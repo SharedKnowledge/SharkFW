@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.java.j2seproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
+            <name>Shark_emulator</name>
+            <source-roots>
+                <root id="src.aspects.dir"/>
+                <root id="src.additionalCP.dir"/>
+                <root id="src.j2se.dir"/>
+                <root id="src.core.dir"/>
+                <root id="src.j2seApps.dir"/>
+                <root id="src.j2se_androidWrapper.dir"/>
+                <root id="src.coreApps.dir"/>
+                <root id="src.j2se_android.dir"/>
+            </source-roots>
+            <test-roots>
+                <root id="test.coreTests.dir"/>
+                <root id="test.j2seTests.dir"/>
+            </test-roots>
+        </data>
+    </configuration>
+</project>

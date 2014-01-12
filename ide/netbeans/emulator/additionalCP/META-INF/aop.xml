@@ -1,0 +1,6 @@
+<!-- aop.xml -->
+<aspectj>
+    <aspects>
+        <aspect name="net.sharkfw.emulator.aspects.BasicAspect"/>
+    </aspects>
+</aspectj>

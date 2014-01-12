@@ -1,0 +1,5 @@
+add: 
+
+	-javaagent:dist\lib\aspectjweaver.jar
+
+to VM Options in Run section of the netbeans project properties
