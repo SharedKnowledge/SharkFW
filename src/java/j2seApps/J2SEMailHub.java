@@ -1,6 +1,7 @@
 
+import java.io.IOException;
 import net.sharkfw.kp.HubKP;
-import net.sharkfw.peer.J2SESharkEngine;
+import net.sharkfw.peer.J2SEAndroidSharkEngine;
 
 /*
  * To change this template, choose Tools | Templates
@@ -29,8 +30,8 @@ public class J2SEMailHub {
   private static String replyAddress = "hub@sharksystem.net";
   
   
-  public static void main(String[] args) {
-    J2SESharkEngine se = new J2SESharkEngine();
+  public static void main(String[] args) throws IOException {
+    J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
     
 //     Set Hub's supported protocols
 //     Start TCP protocol engine on port 8888
@@ -38,12 +39,12 @@ public class J2SEMailHub {
     System.out.println("Started TCP-Server on port 8888.");
     
     // Set mail-config, check mail every minute
-    se.setMailConfiguration(smtpHost, smtpUser, smtpPassword, pop3Host, pop3User, replyAddress, pop3Password, 1);
+    //se.setMailConfiguration(smtpHost, smtpUser, smtpPassword, pop3Host, pop3User, replyAddress, pop3Password, 1);
     // Start mail protocol-engine
     se.startMail();
     System.out.println("Started Mail-Service for " + smtpUser);
     
-    HubKP hub = new HubKP(se, interestsValid, interestCheckInterval, pathToStatusPage, statusPageInterval);
+    //HubKP hub = new HubKP(se, interestsValid, interestCheckInterval, pathToStatusPage, statusPageInterval);
   }
   
 }

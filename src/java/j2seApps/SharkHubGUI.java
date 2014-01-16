@@ -12,7 +12,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import net.sharkfw.kp.HubKP;
-import net.sharkfw.peer.J2SESharkEngine;
+import net.sharkfw.peer.J2SEAndroidSharkEngine;
 
 /*
  * To change this template, choose Tools | Templates
@@ -30,14 +30,14 @@ import net.sharkfw.peer.J2SESharkEngine;
  */
 public class SharkHubGUI extends javax.swing.JFrame {
 
-    private final J2SESharkEngine se;
+    private final J2SEAndroidSharkEngine se;
     private HubKP hubkp;
     
     /** Creates new form SharkHubGUI */
     public SharkHubGUI() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this.se = new J2SESharkEngine();
+        this.se = new J2SEAndroidSharkEngine();
         System.setOut(new PrintStream(new OutputRedirecter()));
     }
 
@@ -635,8 +635,8 @@ public class SharkHubGUI extends javax.swing.JFrame {
         String statuspagePath = tfStatusPagePath.getText();
         int statusUpdate = (Integer) spnStatusPageUpdate.getValue();
         
-        this.hubkp = new HubKP(se, interestsValid, interestCheck, statuspagePath, statusUpdate);
-        this.hubkp.setAdditionalOutput(new StatusPageOutputStream());        
+//        this.hubkp = new HubKP(se, interestsValid, interestCheck, statuspagePath, statusUpdate);
+//        this.hubkp.setAdditionalOutput(new StatusPageOutputStream());        
         
         if(statuspagePath == null || statuspagePath.equalsIgnoreCase("")) {
             hubkp = null;
@@ -655,8 +655,11 @@ public class SharkHubGUI extends javax.swing.JFrame {
                 }
             }
             int timeout = (Integer) spnTimeout.getValue();
-            
-            se.startTCP(port);
+            try {
+                se.startTCP(port);
+            } catch (IOException ex) {
+                Logger.getLogger(SharkHubGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
             se.setConnectionTimeOut(timeout);
         } else if(rbMAIL.isSelected()) {
             String smtp = tfSMTP.getText();
@@ -668,9 +671,12 @@ public class SharkHubGUI extends javax.swing.JFrame {
                 hubkp = null;
                 return;
             }
-            
-            se.setMailConfiguration(smtp, user, pw, pop, user, user, pw, 1);
-            se.startMail();
+            try {
+                //            se.setMailConfiguration(smtp, user, pw, pop, user, user, pw, 1);
+                se.startMail();
+            } catch (IOException ex) {
+                Logger.getLogger(SharkHubGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         this.jFrame1.setVisible(false);
