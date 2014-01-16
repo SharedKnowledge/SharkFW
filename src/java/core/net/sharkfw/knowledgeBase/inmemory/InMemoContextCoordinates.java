@@ -1,7 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import net.sharkfw.knowledgeBase.*;
-
 /**
  * ContextCoordinates describe the coordinates of a ContextPoint.
  * This class holds a reference to one tag one tag on each dimension, and stores
