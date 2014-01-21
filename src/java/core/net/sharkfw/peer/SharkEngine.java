@@ -283,13 +283,13 @@ abstract public class SharkEngine {
     /**
      * Stops networking for a given protocol.
      *
+     * @throws net.sharkfw.kep.SharkProtocolNotSupportedException
      * @see net.sharkfw.protocols.Protocols
      *
      * @param type Int value representing the protocol
-     * @throws kep.SharkProtocolNotSupportedException
      */
     public void stopProtocol(int type) throws SharkProtocolNotSupportedException {
-        Stub protocolStub = this.getProtocolStub(type);
+        Stub protocolStub = this.protocolStubs[type];
         
         if(protocolStub != null) {
             protocolStub.stop();
