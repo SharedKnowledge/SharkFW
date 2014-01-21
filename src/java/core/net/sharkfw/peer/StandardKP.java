@@ -98,14 +98,9 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * AnchorSet, that has been used to create the interest.
      * </p>
      * @param se The SharkEngine that handles the KnowledgePort.
+     * @param interest
      * @param kb The SharkKB over which the KnowledgPort works.
-     * @param imei The interest which is handled by the KnowledgePort.
-     * @deprecated 
      */
-    public StandardKP(SharkEngine se, SharkKB kb, SharkCS interest) {
-        this(se, interest, KnowledgePort.getZeroFP(), KnowledgePort.getZeroFP(), kb);
-    }
-
     public StandardKP(SharkEngine se, SharkCS interest, SharkKB kb) {
         this(se, interest, KnowledgePort.getZeroFP(), KnowledgePort.getZeroFP(), kb);
     }

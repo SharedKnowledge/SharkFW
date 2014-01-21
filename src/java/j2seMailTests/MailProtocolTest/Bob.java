@@ -46,7 +46,7 @@ public class Bob {
         
         ContextCoordinates cc = kb.createContextCoordinates(p2p, bobPeer, null, null, null, null, SharkCS.DIRECTION_IN);
         Interest interest = kb.createInterest(cc);        
-        StandardKP kp = new StandardKP(bob, kb, interest);        
+        StandardKP kp = new StandardKP(bob, interest, kb);        
         System.out.println("done!");
         
         System.out.println("Press Return to start the mail engine");

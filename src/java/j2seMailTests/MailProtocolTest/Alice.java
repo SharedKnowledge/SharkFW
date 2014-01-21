@@ -69,7 +69,7 @@ public class Alice {
         
         Interest interest = kb.createInterest(cc);
         
-        StandardKP kp = new StandardKP(alice, kb, interest);
+        StandardKP kp = new StandardKP(alice, interest, kb);
         
         
         System.out.println("start...");

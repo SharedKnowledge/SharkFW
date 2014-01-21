@@ -666,7 +666,7 @@ public class ExchangeTests {
                 InMemoSharkKB.createInMemoContextCoordinates(aliceTopicTag, 
                 aliceOwnerTag, null, null, null, null, SharkCS.DIRECTION_OUT));
         
-        StandardKP aliceKP = new StandardKP(alice, aliceKB, aliceInterest);
+        StandardKP aliceKP = new StandardKP(alice, aliceInterest, aliceKB);
         
 //        ContextPoint cp = aliceKB.createContextPoint(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, aliceOwnerTag, null, null, ContextSpace.OUT));
         ContextPoint cp = aliceKB.createContextPoint(
@@ -690,7 +690,7 @@ public class ExchangeTests {
                 InMemoSharkKB.createInMemoContextCoordinates(null, bobOwnerTag, 
                 null, null, null, null, SharkCS.DIRECTION_IN)
                 );
-        StandardKP bobKP = new StandardKP(bob, bobKB, bobInterest);
+        StandardKP bobKP = new StandardKP(bob, bobInterest, bobKB);
         
         bob.startTCP(2121);
         
@@ -750,7 +750,7 @@ public class ExchangeTests {
                 aliceTopicTag, aliceOwnerTag, null, null, null, null, 
                 SharkCS.DIRECTION_OUT));
         
-        StandardKP aliceKP = new StandardKP(alice, aliceKB, aliceInterest);
+        StandardKP aliceKP = new StandardKP(alice, aliceInterest, aliceKB);
         
 //        ContextPoint cp = aliceKB.createContextPoint(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, aliceOwnerTag, null, null, ContextSpace.OUT));
         ContextPoint cp = aliceKB.createContextPoint(
@@ -773,7 +773,7 @@ public class ExchangeTests {
         Interest bobInterest = bobKB.createInterest(
                 InMemoSharkKB.createInMemoContextCoordinates(null, bobOwnerTag, 
                 null, null, null, null, SharkCS.DIRECTION_IN));
-        StandardKP bobKP = new StandardKP(bob, bobKB, bobInterest);
+        StandardKP bobKP = new StandardKP(bob, bobInterest, bobKB);
         
         bob.startTCP(4131);
         
@@ -815,7 +815,7 @@ public class ExchangeTests {
         
         Interest aliceInterest = aliceKB.createInterest(aliceCC);
         
-        StandardKP aliceKP = new StandardKP(alice, aliceKB, aliceInterest);
+        StandardKP aliceKP = new StandardKP(alice, aliceInterest, aliceKB);
         
         alice.startTCP(alicePort);
         
@@ -827,7 +827,7 @@ public class ExchangeTests {
         Interest bobInterest = bobKB.createInterest(
                 InMemoSharkKB.createInMemoContextCoordinates(null, bobOwnerTag, 
                 null, null, null, null, SharkCS.DIRECTION_IN));
-        StandardKP bobKP = new StandardKP(bob, bobKB, bobInterest);
+        StandardKP bobKP = new StandardKP(bob, bobInterest, bobKB);
         
         bob.startTCP(bobPort);
         

@@ -129,7 +129,7 @@ public class PropertyTransferTests implements KPListener {
         this.aliceCP.addInformation("test");
         this.aliceCP.setProperty("testproperty", "testpropertyvalue");
         
-        KnowledgePort aliceKP = new StandardKP(aliceSE, aliceKB, aliceInterest);
+        KnowledgePort aliceKP = new StandardKP(aliceSE, aliceInterest, aliceKB);
         
 //        System.out.println(this.getString());
         
@@ -140,7 +140,7 @@ public class PropertyTransferTests implements KPListener {
         Thread.sleep(500);
         
         // Bob
-        KnowledgePort bobKP = new StandardKP(bobSE, bobKB, bobInterest);
+        KnowledgePort bobKP = new StandardKP(bobSE, bobInterest, bobKB);
         bobKP.addListener(this);
         
         bobSE.setConnectionTimeOut(1000);
@@ -161,7 +161,7 @@ public class PropertyTransferTests implements KPListener {
     public void setSender2CPPropertyTest() throws InterruptedException, SharkSecurityException, SharkKBException, IOException {
         this.aliceCP.addInformation("test");
         
-        KnowledgePort aliceKP = new StandardKP(aliceSE, aliceKB, aliceInterest);
+        KnowledgePort aliceKP = new StandardKP(aliceSE, aliceInterest, aliceKB);
         
 //        System.out.println(this.getString());
         
@@ -172,7 +172,7 @@ public class PropertyTransferTests implements KPListener {
         Thread.sleep(500);
         
         // Bob
-        KnowledgePort bobKP = new StandardKP(bobSE, bobKB, bobInterest);
+        KnowledgePort bobKP = new StandardKP(bobSE, bobInterest, bobKB);
         bobKP.addListener(this);
         
         bobSE.setConnectionTimeOut(1000);

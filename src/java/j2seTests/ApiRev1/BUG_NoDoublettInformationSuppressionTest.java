@@ -61,7 +61,7 @@ public class BUG_NoDoublettInformationSuppressionTest {
         
 //        Interest aliceInterest = aliceKB.createInterest(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, null, null, null, ContextSpace.OUT));
         Interest aliceInterest = aliceKB.createInterest(aliceKB.createContextCoordinates(aliceTopicTag, aliceOwnerTag, null, null, null, null, SharkCS.DIRECTION_OUT));
-        StandardKP aliceKP = new StandardKP(alice, aliceKB, aliceInterest);
+        StandardKP aliceKP = new StandardKP(alice, aliceInterest, aliceKB);
         
 //        ContextPoint cp = aliceKB.createContextPoint(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, aliceOwnerTag, null, null, ContextSpace.OUT));
         ContextPoint cp = aliceKB.createContextPoint(aliceKB.createContextCoordinates(aliceTopicTag, aliceOwnerTag, null, aliceOwnerTag, null, null, SharkCS.DIRECTION_OUT));
