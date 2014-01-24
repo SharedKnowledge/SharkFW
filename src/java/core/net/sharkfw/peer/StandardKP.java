@@ -69,7 +69,16 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
     /**
     * Ontology-Transfer-Parameter used for this KnowledgePort.
     */
-    private FragmentationParameter[] otp;
+    private FragmentationParameter[] bgfp;
+    
+    /**
+     * Whether or not delete assimiated context point from received knowledge.
+     */
+    private boolean deleteAssimilated = true;
+    
+    public void deleteAssimilatedFromKnowledge(boolean delete) {
+        this.deleteAssimilated = delete;
+    }
   
     public StandardKP(SharkEngine se, SharkCS interest, 
             FragmentationParameter[] backgroundFP, 
@@ -77,7 +86,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         
         super(se, kb);
         this.fp = fp;
-        this.otp = backgroundFP;
+        this.bgfp = backgroundFP;
         
         try {
             this.interest = InMemoSharkKB.createInMemoCopy(interest);
@@ -115,10 +124,10 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * Call the actual assimilation afterwards.</p>
      *
      * @param k A Knowledge object received from another peer
-     * @param responseFactory KEPResponse to create a response to this insert request
+     * @param response KEPResponse to create a response to this insert request
      */
     @Override
-    protected void doInsert(Knowledge k, KEPConnection responseFactory) {
+    protected void doInsert(Knowledge k, KEPConnection response) {
           L.d("\n******************************************\n\t\tKP doInsert\n******************************************\n", this);
 
         if(!this.isIKP()) { 
@@ -177,7 +186,8 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
             // assimilate this knowledge
             ArrayList<ContextCoordinates> assimilatedCC = 
                     SharkCSAlgebra.assimilate(this.getKB(), effectiveInterest, 
-                                            this.getFP(), k, this.learn, true);
+                                            this.getFP(), k, this.learn, 
+                                            this.deleteAssimilated);
             
             L.d("doInsert: knowledge base after assimilation:\n " + 
                     L.kb2String(this.getKB()), this); 
@@ -208,7 +218,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * If answering with expose, send the contextualized interest back.
      *
      * @param receivedInterest The SimpleInterest received by another peer
-     * @param responseFactory KEPResponse that creates the reply message
+     * @param response
      */
     @Override
     protected void doExpose(SharkCS receivedInterest, KEPConnection response) {        
@@ -387,7 +397,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @param otp An array of FragmentationParameter. One for each dimension.
      */
     public void setOtp(FragmentationParameter otp[]) {
-      this.otp = otp;
+      this.bgfp = otp;
 
     }
 
@@ -415,7 +425,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         * @return An array of <code>FragmentationParameter</code>. One for each dimension.
         */
     public FragmentationParameter[] getOTP() {
-        return this.otp;
+        return this.bgfp;
     }
 
     /**
