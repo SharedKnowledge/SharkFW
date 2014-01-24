@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 import net.sharkfw.kep.*;
+import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
@@ -51,6 +52,17 @@ abstract public class SharkEngine {
     private SecurityLevel signatureLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
 
 
+    /**
+     * Creates standardKP with simple constructor.
+     * 
+     * It is deprecated - use KP constructor instead. It isn't useful to
+     * handle StandardKP as a special one.
+     * 
+     * @param interest
+     * @param kb
+     * @deprecated 
+     * @return 
+     */
     public StandardKP createKP(SharkCS interest, SharkKB kb) {
         return new StandardKP(this, interest, kb);
     }
@@ -436,9 +448,9 @@ abstract public class SharkEngine {
      * @param sender
      * @return 
      */
-    public boolean isAccepted(PeerSemanticTag sender) {
-        return true;
-    }
+//    public boolean isAccepted(PeerSemanticTag sender) {
+//        return true;
+//    }
     
     /*********************************************************************
      *               moved from system factory to here                   *
@@ -709,6 +721,7 @@ abstract public class SharkEngine {
      * <code>boolean mailStarted = engine.isProtocolStarted(Protocols.MAIL)</code>
      * </p>
      * 
+     * @param protocol
      * @return <code>true</code> if the given protocol is started, <code>false</code> if not.
      */
     public boolean isProtocolStarted(int protocol) {
@@ -938,7 +951,7 @@ abstract public class SharkEngine {
      * Create a KEP message that shall be send to on (!) of those addresses
      * @return 
      */
-    public KEPOutMessage createKEPOutMessage(String[] addresses, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException {
+    private KEPOutMessage createKEPOutMessage(String[] addresses, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException {
         KEPOutMessage response = this.createKEPOutMessage(addresses);
 
         if(response != null) {
@@ -1235,11 +1248,14 @@ abstract public class SharkEngine {
      */
     public abstract void startGeoSensor();
 
+    public abstract void persist() throws SharkKBException;
+
     public enum SecurityLevel { MUST, IF_POSSIBLE, NO}
     public enum SecurityReplyPolicy { SAME, TRY_SAME, AS_DEFINED }
     
     /**
      * 
+     * @param engineOwnerPeer
      * @param privateKey private RSA key of this peer
      * @param peer a PST that signes messages - in most cases it will be 
      * the description of the user who actual runs that software
@@ -1478,6 +1494,273 @@ abstract public class SharkEngine {
      */
     public void setSilentPeriod(int milliseconds) {
         this.kepStub.setSilentPeriod(milliseconds);
+    }
+    
+    /////////////////////////////////////////////////////////////////
+    //                 remember unsent messages                    //
+    /////////////////////////////////////////////////////////////////
+    
+    private SharkKB unsentMessagesKB;
+    private static final String UNSENTMESSAGE_SI = "http://www.sharksystem.net/vocabulary/unsentMesssages";
+    private SemanticTag unsentMessagesST = InMemoSharkKB.createInMemoSemanticTag("UnsentMessage", UNSENTMESSAGE_SI);
+    
+    private static final String INTEREST_CONTENT_TYPE = "x-shark/interest";
+    private static final String KNOWLEDGE_CONTENT_TYPE = "x-shark/knowledge";
+    
+    public void setUnsentMessagesKB(SharkKB kb) {
+       this.unsentMessagesKB = kb; 
+    }
+    
+    private ContextCoordinates getUnsentCC(PeerSemanticTag recipient) {
+        return InMemoSharkKB.createInMemoContextCoordinates(
+                this.unsentMessagesST, recipient, null, null, 
+                null, null, SharkCS.DIRECTION_NOTHING);
+    }
+    
+    private ContextPoint getUnsentMessageCP(PeerSemanticTag recipient) {
+        if(this.unsentMessagesKB != null) {
+            try {
+                ContextPoint cp = this.unsentMessagesKB.createContextPoint(
+                        this.getUnsentCC(recipient));
+
+                return cp;
+            }
+            catch(SharkKBException e) {
+            }
+        }
+        
+        return null;
+    }
+    
+    private XMLSerializer xs = null;
+    
+    private XMLSerializer getXMLSerializer() {
+        if(this.xs == null) {
+            this.xs = new XMLSerializer();
+        }
+        
+        return this.xs;
+    }
+
+    public void rememberUnsentInterest(SharkCS interest, PeerSemanticTag recipient) {
+        ContextPoint cp = this.getUnsentMessageCP(recipient);
+        
+        if(cp == null) {
+            L.w("cannot save unsent interest: ", this);
+            return;
+        }
+        
+        try {
+            String interestString = this.getXMLSerializer().serializeSharkCS(interest);
+            Information i = cp.addInformation(interestString);
+            
+            i.setContentType(INTEREST_CONTENT_TYPE);
+            
+        } catch (SharkKBException ex) {
+            L.d("cannot serialize interest", this);
+        }
+    }
+    
+    public void rememberUnsentKnowledge(Knowledge k, PeerSemanticTag recipient) {
+        ContextPoint cp = this.getUnsentMessageCP(recipient);
+        
+        if(cp == null) {
+            L.w("cannot save unsent knowledge: ", this);
+            return;
+        }
+        
+        try {
+            Information i = cp.addInformation();
+            SharkOutputStream sos = new UTF8SharkOutputStream(i.getOutputStream());
+            this.getXMLSerializer().write(k, sos);
+            i.setContentType(KNOWLEDGE_CONTENT_TYPE);
+        } catch (Exception ex) {
+            L.d("cannot serialize knowledge", this);
+        }
+    }
+    
+    public void sendUnsentMessages() {
+        if(this.unsentMessagesKB != null) {
+            try {
+                Enumeration<ContextPoint> cpEnum = this.unsentMessagesKB.getAllContextPoints();
+                if(cpEnum == null) {
+                    return;
+                }
+                
+                while(cpEnum.hasMoreElements()) {
+                    ContextPoint cp = cpEnum.nextElement();
+                    
+                    this.unsentMessagesKB.removeContextPoint(cp.getContextCoordinates());
+                    
+                    Enumeration<Information> infoEnum = cp.enumInformation();
+                    if(infoEnum == null) {
+                        continue;
+                    }
+                    
+                    while(infoEnum.hasMoreElements()) {
+                        Information i = infoEnum.nextElement();
+                        
+                        if(i.getContentType().equalsIgnoreCase(INTEREST_CONTENT_TYPE)) {
+                            // Interest
+                            String serialeInterest = new String(i.getContentAsByte());
+                            SharkCS deserializeSharkCS = this.getXMLSerializer().deserializeSharkCS(serialeInterest);
+                            cp.removeInformation(i);
+                            
+                            // TODO reset - prevent loop!
+                        }
+                        else if(i.getContentType().equalsIgnoreCase(KNOWLEDGE_CONTENT_TYPE)) {
+                            // knowledge
+                            // TODO
+                        }
+                        
+                    }
+                }
+                
+            }
+            catch(SharkKBException e) {
+                
+            }
+        }
+    }
+    
+    public void removeUnsentMessages() {
+        if(this.unsentMessagesKB != null) {
+            try {
+                Enumeration<ContextPoint> cpEnum = this.unsentMessagesKB.getAllContextPoints();
+                if(cpEnum == null) {
+                    return;
+                }
+                
+                while(cpEnum.hasMoreElements()) {
+                    ContextPoint cp = cpEnum.nextElement();
+                    this.unsentMessagesKB.removeContextPoint(cp.getContextCoordinates());
+                }
+            }
+            catch(SharkKBException e) {
+                L.d("problems while iterating stored unsent messages", this);
+            }
+        }
+    }
+    
+    
+    /////////////////////////////////////////////////////////////////////////
+    //                        list manager methods                         //
+    /////////////////////////////////////////////////////////////////////////
+    
+    // both should be private - review white-/black list management
+    protected ArrayList<PeerSemanticTag> blackList = new ArrayList();
+    protected ArrayList<PeerSemanticTag> whiteList = new ArrayList();
+    
+    public static final String WHITE_LIST = "subSpaceGuard_whiteList";
+    public static final String BLACK_LIST = "subSpaceGuard_blackList";
+    public static final String USE_WHITE_LIST = "subSpaceGuard_useWhiteList";
+    
+    /**
+     * Add or remove peer to/from blacklist (filter.
+     * @param peer 
+     * @param accept true: peer invitations are accepted and result in a 
+     * invitation notification: false: Invitations are dropped without further
+     * comments
+     */
+    public void acceptPeer(PeerSemanticTag peer, boolean accept) {
+        if(accept) {
+            // add to white list
+            this.whiteList.add(InMemoSharkKB.createInMemoCopy(peer));
+            
+            // try to remove from backlist
+            Iterator<PeerSemanticTag> peerIter = this.blackList.iterator();
+            while(peerIter.hasNext()) {
+                PeerSemanticTag blackPeer = peerIter.next();
+                
+                if(SharkCSAlgebra.identical(blackPeer, peer)) {
+                    this.blackList.remove(blackPeer);
+                    return;
+                }
+            }
+        } else {
+            // make a copy and add to black list
+            this.blackList.add(InMemoSharkKB.createInMemoCopy(peer));
+            
+            // try to remove from whitelist
+            Iterator<PeerSemanticTag> peerIter = this.whiteList.iterator();
+            while(peerIter.hasNext()) {
+                PeerSemanticTag blackPeer = peerIter.next();
+                
+                if(SharkCSAlgebra.identical(blackPeer, peer)) {
+                    this.whiteList.remove(blackPeer);
+                    return;
+                }
+            }
+        }
+
+        // remember those settings
+        try {
+            this.persist();
+        }
+        catch(SharkKBException skbe) {
+            L.e("cannot save shark net engine status", this);
+        }
+    }
+
+    protected boolean useWhiteList = false;
+    
+    /**
+     * Trigger what policy is used. This guard manages a white and
+     * a black list.
+     * 
+     * Using a white list is more restrictive that using a black list:
+     * 
+     * <ul>
+     * <li>Using a whitelist means: Only invitation are excepted which
+     * are send from peer who a explicitely allowed to invite this peer.
+     * <li>Using a black list means that peer can be set on a black list. Those
+     * peers are not allowed to invite.
+     * </ul>
+     * 
+     * The difference is for unknown peers: Invitation of unknown peers are
+     * accepted with a black list but not with a whitelist
+     */
+    public void useWhiteList(boolean whiteYes) {
+        this.useWhiteList = whiteYes;
+    }
+    
+    private boolean isIn(Iterator<PeerSemanticTag> peerIter, PeerSemanticTag peer) {
+        if(peerIter == null) {
+            return false;
+        }
+        
+        while(peerIter.hasNext()) {
+            PeerSemanticTag pst = peerIter.next();
+            if(SharkCSAlgebra.identical(pst, peer)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Move to core.SharkEngine soon.
+     * @param sender
+     * @return 
+     */
+    public boolean isAccepted(PeerSemanticTag sender) {
+        if(this.useWhiteList) {
+            if(sender == null) {
+                return false;
+            }
+            
+            return this.isIn(this.whiteList.iterator(), sender);
+        } else {
+            if(sender == null) {
+                return true;
+            }
+            return !this.isIn(this.blackList.iterator(), sender);
+        }
+    }    
+    
+    public Iterator<PeerSemanticTag> getWhiteList() {
+        return this.whiteList.iterator();
     }
 }
 
