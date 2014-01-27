@@ -240,6 +240,14 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
           
           // refresh interest
           SharkCS localInterest = this.getInterest();
+          
+          /*
+            * Remote interest has passed the door. Now we enrich the
+            * interest with background knowledge - to teach remote
+            * peer. Thus, local kb becomes source, mutualInterest becomes context.
+            * 
+            * Result can be more general, larger, than the local interest.
+          */
           SharkCS effectiveInterest = this.getKB().contextualize(localInterest, this.getOTP());
           
           // check it with the guarding interest first
@@ -247,7 +255,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 //          SharkCS mutualInterest = SharkCSAlgebra.contextualize(
 //                  receivedInterest, this.getInterest(), this.getFP());
 
-          SharkCS mutualInterest = SharkCSAlgebra.contextualize(
+          Interest mutualInterest = SharkCSAlgebra.contextualize(
                   receivedInterest, effectiveInterest, this.getFP());
 
           if(mutualInterest == null) {
@@ -258,55 +266,6 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
           L.d("doExpose: \n mutual interest is:\n"+ L.contextSpace2String(mutualInterest), this);
 
           int effectiveDirection = mutualInterest.getDirection();
-
-          /////////////////////////////////////////////////////////////////
-          //                       send knowledge                        //
-          /////////////////////////////////////////////////////////////////
-          
-          // remote peer wants to get something?
-          if(effectiveDirection == SharkCS.DIRECTION_INOUT || 
-                  effectiveDirection == SharkCS.DIRECTION_OUT) {
-              
-              
-              /**
-               * We turn sides now
-               * We have reduced the interest in the previous step by taking
-               * the local interest as context - as guard so to say.
-               * 
-               * Remote interest has passed that door. Now we enrich the
-               * interest with background knowledge - to teach remote
-               * peer. Thus, local kb becomes source, mutualInterest becomes context.
-               * 
-               * Result can be more general, larger, than the mutual interest.
-               */
-//              Interest extractionInterest = SharkCSAlgebra.contextualize(
-//                  this.getKB().asSharkCS(), receivedInterest, this.getOTP());
-              
-              Interest extractionInterest = SharkCSAlgebra.contextualize(
-                  this.getKB().asSharkCS(), mutualInterest, this.getOTP());
-              
-              L.d("doExpose: \n extraction interest is:\n"+ L.contextSpace2String(extractionInterest), this);
-              
-              // set direction: we take all cps that are explicitely set to out
-              extractionInterest.setDirection(SharkCS.DIRECTION_INOUT);
-              
-            // Effective interest = sending interest. Extract knowledge.
-            InMemoSharkKB tempKB = new InMemoSharkKB();
-            
-            Knowledge k = SharkCSAlgebra.extract(tempKB, 
-                    this.getKB(), extractionInterest, 
-                    this.getFP(), true);
-            
-            if(k != null) {
-                L.d("extracted non-empty knowledge", this);
-                
-                // send it back
-                response.insert(k, (String) null);
-                this.notifyInsertSent(this, k);
-            } else {
-                L.d("no knowledge found with those extraction cs", this);
-            }
-          }
 
           /////////////////////////////////////////////////////////////////
           //                    expose mutual interest                   //
@@ -320,6 +279,49 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 
             response.expose(mutualInterest);
             this.notifyExposeSent(this, mutualInterest);
+          }
+          
+          /* Note: Don't change the order of expose and send.
+           * We are ging to manipulate mutual interest in the next few lines
+          */
+
+          /////////////////////////////////////////////////////////////////
+          //                       send knowledge                        //
+          /////////////////////////////////////////////////////////////////
+          
+          // remote peer wants to get something?
+          if(effectiveDirection == SharkCS.DIRECTION_INOUT || 
+                  effectiveDirection == SharkCS.DIRECTION_OUT) {
+              
+//              Interest extractionInterest = SharkCSAlgebra.contextualize(
+//                  this.getKB().asSharkCS(), mutualInterest, this.getOTP());
+
+//              Interest extractionInterest = InMemoSharkKB.createInMemoCopy(mutualInterest);
+//              L.d("doExpose: \n extraction interest is:\n"+ L.contextSpace2String(extractionInterest), this);
+              
+              // set direction: we take all cps that are explicitely set to out
+//              extractionInterest.setDirection(SharkCS.DIRECTION_INOUT);
+              
+              mutualInterest.setDirection(SharkCS.DIRECTION_INOUT);
+              
+              L.d("doExpose: \n extraction interest is:\n"+ L.contextSpace2String(mutualInterest), this);
+              
+            // Effective interest = sending interest. Extract knowledge.
+            InMemoSharkKB tempKB = new InMemoSharkKB();
+            
+            Knowledge k = SharkCSAlgebra.extract(tempKB, 
+                    this.getKB(), mutualInterest, 
+                    this.getFP(), true);
+            
+            if(k != null) {
+                L.d("extracted non-empty knowledge", this);
+                
+                // send it back
+                response.insert(k, (String) null);
+                this.notifyInsertSent(this, k);
+            } else {
+                L.d("no knowledge found with those extraction cs", this);
+            }
           }
 
       } catch (SharkException ex) {
