@@ -4,7 +4,6 @@ import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.protocols.PeerAddress;
 import net.sharkfw.system.SharkException;
 
 /**

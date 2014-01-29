@@ -16,6 +16,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.pki.SharkPublicKeyStorage;
 import net.sharkfw.protocols.*;
+import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 import net.sharkfw.system.SharkNotSupportedException;
@@ -390,17 +391,17 @@ abstract public class SharkEngine {
      * 
      * @param kp 
      */
-    public void setDefaultKP(KnowledgePort kp) {
-        // remove this kp from usual KP list
-        this.kps.remove(kp);
-        
-        // add as default
-        this.kepStub.setNotHandledRequestKP(kp);
-    }
-
-    public void resetDefaultKP() {
-        this.kepStub.resetNotHandledRequestKP();
-    }
+//    public void setDefaultKP(KnowledgePort kp) {
+//        // remove this kp from usual KP list
+//        this.kps.remove(kp);
+//        
+//        // add as default
+//        this.kepStub.setNotHandledRequestKP(kp);
+//    }
+//
+//    public void resetDefaultKP() {
+//        this.kepStub.resetNotHandledRequestKP();
+//    }
 
     /**
      * Return all KP which are currently registered in this SharkEngine.
@@ -410,6 +411,15 @@ abstract public class SharkEngine {
     public Enumeration<KnowledgePort> getKPs() {
         return this.kps.elements();
     }
+    
+    /**
+     * @return
+     */
+    public Iterator<KnowledgePort> getAllKP() {
+        EnumerationChain kpIter = new EnumerationChain<KnowledgePort>();
+        kpIter.addEnumeration(this.getKPs());
+        return kpIter;
+    }    
 
     /**
      * Stops and removes <code>KnowledgePort</code>
@@ -1156,6 +1166,13 @@ abstract public class SharkEngine {
         msg.initSecurity(useThisPrivateKey, publicKey, sendingPeerSIString, sign);
     }
 
+    /**
+     * That message iterates all remote peers in kp interest and exposes that 
+     * interest to them
+     * @param kp
+     * @throws net.sharkfw.system.SharkSecurityException
+     * @throws java.io.IOException
+     */ 
     public void publishKP(KnowledgePort kp) throws SharkSecurityException, IOException {
         L.d("publishKP() started", this);
         /**
