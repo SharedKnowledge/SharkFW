@@ -48,5 +48,5 @@ public interface WhiteAndBlackListManager {
     /**
      * @return Iterator of white listed peers
      */
-    Iterator<PeerSemanticTag> getWhiteList();
+    //Iterator<PeerSemanticTag> getWhiteList();
 }

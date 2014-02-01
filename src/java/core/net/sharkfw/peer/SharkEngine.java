@@ -310,6 +310,18 @@ abstract public class SharkEngine {
             this.removeProtocolStub(type);
         }
     }
+    
+    public void stopTCP() throws SharkProtocolNotSupportedException {
+        this.stopProtocol(Protocols.TCP);
+    }
+
+    public void stopWifiDirect() throws SharkProtocolNotSupportedException {
+        this.stopProtocol(Protocols.WIFI_DIRECT);
+    }
+
+    public void stopMail() throws SharkProtocolNotSupportedException {
+        this.stopProtocol(Protocols.MAIL);
+    }
 
     /**
      * Adds a <code>KnowledgePort</code> to this <code>SharkEngine</code>.
@@ -750,16 +762,20 @@ abstract public class SharkEngine {
      * Publish the interest of that kp to the environment.
      * 
      * @param kp <code>KnowledgePort</code> to publish.
+     * @param recipient
+     * @throws net.sharkfw.system.SharkSecurityException
+     * @throws java.io.IOException
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
     public void publishKP(KnowledgePort kp, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         this.sendInterest(kp.getInterest(), recipient, kp);
     }
     
-    public void sendInterest(SharkCS interest, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
+    void sendInterest(SharkCS interest, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
         this.sendKEPCommand(interest, null, kp, recipient);
     }
     
-    public void sendKnowledge(Knowledge k, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
+    void sendKnowledge(Knowledge k, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
         this.sendKEPCommand(null, k, kp, recipient);
     }
 
@@ -858,7 +874,7 @@ abstract public class SharkEngine {
      * @param addrB
      * @return 
      */
-    private boolean better(String addrA, String addrB) {
+    protected boolean better(String addrA, String addrB) {
         try {
             int aProtocol = Protocols.getValueByAddress(addrA);
             int bProtocol = Protocols.getValueByAddress(addrB);
@@ -1239,11 +1255,13 @@ abstract public class SharkEngine {
      * is supported, null is returned.
      *
      * @return An instance of PeerSensor, or null if none is supported
+     * @deprecated 
      */
     public abstract PeerSensor startPeerSensor();
 
     /**
      * Stop the currently running PeerSensor.
+     * @deprecated 
      */
     public abstract void stopPeerSensor();
 
@@ -1252,11 +1270,13 @@ abstract public class SharkEngine {
      * is supported, null is returned.
      *
      * @return An instance of GeoSensor, or null if none is supported.
+     * @deprecated 
      */
     public abstract GeoSensor getGeoSensor();
 
     /**
      * Stop the currently running GeoSensor.
+     * @deprecated 
      */
     public abstract void stopGeoSensor();
 
@@ -1395,6 +1415,7 @@ abstract public class SharkEngine {
      * @param address recipient address
      * @return Knowledge with information that are not already sent or null if 
      * all information have already been transmitted
+     * @deprecated ???
      */
     public Knowledge removeSentInformation(Knowledge k, String address) {
         
@@ -1450,7 +1471,7 @@ abstract public class SharkEngine {
     }
     
     /**
-     * this mthods stores what information are sent to whom in order to suppress
+     * this method stores what information are sent to whom in order to suppress
      * duplicates. Note: It only suppresses duplicates to direct communication
      * partners. It does not inspect the remote dimension of context points though.
      * @param k knowledge to be sent
@@ -1559,6 +1580,11 @@ abstract public class SharkEngine {
         return this.xs;
     }
 
+    /**
+     * stores unsent message somewhere... TODO
+     * @param interest
+     * @param recipient 
+     */
     public void rememberUnsentInterest(SharkCS interest, PeerSemanticTag recipient) {
         ContextPoint cp = this.getUnsentMessageCP(recipient);
         
@@ -1578,6 +1604,11 @@ abstract public class SharkEngine {
         }
     }
     
+    /**
+     * stores unsent knowledge somewhere... TODO
+     * @param k
+     * @param recipient
+     */
     public void rememberUnsentKnowledge(Knowledge k, PeerSemanticTag recipient) {
         ContextPoint cp = this.getUnsentMessageCP(recipient);
         
@@ -1596,6 +1627,9 @@ abstract public class SharkEngine {
         }
     }
     
+    /**
+     * Re-send unsent messages.
+     */
     public void sendUnsentMessages() {
         if(this.unsentMessagesKB != null) {
             try {
@@ -1776,8 +1810,8 @@ abstract public class SharkEngine {
         }
     }    
     
-    public Iterator<PeerSemanticTag> getWhiteList() {
-        return this.whiteList.iterator();
-    }
+//    public Iterator<PeerSemanticTag> getWhiteList() {
+//        return this.whiteList.iterator();
+//    }
 }
 
