@@ -1,6 +1,5 @@
 package net.sharkfw.peer;
 
-import java.util.Iterator;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 
 /**
@@ -32,8 +31,17 @@ public interface WhiteAndBlackListManager {
      * 
      * The difference is for unknown peers: Invitation of unknown peers are
      * accepted with a black list but not with a whitelist
+     * @param whiteList
      */
     void useWhiteList(boolean whiteList);
+    
+    /**
+     * Method can be used to switch black and white list management.
+     * Use useWhiteList to define what kind of list is to be used.
+     * 
+     * @param on true.. management is on, false management is off.
+     */
+    void useBlackWhiteList(boolean on);
     
     /**
      * Returns whether this peer is allowed to send a message.

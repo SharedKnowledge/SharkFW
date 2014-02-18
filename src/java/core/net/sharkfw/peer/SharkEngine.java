@@ -1775,6 +1775,11 @@ abstract public class SharkEngine {
         this.useWhiteList = whiteYes;
     }
     
+    private boolean useBlackWhiteList = true;
+    public void useBlackWhiteList(boolean on) {
+        this.useBlackWhiteList = on;
+    }
+    
     private boolean isIn(Iterator<PeerSemanticTag> peerIter, PeerSemanticTag peer) {
         if(peerIter == null) {
             return false;
@@ -1796,6 +1801,10 @@ abstract public class SharkEngine {
      * @return 
      */
     public boolean isAccepted(PeerSemanticTag sender) {
+        if(!this.useBlackWhiteList) {
+            return true;
+        }
+        
         if(this.useWhiteList) {
             if(sender == null) {
                 return false;
