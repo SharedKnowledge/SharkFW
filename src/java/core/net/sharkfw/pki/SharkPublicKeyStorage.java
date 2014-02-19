@@ -42,8 +42,8 @@ public interface SharkPublicKeyStorage {
      * return public key of a peer described by it's subject identifier.
      * The first matching peer ist taken and its key ist returned.
      * @param si si describing the peer
-     * @throws SharkSecurityException if no key can be found.
      * @return RSA public key
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
     public PublicKey getPublicKey(String si[]) throws SharkKBException;
     
@@ -63,6 +63,7 @@ public interface SharkPublicKeyStorage {
      * See http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#KeyPairGenerator
      * for information about standard algorithm names.
      * <br/><b>Note</b> This is a blocking sending method as we inform other peers of our new certificate. Call it in a thread.
+     * @param format
      * @throws SharkKBException 
      */
     public void createKeyPair(String format) throws SharkKBException;
@@ -84,14 +85,29 @@ public interface SharkPublicKeyStorage {
      * @param validity Time this certificate will be valid
      * @return The certificate for the public key.
      * @throws SharkKBException if certificate can not be created
+     * @deprecated create certificate for each signing peer
      */
     public SharkCertificate addPublicKey(PublicKey pk, PeerSemanticTag peer, List<SigningPeer> signatures, long validity) throws SharkKBException;
+
+    /**
+     * Adds the public key of another peer to our pki store.
+     * If we already have stored that public key for that peer we only update
+     * the signatures.
+     * @param pk The public key to store.
+     * @param peer The peer the public key belongs to.
+     * @param signature Signature for that public key. Can be null if no one has signed the public key.
+     * @param validity Time this certificate will be valid
+     * @return The certificate for the public key.
+     * @throws SharkKBException if certificate can not be created
+     */ 
+    public SharkCertificate addPublicKey(PublicKey pk, PeerSemanticTag peer, SigningPeer signature, long validity) throws SharkKBException;
     
     /**
      * This signs a public key of that peer. This method must only be used
      * by the peer who got the public key first hand from the peer.
      * @param peer The peer the public key of has to be signed.
      * @throws SharkKBException if peer has no public key
+     * @throws net.sharkfw.system.SharkPKVerifiyException
      */
     public void signPublicKey(PeerSemanticTag peer) throws SharkKBException, SharkPKVerifiyException;
     
@@ -101,6 +117,7 @@ public interface SharkPublicKeyStorage {
      * The maximal number is one year.
      * 
      * @param duration 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public void setValidity(long duration) throws SharkKBException;
     
@@ -109,6 +126,7 @@ public interface SharkPublicKeyStorage {
      * 
      * @param peer
      * @return 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public SharkCertificate getCertificate(PeerSemanticTag peer) throws SharkKBException;
 
@@ -142,6 +160,7 @@ public interface SharkPublicKeyStorage {
      * @param cert
      * @return Level of trust - 0 is best. -1 is returned of no path of trust can
      * be found at all.
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
     public int trustLevel(SharkCertificate cert) throws SharkKBException;
     
@@ -188,6 +207,7 @@ public interface SharkPublicKeyStorage {
     /**
      * Switch pki communication on or off.
      * @param on 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public void setSharing(boolean on) throws SharkKBException;
     

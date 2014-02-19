@@ -12,8 +12,17 @@ public class SigningPeer {
     
     private String[] mPeerSI;
     private byte[] mSignatur;
-    
+
+    /**
+     * @deprecated use other constructor.
+     */
     public SigningPeer(){
+    }
+
+    public SigningPeer(String[] peerSI, byte[] signature){
+        this();
+        this.mPeerSI = peerSI;
+        this.mSignatur = signature;
     }
 
     public String[] getPeerSI(){
@@ -24,10 +33,18 @@ public class SigningPeer {
         return mSignatur;
     }
     
+    /**
+     * @param sis 
+     * @deprecated 
+     */
     public void setPeerSI(String[] sis){
         mPeerSI = sis.clone();
     }
     
+    /**
+     * @param signature 
+     * @deprecated 
+     */
     public void setSignature(byte[] signature){
         mSignatur = signature;
     }
