@@ -35,7 +35,7 @@ public class FSInformation extends InMemoInformation {
         this.setupContentFile();
         this.setupUniqueID();
     }
-    
+
     /**
      * calculate content file name by information name and content type
      */
@@ -70,8 +70,8 @@ public class FSInformation extends InMemoInformation {
         } else {
             extension = "." + extension;
         }
-        
-        String newFilename = this.folder + "/" + name + extension;
+                
+		String newFilename = this.folder + "/" + FSGenericTagStorage.mapName(name) + extension;
         
         File newContentFile = new File(newFilename);
         

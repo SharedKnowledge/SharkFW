@@ -80,9 +80,22 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     }
 
+    /**
+     * @throws if name contains chars, that are not allowed inside file- or path-names
+     */
     @Override
     public void setName(String name) throws SharkKBException {
-        if (name != null && (name.contains("/") || name.contains("\\"))) {
+        if (name != null && (
+        			name.contains("<") ||		/* less than,  IO redirection (input) */
+        			name.contains(">") || 		/* greater than, IO redirection (output) */
+        			name.contains("|") || 		/* bar,  IO redirection (pipe) */
+        			name.contains("/") || 		/* slash, directory separator */
+        			name.contains(":") ||		/* colon, host separator on network filesystems, protocol separator */ 
+        			name.contains("*") ||		/* asterisk, wildcard for any amount of chars */ 
+        			name.contains("?") ||		/* question mark, wildcard for one single char */ 
+        			name.contains("\"") ||		/* double quotes, commandline argument grouping (doesn't work on windows cmd.exe shell anyway, but the char is forbidden) */ 
+        			name.contains("\\")			/* backslash, directory separator */
+        		)) {
             throw new SharkKBException("The name contains not allowed characters.");
         }
 
@@ -316,7 +329,9 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         if (value == null) {
             return 0;
         }
-
+        if (value.equals("")) {
+            return 0;
+        }
         return Long.parseLong(value);
     }
 

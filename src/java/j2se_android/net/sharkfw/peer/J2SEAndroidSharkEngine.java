@@ -1,11 +1,13 @@
 package net.sharkfw.peer;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.kep.SimpleKEPStub;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -57,7 +59,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
     private String pop3user;
     
     // TCP parameter
-    private int defaultTCPPort = 4444;
+    public static int defaultTCPPort = 7070;
     private int defaultUDPPort = 5555;
     private int defaultHTTPPort = 8080;
     private int kpStoreCount = 0;
@@ -88,6 +90,75 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
             throw new SharkProtocolNotSupportedException(ioe.getMessage());
         }
     }
+    
+	/**
+	 * @param hostnameArg  	can be part of hostname, domainname, or textual ip address 
+	 * 				        segment to narrow down in case more interfaces exists in 
+	 * 						the system, if this argument is null and the resolver works properly
+	 * 				        the environment variable COMPUTERNAME is used
+	 * @returns the fully qualified domain name
+	 */
+	public static String getFQDN(String hostnameArg) { 
+		// TODO: how to get hostname on any platform 	
+		Map<String, String> env = System.getenv();
+		String computername = env.get("COMPUTERNAME").toLowerCase();
+
+		try {
+//			int k = 0;
+			Enumeration<NetworkInterface> a = NetworkInterface.getNetworkInterfaces();
+			
+			while (a.hasMoreElements()) {
+				NetworkInterface b = a.nextElement();				
+//				System.out.print("if["+k+"]:"+b.getDisplayName());
+				
+				if (!b.isLoopback() && b.isUp()) {				
+					Enumeration<InetAddress> c = b.getInetAddresses();
+//					int n = 0;
+					while(c.hasMoreElements()) {
+						InetAddress d = c.nextElement();		
+						String fqdn = d.getCanonicalHostName().toLowerCase();
+						
+						if (fqdn.equals(d.getHostAddress())) {
+							// the resolver didn't work, we've got the plain IP address
+							if (hostnameArg != null) {
+								if (fqdn.contains(hostnameArg)) {
+									// this is a fallback for poor configurations
+									// if plain IP or network address was requested, we have found it
+									return fqdn;
+								}
+							} else {
+								return fqdn;
+							}
+						} else {
+							// the resolver got something
+							if (hostnameArg != null) {
+								// stick to what was given
+								if (fqdn.contains(hostnameArg)) {
+									// we have found what was requested
+									return fqdn;
+								}
+							} else {
+								// take the default hostname
+								if (fqdn.contains(computername)) {
+									// this is it
+									return fqdn;
+								}
+							}
+						}
+//						System.out.print(" name["+n+"]:"+fqdn);
+//						n++;
+					}
+				}				
+//				System.out.println(" loopback:"+b.isLoopback()+"  up:"+b.isUp());
+//				k++;
+			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 
     // ===========================================================================
     // API rev. 3 methods
@@ -212,7 +283,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
     }
 
     @Override
-    protected MessageStub createMailStub(RequestHandler handler) 
+	public MessageStub createMailStub(RequestHandler handler) 
                 throws SharkProtocolNotSupportedException  {
         
         return new MailMessageStub(handler, 
@@ -262,7 +333,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
      * @param pop3user POP3 user name
      * @param pop3ReplyAddress Adress that is used as reply address
      * @param pop3pwd POP3 password
-     * @param mailCheckInterval
+     * @param mailCheckInterval integer number, delay in minutes
      * @param sslPOP3 
      */
     public void setMailConfiguration(
@@ -417,7 +488,6 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
         this.ph = ph;
     }
     
-    @Override
     public void persist() throws SharkKBException {
         if(this.ph != null) {
             // black / white list manager - move to SharkEngine
@@ -459,11 +529,11 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
             }
 
             if(this. whiteList == null) {
-                this.whiteList = new ArrayList();
+                this.whiteList = new ArrayList<PeerSemanticTag>();
             }
 
             if(this.blackList == null) {
-                this.blackList = new ArrayList();
+                this.blackList = new ArrayList<PeerSemanticTag>();
             }
 
             this.useWhiteList = Boolean.parseBoolean(this.ph.getSystemProperty(USE_WHITE_LIST));
@@ -560,4 +630,319 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
                     pop3Host, pop3user, replyAddress, pop3pwd, mailCheckInterval, sslPOP3);
         }
     }
+    
+    /////////////////////////////////////////////////////////////////////////
+    //                        list manager methods                         //
+    /////////////////////////////////////////////////////////////////////////
+    
+    private ArrayList<PeerSemanticTag> blackList = new ArrayList<PeerSemanticTag>();
+    private ArrayList<PeerSemanticTag> whiteList = new ArrayList<PeerSemanticTag>();
+    
+    public static final String WHITE_LIST = "subSpaceGuard_whiteList";
+    public static final String BLACK_LIST = "subSpaceGuard_blackList";
+    public static final String USE_WHITE_LIST = "subSpaceGuard_useWhiteList";
+    
+    /**
+     * Add or remove peer to/from blacklist (filter.
+     * @param peer 
+     * @param accept true: peer invitations are accepted and result in a 
+     * invitation notification: false: Invitations are dropped without further
+     * comments
+     */
+    @Override
+    public void acceptPeer(PeerSemanticTag peer, boolean accept) {
+        if(accept) {
+            // add to white list
+            this.whiteList.add(InMemoSharkKB.createInMemoCopy(peer));
+            
+            // try to remove from backlist
+            Iterator<PeerSemanticTag> peerIter = this.blackList.iterator();
+            while(peerIter.hasNext()) {
+                PeerSemanticTag blackPeer = peerIter.next();
+                
+                if(SharkCSAlgebra.identical(blackPeer, peer)) {
+                    this.blackList.remove(blackPeer);
+                    return;
+                }
+            }
+        } else {
+            // make a copy and add to black list
+            this.blackList.add(InMemoSharkKB.createInMemoCopy(peer));
+            
+            // try to remove from whitelist
+            Iterator<PeerSemanticTag> peerIter = this.whiteList.iterator();
+            while(peerIter.hasNext()) {
+                PeerSemanticTag blackPeer = peerIter.next();
+                
+                if(SharkCSAlgebra.identical(blackPeer, peer)) {
+                    this.whiteList.remove(blackPeer);
+                    return;
+                }
+            }
+        }
+
+        // remember those settings
+        try {
+            this.persist();
+        }
+        catch(SharkKBException skbe) {
+            L.e("cannot save shark net engine status", this);
+        }
+    }
+
+    private boolean useWhiteList = false;
+    
+    /**
+     * Trigger what policy is used. This guard manages a white and
+     * a black list.
+     * 
+     * Using a white list is more restrictive that using a black list:
+     * 
+     * <ul>
+     * <li>Using a whitelist means: Only invitation are excepted which
+     * are send from peer who a explicitely allowed to invite this peer.
+     * <li>Using a black list means that peer can be set on a black list. Those
+     * peers are not allowed to invite.
+     * </ul>
+     * 
+     * The difference is for unknown peers: Invitation of unknown peers are
+     * accepted with a black list but not with a whitelist
+     */
+    @Override
+    public void useWhiteList(boolean whiteYes) {
+        this.useWhiteList = whiteYes;
+    }
+    
+    private boolean isIn(Iterator<PeerSemanticTag> peerIter, PeerSemanticTag peer) {
+        if(peerIter == null) {
+            return false;
+        }
+        
+        while(peerIter.hasNext()) {
+            PeerSemanticTag pst = peerIter.next();
+            if(SharkCSAlgebra.identical(pst, peer)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Move to core.SharkEngine soon.
+     * @param sender
+     * @return 
+     */
+    @Override
+    public boolean isAccepted(PeerSemanticTag sender) {
+        if(this.useWhiteList) {
+            if(sender == null) {
+                return false;
+            }
+            
+            return this.isIn(this.whiteList.iterator(), sender);
+        } else {
+            if(sender == null) {
+                return true;
+            }
+            return !this.isIn(this.blackList.iterator(), sender);
+        }
+    }    
+    
+    @Override
+    public Iterator<PeerSemanticTag> getWhiteList() {
+        return this.whiteList.iterator();
+    }
+    
+    /////////////////////////////////////////////////////////////////
+    //                 remember unsent messages                    //
+    /////////////////////////////////////////////////////////////////
+    
+    private SharkKB unsentMessagesKB;
+    private static final String UNSENTMESSAGE_SI = "http://www.sharksystem.net/vocabulary/unsentMesssages";
+    private SemanticTag unsentMessagesST = InMemoSharkKB.createInMemoSemanticTag("UnsentMessage", UNSENTMESSAGE_SI);
+    
+    private static final String INTEREST_CONTENT_TYPE = "x-shark/interest";
+    private static final String KNOWLEDGE_CONTENT_TYPE = "x-shark/knowledge";
+    
+    public void setUnsentMessagesKB(SharkKB kb) {
+       this.unsentMessagesKB = kb; 
+    }
+    
+    private ContextCoordinates getUnsentCC(PeerSemanticTag recipient) {
+        return InMemoSharkKB.createInMemoContextCoordinates(
+                this.unsentMessagesST, recipient, null, null, 
+                null, null, SharkCS.DIRECTION_NOTHING);
+    }
+    
+    private ContextPoint getUnsentMessageCP(PeerSemanticTag recipient) {
+        if(this.unsentMessagesKB != null) {
+            try {
+                ContextPoint cp = this.unsentMessagesKB.createContextPoint(
+                        this.getUnsentCC(recipient));
+
+                return cp;
+            }
+            catch(SharkKBException e) {
+            }
+        }
+        
+        return null;
+    }
+    
+    private XMLSerializer xs = null;
+    
+    private XMLSerializer getXMLSerializer() {
+        if(this.xs == null) {
+            this.xs = new XMLSerializer();
+        }
+        
+        return this.xs;
+    }
+
+    public void rememberUnsentInterest(SharkCS interest, PeerSemanticTag recipient) {
+        ContextPoint cp = this.getUnsentMessageCP(recipient);
+        
+        if(cp == null) {
+            L.w("cannot save unsent interest: ", this);
+            return;
+        }
+        
+        try {
+            String interestString = this.getXMLSerializer().serializeSharkCS(interest);
+            Information i = cp.addInformation(interestString);
+            
+            i.setContentType(INTEREST_CONTENT_TYPE);
+            
+        } catch (SharkKBException ex) {
+            L.d("cannot serialize interest", this);
+        }
+    }
+    
+    public void rememberUnsentKnowledge(Knowledge k, PeerSemanticTag recipient) {
+        ContextPoint cp = this.getUnsentMessageCP(recipient);
+        
+        if(cp == null) {
+            L.w("cannot save unsent knowledge: ", this);
+            return;
+        }
+        
+        try {
+            Information i = cp.addInformation();
+            SharkOutputStream sos = new UTF8SharkOutputStream(i.getOutputStream());
+            this.getXMLSerializer().write(k, sos);
+            i.setContentType(KNOWLEDGE_CONTENT_TYPE);
+        } catch (Exception ex) {
+            L.d("cannot serialize knowledge", this);
+        }
+    }
+    
+    public void sendUnsentMessages() {
+        if(this.unsentMessagesKB != null) {
+            try {
+                Enumeration<ContextPoint> cpEnum = this.unsentMessagesKB.getAllContextPoints();
+                if(cpEnum == null) {
+                    return;
+                }
+                
+                while(cpEnum.hasMoreElements()) {
+                    ContextPoint cp = cpEnum.nextElement();
+                    
+                    this.unsentMessagesKB.removeContextPoint(cp.getContextCoordinates());
+                    
+                    Enumeration<Information> infoEnum = cp.enumInformation();
+                    if(infoEnum == null) {
+                        continue;
+                    }
+                    
+                    while(infoEnum.hasMoreElements()) {
+                        Information i = infoEnum.nextElement();
+                        
+                        if(i.getContentType().equalsIgnoreCase(INTEREST_CONTENT_TYPE)) {
+                            // Interest
+                            String serialeInterest = new String(i.getContentAsByte());
+                            SharkCS deserializeSharkCS = this.getXMLSerializer().deserializeSharkCS(serialeInterest);
+                            cp.removeInformation(i);
+                            
+                            // TODO reset - prevent loop!
+                        }
+                        else if(i.getContentType().equalsIgnoreCase(KNOWLEDGE_CONTENT_TYPE)) {
+                            // knowledge
+                            // TODO
+                        }
+                        
+                    }
+                }
+                
+            }
+            catch(SharkKBException e) {
+                
+            }
+        }
+    }
+    
+    public void removeUnsentMessages() {
+        if(this.unsentMessagesKB != null) {
+            try {
+                Enumeration<ContextPoint> cpEnum = this.unsentMessagesKB.getAllContextPoints();
+                if(cpEnum == null) {
+                    return;
+                }
+                
+                while(cpEnum.hasMoreElements()) {
+                    ContextPoint cp = cpEnum.nextElement();
+                    this.unsentMessagesKB.removeContextPoint(cp.getContextCoordinates());
+                }
+            }
+            catch(SharkKBException e) {
+                L.d("problems while iterating stored unsent messages", this);
+            }
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////
+    //                           others                            //
+    /////////////////////////////////////////////////////////////////
+    
+//    public void sendCP(ContextPoint cp, Iterator<PeerSemanticTag> recipients) throws SharkKBException {
+//        
+//        if(cp == null || recipients == null) {
+//            throw new SharkKBException("parameter must not be null");
+//        }
+//        
+//        ContextCoordinates cc = cp.getContextCoordinates();
+//        
+//        KnowledgePort senderKP = null;
+//        
+//        Enumeration<KnowledgePort> kpEnum = this.getKPs();
+//        if(kpEnum != null) {
+//            while(kpEnum.hasMoreElements()) {
+//                KnowledgePort kp = kpEnum.nextElement();
+//                SharkCS interest = kp.getInterest();
+//                
+//                if(interest != null) {
+//                    if(SharkCSAlgebra.isIn(interest, cc)) {
+//                        // we have a kp found
+//                        senderKP = kp;
+//                        break;
+//                    }
+//                }
+//            }
+//            
+//            if(senderKP != null) {
+//                Knowledge k = InMemoSharkKB.createInMemoKnowledge();
+//                k.addContextPoint(cp);
+//                
+//                while(recipients.hasNext()) {
+//                    try {
+//                        PeerSemanticTag recipient = recipients.next();
+//                        this.sendKnowledge(k, recipient, senderKP);
+//                    }
+//                    catch(SharkException e) {
+//                        // ignore and try next
+//                    }
+//                }
+//            }
+//        }
+//    }    
 }

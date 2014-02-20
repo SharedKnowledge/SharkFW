@@ -54,6 +54,10 @@ public final class MailMessageStub implements MessageStub, Runnable {
     private Thread mailCheckThread;
     private String replyAddress;
     
+    // used for debugging
+    private boolean dequeue;
+    private boolean finished;
+    
     public static final boolean SSL_IS_DEFAULT = false;
     private final boolean sslSMTP;
     private final boolean sslPOP3;
@@ -118,14 +122,16 @@ public final class MailMessageStub implements MessageStub, Runnable {
         
         this.sslSMTP = sslSMTP;
         this.sslPOP3 = sslPOP3;
-        
+        this.dequeue = false; 
+        this.finished = false;
     }
     
     public final void start() {
+    	this.finished = false;
         if(!this.started()) {
             this.mailCheckThread = new Thread(this);
             this.mailCheckThread.start();
-        }
+        }        
     }
 
     private boolean checkAgain = true;
@@ -134,14 +140,38 @@ public final class MailMessageStub implements MessageStub, Runnable {
         this.checkAgain = false;
         if(this.mailCheckThread != null) {
             this.mailCheckThread.interrupt();
-        }
-        
+        }        
         this.mailCheckThread = null;
     }
     
     public boolean started() {
         return this.mailCheckThread != null;
     }
+    
+
+	public void waitForStoppedMailQ(int limit, String msg) {
+		int k = 0;
+		while (!this.finished && (k<limit)) {
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			k++;
+		}
+		if (k >= limit) {
+			System.out.println("it took longer than "+(20*k)+"ms to "+msg+" mailqueue");
+		}
+	}
+	
+	public void emptyQueue() {
+		stop();
+		waitForStoppedMailQ(200, "stop");    	
+		this.dequeue = true;
+		start();
+		// wait until stopped by itself
+		waitForStoppedMailQ(600, "empty");    	    	
+	}
 
     /**
      * for use in sub classes only
@@ -265,10 +295,10 @@ public final class MailMessageStub implements MessageStub, Runnable {
          * we do the whole process in each loop:
          * opening connection, checking for mails and closing
          * connection. Might be somewhat time consuming but
-         * it's better safe ressource on mail server side?
+         * it's better safe resource on mail server side?
          */
         do {
-          L.d("Checking mails for: " + this.pop3UserName, this);
+        	L.d((this.dequeue?"Dequeue":"Check")+"ing mails for: " + this.pop3UserName, this);
             Store store = null;
             Folder folder = null;
             Session session = null;
@@ -316,6 +346,7 @@ public final class MailMessageStub implements MessageStub, Runnable {
                       // mark message as deleted
                       m.setFlag(Flags.Flag.DELETED, true);
 
+                      if (!this.dequeue) {	
                       // read it
                       ByteArrayOutputStream baos = new ByteArrayOutputStream();
                       
@@ -332,10 +363,14 @@ public final class MailMessageStub implements MessageStub, Runnable {
                       //this.handleMessage(partNumber, maxParts, channelID, from, decoded);
                       L.d("Passing on message " + (i+1) + " of " + messages.length + " on " + this.pop3UserName, this);
                       this.handler.handleMessage(decoded, this);
+                      
+                      } else {
+                    	  L.d("dequeueing message " + (i+1) + " of " + messages.length + " on " + this.pop3UserName, this);
+                      }
                   }
                 }
             } catch (Exception ex) {
-                L.l("exception during mail access was handled:", this);
+                L.l("exception during "+(sslPOP3?"ssl":"")+"mail access for "+pop3UserName+"("+pop3pwd+") was handled:", this);
                 L.d(ex.getMessage(), ex);
             } finally {
                 try {
@@ -355,6 +390,13 @@ public final class MailMessageStub implements MessageStub, Runnable {
             }
             
             try {
+            	if (this.dequeue) {
+            		// stop the whole thing
+            		this.dequeue = false;            		
+            		this.checkAgain = false;
+            		this.mailCheckThread = null;
+            		break;
+            	}
                 Thread.sleep(this.mailCheckInterval * MailMessageStub.MINIMAL_CHECKING_DELAY);
             } catch (InterruptedException ex) {
                 // wake up call from stop() probably
@@ -362,6 +404,7 @@ public final class MailMessageStub implements MessageStub, Runnable {
             }
             
         } while (this.checkAgain);
+        this.finished = true;
     }
     
 //    protected void handleMessage(String[] partNumber, String[] maxNumber, 

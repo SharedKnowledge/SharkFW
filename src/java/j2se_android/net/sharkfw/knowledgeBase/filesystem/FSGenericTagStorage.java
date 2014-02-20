@@ -51,6 +51,44 @@ public class FSGenericTagStorage<ST extends SemanticTag> extends
         return this.rootFolderName;
     }
     
+	public static String hexByte(char c) {
+		String ret = "";
+		ret = "%" + Integer.toHexString(c >> 4).toUpperCase() + Integer.toHexString(c & 0x0F).toUpperCase();
+		return ret;
+	}
+	
+	public static String mapName(String input) {
+		String ret = "";
+	
+		for (int i=0; i<input.length(); i++) {
+			char c = input.charAt(i);	
+			if (((c >= 'A') && (c <= 'Z'))  || 
+				((c >= 'a') && (c <= 'z'))  ||
+				((c >= '0') && (c <= '9'))  ||
+				(c == '_') ||
+				(c == '+') ||
+				(c == '-') ||
+				(c == '@') ||
+				(c == '=') ||
+				(c == '~') ||
+				(c == '&') ||	/* Achtung! HTTP GET variable, funktioniert aber mit Windows file-API  */
+				(c == '!') ||	/* Achtung! shell escape, funktioniert aber mit Windows file-API  */
+				(c == '%') ||	/* unser escape Zeichen nicht weiter umwandeln */
+				(c == '#') ||	/* ACHTUNG! Shell kommentar #, funktioniert aber mit Windows file-API */	
+				(c == ' ') ||	/* gerade noch OK für Windows-file-API, Shit für alle Kommandozeilenprogramme */
+				(c == '.') 		/* schon im Windows-Explorer ein Problem, wenn am Anfang stehend */ 
+				) {
+					ret += c;
+			} else {
+				// nicht erlaubt mit Windows / \ | " * ? < > :		
+				// degree °
+				// caret ^ 	
+				ret += hexByte(c);
+			}
+		}		
+		return ret;   	
+	}
+
     @Override
     public void add(ST tag) throws SharkKBException {
         super.add(tag);
@@ -72,7 +110,7 @@ public class FSGenericTagStorage<ST extends SemanticTag> extends
             }
             
             // init
-            String foldername = this.rootFolderName + "/" + tagName;
+            String foldername = this.rootFolderName + "/" + mapName(tagName);
 
             // create a property holder in empty folder
             FSPropertyHolder fsProp = FSSharkKB.createFSPropertyHolder(foldername);
