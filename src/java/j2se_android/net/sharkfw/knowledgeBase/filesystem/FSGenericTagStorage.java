@@ -1,4 +1,4 @@
-﻿package net.sharkfw.knowledgeBase.filesystem;
+package net.sharkfw.knowledgeBase.filesystem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -75,13 +75,13 @@ public class FSGenericTagStorage<ST extends SemanticTag> extends
 				(c == '!') ||	/* Achtung! shell escape, funktioniert aber mit Windows file-API  */
 				(c == '%') ||	/* unser escape Zeichen nicht weiter umwandeln */
 				(c == '#') ||	/* ACHTUNG! Shell kommentar #, funktioniert aber mit Windows file-API */	
-				(c == ' ') ||	/* gerade noch OK für Windows-file-API, Shit für alle Kommandozeilenprogramme */
+				(c == ' ') ||	/* gerade noch OK f??indows-file-API, Shit f??lle Kommandozeilenprogramme */
 				(c == '.') 		/* schon im Windows-Explorer ein Problem, wenn am Anfang stehend */ 
 				) {
 					ret += c;
 			} else {
 				// nicht erlaubt mit Windows / \ | " * ? < > :		
-				// degree °
+				// degree ?
 				// caret ^ 	
 				ret += hexByte(c);
 			}
