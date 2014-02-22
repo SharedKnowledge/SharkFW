@@ -771,11 +771,11 @@ abstract public class SharkEngine {
         this.sendInterest(kp.getInterest(), recipient, kp);
     }
     
-    void sendInterest(SharkCS interest, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
+    public void sendInterest(SharkCS interest, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
         this.sendKEPCommand(interest, null, kp, recipient);
     }
     
-    void sendKnowledge(Knowledge k, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
+    public void sendKnowledge(Knowledge k, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
         this.sendKEPCommand(null, k, kp, recipient);
     }
 
