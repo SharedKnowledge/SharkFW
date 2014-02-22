@@ -51,50 +51,50 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
      * @throws SharkKBException
      */
     public Information addInformation(Hashtable props, boolean duplicatesAllowed) throws SharkKBException {
-    Information info = new InMemoInformation();
+    	Information info = new InMemoInformation();
 
-    /*
-     * Should set UNIQUENAME with "" as property?
-     */
-    if(props != null){
-      Enumeration keys = props.keys();
-      while(keys.hasMoreElements()){
-        String key = (String) keys.nextElement();
-        String value = (String) props.get(key);
-        info.setProperty(key, value);
-      }
+    	/*
+    	 * Should set UNIQUENAME with "" as property?
+    	 */
+    	if(props != null){
+    		Enumeration keys = props.keys();
+    		while(keys.hasMoreElements()){
+    			String key = (String) keys.nextElement();
+    			String value = (String) props.get(key);
+    			info.setProperty(key, value);
+    		}
+    	}
+    	this.addInformation(info);
+    	return info;
     }
-    this.addInformation(info);
-    return info;
-  }
 
   /**
    * 
    * @param info
    */
     @Override
-  public void addInformation(Information info){
-    boolean alreadyIn = false;
+    public void addInformation(Information info){
+    	boolean alreadyIn = false;
 
-    Enumeration infoEnum = this.information.elements();
-    while(infoEnum.hasMoreElements()) {
-      Information current = (Information) infoEnum.nextElement();
-      if(current.hashCode() == info.hashCode()) {
-        alreadyIn = true;
-      }
-    }
+    	Enumeration infoEnum = this.information.elements();
+    	while(infoEnum.hasMoreElements()) {
+    		Information current = (Information) infoEnum.nextElement();
+    		if(current.hashCode() == info.hashCode()) {
+    			alreadyIn = true;
+    		}
+    	}
 
-    if(!alreadyIn) {
-      information.add(info);
-    }
+    	if(!alreadyIn) {
+    		information.add(info);
+    	}
 
-    /*
-     * notify listener
-     */
-    if(this.listener != null) {
-      this.listener.addedInformation(info, this);
+    	/*
+    	 * notify listener
+    	 */
+    	if(this.listener != null) {
+    		this.listener.addedInformation(info, this);
+    	}
     }
-  }
 
     @Override
   public void removeInformation(Information info) {

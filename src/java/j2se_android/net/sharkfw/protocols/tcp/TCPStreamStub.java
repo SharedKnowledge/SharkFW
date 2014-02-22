@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+
+import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.StreamStub;
@@ -144,7 +146,7 @@ public class TCPStreamStub implements StreamStub {
         if (this.server != null) {
             addr += Integer.toString(this.server.getPortNumber());
         } else {
-            addr += "4444"; // TODO: use J2SEAndroidSharkEngine.defaultTCPPort    
+			addr += J2SEAndroidSharkEngine.defaultTCPPort;
         }
         L.d("Local address is: "+addr, this);
         return addr;

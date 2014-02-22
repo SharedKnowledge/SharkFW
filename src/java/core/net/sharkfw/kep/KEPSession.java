@@ -47,57 +47,57 @@ public class KEPSession extends Thread {
      */
     @Override
     public void run() {
-      L.d("Started.", this);
-        boolean handled = false;
+    	L.d("Started.", this);
+    	boolean handled = false;
 
-        do {
-          L.d("Next run starts.", this);
-            try { 
-              L.d("Creating KEPRequest from connection replyaddress: " + this.con.getReplyAddressString(), this);
-              KEPInMessage inMsg = new KEPInMessage(this.se, this.con);
-              inMsg.initSecurity(this.privateKey, this.publicKeyStorage,
+    	do {
+    		L.d("Next run starts.", this);
+    		try { 
+    			L.d("Creating KEPRequest from connection replyaddress: " + this.con.getReplyAddressString(), this);
+    			KEPInMessage inMsg = new KEPInMessage(this.se, this.con);
+    			inMsg.initSecurity(this.privateKey, this.publicKeyStorage,
                                 this.encryptionLevel, this.signatureLevel,
                                 this.replyPolicy, this.refuseUnverifiably);
-              inMsg.parse();
-              L.d("Created KEPRequest object", this);
-              handled = this.kepStub.callListener(inMsg);
-              handled = handled && inMsg.keepOpen();
-            } catch (SharkNotSupportedException e) {
-              L.e("unsupported KEP format: " + e.getMessage(), this);
+    			inMsg.parse();
+    			L.d("Created KEPRequest object", this);
+    			handled = this.kepStub.callListener(inMsg);
+    			handled = handled && inMsg.keepOpen();
+    		} catch (SharkNotSupportedException e) {
+    			L.e("unsupported KEP format: " + e.getMessage(), this);
 //              e.printStackTrace();
-            } catch (IOException ioe) {
-              // connection closed - bye
-              handled = false;
-              L.d("IOException while handling KEP Request - go ahead", this);
-            } catch (SharkSecurityException ioe) {
-              // connection closed - bye
-              handled = false;
-              L.d("Security Exception", this);
-            }
+    		} catch (IOException ioe) {
+    			// connection closed - bye
+    			handled = false;
+    			L.d("IOException while handling KEP Request - go ahead", this);
+    		} catch (SharkSecurityException ioe) {
+    			// connection closed - bye
+    			handled = false;
+    			L.d("Security Exception", this);
+    		}
             catch (SharkKBException ioe) {
-              // connection closed - bye
-              handled = false;
-              L.d("SharkKB Exception", this);
+            	// connection closed - bye
+            	handled = false;
+            	L.d("SharkKB Exception", this);
             }
             catch(RuntimeException re) {
-                L.d("connection refused - peer already gone", this);
+            	L.d("connection refused - peer already gone", this);
             }
 
-          L.d("Handled = " + handled, this);
-            if(!handled) {
-              L.d("Checking for more KEP-Commands", this);
+    		L.d("Handled = " + handled, this);
+    		if(!handled) {
+    			L.d("Checking for more KEP-Commands", this);
                 // no listener handled that request
                 // maybe there is another KEP methode in the stream
                 try {
                     if(this.con.getInputStream().available() > 0) {
-                      L.d("More bytes available on inputstream" , this);
-                      handled = true;
+                    	L.d("More bytes available on inputstream" , this);
+                    	handled = true;
                     } else {
                         // maybe remote peer wasn't fast enough - give it some time
                         L.d("Waiting for remotepeer for: " + se.getConnectionTimeOut(), this);
                         Thread.sleep(se.getConnectionTimeOut());
                         if(this.con.getInputStream().available() > 0) {
-                           handled = true;
+                        	handled = true;
                         }
                     }
                 }
@@ -117,7 +117,7 @@ public class KEPSession extends Thread {
             e.printStackTrace();
         }
 
-       this.kepStub.removeStreamConnection(con);
+        this.kepStub.removeStreamConnection(con);
         this.con.close();
     }
 
