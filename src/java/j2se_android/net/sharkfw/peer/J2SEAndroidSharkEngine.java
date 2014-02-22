@@ -749,8 +749,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
         }
     }    
     
-    @Override
-    public Iterator<PeerSemanticTag> getWhiteList() {
+        public Iterator<PeerSemanticTag> getWhiteList() {
         return this.whiteList.iterator();
     }
     
