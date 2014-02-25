@@ -4,6 +4,8 @@
  */
 package net.sharkfw.pki;
 
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+
 /**
  *
  * @author df
@@ -17,6 +19,10 @@ public class SigningPeer {
      * @deprecated use other constructor.
      */
     public SigningPeer(){
+    }
+
+    public SigningPeer(PeerSemanticTag peer, byte[] signature){
+        this(peer.getSI(), signature);
     }
 
     public SigningPeer(String[] peerSI, byte[] signature){
