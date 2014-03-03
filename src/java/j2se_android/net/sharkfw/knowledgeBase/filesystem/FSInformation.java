@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
+import net.sharkfw.TimeLong;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.system.L;
@@ -320,14 +322,14 @@ public class FSInformation extends InMemoInformation {
         // creationTime
         value = this.getProperty(INFO_CREATION_TIME);
         if(value != null) {
-            time = Long.valueOf(value);
+            time = TimeLong.parse(value);
             this.setCreationTime(time);
         }
         
         // lastModified
         value = this.getProperty(INFO_LAST_MODIFED);
         if(value != null) {
-            time = Long.valueOf(value);
+            time = TimeLong.parse(value);
             this.setLastModified(time);
         }
 

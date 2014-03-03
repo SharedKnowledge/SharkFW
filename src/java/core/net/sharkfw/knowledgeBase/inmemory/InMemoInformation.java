@@ -1,6 +1,8 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.io.*;
+
+import net.sharkfw.TimeLong;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.PeerSTSet;
@@ -29,6 +31,8 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public static final String INFO_NAME = "info_name";
     public static final String INFO_ORIGINATOR = "info_originator";
     public static final String INFO_ID_PROPERTY_NAME = "SharkNet_InfoID";
+    
+
 
 // Save the content. Manages internal byte array automatically.
     private ByteArrayOutputStream content = new ByteArrayOutputStream();
@@ -332,7 +336,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         if (value.equals("")) {
             return 0;
         }
-        return Long.parseLong(value);
+        return TimeLong.parse(value);
     }
 
     protected void setLastModified(long time) {
@@ -346,7 +350,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
             return 0;
         }
 
-        return Long.parseLong(value);
+        return TimeLong.parse(value);
     }
 
     // allow classes on this package to modify that time

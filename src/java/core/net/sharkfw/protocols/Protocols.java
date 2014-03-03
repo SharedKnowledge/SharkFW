@@ -86,6 +86,7 @@ public abstract class Protocols {
 //            case BT_L2CAP: return "Bluetooth L2CAP";
 //            case BT_RFCOMM: return "Bluetooth RFCOMM";
 //            case HTTP: return "HTTP";
+            case MAIL: return "MAIL";
         }
         
         return "unknown protocol type: " + type;
@@ -123,7 +124,7 @@ public abstract class Protocols {
 //            case Protocols.UDP: return false;
 //            case Protocols.BT_L2CAP: return false;
 //            case Protocols.HTTP: return true;
-            case Protocols.MAIL: return true;
+            case Protocols.MAIL: return false;
         }
 
         throw new SharkProtocolNotSupportedException("unknown protocol type: " + type);

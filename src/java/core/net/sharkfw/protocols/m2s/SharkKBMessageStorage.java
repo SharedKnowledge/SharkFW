@@ -8,6 +8,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.sharkfw.TimeLong;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
@@ -274,7 +276,7 @@ public class SharkKBMessageStorage implements MessageStorage {
         
         long offset = 0;
         if(offsetString != null) {
-            offset = Long.parseLong(offsetString);
+            offset = TimeLong.parse(offsetString);
         }
         
         String packageNumberString = cp.getProperty(LAST_SEND_PACKAGE_NUMBER);

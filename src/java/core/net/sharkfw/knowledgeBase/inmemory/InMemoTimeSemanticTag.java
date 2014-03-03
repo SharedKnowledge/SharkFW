@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import net.sharkfw.TimeLong;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkURI;
@@ -96,7 +97,7 @@ public class InMemoTimeSemanticTag extends InMemo_SN_TX_SemanticTag
             String fromString = uri.substring(index, nextIndex);
 
             try {
-                fromValue = Long.parseLong(fromString);
+                fromValue = TimeLong.parse(fromString);
             }
             catch(NumberFormatException nfe) {
                 throw new SharkKBException("cannot parse tag <" + tag + "> in time semantic tag uri: " + uri);
