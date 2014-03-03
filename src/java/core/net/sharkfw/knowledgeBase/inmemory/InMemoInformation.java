@@ -2,7 +2,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import java.io.*;
 
-import net.sharkfw.TimeLong;
+import net.sharkfw.system.TimeLong;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.PeerSTSet;

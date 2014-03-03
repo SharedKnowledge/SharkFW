@@ -1,6 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import net.sharkfw.TimeLong;
+import net.sharkfw.system.TimeLong;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkURI;

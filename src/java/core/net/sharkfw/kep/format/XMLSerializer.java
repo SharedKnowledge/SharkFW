@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import net.sharkfw.TimeLong;
+import net.sharkfw.system.TimeLong;
 import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.*;

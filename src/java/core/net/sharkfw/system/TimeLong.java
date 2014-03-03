@@ -1,4 +1,4 @@
-package net.sharkfw;
+package net.sharkfw.system;
 
 /**
  * fail safe number parsing 

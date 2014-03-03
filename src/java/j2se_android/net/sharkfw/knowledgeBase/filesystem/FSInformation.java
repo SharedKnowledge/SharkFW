@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import net.sharkfw.TimeLong;
+import net.sharkfw.system.TimeLong;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.system.L;
