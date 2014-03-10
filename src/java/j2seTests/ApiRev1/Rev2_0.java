@@ -22,7 +22,8 @@ import org.junit.runners.Suite;
             ApiRev1.SimpleKBTest.class, 
             ApiRev1.SerializationTest.class, 
             ApiRev1.Assimilate_ExtractionTests.class, 
-            ApiRev1.ExchangeTests.class
+            ApiRev1.ExchangeTests.class,
+            ApiRev1.DifferentAddresses.class
         })
 public class Rev2_0 {
 

@@ -544,7 +544,7 @@ public class ExchangeTests {
       // Create interest.
       SharkCS bobAs = bobKB.createContextCoordinates(bobTopic, bob, bobAlice, bobAlice, bobToday, null, SharkCS.DIRECTION_IN);
       
-      StandardKP bobKP = bobSE.createKP(bobAs, bobKB);
+      StandardKP bobKP = new StandardKP(bobSE, bobAs, bobKB);
       
       // Start server
       bobSE.startTCP(6662);
