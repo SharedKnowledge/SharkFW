@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.AbstractSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolderDelegate;
 import net.sharkfw.knowledgeBase.SemanticTag;
@@ -139,10 +141,19 @@ public class FSGenericTagStorage<ST extends SemanticTag> extends
     
     @Override
     public void removeSemanticTag(ST tag) {
-        super.removeSemanticTag(tag);
+        ST tag2Remove = null;
+        try {
+            // maybe that tag is just the identical object - take it from this storage
+            tag2Remove = this.getSemanticTag(tag.getSI());
+        } catch (SharkKBException ex) {
+            // nothing to delete
+            return;
+        }
+        
+        super.removeSemanticTag(tag2Remove);
         
         try {
-            PropertyHolderDelegate pTag = (PropertyHolderDelegate) tag;
+            PropertyHolderDelegate pTag = (PropertyHolderDelegate) tag2Remove;
             
             SystemPropertyHolder ph = pTag.getPropertyHolder();
             
@@ -159,7 +170,7 @@ public class FSGenericTagStorage<ST extends SemanticTag> extends
                 folder.delete();
                 
                 // adjust foldernames
-                String[] sis = tag.getSI();
+                String[] sis = tag2Remove.getSI();
                 if(sis == null || sis.length == 0) { return; }
                 
                 for(int i = 0; i < sis.length; i++) {

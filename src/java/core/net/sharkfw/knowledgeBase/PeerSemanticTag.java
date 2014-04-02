@@ -33,5 +33,8 @@ public interface PeerSemanticTag extends SemanticTag {
    * @param addresses An array of strings containing all known addresses of this peer.
    */
     public void setAddresses(String[] addresses);
+    
+    public void removeAddress(String address);
 
+    public void addAddress(String address);
 }

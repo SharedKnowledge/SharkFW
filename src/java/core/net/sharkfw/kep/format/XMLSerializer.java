@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+
+import net.sharkfw.system.TimeLong;
 import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.*;
@@ -1030,7 +1032,7 @@ public class XMLSerializer implements KnowledgeSerializer {
 
                         String lenString = is.readUTF8();
                         L.d("read lenString: " + lenString, this);
-                        long len = Long.parseLong(lenString);
+                        long len = TimeLong.parse(lenString);
 
                         String type = is.readUTF8();
                         L.d("read type: " + type, this);
@@ -1110,7 +1112,7 @@ public class XMLSerializer implements KnowledgeSerializer {
 
             if(fromString != null) {
                 found = true;
-                from = Long.parseLong(fromString);
+                from = TimeLong.parse(fromString);
             }
 
             String durationString = this.stringBetween(TIME_DURATION, partString, index);

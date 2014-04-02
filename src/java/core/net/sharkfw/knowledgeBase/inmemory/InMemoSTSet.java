@@ -135,6 +135,7 @@ public class InMemoSTSet implements STSet {
      * Create a copy if required in the first step.
      * 
      * @param tag Tag to add.
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
     public void add(SemanticTag tag) throws SharkKBException {
         this.storage.add(tag);

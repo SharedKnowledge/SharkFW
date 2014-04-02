@@ -201,13 +201,28 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
     }
     
     /**
+     * Removes all predicates of this type - handle with care!
+     * @param type 
+     */
+    public void removePredicate(String type) {
+        if(this.targets == null) {
+            // nothings exists - nothing todo
+            return;
+        }
+
+        this.targets.remove(type);
+    }
+    
+    /**
+     * Removes an association. If target is null, all associations of
+     * this type are removed!
      * 
      * @param type
-     * @param target 
+     * @param target if null - all associations of this type are removed
      */
     private void setPredicate(String type, SemanticTag target) {
         if(target == null) {
-            return;
+            this.removePredicate(type);
         }
         
         boolean hashSetAlreadyExists = true;
@@ -465,6 +480,14 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
     @Override
     public void move(TXSemanticTag supertag) {
         this.refreshPredicates();
+        
+        // is there already another super tag? if so - remove it.
+        TXSemanticTag oldSuperTag = this.getSuperTag();
+        this.removePredicate(SemanticNet.SUPERTAG);
+        if(oldSuperTag instanceof InMemo_SN_TX_SemanticTag) {
+            ((InMemo_SN_TX_SemanticTag) oldSuperTag).removePredicate(SemanticNet.SUBTAG, this);
+        }
+        
         // supertag is my new super tag. Remember by means of predicate.
         this.setPredicate(SemanticNet.SUPERTAG, supertag);
         // are we in this implementation with super tag
