@@ -383,7 +383,14 @@ public class L {
                     Enumeration<SNSemanticTag> tagEnum = sn.targetTags(predicateName);
                     while(tagEnum.hasMoreElements()) {
                         SNSemanticTag targetTag = tagEnum.nextElement();
-                        buf.append("\t").append(predicateName).append(" target: ").append(targetTag.getSI()[0]).append("\n");
+                        String firstSI;
+                        String[] si = targetTag.getSI();
+                        if(si != null) {
+                            firstSI = si[0];
+                        } else {
+                            firstSI = "ANY";
+                        }
+                        buf.append("\t").append(predicateName).append(" target: ").append(firstSI).append("\n");
                     }
                 }
             }

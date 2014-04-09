@@ -260,7 +260,7 @@ public abstract class SharkCSAlgebra {
          * their relations. Now, all allowed relations between all
          * tags in the fragment has to be copied. 
          */
-
+        
         // iterate concepts in fragment
         Enumeration<SemanticTag> fTagEnum = fragment.tags();
         while(fTagEnum.hasMoreElements()) {
@@ -450,10 +450,11 @@ public abstract class SharkCSAlgebra {
                         SNSemanticTag copyReferencedTag = 
                                 fragment.getSemanticTag(referencedTag.getSI());
                         
-                        // must no be null
-                        
-                        // it was now copied - set predicates also in fragment
-                        fragmentTag.setPredicate(predicateString, copyReferencedTag);
+                        // can be null if referenced tag is not part of the fragment
+                        if(copyReferencedTag != null) {
+                            // it was now copied - set predicates also in fragment
+                            fragmentTag.setPredicate(predicateString, copyReferencedTag);
+                        }
                     }
                 }
             }
