@@ -62,7 +62,15 @@ public class InMemoSemanticNet extends InMemoSTSet implements SemanticNet {
      */
     @Override
     public SNSemanticTag merge(SemanticTag tag) throws SharkKBException {
-        return (SNSemanticTag) super.merge(tag);
+        // a SNSemanticTag is assumed as reply - therefore a SNSemanticTag must be inserted
+        
+        SNSemanticTag snTag;
+        if(tag instanceof SNSemanticTag) {
+            snTag = (SNSemanticTag) tag;
+        } else {
+            snTag = InMemoSharkKB.createInMemoCopyToSNSemanticTag(tag);
+        }
+        return (SNSemanticTag) super.merge(snTag);
     }
 
     protected void add(SNSemanticTag tag) throws SharkKBException {
