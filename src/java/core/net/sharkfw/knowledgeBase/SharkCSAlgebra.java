@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -96,6 +98,7 @@ public abstract class SharkCSAlgebra {
             target.setName(name);
         }
         
+        boolean checkAnySI = false;
         // iterate SIs now
         String[] toMergeSIS = toMerge.getSI();
         for(int iM = 0; iM < toMergeSIS.length; iM++) {
@@ -111,16 +114,37 @@ public abstract class SharkCSAlgebra {
                 }
             }
             
+            // we haven't found toMerge Si in target - add it.
             if(!found) {
                 String si2add = new String(toMergeSIS[iM]);
+                
+                /* if we add at least a single si that isn't any.
+                requires a test later
+                */
                 try {
                     target.addSI(si2add);
+                    if(!SharkCSAlgebra.isAny(new String[]{si2add})) {
+                        checkAnySI = true;
+                    }
                 }
                 catch(SharkKBException e) {
                     // si seems alread to exist
                 }
             }
         } // next si from tag to merge into target.
+        
+        /* maybe target contained an ANY SI
+        If we have added a non-any-SI that any Si must be removed
+        */
+        if(checkAnySI) {
+            if(target.isAny()) {
+                try {
+                    target.removeSI(SharkCS.ANYURL);
+                } catch (SharkKBException ex) {
+                    // shouldn't happen here
+                }
+            }
+        }
         
         // copy hidden
         target.setHidden(toMerge.hidden());
