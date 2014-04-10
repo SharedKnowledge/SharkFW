@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -235,8 +236,8 @@ public abstract class SharkCSAlgebra {
                 forbiddenTypes = null;
             }
             
-            // allowed types can also be empty - check again
-            if(allowedTypes.isEmpty()) {
+            // allowed types can have become empty - check again
+            if(allowedTypes != null && allowedTypes.isEmpty()) {
                 allowedTypes = null;
             }
         }
@@ -278,7 +279,6 @@ public abstract class SharkCSAlgebra {
                     1, /* just predicates from this tag to others */
                     false /* dont merge. It already done */
                     );
-            
         }
         
         return fragment;
@@ -490,12 +490,31 @@ public abstract class SharkCSAlgebra {
         if(contextTagEnum == null) {
             return fragment;
         }
+
+        /*
+        We need list of allowed and forbidden predicates more than one.
+        We have got an enumeration - we must keep it.
+        */
+        
+        Vector<String> allowed = new Vector();
+        if(allowedPredicates != null) {
+            while(allowedPredicates.hasMoreElements()) {
+                allowed.add(allowedPredicates.nextElement());
+            }
+        }
+        
+        Vector<String> forbidden = new Vector();
+        if(forbiddenPredicates != null) {
+            while(forbiddenPredicates.hasMoreElements()) {
+                forbidden.add(forbiddenPredicates.nextElement());
+            }
+        }
         
         while(contextTagEnum.hasMoreElements()) {
             SemanticTag anchor = contextTagEnum.nextElement();
             
-            SharkCSAlgebra.fragment(fragment, anchor, source, allowedPredicates, 
-                    forbiddenPredicates, depth);
+            SharkCSAlgebra.fragment(fragment, anchor, source, allowed.elements(), 
+                    forbidden.elements(), depth);
         }
         
         return fragment;
@@ -1211,7 +1230,6 @@ public abstract class SharkCSAlgebra {
             boolean learnTags, boolean deleteAssimilated) 
                 throws SharkKBException {
         
-//        System.out.println("Start Assimilation");
         ArrayList<ContextCoordinates> assimilated = new ArrayList<ContextCoordinates>();
         ArrayList<ContextPoint> assimilatedCP = new ArrayList<ContextPoint>();
         
