@@ -1533,5 +1533,19 @@ public class SimpleKBTest {
         Assert.assertEquals(tag, sameTag);
     }
     
-  
+    @Test
+    public void mergePureSTIntoTaxonomyOrSemanticNet() throws SharkKBException {
+        Taxonomy tx = InMemoSharkKB.createInMemoTaxonomy();
+        
+        // create unnamed tag of type ST
+        SemanticTag st = InMemoSharkKB.createInMemoSemanticTag("A tag", "http://www.something.de");
+        
+        // merge into taxonomy
+        tx.merge(st);
+        
+        SemanticNet sn = InMemoSharkKB.createInMemoSemanticNet();
+        
+        // merge into semantic net
+        sn.merge(st);
+    }
 }

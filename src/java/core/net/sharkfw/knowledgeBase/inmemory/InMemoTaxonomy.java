@@ -262,12 +262,14 @@ public class InMemoTaxonomy implements Taxonomy, STSet {
 
     @Override
     public SemanticTag merge(SemanticTag source) throws SharkKBException {
-        if(source instanceof TXSemanticTag) {
+//        if(source instanceof TXSemanticTag) {
             return this.storage.merge(source);
-        } else {
-            throw new SharkKBException("don't like to merge a non "
-                    + "TXSemanticTag into a taxonomy");
-        }
+//        } else {
+            // handle source as pure semantic tag.
+//            return this.storage.merge(source);
+//            throw new SharkKBException("don't like to merge a non "
+//                    + "TXSemanticTag into a taxonomy");
+//        }
     }
 
     @Override
