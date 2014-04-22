@@ -227,7 +227,8 @@ public abstract class SharkCSAlgebra {
                     allowedTypes.remove(forbiddenTypeString);
                 }
                 
-                forbiddenTypes.add(allowedPredicates.nextElement());
+                // I guess this line was a cut&paste error
+//                forbiddenTypes.add(allowedPredicates.nextElement());
             }
             
             // have we got anything?
