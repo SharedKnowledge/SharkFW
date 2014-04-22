@@ -84,6 +84,12 @@ public interface ContextPoint extends SystemPropertyHolder {
    * @return 
    */
   public Iterator<Information> getInformation(String name);
+  
+  /**
+   * Return information with no name
+   * @return 
+   */
+  public Iterator<Information> getInformation();
 
   /**
    * Remove <code>toDelete</code> {@link Information} from this contextpoint.

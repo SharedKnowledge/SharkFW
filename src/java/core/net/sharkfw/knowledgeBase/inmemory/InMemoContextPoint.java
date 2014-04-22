@@ -29,9 +29,9 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
         super(persistentHolder);
     }
 
-    public Enumeration<Information> getInformation() {
-        Vector informationEnum = (Vector) information.clone();
-        return informationEnum.elements();
+    @Override
+    public Iterator<Information> getInformation() {
+        return this.getInformation(null);
     }
 
     @Override
@@ -162,10 +162,10 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
     public Iterator<Information> getInformation(String name) {
         ArrayList<Information> infoList = new ArrayList();
         
-        Enumeration<Information> infoEnum = this.getInformation();
+        Iterator<Information> infoEnum = this.getInformation();
         if(infoEnum != null) {
-            while(infoEnum.hasMoreElements()) {
-                Information info = infoEnum.nextElement();
+            while(infoEnum.hasNext()) {
+                Information info = infoEnum.next();
                 String infoName = info.getName();
                 
                 if( (name == null && infoName == null)
