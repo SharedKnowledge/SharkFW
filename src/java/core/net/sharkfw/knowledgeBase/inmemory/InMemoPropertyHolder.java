@@ -102,4 +102,9 @@ public class InMemoPropertyHolder implements SystemPropertyHolder {
     public String getSystemProperty(String name) {
         return null;
     }
+
+    @Override
+    public void removeProperty(String name) {
+        this.setProperty(name, null);
+    }
 }

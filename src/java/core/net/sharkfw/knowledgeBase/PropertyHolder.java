@@ -34,6 +34,13 @@ public interface PropertyHolder {
    * <code>true</code> = transferable, <code>false</code> = not transferable
    */
   public void setProperty(String name, String value, boolean transfer);
+  
+  /**
+   * A property is permanently removed. Nothing happens a no
+   * property with that name exists.
+   * @param name 
+   */
+  public void removeProperty(String name);
 
   /**
    * Return an <code>Enumeration</code> of all property-names (transferable or not)

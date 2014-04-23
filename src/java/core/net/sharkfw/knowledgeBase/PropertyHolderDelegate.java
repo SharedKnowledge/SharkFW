@@ -63,11 +63,18 @@ public class PropertyHolderDelegate implements SystemPropertyHolder {
      */
     public void refreshStatus() {}
 
+    @Override
     public void setSystemProperty(String name, String value) {
         this.propertyHolder.setSystemProperty(name, value);
     }
 
+    @Override
     public String getSystemProperty(String name) {
         return this.propertyHolder.getSystemProperty(name);
+    }
+
+    @Override
+    public void removeProperty(String name) {
+        this.setProperty(name, null);
     }
 }
