@@ -1,13 +1,8 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.PeerTaxonomy;
-import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SpatialSTSet;
-import net.sharkfw.knowledgeBase.TimeSTSet;
 
 /**
  *

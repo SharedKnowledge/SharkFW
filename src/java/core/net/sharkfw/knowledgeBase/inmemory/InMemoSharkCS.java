@@ -6,7 +6,7 @@ import net.sharkfw.knowledgeBase.*;
  *
  * @author thsc
  */
-public abstract class InMemoSharkCS implements SharkCS {
+abstract class InMemoSharkCS implements SharkCS {
     
     protected InMemoSharkCS() {
         

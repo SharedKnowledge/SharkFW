@@ -6,7 +6,7 @@ import net.sharkfw.knowledgeBase.*;
  *
  * @author thsc
  */
-public class InMemoDynamicInterest implements DynamicInterest {
+class InMemoDynamicInterest implements DynamicInterest {
     
     private final SharkKB kb;
     private final SharkCS initialInterest;
