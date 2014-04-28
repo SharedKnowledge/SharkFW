@@ -76,7 +76,7 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
     public void addInformation(Information info){
     	boolean alreadyIn = false;
 
-    	Enumeration infoEnum = this.information.elements();
+    	Enumeration<Information> infoEnum = this.information.elements();
     	while(infoEnum.hasMoreElements()) {
     		Information current = (Information) infoEnum.nextElement();
     		if(current.hashCode() == info.hashCode()) {
@@ -153,14 +153,14 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
   }
 
     @Override
-  public Enumeration enumInformation() {
+  public Enumeration<Information> enumInformation() {
     return this.information.elements();
   }
     
     
     @Override
     public Iterator<Information> getInformation(String name) {
-        ArrayList<Information> infoList = new ArrayList();
+        ArrayList<Information> infoList = new ArrayList<Information>();
         
         Iterator<Information> infoEnum = this.getInformation();
         if(infoEnum != null) {
