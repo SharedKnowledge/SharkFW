@@ -163,6 +163,8 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
             L.d("doInsert: local interest:\n ", this); 
             L.d(L.contextSpace2String(this.getInterest()), this);
 
+            this.notifyKnowledgeReceived(k);
+            
 //            // calculate effective interest
             SharkCS effectiveInterest;
             
@@ -170,6 +172,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
                 SharkCSAlgebra.contextualize(background,
                 this.getInterest(), this.getFP());
             
+            // is there a mutual interest ?
             if(effectiveInterest == null) {
                 L.d("no mutual interest", this);
                 return;
@@ -178,11 +181,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
             L.d("doInsert: effective interest:\n ", this); 
             L.d(L.contextSpace2String(effectiveInterest), this);
 
-            // is there a mutual interest ?
-            if(effectiveInterest == null) {
-                return;
-            }
-            
+			/* dead code removed */
             // assimilate this knowledge
             ArrayList<ContextCoordinates> assimilatedCC = 
                     SharkCSAlgebra.assimilate(this.getKB(), effectiveInterest, 

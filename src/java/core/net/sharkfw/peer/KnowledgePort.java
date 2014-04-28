@@ -35,6 +35,7 @@ import net.sharkfw.system.SharkSecurityException;
  * @author thsc
  * @author mfi
  */
+@SuppressWarnings("rawtypes")
 abstract public class KnowledgePort {
 
     protected SharkCS interest;
@@ -43,8 +44,10 @@ abstract public class KnowledgePort {
     protected KEPStub kepStub;
     private boolean isStarted = false;
     protected Vector listeners = new Vector();
+    @SuppressWarnings("unused")
     private String id = null;
     protected SharkEngine se;
+    @SuppressWarnings("unused")
     private PrivateKey privateKey;
 
     /**
@@ -278,6 +281,8 @@ abstract public class KnowledgePort {
      * @param listener Listener impl to be added
      * 
      */
+
+	@SuppressWarnings("unchecked")
     public final void addListener(KPListener listener) {
         this.listeners.add(listener);
     }
@@ -339,6 +344,20 @@ abstract public class KnowledgePort {
     }
 
     /**
+     * Notify all listener for event 'received knowledge'
+     * 
+     * @param k The knowledge that was received.
+     */
+    protected void notifyKnowledgeReceived(Knowledge k) {
+        Enumeration listenerEnum = this.listeners.elements();
+
+        while (listenerEnum.hasMoreElements()) {
+            KPListener kpl = (KPListener) listenerEnum.nextElement();
+            kpl.receivedKnowledge(k);
+        }
+    }
+
+    /**
      * send knowledge to all recipients - this call is delegated to shark engine
      * @param k knowledge to be sent
      * @param recipientAddresses addresses in Shark format. mail://... tcp://... etc.
@@ -378,6 +397,7 @@ abstract public class KnowledgePort {
      * @param k knowledge to be sent
      * @param recipientAddresses addresses in Shark format. mail://... tcp://... etc.
      */
+    @SuppressWarnings("deprecation")
     public void sendInterest(SharkCS interest, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         this.se.sendInterest(interest, recipient, this);
     }

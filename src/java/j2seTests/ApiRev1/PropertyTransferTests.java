@@ -217,4 +217,9 @@ public class PropertyTransferTests implements KPListener {
         this.receivedCP = newCP;
         this.testpropertyContent = newCP.getProperty("testproperty");
     }
+
+	@Override
+	public void receivedKnowledge(Knowledge k) {
+		// TODO Auto-generated method stub
+	}
 }
