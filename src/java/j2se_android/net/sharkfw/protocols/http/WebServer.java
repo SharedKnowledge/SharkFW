@@ -56,6 +56,7 @@ public class WebServer implements SharkServer {
      * If a Browser tries to connect to the Webserver it will either redirect the
      * User to a specified Website or show a stored HTML file.
      */
+    @SuppressWarnings("unused")
     @Override
     public void run() {
         try {
@@ -163,6 +164,7 @@ public class WebServer implements SharkServer {
         }
 
         ps.flush();
+        fis.close();
     }
 
     @Override
