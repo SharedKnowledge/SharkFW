@@ -36,5 +36,9 @@ public interface PeerSemanticTag extends SemanticTag {
     
     public void removeAddress(String address);
 
+    /**
+     * add another address
+     * @param newAddress the adress to be added
+     */
     public void addAddress(String address);
 }
