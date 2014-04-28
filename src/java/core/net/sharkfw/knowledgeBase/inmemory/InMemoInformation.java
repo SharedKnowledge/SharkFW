@@ -22,6 +22,7 @@ import net.sharkfw.system.Streamer;
  *
  * @author mfi, thsc
  */
+@SuppressWarnings("unchecked")
 public class InMemoInformation extends PropertyHolderDelegate implements Information {
 
     public static final String INFO_CONTENT_TYPE = "info_content_type";
@@ -32,6 +33,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public static final String INFO_ORIGINATOR = "info_originator";
     public static final String INFO_ID_PROPERTY_NAME = "SharkNet_InfoID";
     
+    protected SpinLock spinLock;
 
 
 // Save the content. Manages internal byte array automatically.
@@ -44,11 +46,13 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     public InMemoInformation(byte contentArray[]) {
         this();
+		spinLock.enter();
         try {
             content.write(contentArray);
         } catch (IOException ex) {
             L.e(ex.getMessage(), this);
         }
+		spinLock.leave();
     }
 
     /**
@@ -57,6 +61,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public InMemoInformation() {
         super();
         this.defaultInit();
+		spinLock = new SpinLock(5);
     }
 
     /**
@@ -64,6 +69,8 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     protected InMemoInformation(String contentType, long lastModified,
             long creationTime, PeerSTSet recipientSet) {
+
+		spinLock = new SpinLock(5);
 
         this.setProperty(InMemoInformation.INFO_CONTENT_TYPE, contentType);
         this.setProperty(InMemoInformation.INFO_LAST_MODIFED, Long.toString(lastModified));
@@ -74,6 +81,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     public InMemoInformation(SystemPropertyHolder ph) {
         super(ph);
+		spinLock = new SpinLock(5);
 //        this.defaultInit();
     }
 
@@ -122,6 +130,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public void streamContent(OutputStream os) {
+		spinLock.enter();
         try {
             // vllt mit Streamer.stream arbeiten?
             //os.write(content.toByteArray());
@@ -130,6 +139,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         } catch (IOException ex) {
             L.e(ex.getMessage(), this);
         }
+		spinLock.leave();
     }
 
     /**
@@ -145,6 +155,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         // Problems when casting long to int? Maybe use Streamer?
         byte[] contentIs = new byte[(int) len];
 
+		spinLock.enter();
         try {
 
             is.read(contentIs);
@@ -154,6 +165,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
         }
+		spinLock.leave();
     }
 
     /**
@@ -175,7 +187,10 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public byte[] getContentAsByte() {
-        return content.toByteArray();
+		spinLock.enter();
+		byte[] ba = content.toByteArray();
+		spinLock.leave();
+		return ba;
     }
 
     /**
@@ -185,7 +200,14 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public long getContentLength() {
-        return content.size();
+		spinLock.enter();
+		if (this.content != null) {
+			int sz = this.content.size();
+			spinLock.leave();
+			return sz;
+		}
+		spinLock.leave();
+		return 0;
     }
 
     /**
@@ -220,7 +242,8 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public int hashCode() {
         int result = 0; //hashCode;
         if (result == 0) {
-            byte[] contentArray = this.getContentAsByte();
+			spinLock.enter();
+			byte[] contentArray = content.toByteArray();
             long size = contentArray.length;
 
             result = 17;
@@ -258,6 +281,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
                     result = 31 * result + (int) contentArray[i];
                 }
             }
+			spinLock.leave();
         }
         return result;
     }
@@ -273,6 +297,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public void setContent(byte[] content) {
         this.setTimes();
 
+		spinLock.enter();
         this.content = new ByteArrayOutputStream();
 
         try {
@@ -280,8 +305,10 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         } catch (IOException ex) {
             L.e(ex.getMessage(), this);
         }
+		spinLock.leave();
     }
 
+    
     protected void setTimes() {
         String nowString = Long.toString(System.currentTimeMillis());
 
@@ -297,13 +324,11 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public void setContent(String content) {
-        this.setTimes();
-        this.content = new ByteArrayOutputStream();
         try {
-            this.content.write(content.getBytes(KEPMessage.ENCODING));
+			setContent(content.getBytes(KEPMessage.ENCODING));
+		} catch (UnsupportedEncodingException e) {
             //FIXME: Catch unknown encoding exception?!
-        } catch (IOException ex) {
-            L.e(ex.getMessage(), this);
+			e.printStackTrace();
         }
     }
 
@@ -312,9 +337,10 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public void removeContent() {
+		spinLock.enter();
         this.setTimes();
         this.content = new ByteArrayOutputStream();
-
+		spinLock.leave();
     }
 
     /**
@@ -375,18 +401,17 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      * Return an InputStream that allows streaming data into information object.
      *
      * @return InputStream to information object
+     * @throws SharkKBException 
      */
     public InputStream getInputStream() throws SharkKBException {
-        return new ByteArrayInputStream(content.toByteArray());
-    }
-
-    public int size() {
-        if (this.content != null) {
-            return this.content.size();
+		spinLock.enter();
+		byte[] ba = content.toByteArray();
+		ByteArrayInputStream is = new ByteArrayInputStream(ba);
+		spinLock.leave();
+		return is;
         }
 
-        return 0;
-    }
+	/* size() was a duplicate to getContentLength() */
 
     /**
      * Returns the unique ID of this information
@@ -403,9 +428,22 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     }
 
     @Override
-    public String getContentAsString() throws SharkKBException {
-        byte[] cBytes = this.getContentAsByte();
+    public String getContentAsString() {
+        byte[] cBytes = getContentAsByte();
         String cString = new String(cBytes);
         return cString;
     }
+
+	public void obtainLock(InputStream i) {
+		spinLock.enter();
+	}
+
+	public void obtainLock(OutputStream i) {
+		spinLock.enter();
+	}
+	
+	public void releaseLock() {
+		spinLock.leave();
+	}
+
 }

@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.filesystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -73,7 +74,18 @@ public class FSContextPoint extends InMemoContextPoint {
         Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, infoCopy);
         OutputStream writeAccess = infoCopy.getOutputStream();
         
+        InputStream readAccess = null;
+        try {
+            readAccess = info.getInputStream();
+            info.obtainLock(readAccess);
+        } catch (SharkKBException e) {
+        }
+        
+		infoCopy.obtainLock(writeAccess);
         info.streamContent(writeAccess);
+		infoCopy.releaseLock();
+		info.releaseLock();
+
         try {
             // close stream
             writeAccess.close();
@@ -87,7 +99,7 @@ public class FSContextPoint extends InMemoContextPoint {
          * But.. Info becomes aware of its name and content-type
          * by resetting.
          */
-        String value = infoCopy.getName();
+        String value = info.getName();
         try {
             infoCopy.setName(value);
         } catch (SharkKBException ex) {
@@ -95,7 +107,7 @@ public class FSContextPoint extends InMemoContextPoint {
             //checked when the name of the infoCopy was set and therefore it can not contain false characters
         }
         
-        value = infoCopy.getContentType();
+        value = info.getContentType();
         infoCopy.setContentType(value);
     }
 

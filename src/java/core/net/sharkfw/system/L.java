@@ -274,7 +274,7 @@ public class L {
                     Information info = infoEnum.nextElement();
                     String name = info.getName();
                     String contentType = info.getContentType();
-                    int len = info.size();
+                    long len = info.getContentLength();
                     
                     buf.append(index++);
                     buf.append(": name: ");

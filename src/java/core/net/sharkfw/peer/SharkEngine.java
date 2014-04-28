@@ -1,6 +1,7 @@
 package net.sharkfw.peer;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -90,21 +91,26 @@ abstract public class SharkEngine {
     /**
      * Reference to the PeerSensor working on this SharkEngine
      */
+    @SuppressWarnings("unused")
     private PeerSensor psensor = null;
     /**
      * Reference to the GeoSensor working on this SharkEngine
      */
+    @SuppressWarnings("unused")
     private GeoSensor gsensor = null;
     /**
      * Reference to the TimeSensor working on this SharkEngine
      */
+    @SuppressWarnings("unused")
     private TimeSensor tsensor = null;
     private static int DEFAULT_TCP_PORT = 7070;
+    @SuppressWarnings("unused")
     private static int DEFAULT_HTTP_PORT = 8080;
 
     /**
      * Empty constructor for new API
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public SharkEngine() {
         this.kps = new Vector();
     }
@@ -115,7 +121,7 @@ abstract public class SharkEngine {
     }
 
     /**
-     * TODO: PrÃ¼fen, ob wir finalize() noch brauchen
+     * TODO: Prüfen, ob wir finalize() noch brauchen
      */
     @Override
     protected void finalize() {
@@ -219,6 +225,7 @@ abstract public class SharkEngine {
      * @return true on success, false on failure TODO: failure is announced by exception!
      * @throws SharkProtocolNotSupportedException
      */
+    @SuppressWarnings("unused")
     protected final boolean start(int type, int port) throws SharkProtocolNotSupportedException, IOException {
         Stub protocolStub = this.startServer(type, kepStub, port);
         
@@ -428,7 +435,7 @@ abstract public class SharkEngine {
      * @return
      */
     public Iterator<KnowledgePort> getAllKP() {
-        EnumerationChain kpIter = new EnumerationChain<KnowledgePort>();
+        EnumerationChain<KnowledgePort> kpIter = new EnumerationChain<KnowledgePort>();
         kpIter.addEnumeration(this.getKPs());
         return kpIter;
     }    
@@ -541,6 +548,7 @@ abstract public class SharkEngine {
 //
 //        return this.btl2cap;
 //    }
+    @SuppressWarnings("unused")
     private boolean mailAvailable = true; // a guess
 
 //    private MessageStub startMailMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
@@ -779,6 +787,7 @@ abstract public class SharkEngine {
         this.sendKEPCommand(null, k, kp, recipient);
     }
 
+    @SuppressWarnings("unused")
     private void sendKEPCommand(SharkCS interest, Knowledge k, KnowledgePort kp, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         L.d("Send KEP command to recipient: >>>>>>>>>>>\n", this);
         
@@ -896,6 +905,7 @@ abstract public class SharkEngine {
      * @param addresses
      * @return 
      */
+    @SuppressWarnings("rawtypes")
     private KEPOutMessage createKEPOutMessage(String[] addresses) {
         KEPOutMessage response = null;
         MessageStub mStub;
@@ -1215,6 +1225,7 @@ abstract public class SharkEngine {
     public void publishAllKP() throws SharkSecurityException, IOException {
         L.d("Publishing all KPs", this);
         // Find all KPs
+        @SuppressWarnings("rawtypes")
         Enumeration kpEnum = this.kps.elements();
 
         // publish one by one to the environment
@@ -1231,6 +1242,7 @@ abstract public class SharkEngine {
         L.d("Publishing all KPs", this);
 
         // Find all KPs
+        @SuppressWarnings("rawtypes")
         Enumeration kpEnum = this.kps.elements();
 
         // Publish them one by one to the recipient
@@ -1241,7 +1253,7 @@ abstract public class SharkEngine {
     }
 
     public void stop() {
-        for (int i = i = 0; i < Protocols.NUMBERPROTOCOLS; i++) {
+        for (int i = 0; i < Protocols.NUMBERPROTOCOLS; i++) {
             try {
                 this.stopProtocol(i);
             } catch (SharkProtocolNotSupportedException ex) {
@@ -1311,6 +1323,7 @@ abstract public class SharkEngine {
      * public key. This paramter defines whether the message is to be refused in this 
      * case or not. Note: Messages with wrong signatures are refused in any case.
      */
+    @SuppressWarnings("unused")
     public void initSecurity(PeerSemanticTag engineOwnerPeer, 
             SharkPublicKeyStorage publicKeyStorage,
             SecurityLevel encryptionLevel, SecurityLevel signatureLevel,
@@ -1417,6 +1430,7 @@ abstract public class SharkEngine {
      * all information have already been transmitted
      * @deprecated ???
      */
+    @SuppressWarnings("rawtypes")
     public Knowledge removeSentInformation(Knowledge k, String address) {
         
         // create knowledge to be returned
@@ -1477,6 +1491,7 @@ abstract public class SharkEngine {
      * @param k knowledge to be sent
      * @param address communication partners address
      */
+    @SuppressWarnings("rawtypes")
     public void setSentInformation(Knowledge k, String address) {
         // lets investigate any cp
         Enumeration cpEnum = k.contextPoints();
@@ -1619,8 +1634,11 @@ abstract public class SharkEngine {
         
         try {
             Information i = cp.addInformation();
-            SharkOutputStream sos = new UTF8SharkOutputStream(i.getOutputStream());
+            OutputStream os = i.getOutputStream();
+            SharkOutputStream sos = new UTF8SharkOutputStream(os);
+            i.obtainLock(os);
             this.getXMLSerializer().write(k, sos);
+            i.releaseLock();
             i.setContentType(KNOWLEDGE_CONTENT_TYPE);
         } catch (Exception ex) {
             L.d("cannot serialize knowledge", this);
@@ -1653,7 +1671,7 @@ abstract public class SharkEngine {
                         
                         if(i.getContentType().equalsIgnoreCase(INTEREST_CONTENT_TYPE)) {
                             // Interest
-                            String serialeInterest = new String(i.getContentAsByte());
+                            String serialeInterest = i.getContentAsString();
                             SharkCS deserializeSharkCS = this.getXMLSerializer().deserializeSharkCS(serialeInterest);
                             cp.removeInformation(i);
                             
@@ -1699,8 +1717,8 @@ abstract public class SharkEngine {
     /////////////////////////////////////////////////////////////////////////
     
     // both should be private - review white-/black list management
-    protected ArrayList<PeerSemanticTag> blackList = new ArrayList();
-    protected ArrayList<PeerSemanticTag> whiteList = new ArrayList();
+    protected ArrayList<PeerSemanticTag> blackList = new ArrayList<PeerSemanticTag>();
+    protected ArrayList<PeerSemanticTag> whiteList = new ArrayList<PeerSemanticTag>();
     
     public static final String WHITE_LIST = "subSpaceGuard_whiteList";
     public static final String BLACK_LIST = "subSpaceGuard_blackList";

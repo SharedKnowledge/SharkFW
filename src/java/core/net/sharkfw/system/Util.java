@@ -47,6 +47,7 @@ public class Util {
      * This class turns a String array into an <code>
      * Enumeration.
      */
+    @SuppressWarnings("rawtypes")
     static private class ArrayEnum implements Enumeration {
 
         private String[] s;
@@ -151,6 +152,7 @@ public class Util {
      * @param cpSI The array to be turned into an Enumeration
      * @return An Enumeration of Strings created from the array
      */
+    @SuppressWarnings("rawtypes")
     public static Enumeration array2Enum(String[] cpSI) {
         return new ArrayEnum(cpSI);
     }
@@ -230,6 +232,7 @@ public class Util {
      * @param b A string array
      * @return The union of <code>a</code> and <code>b</code>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static String[] mergeArrays(String[] a, String[] b) {
         if (a == null) {
             return b;
@@ -321,6 +324,7 @@ public class Util {
      * @param delimiter The delimiter to tell tokens apart
      * @return A vector of String as taken from <code>s</code>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Vector string2Vector(String s, String delimiter) {
         if (s == null || delimiter == null) {
             return null;
@@ -343,6 +347,7 @@ public class Util {
      * @param delimiter The delimiter to tell tokens apart
      * @return A string containing the serialized contents of the Vector
      */
+    @SuppressWarnings("rawtypes")
     public static String vector2String(Vector v, String delimiter) {
         if (v == null || delimiter == null) {
             return null;
@@ -374,7 +379,7 @@ public class Util {
         PeerSTSet pSet = InMemoSharkKB.createInMemoPeerSTSet();
         xs.deserializeSTSet(pSet, serialized);
         
-        ArrayList<PeerSemanticTag> pArray = new ArrayList();
+        ArrayList<PeerSemanticTag> pArray = new ArrayList<PeerSemanticTag>();
         
         Enumeration<PeerSemanticTag> peerTags = pSet.peerTags();
         if(peerTags == null || !peerTags.hasMoreElements()) {
@@ -388,10 +393,12 @@ public class Util {
         return pArray;
     }
     
+    @SuppressWarnings("rawtypes")
     public static String iteration2String(Iterator iter, String delimiter) {
         return enumeration2String(new Iterator2Enumeration(iter), delimiter);
     }
 
+    @SuppressWarnings("rawtypes")
     public static String enumeration2String(Enumeration enume, String delimiter) {
         if (enume == null || delimiter == null) {
             return null;
@@ -407,6 +414,7 @@ public class Util {
         return buf.toString();
     }
 
+    @SuppressWarnings("rawtypes")
     public static String fragmentationParameter2string(
             FragmentationParameter[] fp) {
         StringBuffer buf = new StringBuffer();
@@ -459,6 +467,7 @@ public class Util {
      * @param s A string containing the serialized form of a <code>FragmentationParameter</code>
      * @return A <code>FragmentationParameter</code> created using <code>s</code>
      */
+    @SuppressWarnings("rawtypes")
     public static FragmentationParameter[] string2fragmentationParameter(String s) {
         FragmentationParameter[] fpSet = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
 
@@ -537,6 +546,7 @@ public class Util {
      * @param list The <code>List</code> to convert
      * @return A <code>Vector</code> containing all elements from the <code>list</code>.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Vector list2Vector(List list) {
         Iterator listIterator = list.iterator();
 
@@ -555,6 +565,7 @@ public class Util {
      * 
      * @return A <code>Vector</code> containing all elements of <code>e</code>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Vector enum2Vector(Enumeration e) {
         if (e == null) {
             return new Vector();
@@ -711,6 +722,7 @@ public class Util {
      * @param prop
      * @param comment
      */
+    @SuppressWarnings("rawtypes")
     public static void storeProps(OutputStream fos, Properties prop,
             String comment) {
         try {
@@ -844,6 +856,7 @@ public class Util {
      * @param uri
      * @return Stringarray which [0] Element holds the ip address and [1] holds the port
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static String[] getIPandPortFromURI(String uri) {
 
         Vector strings = new Vector();
@@ -962,6 +975,7 @@ public class Util {
      * @param enumeration The enumeration of strings to read from
      * @return A newly created array of strings as read from the <code>enumeration</code>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static String[] enumeration2StringArray(Enumeration enumeration) {
         Vector v = new Vector();
 
@@ -984,6 +998,7 @@ public class Util {
      * @param original The <code>ContextPoint</code> to copy from.
      * @param copy The <code>ContextPoint</code> to copy to.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void copyInformation(ContextPoint original, ContextPoint copy, boolean withTimestamp) throws SharkKBException {
         Enumeration infoEnum = original.enumInformation();
         while (infoEnum != null && infoEnum.hasMoreElements()) {
@@ -1014,7 +1029,9 @@ public class Util {
             Util.copyPropertiesFromPropertyHolderToPropertyHolder(original, copy);
             
             OutputStream os = localInfo.getOutputStream();
+			localInfo.obtainLock(os);
             info.streamContent(os);
+			localInfo.releaseLock();
             // Also copy all props from the original information to the newly created information
             Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, localInfo);
             L.d("Creating Information with name:" + info, Util.class);
@@ -1046,6 +1063,7 @@ public class Util {
      * @param toSort the <String or Object> Vector to sort
      * @return Vector<String> sorted values.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Vector sortStringVector(Vector toSort) {
         if (toSort == null) {
             return new Vector();
@@ -1078,6 +1096,7 @@ public class Util {
      * @param toSort the <Integer> Vector to sort
      * @return Vector<Integer> sorted values.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Vector sortIntegerVector(Vector toSort) {
         if (toSort == null) {
             return new Vector();
@@ -1186,6 +1205,7 @@ public class Util {
      * @param hashcode The hashcode to check.
      * @return <code>true</code> if an Information exists on <code>cp</code> with <code>.getProperty(SharkKB.HASHCODE).equals(hashcode)</code>. <code>false</code> otherwise.
      */
+    @SuppressWarnings("rawtypes")
     public static boolean contextPointHasHashcode(ContextPoint cp, int hashcode) {
         if (cp == null) {
             return false;
@@ -1268,6 +1288,7 @@ public class Util {
      * @param source The property holder used as template.
      * @param copy The property holder to be filled with all props from source.
      */
+    @SuppressWarnings("rawtypes")
     public static void copyPropertiesFromPropertyHolderToPropertyHolder(SystemPropertyHolder source, SystemPropertyHolder copy) {
         Enumeration nameEnum = source.propertyNames(true);
         while (nameEnum != null && nameEnum.hasMoreElements()) {

@@ -1,6 +1,7 @@
 package net.sharkfw.peer;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -828,9 +829,12 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
         
         try {
             Information i = cp.addInformation();
-            SharkOutputStream sos = new UTF8SharkOutputStream(i.getOutputStream());
+            OutputStream os = i.getOutputStream();
+            SharkOutputStream sos = new UTF8SharkOutputStream(os);
+            i.obtainLock(os);
             this.getXMLSerializer().write(k, sos);
             i.setContentType(KNOWLEDGE_CONTENT_TYPE);
+            i.releaseLock();
         } catch (Exception ex) {
             L.d("cannot serialize knowledge", this);
         }
@@ -859,7 +863,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
                         
                         if(i.getContentType().equalsIgnoreCase(INTEREST_CONTENT_TYPE)) {
                             // Interest
-                            String serialeInterest = new String(i.getContentAsByte());
+                            String serialeInterest = i.getContentAsString();
                             SharkCS deserializeSharkCS = this.getXMLSerializer().deserializeSharkCS(serialeInterest);
                             cp.removeInformation(i);
                             

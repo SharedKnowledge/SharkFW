@@ -1,5 +1,8 @@
 package net.sharkfw.knowledgeBase;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -117,12 +120,13 @@ public interface Information extends SystemPropertyHolder {
      * @return An OutputStream containing the content of this Information.
      * @deprecated use getOutputStream();
      */
-     public OutputStream getWriteAccess();
+//     public OutputStream getWriteAccess();
     
     /**
      * Return an OutputStream containing the content of this Information.
      * @return An OutputStream containing the content of this Information.
      *     public OutputStream getWriteAccess();
+     * @throws SharkKBException 
      */
     public OutputStream getOutputStream() throws SharkKBException;
     
@@ -154,11 +158,26 @@ public interface Information extends SystemPropertyHolder {
      */
     public void setName(String name) throws SharkKBException;
     
-    public int size();
+    // size() was duplicate to getContentLength() 
     
     /**
      * Returns the unique ID of that information object
      * @return unique ID as String, "" if there is no unique ID set
      */
     public String getUniqueID();
+        
+    /**
+     * enters a critical section 
+     */
+    public void obtainLock(InputStream i);    
+    
+    /**
+     * enters a critical section 
+     */
+    public void obtainLock(OutputStream o);    
+    
+    /**
+     * leaves a critical section 
+     */
+    public void releaseLock();
 }

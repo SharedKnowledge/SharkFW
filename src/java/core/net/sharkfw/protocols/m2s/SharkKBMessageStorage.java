@@ -106,6 +106,7 @@ public class SharkKBMessageStorage implements MessageStorage {
             this.openOS.put(id, os);
             
             return os;
+			// TODO: operations on this stream are not protected by a critical section 
         } catch (SharkKBException ex) {
             // won't happen
         }
@@ -151,8 +152,10 @@ public class SharkKBMessageStorage implements MessageStorage {
         
         try {
             OutputStream infoOS = i.getOutputStream();
+            i.obtainLock(infoOS);
 
             int size = Streamer.stream(is, infoOS, 100);
+            i.releaseLock();
 
             i.setProperty(IS_LAST, Boolean.toString(last));
             i.setProperty(PACKAGENUMBER, Integer.toString(packageNumber));
@@ -208,7 +211,8 @@ public class SharkKBMessageStorage implements MessageStorage {
                 currentOffset = Integer.parseInt(value);
             }
             
-            int remainingNumber = i.size() - currentOffset;
+            // TODO: clean up types, remove cast to int
+            int remainingNumber = ((int)i.getContentLength()) - currentOffset;
             
             if(remainingNumber < 0) {
                 throw new SharkException("internal error: current offset in message storage is smaller than actual size - impossible");
@@ -297,8 +301,9 @@ public class SharkKBMessageStorage implements MessageStorage {
             
             offset += size;
 
-            L.d("streamed message part: new offset / size:" + offset + " / " + i.size(), this);
-            if(offset >= i.size()) { // TODO really >= ??
+            L.d("streamed message part: new offset / size:" + offset + " / " + i.getContentLength(), this);
+            if(offset >= i.getContentLength()) { 
+				// TODO: is it really >= ??
                 L.d("offset exceeds size - remove local storage", this);
                 // we are done - remove saved message part
                 this.kb.removeContextPoint(cp.getContextCoordinates());

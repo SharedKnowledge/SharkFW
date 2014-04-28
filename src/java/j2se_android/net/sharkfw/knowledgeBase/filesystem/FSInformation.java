@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.NonReadableChannelException;
 
 import net.sharkfw.system.TimeLong;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -20,6 +24,7 @@ import net.sharkfw.system.L;
  */
 public class FSInformation extends InMemoInformation {
     private File contentFile;
+	private FileLock  _fLock;
     private String folder;
     public static final String INFO_FILE = "fsinfo_file";
     
@@ -40,8 +45,12 @@ public class FSInformation extends InMemoInformation {
 
     /**
      * calculate content file name by information name and content type
+     * @throws SharkKBException
      */
     private void setupContentFile() throws SharkKBException {
+		
+		spinLock.enter();
+		
         // is there already a content file
         if(this.contentFile != null) {
             if(this.contentFile.exists()) {
@@ -50,6 +59,7 @@ public class FSInformation extends InMemoInformation {
                     this.setSystemProperty(INFO_FILE, this.contentFile.getCanonicalPath());
                 }
                 catch(IOException ioe) {
+                	spinLock.leave();
                     throw new SharkKBException(ioe.getMessage());
                 }
             }
@@ -85,12 +95,14 @@ public class FSInformation extends InMemoInformation {
                     this.setSystemProperty(INFO_FILE, this.contentFile.getCanonicalPath());
                 }
                 catch(IOException ieo) {
+					spinLock.leave();
                     throw new SharkKBException(ieo.getMessage());
                 }
             }
         } else {
             this.contentFile = newContentFile;
         }
+		spinLock.leave();
     }
     
     /*
@@ -113,7 +125,14 @@ public class FSInformation extends InMemoInformation {
     
     @Override
     public long getContentLength() {
-        return this.contentFile.length();
+		spinLock.enter();
+		if(this.contentFile != null) {
+			long sz = this.contentFile.length();
+			spinLock.leave();
+			return sz;
+		}
+		spinLock.leave();
+		return 0;
     }
     
     @Override
@@ -121,34 +140,46 @@ public class FSInformation extends InMemoInformation {
         FileOutputStream fos;
         this.setContentType("text/plain");
         
+		spinLock.enter();
         try {
             fos = new FileOutputStream(this.contentFile);
+			lockFile(fos.getChannel(), true);
+
             PrintStream ps = new PrintStream(fos);
             ps.print(content);
+
+			unlockFile();
             fos.close();
             
             this.setTimes();
             
             this.persist();
         } catch (Exception ex) {
-            L.e("couldn't write information to file: " + ex.getMessage(), this);
+            L.e("setContent("+content+"): couldn't write information to file: " + ex.getMessage(), this);
+			ex.printStackTrace();
         }
+		releaseLock();
     }
     
     @Override
     public void setContent(byte[] content) {
         FileOutputStream fos;
+		spinLock.enter();
         try {
             fos = new FileOutputStream(this.contentFile);
+			lockFile(fos.getChannel(), true);	
             fos.write(content);
+			unlockFile();
             fos.close();
             
             this.setTimes();
             
             this.persist();
         } catch (Exception ex) {
-            L.e("couldn't write information to file: " + ex.getMessage(), this);
+            L.e("setContent(byte[]): couldn't write information to file: " + ex.getMessage(), this);
+			ex.printStackTrace();
         }
+		releaseLock();
     }
     
     private static final int MAX_BUFFER_LEN = 1024*100; // 100 kByte
@@ -158,9 +189,11 @@ public class FSInformation extends InMemoInformation {
         byte[] buffer = null;
         int index = 0;
         
+		spinLock.enter();
         FileOutputStream fos;
         try {
             fos = new FileOutputStream(this.contentFile);
+			lockFile(fos.getChannel(), true);
             
             while(len > 0) {
                 int byte2write = (int) (len > MAX_BUFFER_LEN ? MAX_BUFFER_LEN : len);
@@ -176,38 +209,49 @@ public class FSInformation extends InMemoInformation {
                 
                 len -= bytesRead;
             }
-            
+			unlockFile();
             fos.close();
             
             this.setTimes();
             this.persist();
             
         } catch (Exception ex) {
-            L.e("couldn't write information to file: " + ex.getMessage(), this);
+            L.e("setContent(InputStream,"+len+"): couldn't write information to file: " + ex.getMessage(), this);
+            ex.printStackTrace();
         }
+        releaseLock();
     }
     
     @Override
     public void removeContent() {
+    	spinLock.enter();
+		try {
         this.contentFile.delete();
         this.setTimes();
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		}
+		spinLock.leave();
     }
     
     @Override
     public void streamContent(OutputStream os) {
         FileInputStream fis;
+		spinLock.enter();
         try {
             fis = new FileInputStream(this.contentFile);
-            
+			lockFile(fis.getChannel(), false);	
             int b = fis.read();
             while(b != -1) {
                 os.write(b);
                 b = fis.read();
             }
-            
+			unlockFile();
             fis.close();
         } catch (Exception ex) {
-            L.l("couldn't read information to file (might be ok - no content)" + ex.getMessage(), this);
+            L.l("streamContent(): couldn't read information from file (might be ok - no content)" + ex.getMessage(), this);
+			ex.printStackTrace();
         }
 //        finally {
 //            try {
@@ -216,6 +260,7 @@ public class FSInformation extends InMemoInformation {
 //                // ignore
 //            }
 //        }
+        releaseLock();
     }
     
     /**
@@ -231,15 +276,41 @@ public class FSInformation extends InMemoInformation {
         
         byte[] content = new byte[len];
         
-        FileInputStream fis;
+        FileInputStream fis = null;
+		spinLock.enter();
         try {
             fis = new FileInputStream(this.contentFile);
-            fis.read(content);
+		} catch (FileNotFoundException e) {
+			try {
+				String cpn = this.contentFile.getCanonicalPath();
+				System.out.println("getContentAsByte(): severe problem, file "+cpn+" should exist: " + e.getMessage());
+			} catch (IOException e1) {
+				System.out.println("getContentAsByte(): severe problem, can't resolve canonical pathname:" + e1.getMessage()+ "  file should exist: " + e.getMessage());
+				e1.printStackTrace();
+			}						
+			e.printStackTrace();
+		}
+		if (fis != null) {
+			lockFile(fis.getChannel(), false);	
+			try {
+				int got = fis.read(content);
+				if (got < 0) {
+					// end-of-file was reached
+				}
+			} catch (IOException e) {
+				// read interrupted or other IO error
+				System.out.println("getContentAsByte(): error in read(): " + e.getMessage());
+				e.printStackTrace();
+			}
+			unlockFile();
+			try {
             fis.close();
-        } catch (Exception ex) {
-            L.l("couldn't read information to file (might be ok - no content)" + ex.getMessage(), this);
+			} catch (IOException e) {
+				System.out.println("getContentAsByte(): error in close(): " + e.getMessage());
+				e.printStackTrace();
         }
-        
+        }
+		releaseLock();
         return content;
     }
     
@@ -420,14 +491,7 @@ public class FSInformation extends InMemoInformation {
         }
     }
     
-    @Override
-    public int size() {
-        if(this.contentFile != null) {
-            return (int) this.contentFile.length();
-        }
-        return 0;
-    }
-    
+    /* size() was a duplicate to getContentLength() */
     /**
      * Returns the folder the information is stored in
      * @return 
@@ -435,4 +499,74 @@ public class FSInformation extends InMemoInformation {
     public String getPath(){
         return folder;
     }
+
+	@Override
+	public void obtainLock(InputStream i) {
+		spinLock.enter();
+		if (i instanceof FileInputStream) {
+			lockFile(((FileInputStream)i).getChannel(), false);	
+		}	    		
+	}
+	
+	@Override
+	public void obtainLock(OutputStream o) {
+		spinLock.enter();
+		if (o instanceof FileOutputStream) {
+			lockFile(((FileOutputStream)o).getChannel(), true);
+		}			
+	}   
+
+	@Override
+	public void releaseLock() {		
+		unlockFile();
+		spinLock.leave();
+	}
+
+	private void lockFile(FileChannel _fChannel, boolean write) {
+		int k = 0;
+		_fLock = null;
+		Exception ioe = null;
+		
+		while ((_fLock == null) && (k < 100)) {	// try to obtain lock for 2 seconds
+			try {
+				_fLock = _fChannel.tryLock(0L, Long.MAX_VALUE, true);
+			} catch (Exception e) {				
+				if (e instanceof NonReadableChannelException) {
+					if (write) {
+						// ignore this after 0.4 seconds
+//						if (k > 20) {
+//							break;
+//						}
+					} else {
+						ioe = e;
+						System.out.println("cant read with this stream: attempt "+k);
+						e.printStackTrace();
+					}
+				}				
+			} 
+			Thread.yield();
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			k++;
+		}	
+		if ((ioe != null) && (k > 0)) {
+			L.l(k+"th attempt to get lock", this);
+			ioe.printStackTrace();	
+		}			
+	}
+
+	private void unlockFile() {
+		if (_fLock != null) {
+			try {
+				_fLock.release();
+			} catch (IOException e) {
+				L.l("getContentAsByte(): error in unlockFile(): " + e.getMessage(), this);
+				e.printStackTrace();
+			}
+			_fLock = null;
+		}
+	}
 }
