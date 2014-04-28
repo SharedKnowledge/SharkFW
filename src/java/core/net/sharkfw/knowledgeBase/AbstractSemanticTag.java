@@ -1,9 +1,5 @@
 package net.sharkfw.knowledgeBase;
 
-import java.util.Enumeration;
-import net.sharkfw.peer.StandardKP;
-import net.sharkfw.system.Util;
-
 /**
  * This class unites offers a place to extends all SemanticTags with additional functionality.
  * It serves as a superclass for all SemanticTags in the Shark framework.
@@ -14,6 +10,7 @@ import net.sharkfw.system.Util;
  * 
  * @author mfi, thsc
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractSemanticTag extends PropertyHolderDelegate 
                                         implements SemanticTag, SystemPropertyHolder {
     

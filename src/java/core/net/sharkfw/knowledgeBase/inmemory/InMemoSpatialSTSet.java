@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.Geometry;
-import net.sharkfw.system.Util;
 
 /**
  *
@@ -16,6 +15,7 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
         super(new InMemoGenericTagStorage<SpatialSemanticTag>());
     }
 
+    @SuppressWarnings("rawtypes")
     public InMemoSpatialSTSet(InMemoGenericTagStorage storage) {
         super(storage);
     }
@@ -52,6 +52,7 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
         return gsts;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Vector points) throws SharkKBException {
         SpatialSemanticTag gst = this.getSpatialSemanticTag(sis);
@@ -118,6 +119,7 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
         throw new SharkKBException("cannot use non geo semantic tag in geo semantic tag set");
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
         return this.createSpatialSemanticTag(name, sis, (Vector) null);
@@ -148,6 +150,7 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
         return this.castGST(super.getSemanticTag(si));
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration<SpatialSemanticTag> spatialTags() throws SharkKBException {
         Enumeration tags = super.tags();

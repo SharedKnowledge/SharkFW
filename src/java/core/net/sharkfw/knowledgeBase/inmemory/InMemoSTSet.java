@@ -21,6 +21,7 @@ import net.sharkfw.knowledgeBase.*;
  */
 public class InMemoSTSet implements STSet {
 
+    @SuppressWarnings("rawtypes")
     private InMemoGenericTagStorage storage;
     
     /**
@@ -40,6 +41,7 @@ public class InMemoSTSet implements STSet {
         this.storage = new InMemoGenericTagStorage<SemanticTag>();
     }
     
+    @SuppressWarnings("rawtypes")
     public InMemoGenericTagStorage getTagStorage() {
         return this.storage;
     }
@@ -48,6 +50,7 @@ public class InMemoSTSet implements STSet {
      * creates a new st set with same tags - be careful
      * @param storage 
      */
+    @SuppressWarnings("rawtypes")
     InMemoSTSet(InMemoGenericTagStorage storage) {
         this.storage = storage;
     }
@@ -68,6 +71,7 @@ public class InMemoSTSet implements STSet {
         return this.storage.getSemanticTag(si);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Enumeration<SemanticTag> tags() {
         return this.storage.tags();
@@ -89,6 +93,7 @@ public class InMemoSTSet implements STSet {
      * @param set2merge 
      * @see AbstractSemanticTag
      */
+    @SuppressWarnings("unused")
     @Override
     public void merge(STSet remoteSet) throws SharkKBException {
         // iterate 
@@ -109,6 +114,7 @@ public class InMemoSTSet implements STSet {
      * @param targetSet
      * @param source 
      */
+    @SuppressWarnings("unchecked")
     @Override
     public SemanticTag merge(SemanticTag source) throws SharkKBException {
         return this.getTagStorage().merge(source);
@@ -137,12 +143,14 @@ public class InMemoSTSet implements STSet {
      * @param tag Tag to add.
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
+    @SuppressWarnings("unchecked")
     public void add(SemanticTag tag) throws SharkKBException {
         this.storage.add(tag);
         
         this.notifyCreated(tag);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void removeSemanticTag(SemanticTag tag) {
         this.storage.removeSemanticTag(tag);

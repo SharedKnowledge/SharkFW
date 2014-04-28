@@ -13,6 +13,7 @@ import net.sharkfw.system.Util;
  * 
  * @author thsc
  */
+@SuppressWarnings("unchecked")
 public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
                                 implements SNSemanticTag, TXSemanticTag {
     
@@ -75,6 +76,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
      * @param predicateName predicate type name
      * @return enumeration or null, if there is no such tag
      */
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public Enumeration <SNSemanticTag> targetTags(String predicateName) {
         this.refreshPredicates();
@@ -176,6 +178,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
      * @param predicateName predicate type name
      * @return enumeration or null, if there is no such tag
      */
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public Enumeration <SNSemanticTag> sourceTags(String predicateName) {
         this.refreshPredicates();
@@ -220,6 +223,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
      * @param type
      * @param target if null - all associations of this type are removed
      */
+    @SuppressWarnings({ "unused", "rawtypes" })
     private void setPredicate(String type, SemanticTag target) {
         if(target == null) {
             this.removePredicate(type);
@@ -258,6 +262,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
      * @param type
      * @param source 
      */
+    @SuppressWarnings({ "rawtypes" })
     private void addSourcePredicate(String type, SNSemanticTag source) {
         this.refreshPredicates();
         
@@ -352,6 +357,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private void removeSourcePredicate(String type, InMemo_SN_TX_SemanticTag source) {
         if(this.sources == null) return;
         
@@ -376,6 +382,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
     }
     
 
+    @SuppressWarnings("unused")
     private void localMerge(SemanticTag toMerge) {
         // merge tags only
         super.merge(toMerge);
@@ -434,6 +441,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
      * interpreted as opposite way of sub.
      */
     
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public Enumeration<SemanticTag> subTags() {
         this.refreshPredicates();
@@ -450,6 +458,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
         return e;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public TXSemanticTag getSuperTag() {
         this.refreshPredicates();
@@ -470,6 +479,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
         return null;
     }
     
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public Enumeration<TXSemanticTag> getSubTags() {
         this.refreshPredicates();
@@ -582,6 +592,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
      * @param prefix
      * @param map 
      */
+    @SuppressWarnings({ "rawtypes" })
     private void readPredicates(String prefix, 
             HashMap<String, HashSet<SNSemanticTag>> map,
             InMemoGenericTagStorage home) {
@@ -658,6 +669,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
         super.refreshStatus();
     }
     
+    @SuppressWarnings({ "rawtypes" })
     private void refreshPredicates() {
         if(this.refreshed) { return; }
         
@@ -676,8 +688,10 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
         this.readPredicates(TARGET_PREFIX, this.targets, this.storage);
     }
     
+    @SuppressWarnings("rawtypes")
     private InMemoGenericTagStorage storage;
     
+    @SuppressWarnings("rawtypes")
     public InMemo_SN_TX_SemanticTag(SystemPropertyHolder persistentHolder, InMemoGenericTagStorage storage) {
         super(persistentHolder);
         

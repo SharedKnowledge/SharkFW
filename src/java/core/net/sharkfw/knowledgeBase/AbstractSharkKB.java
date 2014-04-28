@@ -20,6 +20,7 @@ import net.sharkfw.system.Util;
  * 
  * @author thsc
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractSharkKB extends PropertyHolderDelegate 
                                 implements SharkKB, KnowledgeListener
 {
@@ -317,7 +318,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
         if(cs == null) return null;
         
-        HashSet<ContextPoint> result = new HashSet();
+        HashSet<ContextPoint> result = new HashSet<ContextPoint>();
 
         HashSet<ContextCoordinates> coo = this.possibleCoordinates(cs);
 
@@ -375,7 +376,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     public HashSet<ContextCoordinates> possibleCoordinates(SharkCS cs) throws SharkKBException {
         if(cs == null) return null;
-        HashSet<ContextCoordinates> protoCoo = new HashSet();
+        HashSet<ContextCoordinates> protoCoo = new HashSet<ContextCoordinates>();
         
         // create first prototype with direction and owner
         if(cs.getDirection() == SharkCS.DIRECTION_INOUT) {
@@ -399,7 +400,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return protoCoo;
     }
     
-    private HashSet<ContextCoordinates> coordCombination(HashSet protoCoo, 
+    private HashSet<ContextCoordinates> coordCombination(HashSet<ContextCoordinates> protoCoo, 
             STSet set, int dim) throws SharkKBException 
     {
         
@@ -410,7 +411,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         
         if(tagEnum == null || !tagEnum.hasMoreElements()) return protoCoo;
         
-        HashSet<ContextCoordinates> result = new HashSet();
+        HashSet<ContextCoordinates> result = new HashSet<ContextCoordinates>();
         
         while(tagEnum.hasMoreElements()) {
             SemanticTag tag = tagEnum.nextElement();
@@ -448,7 +449,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return result;
     }
 
-    private ArrayList<KnowledgeBaseListener> listeners = new ArrayList();
+    private ArrayList<KnowledgeBaseListener> listeners = new ArrayList<KnowledgeBaseListener>();
 
     @Override
     public void addListener(KnowledgeBaseListener kbl) {

@@ -3,7 +3,6 @@ package net.sharkfw.knowledgeBase.inmemory;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Vector;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
 
@@ -16,7 +15,7 @@ import net.sharkfw.system.Iterator2Enumeration;
  * @author thsc
  */
 public class InMemoKnowledge implements Knowledge {
-    private ArrayList<ContextPoint> cps = new ArrayList();
+    private ArrayList<ContextPoint> cps = new ArrayList<ContextPoint>();
     private SharkVocabulary cm;
 
     /** 
@@ -69,6 +68,7 @@ public class InMemoKnowledge implements Knowledge {
      * @param co The <code>ContextCoordinates</code> to copy.
      * @return A new <code>ContextCoordinates</code> instance with the same values set as <code>co</code>
      */
+    @SuppressWarnings("unused")
     private InMemoContextCoordinates copyCoords(ContextCoordinates co) {
       
         return new InMemoContextCoordinates(
@@ -101,12 +101,13 @@ public class InMemoKnowledge implements Knowledge {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Enumeration<ContextPoint> contextPoints() {
         return new Iterator2Enumeration(this.cps.iterator());
     }
 
-    private ArrayList<KnowledgeListener> listeners = new ArrayList();
+    private ArrayList<KnowledgeListener> listeners = new ArrayList<KnowledgeListener>();
 
     @Override
     public void addListener(KnowledgeListener kbl) {

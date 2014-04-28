@@ -1,7 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Vector;
-import net.sharkfw.knowledgeBase.*;
 
 /**
  *

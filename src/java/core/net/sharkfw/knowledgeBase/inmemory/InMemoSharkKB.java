@@ -8,6 +8,7 @@ import net.sharkfw.system.Util;
  * @author mfi
  * @author thsc
  */
+@SuppressWarnings("unchecked")
 public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPropertyHolder {
     
     ////////////////////////////////////////////////////////////////////////
@@ -223,6 +224,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return copy;
     }
     
+    @SuppressWarnings("unused")
     public static ContextCoordinates createInMemoCopy(ContextCoordinates cc) 
             throws SharkKBException {
         
@@ -474,6 +476,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return InMemoSharkKB.createInMemoCopy((SharkCS) cc);
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
         try {
@@ -493,6 +496,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         throw new SharkKBException("peers dimension isn't a semantic net.");
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     public Taxonomy getTopicsAsTaxonomy()  throws SharkKBException {
         try {

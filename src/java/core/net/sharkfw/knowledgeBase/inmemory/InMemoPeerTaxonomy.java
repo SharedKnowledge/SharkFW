@@ -155,6 +155,7 @@ public class InMemoPeerTaxonomy extends InMemoTaxonomy implements PeerTaxonomy, 
         return fragment;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public PeerSTSet asPeerSTSet() throws SharkKBException {
         PeerSemanticNet stSet = this.getStorage();

@@ -45,27 +45,27 @@ public class SimpleKEPStub extends KEPStub {
   /**
    * A table containing the connection pool of this <code>KEPStub</code>
    */
-  private Hashtable/*<String><StreamConnection>*/ table;
+  private Hashtable<String, StreamConnection> table;
 
   /**
    * The table that stores all messages' contextspaces in their serialized form plus the timestamp when they've been sent.
    */
-  private Hashtable/*<String><Long>*/ messages = new Hashtable();
+  private Hashtable<String, Long> messages = new Hashtable<String, Long>();
 
 
   /**
    * This table stores all knowledges' contextspaces in their serialized form plus the timestamp when they've been sent.
    */
-  private Hashtable knowledges/*<String><Long>*/ = new Hashtable();
+  private Hashtable<String, Long> knowledges = new Hashtable<String, Long>();
   /**
    * Create a new <code>SimpleKEPStub</code> for the <code>SharkEngine</code> se.
    *
    * @param se The <code>SharkEngine</code> for which a new <code>SimpleKEPStub</code> is instantiated.
    */
 	public SimpleKEPStub(SharkEngine se) {
-		this.listener = new Vector();
+		this.listener = new Vector<KnowledgePort>();
 		this.se = se;
-    this.table = new Hashtable();
+    this.table = new Hashtable<String, StreamConnection>();
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class SimpleKEPStub extends KEPStub {
          * which can cause strange side effects.
          */
         
-        ArrayList<KnowledgePort> kpList = new ArrayList();
+        ArrayList<KnowledgePort> kpList = new ArrayList<KnowledgePort>();
         while(lenum.hasMoreElements()) {
             kpList.add(lenum.nextElement());
         }
@@ -258,7 +258,7 @@ public class SimpleKEPStub extends KEPStub {
   public void removeStreamConnection(StreamConnection con) {
     if(this.table != null) {
       // Check if the connection is in the table at all
-      Enumeration keys = this.table.keys();
+      Enumeration<String> keys = this.table.keys();
       // check each key's value
       while(keys != null && keys.hasMoreElements()) {
         String key = (String) keys.nextElement();
@@ -272,12 +272,12 @@ public class SimpleKEPStub extends KEPStub {
   }
 
     @Override
-  public Enumeration getConnectedAddresses() {
+  public Enumeration<String> getConnectedAddresses() {
     if(this.table != null) {
       return table.keys();
 
     } else {
-      Vector v = new Vector();
+      Vector<String> v = new Vector<String>();
       return v.elements();
     }
   }

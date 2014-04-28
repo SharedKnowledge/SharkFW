@@ -12,6 +12,11 @@ package net.sharkfw.system;
  */
 public class SharkRuntimeException extends RuntimeException{
 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7980033147439148633L;
+
     public SharkRuntimeException(){
         super();
     }

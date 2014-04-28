@@ -1,8 +1,6 @@
 package net.sharkfw.protocols;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Shark's own StreamConnection.

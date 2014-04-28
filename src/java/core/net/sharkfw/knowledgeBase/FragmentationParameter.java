@@ -14,10 +14,16 @@ import java.util.Vector;
  * @author mfi
  */
 public class FragmentationParameter implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7292106520692533611L;
     private boolean superAllowed = false;
     private boolean subAllowed = false;
     private int depth = 0;
+    @SuppressWarnings("rawtypes")
     private Vector allowedPredicates = null;
+    @SuppressWarnings("rawtypes")
     private Vector forbiddenPredicates = null;
 
     private boolean taxonomyInitialized = false;
@@ -69,6 +75,7 @@ public class FragmentationParameter implements Serializable{
      * association types for usage in netlike structures.
      * For AssociatedSTSets only
      */
+    @SuppressWarnings("rawtypes")
     public FragmentationParameter(Vector allowedPredicates, Vector forbiddenPredicates, int depth) {
         this.allowedPredicates = allowedPredicates;
         this.forbiddenPredicates = forbiddenPredicates;
@@ -80,6 +87,7 @@ public class FragmentationParameter implements Serializable{
     /**
      * Most general constructor that offers all customization options
      */
+    @SuppressWarnings("rawtypes")
     public FragmentationParameter(boolean superAllowed, boolean subAllowed, Vector allowedAssocTypes, Vector forbiddenAssocTypes, int depth) {
         this.superAllowed = superAllowed;
         this.subAllowed = subAllowed;
@@ -90,6 +98,7 @@ public class FragmentationParameter implements Serializable{
         this.allInitialized = true;
     }
 
+    @SuppressWarnings("rawtypes")
     private void initTaxonomyBySTSet() {
         // init by stSet
         if(this.allowedPredicates != null) {
@@ -163,6 +172,7 @@ public class FragmentationParameter implements Serializable{
         return this.depth;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void initSNByTaxonomy() {
         if(this.superAllowed) {
             this.allowedPredicates = new Vector();
@@ -185,6 +195,7 @@ public class FragmentationParameter implements Serializable{
      *
      * @return An <code>Enumeration</code> of strings which are allowed to be traversed.
      */
+    @SuppressWarnings("unchecked")
     public Enumeration<String> getAllowedPredicates() {
         if(!this.allInitialized && !this.netInitialized) {
             this.initSNByTaxonomy();
@@ -201,6 +212,7 @@ public class FragmentationParameter implements Serializable{
      *
      * @return An <code>Enumeration</code> of strings which are forbidden to be traversed.
      */
+    @SuppressWarnings("unchecked")
     public Enumeration<String> getForbiddenPredicates() {
         if(!this.allInitialized && !this.netInitialized) {
             this.initSNByTaxonomy();
@@ -225,6 +237,7 @@ public class FragmentationParameter implements Serializable{
      * @param forbiddenAssocTypesEnum The enumeration of forbidden types
      * @return True if it allowed, false otherwise
      */
+    @SuppressWarnings("rawtypes")
     public static boolean typeAllowed(String type, Enumeration allowedAssocTypesEnum, Enumeration forbiddenAssocTypesEnum) {
             boolean allowed = false;
             boolean forbidden = false;
@@ -270,6 +283,7 @@ public class FragmentationParameter implements Serializable{
      * @param forbiddenAssocTypesEnum
      * @return Vector of types which are in type enumeration and allowed
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Vector allowedTypes(Enumeration types, Enumeration allowedAssocTypesEnum, Enumeration forbiddenAssocTypesEnum) {
         Vector result = new Vector();
 

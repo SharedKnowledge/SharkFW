@@ -6,13 +6,17 @@
 package net.sharkfw.kep;
 
 import net.sharkfw.system.SharkException;
-import net.sharkfw.system.*;
 
 /**
  *
  * @author thsc
  */
 public class SharkProtocolNotSupportedException extends SharkException {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2764391712902085343L;
+
     public SharkProtocolNotSupportedException() {
         super();
     }

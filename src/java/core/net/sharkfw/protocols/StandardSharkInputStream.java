@@ -7,7 +7,6 @@ package net.sharkfw.protocols;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.system.Streamer;
 import net.sharkfw.system.Util;
 

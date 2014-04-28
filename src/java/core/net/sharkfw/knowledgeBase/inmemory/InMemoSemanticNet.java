@@ -17,6 +17,7 @@ public class InMemoSemanticNet extends InMemoSTSet implements SemanticNet {
         super();
     }
     
+    @SuppressWarnings("rawtypes")
     public InMemoSemanticNet(InMemoGenericTagStorage storage) {    
         super(storage);
     }

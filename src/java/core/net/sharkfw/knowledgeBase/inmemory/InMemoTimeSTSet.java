@@ -2,7 +2,6 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.system.L;
 
 /**
  * In-Memory implementation of a TimeSTSet featuring the internal interfaces and
@@ -19,6 +18,7 @@ public class InMemoTimeSTSet extends InMemoSTSet implements TimeSTSet {
         super(new InMemoGenericTagStorage<TimeSemanticTag>());
     }
     
+    @SuppressWarnings("rawtypes")
     public InMemoTimeSTSet(InMemoGenericTagStorage storage) {
         super(storage);
     }
@@ -89,6 +89,7 @@ public class InMemoTimeSTSet extends InMemoSTSet implements TimeSTSet {
      * @return the resulting tst i both tags overlap. Null is returned only
      * if both concepts don't overlap. 
      */
+    @SuppressWarnings("unused")
     private TimeSemanticTag merge(TimeSemanticTag a, TimeSemanticTag b) throws SharkKBException {
         // check if two identical tags are to be merged - makes no sense
         if(a == b) return null;
@@ -291,6 +292,7 @@ public class InMemoTimeSTSet extends InMemoSTSet implements TimeSTSet {
         return this.castTST(super.getSemanticTag(si));
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Enumeration<TimeSemanticTag> timeTags() throws SharkKBException {
         Enumeration tags = super.tags();

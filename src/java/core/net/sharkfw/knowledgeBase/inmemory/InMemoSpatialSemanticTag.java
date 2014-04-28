@@ -12,6 +12,7 @@ import net.sharkfw.knowledgeBase.geom.inmemory.InMemoGeometry;
  *
  * @author thsc
  */
+@SuppressWarnings("unchecked")
 public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implements SpatialSNSemanticTag {
     private Geometry geom;
     public static final String STD_SST_NAME = "SpatialSemanticTag";
@@ -32,6 +33,7 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
                 geom);
     }
     
+    @SuppressWarnings("rawtypes")
     public InMemoSpatialSemanticTag(SystemPropertyHolder ph, InMemoGenericTagStorage storage) {
         super(ph, storage);
     }
@@ -105,6 +107,7 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
 //        this.setRadius(0);
     }
 
+    @SuppressWarnings("rawtypes")
     public InMemoSpatialSemanticTag(String name, String[] si, Vector/*<Double[]>*/ points) throws SharkKBException {
         this(name, si);
         

@@ -12,6 +12,7 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
  * @author thsc
  * @author mfi
  */
+@SuppressWarnings("unchecked")
 public class InMemoTimeSemanticTag extends InMemo_SN_TX_SemanticTag 
                         implements TimeSemanticTag {
     
@@ -46,6 +47,7 @@ public class InMemoTimeSemanticTag extends InMemo_SN_TX_SemanticTag
         this(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
     }
     
+    @SuppressWarnings("rawtypes")
     public InMemoTimeSemanticTag(SystemPropertyHolder ph, InMemoGenericTagStorage storage) {
         super(ph, storage);
     }

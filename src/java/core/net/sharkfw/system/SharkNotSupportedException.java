@@ -10,6 +10,11 @@ package net.sharkfw.system;
  * @author thsc
  */
 public class SharkNotSupportedException extends SharkException {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5593151700965690611L;
+
     public SharkNotSupportedException() {
         super();
     }

@@ -1,6 +1,5 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import java.util.Vector;
 import net.sharkfw.knowledgeBase.AbstractSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
@@ -13,16 +12,19 @@ import net.sharkfw.system.Util;
  * 
  * @author thsc
  */
+@SuppressWarnings("unchecked")
 public class InMemoSemanticTag extends AbstractSemanticTag {
 
     private String name;
     private String[] si;
+    @SuppressWarnings("rawtypes")
     private InMemoGenericTagStorage storage;
 
     InMemoSemanticTag(String name, String[] si) {
         this(name, si, null);
     }
 
+    @SuppressWarnings("rawtypes")
     InMemoSemanticTag(String name, String[] si, InMemoGenericTagStorage storage) {
         super();
         this.name = name;
@@ -149,10 +151,12 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
         this.persist();
     }
     
+    @SuppressWarnings("rawtypes")
     void setStorage(InMemoGenericTagStorage storage) {
         this.storage = storage;
     }
 
+    @SuppressWarnings("rawtypes")
     public InMemoGenericTagStorage getStorage() {
         return this.storage;
     }
