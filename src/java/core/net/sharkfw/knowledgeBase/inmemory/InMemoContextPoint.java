@@ -162,10 +162,10 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
     public Iterator<Information> getInformation(String name) {
         ArrayList<Information> infoList = new ArrayList<Information>();
         
-        Iterator<Information> infoEnum = this.getInformation();
+        Enumeration<Information> infoEnum = enumInformation();
         if(infoEnum != null) {
-            while(infoEnum.hasNext()) {
-                Information info = infoEnum.next();
+            while(infoEnum.hasMoreElements()) {
+                Information info = infoEnum.nextElement();
                 String infoName = info.getName();
                 
                 if( (name == null && infoName == null)
