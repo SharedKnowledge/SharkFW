@@ -43,8 +43,4 @@ public class DummyKPListener implements KPListener {
         this.lastSentInterest = null;
         this.lastSentKnowledge = null;
     }
-
-	@Override
-	public void receivedKnowledge(Knowledge k) {		
-	}
 }

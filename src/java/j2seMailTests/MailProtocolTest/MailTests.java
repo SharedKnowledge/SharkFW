@@ -268,9 +268,4 @@ public class MailTests implements KPListener {
             Assert.assertEquals(c2[i], 4);
         }
      }
-
-    @Override
-    public void receivedKnowledge(Knowledge k) {
-        //
-    }
 }

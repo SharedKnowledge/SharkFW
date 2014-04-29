@@ -39,12 +39,4 @@ public interface KPListener {
    * @param newCP The ContextPoint assimilated.
    */
   public void knowledgeAssimilated(KnowledgePort kp, ContextPoint newCP);
-  
-  /**
-   * Notify the listener of received knowledge.
-   * <em>Note:</em> This method may be called subsequently, if more than on <code>ContextPoint</code> is assimilated.
-   *
-   * @param k The knowledge that was just received
-   */
-  public void receivedKnowledge(Knowledge k);
 }
