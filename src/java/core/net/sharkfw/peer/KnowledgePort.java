@@ -349,12 +349,12 @@ abstract public class KnowledgePort {
      * @param k The knowledge that was received.
      */
     protected void notifyKnowledgeReceived(Knowledge k) {
-        Enumeration listenerEnum = this.listeners.elements();
-
-        while (listenerEnum.hasMoreElements()) {
-            KPListener kpl = (KPListener) listenerEnum.nextElement();
-            kpl.receivedKnowledge(k);
-        }
+//        Enumeration listenerEnum = this.listeners.elements();
+//
+//        while (listenerEnum.hasMoreElements()) {
+//            KPListener kpl = (KPListener) listenerEnum.nextElement();
+//            kpl.receivedKnowledge(k);
+//        }
     }
 
     /**
