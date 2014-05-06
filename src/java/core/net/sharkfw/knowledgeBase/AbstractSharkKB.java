@@ -680,8 +680,50 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         // if references are the same they are identical
         if(cc1 == cc2) return true;
         
+        if ((cc1 == null) || (cc2 == null)) {	// one of them is null, we can't compare 
+        	return false;
+        }
+
         // direction
-        if(cc1 != null && cc2 != null && cc1.getDirection() == cc2.getDirection()) {
+        // Bugfix to avoid recreation/duplicate profiles, it was triggered by OpenCV() or anything similar which led to exact direction match failed
+        switch (cc1.getDirection()) {
+        	case SharkCS.DIRECTION_OUT:
+                switch (cc2.getDirection()) {
+                	case SharkCS.DIRECTION_IN:      /* OUT/IN, incompatible */		
+                		return false;
+                		
+                	case SharkCS.DIRECTION_INOUT:   /* OUT/INOUT */		
+                		L.w("relax direction match");
+                		// fall thru
+                	default:						/* OUT/OUT is OK */ 							
+                		break;     		
+                }
+        		break;
+        		
+        	case SharkCS.DIRECTION_IN:
+                switch (cc2.getDirection()) {
+            		case SharkCS.DIRECTION_OUT:     /* IN/OUT, incompatible */			
+            			return false;	
+            		case SharkCS.DIRECTION_INOUT:   /* IN/INOUT */		
+                		L.w("relax direction match");
+                		// fall thru
+            		default:						/* IN/IN  is OK */ 			
+            			break;    		
+                }
+        		break;
+        		
+        	case SharkCS.DIRECTION_INOUT:				
+                switch (cc2.getDirection()) {
+            		case SharkCS.DIRECTION_OUT:     /* INOUT/OUT */
+            		case SharkCS.DIRECTION_IN:     	/* INOUT/IN */
+            			L.w("relax direction match");
+            			// fall thru
+              		case SharkCS.DIRECTION_INOUT:   /* INOUT/INOUT is OK */				
+            			break;    		
+                }
+        		break;       		
+        }
+
             
             // originator
             if(AbstractSharkKB.exactMatch(cc1.getOriginator(),cc2.getOriginator())) {
@@ -707,7 +749,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
                     }
                 }
             }
-        } 
         
         return false;
     }
