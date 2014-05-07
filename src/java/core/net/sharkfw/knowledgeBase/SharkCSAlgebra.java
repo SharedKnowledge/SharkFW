@@ -6,8 +6,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -25,6 +23,9 @@ public abstract class SharkCSAlgebra {
      * Determine whether or not <code>tagA</code> and <code>tagB</code> are
      * semantically identical. Is is checked by their subject identifier. At least 
      * one much make both identically.
+     * @param tagA
+     * @param tagB
+     * @return 
      */
     public static boolean identical(SemanticTag tagA, SemanticTag tagB) { 
         // same object ?
