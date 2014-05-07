@@ -1,8 +1,5 @@
 package revisionTests;
 
-import ApiRev1.ExchangeTests;
-import ApiRev1.FSSharkKBTest;
-import ApiRev1.StreamTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -15,9 +12,10 @@ import org.junit.runners.Suite;
     ApiRev1.SimpleKBTest.class, 
     ApiRev1.SerializationTest.class, 
     ApiRev1.Assimilate_ExtractionTests.class, 
-    FSSharkKBTest.class,
-    ExchangeTests.class,
-    StreamTests.class
+    ApiRev1.FSSharkKBTest.class,
+    ApiRev1.ExchangeTests.class,
+    ApiRev1.StreamTests.class,
+    ApiRev1.DifferentAddresses.class
 })
 public class Version2 {
     
