@@ -29,7 +29,7 @@ import org.junit.Test;
  */
 public class FSSharkKBTest {
     
-    private static final String FOLDER = "/Temp/sharkkb";
+    private static final String FOLDER = "Temp/sharkkb";
     private static final String ALICE_SIS = "http://www.sharksystem.net/alice.html";
     private static final String ALICE_ADDR = "mail://alice@sharksystem.net";
 
