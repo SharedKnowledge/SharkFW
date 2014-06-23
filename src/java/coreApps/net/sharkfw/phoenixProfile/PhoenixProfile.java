@@ -12,5 +12,5 @@ package net.sharkfw.phoenixProfile;
  */
 public interface PhoenixProfile {
     
-    
+    public String getBusinessCard();
 }
