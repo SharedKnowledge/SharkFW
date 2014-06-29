@@ -14,6 +14,7 @@ import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.peer.SharkEngine;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -51,12 +52,13 @@ public class BasicGPKPTest {
     //
     @Test
     public void createProfile() throws SharkKBException {
-        GenericProfile profile = new GenericProfileImpl();
-        
         SharkKB kb = new InMemoSharkKB();
+        GenericProfile profile = new GenericProfileImpl(kb);
+        
+        
 
-        //ContextCoordinates interest = kb.createContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
-        SharkCS interest = null;
+        ContextCoordinates interest = kb.createContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
+        //SharkCS interest = null;
         profile.addInterest(interest);
         profile.removeInterest(interest);
 

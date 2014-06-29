@@ -5,6 +5,8 @@
 package net.sharkfw.genericProfile;
 
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.ContextCoordinates;
+import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
@@ -26,13 +28,14 @@ public interface GenericProfile {
      * @param interest  the interest that shall be added
      * @throws SharkKBException 
      */
-    public void addInterest(SharkCS interest) throws SharkKBException;
+    public void addInterest(ContextCoordinates interest) throws SharkKBException;
     /**
      * Deletes an interest of the profile.
      * @param interest the interest that shall be deleted
      * @throws SharkKBException 
      */
-    public void removeInterest(SharkCS interest) throws SharkKBException;
+    public void removeInterest(ContextCoordinates interest) throws SharkKBException;
+    public ContextPoint getInterest(ContextCoordinates interest) throws SharkKBException;
     /**
      * Adds simple information of the profile.
      * @param key   assures the access to the information
