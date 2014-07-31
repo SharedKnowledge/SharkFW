@@ -194,6 +194,7 @@ public interface SharkPublicKeyStorage {
      * @param maxLevel 
      */
     public void setMaxCertSharingLevel(int maxLevel);
+
     public int getCertSharingLevel();
     
     /**

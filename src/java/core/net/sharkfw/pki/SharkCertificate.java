@@ -56,7 +56,6 @@ public interface SharkCertificate {
      * @return The trust level as int value
      * @throws SharkKBException 
      */
-    
     public int trustLevel() throws SharkKBException;
     
     /**
