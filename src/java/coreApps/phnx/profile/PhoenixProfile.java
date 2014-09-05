@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package net.sharkfw.phoenixProfile;
+package phnx.profile;
 
 /**
  *
