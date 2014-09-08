@@ -4,24 +4,20 @@
  */
 package PKI;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.pki.SharkCertificate;
 import net.sharkfw.pki.SharkKeyStorage;
-import net.sharkfw.system.SharkPKVerifiyException;
 import org.junit.*;
 import sun.security.provider.DSAPublicKey;
 
 /**
  *
- * @author s0539748
+ * @author Sascha Saunus (Matr.Nr.: 540070), Daniel Rockenstein (Matr.Nr.: 539748)
+ *
  */
 public class TestSharkKeyStorage {
     

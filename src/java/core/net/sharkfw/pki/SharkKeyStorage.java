@@ -11,7 +11,7 @@ import java.security.PublicKey;
 
 /**
  *
- * @author Sascha Saunus, Daniel Rockenstein
+ * @author Sascha Saunus (Matr.Nr.: 540070), Daniel Rockenstein (Matr.Nr.: 539748)
  */
 public interface SharkKeyStorage {
 
