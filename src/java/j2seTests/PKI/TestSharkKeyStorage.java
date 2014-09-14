@@ -6,6 +6,8 @@ package PKI;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Iterator;
+
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -52,17 +54,27 @@ public class TestSharkKeyStorage {
             }
 
             @Override
-            public void addKey(PublicKey key, PeerSemanticTag peer) {
+            public void addPublicKey(PublicKey key, PeerSemanticTag peer) {
 
             }
 
             @Override
-            public void addKey(PublicKey key, PeerSemanticTag peer, long validity) {
+            public void signKey(PublicKey key, PeerSemanticTag certifiedPeer) {
 
             }
 
             @Override
-            public SharkCertificate getCertificate(PeerSemanticTag peer) {
+            public void signKey(PublicKey key, PeerSemanticTag certifiedPeer, long validity) {
+
+            }
+
+            @Override
+            public SharkCertificate getCertificate(PeerSemanticTag certifiedPeer) {
+                return null;
+            }
+
+            @Override
+            public Iterator<SharkCertificate> getCertificates(PeerSemanticTag certifyingPeer) {
                 return null;
             }
 
@@ -88,11 +100,6 @@ public class TestSharkKeyStorage {
 
             @Override
             public void signCertificate(PeerSemanticTag certifiedPeer, PeerSemanticTag signingPeer) {
-
-            }
-
-            @Override
-            public void removeSignature(PeerSemanticTag certifiedPeer, PeerSemanticTag signingPeer) {
 
             }
 
@@ -127,23 +134,20 @@ public class TestSharkKeyStorage {
         PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
         
         PublicKey key1 = new DSAPublicKey();
-        _keyStore.addKey(key1,bob);
+        _keyStore.addPublicKey(key1,bob);
         
         Assert.assertEquals(key1,_keyStore.getPublicKey(bob));
         
         PublicKey key2 = new DSAPublicKey();
-        _keyStore.addKey(key2,bob);
+        _keyStore.addPublicKey(key2,bob);
         
         Assert.assertEquals(key2,_keyStore.getPublicKey(bob));
-        Assert.assertTrue(_keyStore.getCertificate(bob).isSignedBy(alice));
         Assert.assertNotSame(key1, key2);
     }
     
 
     @Test
     void testAddAndSignCertificate() throws SharkKBException {
-
-
 
         SharkCertificate bobsCertificate = null;
 
@@ -154,29 +158,14 @@ public class TestSharkKeyStorage {
         Assert.assertTrue(_keyStore.getCertificate(bobsCertificate.getCertifiedPeer()).isSignedBy(alice));
     }
 
-    @Test
-    void testRemoveSignature(){
-        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
-
-        PublicKey key1 = new DSAPublicKey();
-        _keyStore.addKey(key1, bob);
-        _keyStore.signCertificate(bob,alice);
-
-        Assert.assertTrue(_keyStore.getCertificate(bob).isSignedBy(alice));
-
-        _keyStore.removeSignature(bob, alice);
-
-        Assert.assertFalse(_keyStore.getCertificate(bob).isSignedBy(alice));
-
-
-    }
 
     @Test
     void testRemoveCertificate(){
         PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
 
         PublicKey key1 = new DSAPublicKey();
-        _keyStore.addKey(key1, bob);
+        _keyStore.addPublicKey(key1, bob);
+        _keyStore.signKey(key1,bob);
 
         Assert.assertTrue(_keyStore.hasCertificate(bob));
 
