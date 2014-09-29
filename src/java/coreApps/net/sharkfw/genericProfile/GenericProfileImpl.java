@@ -151,7 +151,7 @@ public class GenericProfileImpl implements GenericProfile {
     }
 
     /**
-     * Sets an expose status to true for a piece of information of the generic
+     * Sets the expose status to true for a piece of information of the generic
      * profile. The Peers are now being allowed to receive this piece of
      * information .
      *
@@ -199,6 +199,17 @@ public class GenericProfileImpl implements GenericProfile {
         }
     }
 
+     /**
+     * Sets the expose status to false for a piece of information of the generic
+     * profile. The Peers are not allowed to receive this piece of
+     * information anymore.
+     *
+     * @param key defines which piece of information expose status shall be
+     * changed to ohter peers
+     * @param peers defines which other peers' expose status of the selected
+     * pieces of information shall be changed.
+     * @throws SharkKBException
+     */
     @Override
     public void setExposeStatusFalse(String key) throws SharkKBException {
         if (profileCP.getProperty(key) != null) {

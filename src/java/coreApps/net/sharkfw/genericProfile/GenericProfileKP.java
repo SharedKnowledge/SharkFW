@@ -8,7 +8,7 @@ import net.sharkfw.peer.StandardKP;
 
 /**
  *
- * @author s0540042
+ * @author s0540042 s0539752
  */
 public class GenericProfileKP extends StandardKP {
 

@@ -59,17 +59,23 @@ public interface GenericProfile {
     public void removeInformation(String key) throws SharkKBException;
     
     /**
-     * Allows the peers to receive a piece of information which determined by the key.
+     * Allows the peers to receive a piece of information which is determined by the key.
      * @param key  determines which information expose status shall be changed
      * @param peers determines which peers expose status of the different pieces of information shall be changed
      * @throws SharkKBException 
      */
     public void setExposeStatusTrue(String key,  Iterator<PeerSemanticTag> peers) throws SharkKBException;
     
+    
+   /**
+     * Disallows the peers to receive a piece of information which is determined by the key.
+     * @param key  determines which information expose status shall be changed
+     * @param peers determines which peers expose status of the different pieces of information shall be changed
+     * @throws SharkKBException 
+     */
     public void setExposeStatusFalse(String key) throws SharkKBException;
     
     
-
     //public void setExposeStatusFalse(String key, Iterator<PeerSemanticTag> peers ) throws SharkKBException;
     
     /**
