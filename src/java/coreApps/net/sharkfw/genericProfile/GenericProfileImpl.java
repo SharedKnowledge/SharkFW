@@ -104,8 +104,13 @@ public class GenericProfileImpl implements GenericProfile {
      */
     @Override
     public void addInformation(String key, byte[] daten) throws SharkKBException {
-        if (key != null && daten != null && (profileCP.getInformation(key) == null)) {
-            profileCP.addInformation(daten);
+        if ((key != null) && (daten != null) /*&& (profileCP.getInformation(key) == null)*/) {
+            try {
+                profileCP.addInformation(daten);
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
+
         }
     }
 
@@ -118,11 +123,17 @@ public class GenericProfileImpl implements GenericProfile {
      */
     @Override
     public Iterator<Information> getInformation(String key) throws SharkKBException {
-        if (key != null && (profileCP.getInformation(key) != null)) {
-            Iterator<Information> i = profileCP.getInformation(key);
-            return i;
+        Iterator<Information> i = null;
+        if (key != null) {
+            try {
+                profileCP.getInformation(key);
+                i = profileCP.getInformation(key);
+                return i;
+            } catch (NullPointerException npe) {
+                return i;
+            }
         } else {
-            return null;
+            return i;
         }
     }
 
@@ -154,16 +165,18 @@ public class GenericProfileImpl implements GenericProfile {
     public void setExposeStatusTrue(String key, Iterator<PeerSemanticTag> peers) throws SharkKBException {
         String[] si;
         String selectedPeers = "";
-        while (peers.hasNext()) {
-            si = peers.next().getSI();
-            selectedPeers += si[0];
-            selectedPeers += ",";
-        }
-        if (profileCP.getProperty(key) == null) {
-            profileCP.setProperty(key, selectedPeers);
+        if (peers != null) {
+            while (peers.hasNext()) {
+                si = peers.next().getSI();
+                selectedPeers += si[0];
+                selectedPeers += ",";
+            }
+            if (profileCP.getProperty(key) == null) {
+                profileCP.setProperty(key, selectedPeers);
 
-        } else {
-            throw new SharkKBException();
+            } else {
+                throw new SharkKBException();
+            }
         }
     }
 
