@@ -7,6 +7,7 @@ package net.sharkfw.genericProfile;
 import java.util.Iterator;
 import net.sharkfw.genericProfile.GenericProfile;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -54,30 +55,22 @@ public class BasicGPKPTest {
     public void createProfile() throws SharkKBException {
         SharkKB kb = new InMemoSharkKB();
         GenericProfile profile = new GenericProfileImpl(kb);
-        
-        
-
         ContextCoordinates interest = kb.createContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
-        //SharkCS interest = null;
         profile.addInterest(interest);
         profile.removeInterest(interest);
-
+        byte input[] = null;
         String key = "testKey";
-        byte[] daten = null;
-        profile.addInformation(key, daten);
+        Iterator<Information> daten = null;
+        profile.addInformation(key, input);
         daten = profile.getInformation(key);
         profile.removeInformation(key);
-
-        int ExposeStatus = 0;
         Iterator<PeerSemanticTag> peers = null;
-        String[] keys = null;
-        profile.setExposeStatus(keys, ExposeStatus, peers);
-
+        profile.setExposeStatusTrue(key, peers);
     }
-    
+
     @Test
     public void GPKPTests() throws SharkKBException {
-        
+
     }
-    
+
 }
