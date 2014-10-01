@@ -15,6 +15,7 @@ import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.peer.SharkEngine;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -70,7 +71,17 @@ public class BasicGPKPTest {
 
     @Test
     public void GPKPTests() throws SharkKBException {
-
+        SharkEngine aliceSE;
+        aliceSE = new J2SEAndroidSharkEngine();
+        SharkKB kb = new InMemoSharkKB();
+        ContextCoordinates interest = kb.createContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
+        GenericProfileImpl levioza = new GenericProfileImpl(kb);
+        SharkEngine se;
+        
+        GenericProfileKP testKP = new GenericProfileKP(aliceSE, interest, kb);
+        assertNotNull(testKP.getInterest());
+        
+        
     }
 
 }
