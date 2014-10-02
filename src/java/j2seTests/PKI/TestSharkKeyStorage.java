@@ -33,6 +33,7 @@ public class TestSharkKeyStorage {
         alice = InMemoSharkKB.createInMemoPeerSemanticTag("Alice","alice","alice");
         _keyStore = new SharkKeyStorage() {
 
+
             @Override
             public void createKeyPair() {
 
@@ -59,23 +60,23 @@ public class TestSharkKeyStorage {
             }
 
             @Override
-            public void signKey(PublicKey key, PeerSemanticTag certifiedPeer) {
+            public void deletePublicKey(PeerSemanticTag peer) {
 
             }
 
             @Override
-            public void signKey(PublicKey key, PeerSemanticTag certifiedPeer, long validity) {
-
-            }
-
-            @Override
-            public SharkCertificate getCertificate(PeerSemanticTag certifiedPeer) {
+            public PublicKey getPublicKey(PeerSemanticTag peer) {
                 return null;
             }
 
             @Override
-            public Iterator<SharkCertificate> getCertificates(PeerSemanticTag certifyingPeer) {
-                return null;
+            public void signPublicKey(PeerSemanticTag certifiedPeer, PublicKey key) {
+
+            }
+
+            @Override
+            public void signPublicKey(PeerSemanticTag certifiedPeer, long validity) {
+
             }
 
             @Override
@@ -84,28 +85,83 @@ public class TestSharkKeyStorage {
             }
 
             @Override
-            public PublicKey getPublicKey(PeerSemanticTag certifiedPeer) {
+            public Iterator<SharkCertificate> getCertificates() {
                 return null;
             }
 
             @Override
-            public boolean hasCertificate(PeerSemanticTag peer) {
+            public Iterator<SharkCertificate> getCertificatesBy(PeerSemanticTag certifyingPeer) {
+                return null;
+            }
+
+            @Override
+            public Iterator<SharkCertificate> getCertificates(PeerSemanticTag certifiedPeer) {
+                return null;
+            }
+
+            @Override
+            public SharkCertificate getCertificate(PeerSemanticTag certifiedPeer, PeerSemanticTag certifyingPeer) {
+                return null;
+            }
+
+            @Override
+            public SharkCertificate getBestVerifiedCertificate(PeerSemanticTag certifiedPeer) {
+                return null;
+            }
+
+            @Override
+            public SharkCertificate getBestVerifiedCertificate(PeerSemanticTag certifiedPeer, int maxTrustLevel) {
+                return null;
+            }
+
+            @Override
+            public Iterator<SharkCertificate> getVerifiedCertificates(PeerSemanticTag certifiedPeer) {
+                return null;
+            }
+
+            @Override
+            public Iterator<SharkCertificate> getVerifiedCertificates(PeerSemanticTag certifiedPeer, int maxTrustLevel) {
+                return null;
+            }
+
+            @Override
+            public boolean hasCertificate(PeerSemanticTag certifiedPeer) {
                 return false;
             }
 
             @Override
-            public void removeCertificate(PeerSemanticTag peer) {
+            public void removeCertificate(PeerSemanticTag certifiedPeer) {
 
             }
 
             @Override
-            public void signCertificate(PeerSemanticTag certifiedPeer, PeerSemanticTag signingPeer) {
-
-            }
-
-            @Override
-            public int getTrustLevel(PeerSemanticTag certifiedPeer) {
+            public int getTrustLevel(SharkCertificate certificate) {
                 return 0;
+            }
+
+            @Override
+            public boolean verify(SharkCertificate certificate) {
+                return false;
+            }
+
+            @Override
+            public boolean verify(SharkCertificate certificate, int maxTrustLevel) {
+                return false;
+            }
+
+            @Override
+            public int getDefaultTrustLevel() {
+                return 0;
+            }
+
+            @Override
+            public void setDefaultTrustLevel(int level) {
+
+            }
+
+            @Override
+            public void removeInvalidCertificates() {
+
             }
         };
     }
@@ -144,20 +200,109 @@ public class TestSharkKeyStorage {
         Assert.assertEquals(key2,_keyStore.getPublicKey(bob));
         Assert.assertNotSame(key1, key2);
     }
-    
 
     @Test
-    void testAddAndSignCertificate() throws SharkKBException {
+    void testDeleteKey() {
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1, bob);
+
+        _keyStore.deletePublicKey(bob);
+        Assert.assertNull(_keyStore.getPublicKey(bob));
+
+    }
+
+    @Test
+    void testAddCertificate() throws SharkKBException {
 
         SharkCertificate bobsCertificate = null;
 
         _keyStore.addCertificate(bobsCertificate);
-        _keyStore.signCertificate(bobsCertificate.getCertifiedPeer(),alice);
 
-        Assert.assertEquals(bobsCertificate.getPublicKey(), _keyStore.getPublicKey(bobsCertificate.getCertifiedPeer()));
-        Assert.assertTrue(_keyStore.getCertificate(bobsCertificate.getCertifiedPeer()).isSignedBy(alice));
+        Iterator<SharkCertificate> certs = _keyStore.getCertificates();
+
+        Assert.assertTrue(certs.hasNext());
     }
 
+    @Test
+    void testSignKeyAndGetCertificates() {
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1,bob);
+
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
+
+        Iterator<SharkCertificate> certs = _keyStore.getCertificates();
+
+        Assert.assertTrue(certs.hasNext());
+    }
+
+    @Test
+    void testGetCertificate() {
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1,bob);
+
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
+
+        Assert.assertNotNull(_keyStore.getCertificate(bob, alice));
+    }
+
+    @Test
+    void testGetCertificates(){
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1,bob);
+
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
+
+        Iterator<SharkCertificate> certs = _keyStore.getCertificates(bob);
+
+        Assert.assertTrue(certs.hasNext());
+    }
+
+    @Test
+    void testGetCertificatesBy(){
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1,bob);
+
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
+
+        Iterator<SharkCertificate> certs = _keyStore.getCertificatesBy(alice);
+
+        Assert.assertTrue(certs.hasNext());
+    }
+
+    @Test
+    void testGetBestVerifiedCertificate() throws SharkKBException {
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1,bob);
+
+        _keyStore.signPublicKey(bob,_keyStore.getPublicKey(bob));
+
+        Assert.assertEquals(key1, _keyStore.getBestVerifiedCertificate(bob, 0).getPublicKey());
+    }
+
+    @Test
+    void testGetVerifiedCertificates() {
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1,bob);
+
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
+
+        Iterator<SharkCertificate> certs = _keyStore.getVerifiedCertificates(bob, 0);
+        Assert.assertTrue(certs.hasNext());
+    }
 
     @Test
     void testRemoveCertificate(){
@@ -165,7 +310,7 @@ public class TestSharkKeyStorage {
 
         PublicKey key1 = new DSAPublicKey();
         _keyStore.addPublicKey(key1, bob);
-        _keyStore.signKey(key1,bob);
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
 
         Assert.assertTrue(_keyStore.hasCertificate(bob));
 
@@ -174,15 +319,34 @@ public class TestSharkKeyStorage {
         Assert.assertFalse(_keyStore.hasCertificate(bob));
     }
 
-    /*
-    private byte[] getSignature(PrivateKey key) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature =Signature.getInstance("SHA1withDSA");
-        signature.initSign(key);
-        return signature.sign();
-    }*/
-    
+    @Test
+    void testDefaultTrustLevel() {
+        _keyStore.setDefaultTrustLevel(1);
 
-    
+        Assert.assertEquals(_keyStore.getDefaultTrustLevel(),1);
 
+    }
+
+    @Test
+    void testGetTrustLevel() {
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1, bob);
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
+
+        Assert.assertEquals(_keyStore.getTrustLevel(_keyStore.getCertificate(bob,alice)),0);
+    }
+
+    @Test
+    void testVerify(){
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("Bob","bob","bob");
+
+        PublicKey key1 = new DSAPublicKey();
+        _keyStore.addPublicKey(key1, bob);
+        _keyStore.signPublicKey(bob, _keyStore.getPublicKey(bob));
+
+        Assert.assertTrue(_keyStore.verify(_keyStore.getCertificate(bob,alice),0));
+    }
     
 }
