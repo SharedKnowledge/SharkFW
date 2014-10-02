@@ -1,5 +1,6 @@
 package net.sharkfw.genericProfile;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -64,7 +65,7 @@ public interface GenericProfile {
      * @param peers determines which peers expose status of the different pieces of information shall be changed
      * @throws SharkKBException 
      */
-    public void setExposeStatusTrue(String key,  Iterator<PeerSemanticTag> peers) throws SharkKBException;
+    public void setExposeStatusTrue(String key,  ArrayList<PeerSemanticTag> peers) throws SharkKBException;
     
     
    /**

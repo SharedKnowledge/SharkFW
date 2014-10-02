@@ -1,20 +1,12 @@
 package net.sharkfw.genericProfile;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
-import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SharkVocabulary;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.peer.StandardKP;
-import net.sharkfw.system.L;
 
 /**
  *
@@ -22,30 +14,35 @@ import net.sharkfw.system.L;
  */
 public class GenericProfileKP extends StandardKP {
 
-    public GenericProfileKP(SharkEngine se, SharkCS interest, SharkKB kb) {
+    GenericProfileImpl profile;
+
+    public GenericProfileKP(SharkEngine se, SharkCS interest, SharkKB kb, GenericProfileImpl profile) {
         super(se, interest, kb);
+        if (profile != null) {
+            this.profile = profile;
+        }
 
     }
 
-    protected void doInsert(GenericProfileImpl profile, KEPConnection response) {
+    protected void doInsert(String key, byte[] daten, KEPConnection response) {
 
+        try {
+            profile.addInformation(key, daten);
+        } catch (SharkKBException ex) {
+
+        }
     }
 
-    protected void doInsert(ContextCoordinates interest, KEPConnection response) {
+    protected void doExpose(ContextCoordinates interest, KEPConnection response) {
+        try {
+            profile.addInterest(interest);
+        } catch (SharkKBException ex) {
 
+        }
     }
-
-    protected void doInsert(byte[] daten, KEPConnection response) {
-
-    }
-
-    protected void doExpose(GenericProfileImpl profile, KEPConnection response) {
-    }
-
-    protected void doExpose(ContextCoordinates interes, KEPConnection response) {
-    }
-
-    protected void doExpose(byte[] date, KEPConnection response) {
+    
+    public GenericProfileImpl getGenericProfile() {
+        return profile;
     }
 
 }

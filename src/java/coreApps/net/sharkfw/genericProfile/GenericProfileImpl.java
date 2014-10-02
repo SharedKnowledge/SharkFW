@@ -1,5 +1,6 @@
 package net.sharkfw.genericProfile;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -36,6 +37,8 @@ public class GenericProfileImpl implements GenericProfile {
      * Generic Information is stored underneath a ContextPoint, the profileCP
      */
     private ContextPoint profileCP;
+    
+    
 
     //protected final SharkEngine se;
     /**
@@ -45,11 +48,13 @@ public class GenericProfileImpl implements GenericProfile {
 
     /**
      * Generates a generic profile
+     * @param kb
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
     public GenericProfileImpl(SharkKB kb) throws SharkKBException {
 
         this.kb = kb;
-
+       profileCP = kb.createContextPoint(null);
     }
 
     /**
@@ -61,7 +66,7 @@ public class GenericProfileImpl implements GenericProfile {
     @Override
     public void addInterest(ContextCoordinates interest) throws SharkKBException {
         if (interest != null) {
-            kb.createInterest(interest);
+            kb.createContextPoint(interest);
         }
     }
 
@@ -86,8 +91,10 @@ public class GenericProfileImpl implements GenericProfile {
      * @return the requested interest or null
      * @throws SharkKBException
      */
+    @Override
     public ContextPoint getInterest(ContextCoordinates interest) throws SharkKBException {
         if (interest != null) {
+            
             return kb.getContextPoint(interest);
         } else {
             return null;
@@ -162,12 +169,12 @@ public class GenericProfileImpl implements GenericProfile {
      * @throws SharkKBException
      */
     @Override
-    public void setExposeStatusTrue(String key, Iterator<PeerSemanticTag> peers) throws SharkKBException {
+    public void setExposeStatusTrue(String key, ArrayList<PeerSemanticTag> peers) throws SharkKBException {
         String[] si;
         String selectedPeers = "";
         if (peers != null) {
-            while (peers.hasNext()) {
-                si = peers.next().getSI();
+            for(int i = 0; i < peers.size(); i++) {
+                si = peers.get(i).getSI();
                 selectedPeers += si[0];
                 selectedPeers += ",";
             }
