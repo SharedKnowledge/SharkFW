@@ -524,177 +524,186 @@ public class SyncKB implements SharkKB {
 ////        throw new SharkKBException("topic dimension isn't a taxonomy");
     @Override
     public void setOwner(PeerSemanticTag owner) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.setOwner(owner);
     }
 
     @Override
+    // TODO: Implement
     public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotepeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Knowledge createKnowledge() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createKnowledge();
     }
 
     @Override
     public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.removeContextPoint(coordinates);
     }
 
     @Override
+    // TODO: Implement
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
         return _localKB.getAllContextPoints();
     }
 
     @Override
     public void addListener(KnowledgeBaseListener kbl) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.addListener(kbl);
     }
 
     @Override
     public void removeListener(KnowledgeBaseListener kbl) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.removeListener(kbl);
     }
 
     @Override
     public void setStandardFPSet(FragmentationParameter[] fps) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.setStandardFPSet(fps);
     }
 
     @Override
     public FragmentationParameter[] getStandardFPSet() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getStandardFPSet();
     }
 
     @Override
     public Interest createInterest() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createInterest();
     }
 
     @Override
     public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createInterest(cc);
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createSemanticTag(name, sis);
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createSemanticTag(name, si);
     }
 
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createPeerSemanticTag(name, sis, addresses);
     }
 
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createPeerSemanticTag(name, si, address);
     }
 
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createPeerSemanticTag(name, sis, address);
     }
 
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createPeerSemanticTag(name, sis, addresses);
     }
 
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createSpatialSemanticTag(name, sis);
     }
 
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Geometry geom) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createSpatialSemanticTag(name, sis, geom);
     }
 
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Double[] spatialCoo, double radius) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createSpatialSemanticTag(name, sis, spatialCoo, radius);
     }
 
     @Override
     public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createTimeSemanticTag(name, sis);
     }
 
     @Override
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.createTimeSemanticTag(from, duration);
     }
 
     @Override
     public void removeSemanticTag(String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.removeeTimeSemanticTag(sis);
     }
 
     @Override
+    // TODO: Implement
     public void persist() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public PeerSemanticTag getOwner() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getOwner(sis);
     }
 
     @Override
+    // TODO: Implement
     public SharkCS asSharkCS() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public Interest asInterest() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public SemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getSemanticTag(sis);
     }
 
     @Override
     public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getSemanticTag(si);
     }
 
     @Override
     public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getPeerSemanticTag(sis);
     }
 
     @Override
     public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getPeerSemanticTag(si);
     }
 
     @Override
