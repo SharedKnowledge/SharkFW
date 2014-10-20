@@ -42,8 +42,6 @@ public class SyncKB implements SharkKB {
     //                      constructor                                   //
     ////////////////////////////////////////////////////////////////////////
     public SyncKB(SharkKB kb) throws SharkKBException{
-//        super(kb.getTopicsAsSemanticNet(), kb.getPeersAsTaxonomy(), kb.getSpatialSTSet(), kb.getTimeSTSet());
-        
         _localKB = kb;
         
         Enumeration<ContextPoint> contextPoints = _localKB.getAllContextPoints();
@@ -59,8 +57,6 @@ public class SyncKB implements SharkKB {
         }
     }
     
-////    }
-//    
 //    @Override
 //    protected Knowledge getKnowledge() {
 //        return super.getKnowledge();
