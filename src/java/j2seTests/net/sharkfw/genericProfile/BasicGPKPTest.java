@@ -4,7 +4,7 @@
  */
 package net.sharkfw.genericProfile;
 
-import static java.nio.file.Files.list;
+import static java.nio.file.Files.*;
 import java.util.ArrayList;
 import static java.util.Collections.list;
 import java.util.Iterator;
