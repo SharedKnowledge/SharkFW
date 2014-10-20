@@ -708,111 +708,117 @@ public class SyncKB implements SharkKB {
 
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getTopicSTSet();
     }
 
     @Override
     public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getTopicsAsSemanticNet();
     }
 
     @Override
     public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getTopicsAsTaxonomy();
     }
 
     @Override
     public PeerSTSet getPeerSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getPeerSTSet();
     }
 
     @Override
     public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getPeersAsSemanticNet();
     }
 
     @Override
     public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getPeersAsTaxonomy();
     }
 
     @Override
     public TimeSTSet getTimeSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getTimeSTSet();
     }
 
     @Override
     public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getSpatialSTSet();
     }
 
     @Override
+    // TODO: Implement
     public Interest contextualize(SharkCS as) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public Interest contextualize(SharkCS as, FragmentationParameter[] fp) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public Enumeration<SemanticTag> tags() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    // TODO: Implement
     public Iterator<SemanticTag> getTags() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void setSystemProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.setSystemProperty(name, value);
     }
 
     @Override
     public String getSystemProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getSystemProperty(name);
     }
 
     @Override
     public void setProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.setProperty(name, value);
     }
 
     @Override
     public String getProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.getSystemProperty(name);
     }
 
     @Override
     public void setProperty(String name, String value, boolean transfer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.setProperty(name, value, transfer);
     }
 
     @Override
     public void removeProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.removeProperty(name);
     }
 
     @Override
     public Enumeration<String> propertyNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.propertyNames();
     }
 
     @Override
     public Enumeration<String> propertyNames(boolean all) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _localKB.propertyNames(all);
     }
 
     @Override
+    // TODO: Implement
     public void semanticTagCreated(SemanticTag tag, STSet stset) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.semantigTagCreated(tag, stset);
     }
 
     @Override
+    // TODO: Implement
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        _localKB.semantigTagRemoved(tag, stset);
     }
 }
