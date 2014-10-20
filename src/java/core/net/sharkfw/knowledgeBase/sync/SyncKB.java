@@ -11,6 +11,13 @@ import net.sharkfw.system.Util;
 @SuppressWarnings("unchecked")
 public class SyncKB implements SharkKB {
     
+    SharkKB localKB = null;
+
+    /**
+     * initialize the SyncKB with some kind of subclass
+     * of SharkKB.
+     * @param originalKB the KB that should be synced.
+     */
     public SyncKB(SharkKB originalKB){
         localKB = originalKB;
     }
@@ -20,8 +27,9 @@ public class SyncKB implements SharkKB {
     ///////////////////////////////////////////////////////////////////
 
     /**
-     * Create an in memory implementation of a semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
+     * Create a semantic tag in the underlying Knowledge Base.
+     * Consult its documentation for further information on
+     * what you will have to expect.
      * @param name
      * @param sis
      * @return
@@ -31,16 +39,19 @@ public class SyncKB implements SharkKB {
     }
 
     /**
-     * Create an in memory implementation of a semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
-     * @return 
+     * Create a semantic tag in the underlying Knowledge Base.
+     * Consult its documentation for further information on
+     * what you will have to expect.
+     * @param name
+     * @param si
+     * @return
      */
     public static SemanticTag createSemanticTag(String name, String si) {
         return localKB.createSemanticTag(name, new String[] {si});
     }
     
     /**
-     * creates an TST covering a period from
+     * creates an TST covering a period:
      * @param from Start time - milliseconds beginning from 1.1.1970
      * @param duration duration of period in milliseconds
      * @return 
@@ -50,8 +61,9 @@ public class SyncKB implements SharkKB {
     }
 
     /**
-     * Create an in memory implementation of a peer semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
+     * Create a peer semantic tag in the underlying Knowledge Base.
+     * Consult its documentation for further information on 
+     * what you will have to expect.
      * @return 
      */
     public static PeerSemanticTag createPeerSemanticTag(String name, String[] sis, 
@@ -60,8 +72,9 @@ public class SyncKB implements SharkKB {
     }
     
     /**
-     * Create an in memory implementation of a peer semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
+     * Create a peer semantic tag in the underlying Knowledge Base.
+     * Consult its documentation for further information on 
+     * what you will have to expect.
      * @return 
      */
     public static PeerSemanticTag createPeerSemanticTag(String name, String si, 
@@ -91,7 +104,7 @@ public class SyncKB implements SharkKB {
         /**
          * TODO: Implementation
          */
-        return localKB.InMemoContextPoint(cc);
+        return localKB.createContextPoint(cc);
     }
     
     ///////////////////////////////////////////////////////////////////
