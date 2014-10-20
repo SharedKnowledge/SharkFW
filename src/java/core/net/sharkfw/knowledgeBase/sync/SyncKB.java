@@ -200,19 +200,16 @@ public class SyncKB implements SharkKB {
         return i;
     }
         
-    public static Interest createInMemoCopy(Interest interest) 
+    public static Interest createCopy(Interest interest) 
             throws SharkKBException {
-        return InMemoSharkKB._createInMemoCopy(interest);
+        return localKB._createCopy(interest);
     }
     
-    public static Interest createInMemoCopy(SharkCS cs) 
+    public static Interest createCopy(SharkCS cs) 
             throws SharkKBException {
-        
-        if(cs == null) {
-            throw new SharkKBException("cannot make in memo copy from null");
-        }
-        
-        return InMemoSharkKB._createInMemoCopy(cs);
+        if(cs == null)
+            throw new SharkKBException("cannot make copy from null");
+        return localKB._createCopy(cs);
     }
     
     /**
