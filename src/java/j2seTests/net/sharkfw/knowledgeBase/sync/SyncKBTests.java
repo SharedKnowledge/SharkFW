@@ -18,7 +18,7 @@ import org.junit.Test;
  * @author Veit Heller <veit@veitheller.de>
  * @author Simon Arnold <s0539710@htw-berlin.de>
  */
-public class SyncKBTests{
+public class SyncKBTests {
 
 	SharkKB _sharkKB = null;		
 
@@ -35,8 +35,10 @@ public class SyncKBTests{
 
     @Before
     public void setUp() {
+        // Create ourselves a fresh Shark Knowledgebase
         _sharkKB = new InMemoSharkKB();
         
+        // And add some vocabulary and knowledge
         try {
             SemanticTag teapotST = _sharkKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
             PeerSemanticTag alice = _sharkKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
@@ -55,8 +57,19 @@ public class SyncKBTests{
     public void tearDown() {
     }
 
+    
     @Test
-    public void createSyncKB() throws SharkKBException {
+    public void createSyncKBEmpty() {
+        
+    }
+    
+    @Test
+    public void createSyncKBFromExistingKB() {
+        
+    }
+    
+    @Test
+    public void testEverythingVersionedAfterCreating() throws SharkKBException{
         SyncKB testKB = new SyncKB(_sharkKB);
         assertNotNull(testKB);
         Enumeration<ContextPoint> cp = testKB.getAllContextPoints();
@@ -69,6 +82,21 @@ public class SyncKBTests{
                 System.out.println(versionProperty);
             }
         }
+    }
+    
+    @Test
+    public void testAddContextPoint() {
+        
+    }
+    
+    @Test
+    public void testGetContextPoint() {
+        
+    }
+    
+    @Test
+    public void testRemoveContextPoint() {
+        
     }
 
 

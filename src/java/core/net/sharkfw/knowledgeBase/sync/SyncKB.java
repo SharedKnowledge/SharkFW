@@ -626,7 +626,7 @@ public class SyncKB implements SharkKB {
 
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
-        return _localKB.createPeerSemanticTag(name, sis, addresses);
+        return _localKB.createPeerSemanticTag(name, si, addresses);
     }
 
     @Override
@@ -656,7 +656,7 @@ public class SyncKB implements SharkKB {
 
     @Override
     public void removeSemanticTag(String[] sis) throws SharkKBException {
-        _localKB.removeeTimeSemanticTag(sis);
+        _localKB.removeSemanticTag(sis);
     }
 
     @Override
@@ -667,7 +667,7 @@ public class SyncKB implements SharkKB {
 
     @Override
     public PeerSemanticTag getOwner() {
-        return _localKB.getOwner(sis);
+        return _localKB.getOwner();
     }
 
     @Override
@@ -809,12 +809,12 @@ public class SyncKB implements SharkKB {
     @Override
     // TODO: Implement
     public void semanticTagCreated(SemanticTag tag, STSet stset) {
-        _localKB.semantigTagCreated(tag, stset);
+        _localKB.semanticTagCreated(tag, stset);
     }
 
     @Override
     // TODO: Implement
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
-        _localKB.semantigTagRemoved(tag, stset);
+        _localKB.semanticTagRemoved(tag, stset);
     }
 }
