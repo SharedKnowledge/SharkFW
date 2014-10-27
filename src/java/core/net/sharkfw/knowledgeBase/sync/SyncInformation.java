@@ -10,8 +10,8 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 public class SyncInformation implements Information{
 	
 	private Information _localInformation;
-	private static String VERSION_PROPERTY_NAME = "SyncI_version";
-	private static String VERSION_DEFAULT_VALUE = "1";
+	protected static String VERSION_PROPERTY_NAME = "SyncI_version";
+	protected static String VERSION_DEFAULT_VALUE = "1";
 	
 	public SyncInformation(Information i){
 		_localInformation = i;

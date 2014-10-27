@@ -20,8 +20,14 @@ import org.junit.Test;
  */
 public class SyncKBTests {
 
-	SharkKB _sharkKB = null;		
+    SharkKB inMemoKB;		
 
+    SemanticTag teapotST, programmingST;
+    PeerSemanticTag alice;
+    PeerSemanticTag bob;
+    TimeSemanticTag timeST;
+    SpatialSemanticTag spatialST;
+    
     public SyncKBTests() {
     }
 
@@ -34,70 +40,51 @@ public class SyncKBTests {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws SharkKBException {
         // Create ourselves a fresh Shark Knowledgebase
-        _sharkKB = new InMemoSharkKB();
+        inMemoKB = new InMemoSharkKB();
         
         // And add some vocabulary and knowledge
-        try {
-            SemanticTag teapotST = _sharkKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
-            PeerSemanticTag alice = _sharkKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
-            PeerSemanticTag bob = _sharkKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
-            TimeSemanticTag timeST = _sharkKB.createTimeSemanticTag(100, 9000);
-            SpatialSemanticTag spatialST = _sharkKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
-            ContextCoordinates cc = _sharkKB.createContextCoordinates(teapotST, alice, alice, bob, timeST, spatialST, SharkCS.DIRECTION_INOUT);
-            ContextPoint cp = _sharkKB.createContextPoint(cc);
-            Information info = cp.addInformation("This is an information.");
-        } catch (SharkKBException e) {
-            fail(e.toString());
-        }
+        teapotST = inMemoKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
+        programmingST = inMemoKB.createSemanticTag("Programming", "http://en.wikipedia.org/wiki/Programming");
+        alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
+        bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
+        timeST = inMemoKB.createTimeSemanticTag(100, 9000);
+        spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
     }
 
     @After
     public void tearDown() {
     }
 
-    
     @Test
-    public void createSyncKBEmpty() {
-        
+    public void SyncKB_createKB_notNull() throws SharkKBException {
+        SharkKB syncKB = new SyncKB(inMemoKB);
+        assertNotNull(syncKB);
     }
     
     @Test
-    public void createSyncKBFromExistingKB() {
-        
+    public void SyncKB_createCP_isSyncCP() throws SharkKBException {
+        SharkKB syncKB = new SyncKB(inMemoKB);
+        ContextCoordinates cc = syncKB.createContextCoordinates(teapotST, alice, bob, alice, timeST, spatialST, SharkCS.DIRECTION_OUT);
+        assert(syncKB.createContextPoint(cc) instanceof SyncContextPoint);
     }
     
-    @Test
-    public void testEverythingVersionedAfterCreating() throws SharkKBException{
-        SyncKB testKB = new SyncKB(_sharkKB);
-        assertNotNull(testKB);
-        Enumeration<ContextPoint> cp = testKB.getAllContextPoints();
-        assertNotNull(cp);
-        while(cp.hasMoreElements()){
-            Enumeration<Information> i = cp.nextElement().enumInformation();
-            while(i.hasMoreElements()){
-                String versionProperty = i.nextElement().getProperty("version");
-                assertNotNull(versionProperty);
-                System.out.println(versionProperty);
-            }
-        }
-    }
+//    @Test
+//    public void testEverythingVersionedAfterCreating() throws SharkKBException{
+//        SyncKB testKB = new SyncKB(inMemoKB);
+//        assertNotNull(testKB);
+//        Enumeration<ContextPoint> cp = testKB.getAllContextPoints();
+//        assertNotNull(cp);
+//        while(cp.hasMoreElements()){
+//            Enumeration<Information> i = cp.nextElement().enumInformation();
+//            while(i.hasMoreElements()){
+//                String versionProperty = i.nextElement().getProperty("version");
+//                assertNotNull(versionProperty);
+//                System.out.println(versionProperty);
+//            }
+//        }
+//    }
     
-    @Test
-    public void testAddContextPoint() {
-        
-    }
-    
-    @Test
-    public void testGetContextPoint() {
-        
-    }
-    
-    @Test
-    public void testRemoveContextPoint() {
-        
-    }
-
 
 }

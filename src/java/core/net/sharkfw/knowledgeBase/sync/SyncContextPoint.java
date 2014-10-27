@@ -15,8 +15,8 @@ import net.sharkfw.knowledgeBase.Information;
 public class SyncContextPoint implements ContextPoint {
 	
 	private ContextPoint _localCP = null;
-	private static String VERSION_PROPERTY_NAME = "SyncCP_version";
-	private static String VERSION_DEFAULT_VALUE = "1";
+	protected static String VERSION_PROPERTY_NAME = "SyncCP_version";
+	protected static String VERSION_DEFAULT_VALUE = "1";
 	
 	public SyncContextPoint(ContextPoint c){
 		_localCP = c;
