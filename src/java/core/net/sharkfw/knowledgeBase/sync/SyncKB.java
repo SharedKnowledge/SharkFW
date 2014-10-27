@@ -6,23 +6,6 @@ import net.sharkfw.knowledgeBase.geom.Geometry;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSemanticNet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoPeerTaxonomy;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSTSet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSTSet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_PeerSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_SemanticTag;
 
 /**
  * @author simonArnold
