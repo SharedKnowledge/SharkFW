@@ -1,127 +1,158 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
+
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
 import net.sharkfw.knowledgeBase.Information;
 
-/**
- *
- * @author simon
- */
 public class SyncContextPoint implements ContextPoint {
+	
+	private ContextPoint _localCP = null;
+	private static String VERSION_PROPERTY_NAME = "SyncCP_version";
+	private static String VERSION_DEFAULT_VALUE = "1";
+	
+	public SyncContextPoint(ContextPoint c){
+		_localCP = c;
+		if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null)
+			_localCP.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+	}
 
-    @Override
-    public Information addInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public void setSystemProperty(String name, String value) {
+		_localCP.setSystemProperty(name, value);		
+	}
 
-    @Override
-    public void addInformation(Information source) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public String getSystemProperty(String name) {
+		return _localCP.getSystemProperty(name);
+	}
 
-    @Override
-    public Information addInformation(InputStream is, long len) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public void setProperty(String name, String value) {
+		_localCP.setProperty(name, value);
+	}
 
-    @Override
-    public Information addInformation(byte[] content) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public String getProperty(String name) {
+		return _localCP.getProperty(name);
+	}
 
-    @Override
-    public Information addInformation(String content) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public void setProperty(String name, String value, boolean transfer) {
+		_localCP.setProperty(name, value);
+	}
 
-    @Override
-    public Enumeration<Information> enumInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public void removeProperty(String name) {
+		_localCP.removeProperty(name);
+	}
 
-    @Override
-    public Iterator<Information> getInformation(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Enumeration<String> propertyNames() {
+		return _localCP.propertyNames();
+	}
 
-    @Override
-    public Iterator<Information> getInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Enumeration<String> propertyNames(boolean all) {
+		return _localCP.propertyNames(all);
+	}
 
-    @Override
-    public void removeInformation(Information toDelete) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Information addInformation() {
+		Information i = _localCP.addInformation();
+		return new SyncInformation(i);
+	}
 
-    @Override
-    public ContextCoordinates getContextCoordinates() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public void addInformation(Information source) {
+		_localCP.addInformation(source);
+	}
 
-    @Override
-    public void setContextCoordinates(ContextCoordinates cc) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Information addInformation(InputStream is, long len) {
+		Information i =  _localCP.addInformation(is, len);
+		return new SyncInformation(i);
+	}
 
-    @Override
-    public int getNumberInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Information addInformation(byte[] content) {
+		Information i = _localCP.addInformation(content);
+		return new SyncInformation(i);
+	}
 
-    @Override
-    public void setListener(ContextPointListener cpl) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Information addInformation(String content) {
+		Information i = _localCP.addInformation(content);
+		return new SyncInformation(i);
+	}
 
-    @Override
-    public void removeListener() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Enumeration<Information> enumInformation() {
+		Enumeration<Information> infos = _localCP.enumInformation();
+		Vector<Information> temp = new Vector<Information>();
+		while(infos.hasMoreElements()){
+			temp.addElement(new SyncInformation(infos.nextElement()));
+		}
+		return temp.elements();
+	}
 
-    @Override
-    public void setSystemProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Iterator<Information> getInformation(String name) {
+		Iterator<Information> infos = _localCP.getInformation(name);
+		Collection<Information> temp = new ArrayList<Information>();
+		while(infos.hasNext()){
+			temp.add(new SyncInformation(infos.next()));
+		}
+		return temp.iterator();
+	}
 
-    @Override
-    public String getSystemProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Iterator<Information> getInformation() {
+		Iterator<Information> infos = _localCP.getInformation();
+		Collection<Information> temp = new ArrayList<Information>();
+		while(infos.hasNext()){
+			temp.add(new SyncInformation(infos.next()));
+		}
+		return temp.iterator();
+	}
 
-    @Override
-    public void setProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	// TODO Should this be versionized?
+	public void removeInformation(Information toDelete) {
+		_localCP.removeInformation(toDelete);
+	}
 
-    @Override
-    public String getProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public ContextCoordinates getContextCoordinates() {
+		return _localCP.getContextCoordinates();
+	}
 
-    @Override
-    public void setProperty(String name, String value, boolean transfer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	// TODO Should this be versionized?
+	public void setContextCoordinates(ContextCoordinates cc) {
+		_localCP.setContextCoordinates(cc);
+	}
 
-    @Override
-    public void removeProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public int getNumberInformation() {
+		return _localCP.getNumberInformation();
+	}
 
-    @Override
-    public Enumeration<String> propertyNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public void setListener(ContextPointListener cpl) {
+		_localCP.setListener(cpl);
+	}
 
-    @Override
-    public Enumeration<String> propertyNames(boolean all) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public void removeListener() {
+		_localCP.removeListener();
+	}
 
 }
