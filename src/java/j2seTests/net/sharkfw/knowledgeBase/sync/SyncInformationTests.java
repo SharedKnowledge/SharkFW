@@ -74,8 +74,7 @@ public class SyncInformationTests {
         // Mock this
 //        teapotInfo = teapotCP.addInformation(new Inputstream(), len)
         
-        teapotInfo = InMemoSharkKB.createInMemoInformation();
-        teapotCP.addInformation(teapotInfo);
+        teapotInfo = teapotCP.addInformation();
         assertNotNull(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME), SyncInformation.VERSION_DEFAULT_VALUE);
     }

@@ -15,8 +15,8 @@ import net.sharkfw.knowledgeBase.Information;
 public class SyncContextPoint implements ContextPoint {
 	
 	private ContextPoint _localCP = null;
-	protected static String VERSION_PROPERTY_NAME = "SyncCP_version";
-	protected static String VERSION_DEFAULT_VALUE = "1";
+	public static String VERSION_PROPERTY_NAME = "SyncCP_version";
+	public static String VERSION_DEFAULT_VALUE = "1";
 	
 	public SyncContextPoint(ContextPoint c){
 		_localCP = c;
@@ -67,29 +67,34 @@ public class SyncContextPoint implements ContextPoint {
 	@Override
 	public Information addInformation() {
 		Information i = _localCP.addInformation();
+		versionUp();
 		return new SyncInformation(i);
 	}
 
 	@Override
 	public void addInformation(Information source) {
+		versionUp();
 		_localCP.addInformation(source);
 	}
 
 	@Override
 	public Information addInformation(InputStream is, long len) {
 		Information i =  _localCP.addInformation(is, len);
+		versionUp();
 		return new SyncInformation(i);
 	}
 
 	@Override
 	public Information addInformation(byte[] content) {
 		Information i = _localCP.addInformation(content);
+		versionUp();
 		return new SyncInformation(i);
 	}
 
 	@Override
 	public Information addInformation(String content) {
 		Information i = _localCP.addInformation(content);
+		versionUp();
 		return new SyncInformation(i);
 	}
 
@@ -124,8 +129,8 @@ public class SyncContextPoint implements ContextPoint {
 	}
 
 	@Override
-	// TODO Should this be versionized?
 	public void removeInformation(Information toDelete) {
+		versionUp();
 		_localCP.removeInformation(toDelete);
 	}
 
@@ -136,8 +141,12 @@ public class SyncContextPoint implements ContextPoint {
 
 	@Override
 	// TODO Should this be versionized?
+	// TODO Set anyway, even if its the same?
 	public void setContextCoordinates(ContextCoordinates cc) {
-		_localCP.setContextCoordinates(cc);
+		if(cc != _localCP.getContextCoordinates()){
+			_localCP.setContextCoordinates(cc);
+			_localCP.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+		}
 	}
 
 	@Override
@@ -153,6 +162,17 @@ public class SyncContextPoint implements ContextPoint {
 	@Override
 	public void removeListener() {
 		_localCP.removeListener();
+	}
+	
+	public void versionUp() {
+		int version = 1;
+		try{
+			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
+		}catch(NumberFormatException e){
+			// TODO: ?
+		}
+		version++;
+		_localCP.setProperty(VERSION_PROPERTY_NAME, Integer.toString(version));
 	}
 
 }

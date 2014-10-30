@@ -10,8 +10,8 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 public class SyncInformation implements Information{
 	
 	private Information _localInformation;
-	protected static String VERSION_PROPERTY_NAME = "SyncI_version";
-	protected static String VERSION_DEFAULT_VALUE = "1";
+	public static String VERSION_PROPERTY_NAME = "SyncI_version";
+	public static String VERSION_DEFAULT_VALUE = "1";
 	
 	public SyncInformation(Information i){
 		_localInformation = i;
@@ -87,43 +87,27 @@ public class SyncInformation implements Information{
 
 	@Override
 	public void setContent(byte[] content) {
-		int version;
 		_localInformation.setContent(content);
-		try{
-			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
-		}catch(NumberFormatException e){
-			// TODO ?
-			version = 1;
-		}
-		version++;
-		_localInformation.setProperty(VERSION_PROPERTY_NAME,Integer.toString(version));
-		
+		versionUp();
 	}
 
 	@Override
 	public void setContent(String content) {
-		int version;
 		_localInformation.setContent(content);
-		try{
-			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
-		}catch(NumberFormatException e){
-			// TODO ?
-			version = 1;
-		}
-		version++;
-		_localInformation.setProperty(VERSION_PROPERTY_NAME,Integer.toString(version));		
+		versionUp();
 	}
 
 	@Override
-	//TODO Should this be versionized?
 	public void removeContent() {
 		_localInformation.removeContent();
+		versionUp();
 	}
 
 	@Override
 	//TODO Should this be versionized?
 	public void setContentType(String mimetype) {
 		_localInformation.setContentType(mimetype);
+		versionUp();
 	}
 
 	@Override
@@ -189,5 +173,16 @@ public class SyncInformation implements Information{
 	@Override
 	public void releaseLock() {
 		_localInformation.releaseLock();
+	}
+	
+	private void versionUp() {
+		int version = 1;
+		try{
+			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
+		}catch(NumberFormatException e){
+			// TODO ?
+		}
+		version++;
+		_localInformation.setProperty(VERSION_PROPERTY_NAME,Integer.toString(version));
 	}
 }
