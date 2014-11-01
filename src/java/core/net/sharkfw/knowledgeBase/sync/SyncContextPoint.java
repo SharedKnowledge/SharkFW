@@ -22,6 +22,12 @@ public class SyncContextPoint implements ContextPoint {
 		_localCP = c;
 		if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null)
 			_localCP.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+		Iterator<Information> cpInfos = _localCP.getInformation();
+		while(cpInfos.hasNext()){
+			Information info = cpInfos.next();
+			if(info.getProperty(SyncInformation.VERSION_PROPERTY_NAME) == null)
+				info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
+		}
 	}
 
 	@Override
@@ -67,34 +73,36 @@ public class SyncContextPoint implements ContextPoint {
 	@Override
 	public Information addInformation() {
 		Information i = _localCP.addInformation();
-		versionUp();
+		versionUp(i);
 		return new SyncInformation(i);
 	}
 
 	@Override
+	//TODO Should this info be converted?
+	// No, document!!! Reference ought to be dropped.
 	public void addInformation(Information source) {
-		versionUp();
+		versionUp(source);
 		_localCP.addInformation(source);
 	}
 
 	@Override
 	public Information addInformation(InputStream is, long len) {
 		Information i =  _localCP.addInformation(is, len);
-		versionUp();
+		versionUp(i);
 		return new SyncInformation(i);
 	}
 
 	@Override
 	public Information addInformation(byte[] content) {
 		Information i = _localCP.addInformation(content);
-		versionUp();
+		versionUp(i);
 		return new SyncInformation(i);
 	}
 
 	@Override
 	public Information addInformation(String content) {
 		Information i = _localCP.addInformation(content);
-		versionUp();
+		versionUp(i);
 		return new SyncInformation(i);
 	}
 
@@ -164,7 +172,7 @@ public class SyncContextPoint implements ContextPoint {
 		_localCP.removeListener();
 	}
 	
-	public void versionUp() {
+	private void versionUp() {
 		int version = 1;
 		try{
 			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
@@ -173,6 +181,20 @@ public class SyncContextPoint implements ContextPoint {
 		}
 		version++;
 		_localCP.setProperty(VERSION_PROPERTY_NAME, Integer.toString(version));
+	}	
+	
+	private void versionUp(Information info) {
+		int version = 1;
+		try{
+			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
+		}catch(NumberFormatException e){
+			// TODO: ?
+		}
+		version++;
+		_localCP.setProperty(VERSION_PROPERTY_NAME, Integer.toString(version));
+		
+		if(info.getProperty(SyncInformation.VERSION_PROPERTY_NAME) == null)
+			info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
 	}
 
 }
