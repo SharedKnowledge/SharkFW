@@ -104,7 +104,6 @@ public class SyncInformation implements Information{
 	}
 
 	@Override
-	//TODO Should this be versionized?
 	public void setContentType(String mimetype) {
 		_localInformation.setContentType(mimetype);
 		versionUp();

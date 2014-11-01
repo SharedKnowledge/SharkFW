@@ -79,6 +79,7 @@ public class SyncContextPoint implements ContextPoint {
 
 	@Override
 	//TODO Should this info be converted?
+	// No, document!!! Reference ought to be dropped.
 	public void addInformation(Information source) {
 		versionUp(source);
 		_localCP.addInformation(source);
