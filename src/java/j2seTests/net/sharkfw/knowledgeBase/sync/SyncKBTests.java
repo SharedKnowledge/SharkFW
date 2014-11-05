@@ -58,8 +58,10 @@ public class SyncKBTests{
     }
 
     @Test
-    public void testiTest() {
-        
+    public void syncKB_createContextPoint_isSyncCP() throws SharkKBException {
+        SharkKB syncKB = new SyncKB(inMemoKB);
+        ContextPoint syncCP = syncKB.createContextPoint(syncKB.createContextCoordinates(teapotST, alice, bob, alice, timeST, spatialST, SharkCS.DIRECTION_OUT));
+        assert(syncCP instanceof SyncContextPoint);
     }
     
     @Test
