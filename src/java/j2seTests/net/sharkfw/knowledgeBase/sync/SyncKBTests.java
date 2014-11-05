@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.sync;
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
 
 // JUnit imports
@@ -20,8 +21,12 @@ import org.junit.Test;
  */
 public class SyncKBTests{
 
-	SharkKB _sharkKB = null;		
-
+	SharkKB inMemoKB = null;		
+        SemanticTag teapotST;
+        PeerSemanticTag alice, bob;
+        TimeSemanticTag timeST;
+        SpatialSemanticTag spatialST;
+        
     public SyncKBTests() {
     }
 
@@ -35,17 +40,14 @@ public class SyncKBTests{
 
     @Before
     public void setUp() {
-        _sharkKB = new InMemoSharkKB();
+        inMemoKB = new InMemoSharkKB();
         
         try {
-            SemanticTag teapotST = _sharkKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
-            PeerSemanticTag alice = _sharkKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
-            PeerSemanticTag bob = _sharkKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
-            TimeSemanticTag timeST = _sharkKB.createTimeSemanticTag(100, 9000);
-            SpatialSemanticTag spatialST = _sharkKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
-            ContextCoordinates cc = _sharkKB.createContextCoordinates(teapotST, alice, alice, bob, timeST, spatialST, SharkCS.DIRECTION_INOUT);
-            ContextPoint cp = _sharkKB.createContextPoint(cc);
-            cp.addInformation("This is an information.");
+            teapotST = inMemoKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
+            alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
+            bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
+            timeST = inMemoKB.createTimeSemanticTag(100, 9000);
+            spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
         } catch (SharkKBException e) {
             fail(e.toString());
         }
@@ -56,19 +58,53 @@ public class SyncKBTests{
     }
 
     @Test
-    public void createSyncKB() throws SharkKBException {
-        SyncKB testKB = new SyncKB(_sharkKB);
-        assertNotNull(testKB);
-        Enumeration<ContextPoint> cp = testKB.getAllContextPoints();
-        assertNotNull(cp);
-        while(cp.hasMoreElements()){
-            Enumeration<Information> i = cp.nextElement().enumInformation();
-            while(i.hasMoreElements()){
-                String versionProperty = i.nextElement().getProperty("SyncI_version");
-                assertNotNull(versionProperty);
-            }
-        }
+    public void testiTest() {
+        
+    }
+    
+    @Test
+    public void syncKB_createWithEmptySourceKB_syncKBIsCreated() throws SharkKBException {
+        SharkKB emptyKB = new InMemoSharkKB();
+        SharkKB syncKB = new SyncKB(emptyKB);
+        assertNotNull(syncKB);
+    }
+    
+    @Test
+    public void syncKB_createWithNonEmptySourceKB_syncKBIsCreated () throws SharkKBException {
+        ContextCoordinates teapotCC = inMemoKB.createContextCoordinates(teapotST, alice, alice, bob, timeST, spatialST, SharkCS.DIRECTION_INOUT);
+        ContextPoint teapotCP = inMemoKB.createContextPoint(teapotCC);
+        teapotCP.addInformation("The first documented mentioning of tea was in 221 B.C.");
+        
+        // Test that we really have an CP in our KB now
+        assertNotNull(inMemoKB.getContextPoint(teapotCC));
+        
+        SharkKB syncKB = new SyncKB(inMemoKB);
+        assertNotNull(syncKB);
     }
 
-
+    @Test
+    public void syncKB_createWithNonEmptySourceKB_allCPAreVersioned () throws SharkKBException {
+        ContextCoordinates teapotCC = inMemoKB.createContextCoordinates(teapotST, alice, alice, bob, timeST, spatialST, SharkCS.DIRECTION_INOUT);
+        ContextPoint teapotCP = inMemoKB.createContextPoint(teapotCC);
+        teapotCP.addInformation("Although teapots were not known until the Ming dynasty.");
+        ContextCoordinates teapotCC2 = inMemoKB.createContextCoordinates(teapotST, bob, alice, bob, timeST, spatialST, SharkCS.DIRECTION_IN);
+        ContextPoint teapotCP2 = inMemoKB.createContextPoint(teapotCC2);
+        teapotCP2.addInformation("I like tea more than I like coffee. Sometimes.");
+        
+        SyncKB syncKB = new SyncKB(inMemoKB);
+        
+        Enumeration<ContextPoint> cps = syncKB.getAllContextPoints();
+        assertNotNull(cps);
+        while (cps.hasMoreElements()) {
+            ContextPoint cp = cps.nextElement();
+            String version = cp.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME);
+            assertNotNull(version);
+            assertEquals(version, SyncContextPoint.VERSION_DEFAULT_VALUE);
+//            Enumeration<Information> i = cp.nextElement().enumInformation();
+//            while(i.hasMoreElements()){
+//                String versionProperty = i.nextElement().getProperty("SyncI_version");
+//                assertNotNull(versionProperty);
+//            }
+        }
+    }
 }

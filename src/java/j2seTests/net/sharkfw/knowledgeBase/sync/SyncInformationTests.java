@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import net.sharkfw.knowledgeBase.*;
@@ -21,9 +22,9 @@ import org.junit.Test;
  */
 public class SyncInformationTests {
 
-    SharkKB syncKB;
+    SharkKB syncKB, inMemoKB;
     
-    ContextPoint teapotCP, programmingCP;
+    ContextPoint teapotCP;
     
     public SyncInformationTests() {
     }
@@ -39,18 +40,18 @@ public class SyncInformationTests {
     @Before
     public void setUp() throws SharkKBException {
 //         Create ourselves a fresh Shark Knowledgebase
-        syncKB = new SyncKB(new InMemoSharkKB());
+//        syncKB = new SyncKB(new InMemoSharkKB());
+        inMemoKB = new InMemoSharkKB();
         
         // And add some vocabulary
-        SemanticTag teapotST = syncKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
-        SemanticTag programmingST = syncKB.createSemanticTag("Programming", "http://en.wikipedia.org/wiki/Programming");
-        PeerSemanticTag alice = syncKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
-        PeerSemanticTag bob = syncKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
-        TimeSemanticTag timeST = syncKB.createTimeSemanticTag(100, 9000);
-        SpatialSemanticTag spatialST = syncKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
+        SemanticTag teapotST = inMemoKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
+        SemanticTag programmingST = inMemoKB.createSemanticTag("Programming", "http://en.wikipedia.org/wiki/Programming");
+        PeerSemanticTag alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
+        PeerSemanticTag bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
+        TimeSemanticTag timeST = inMemoKB.createTimeSemanticTag(100, 9000);
+        SpatialSemanticTag spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
         
-        teapotCP = syncKB.createContextPoint(syncKB.createContextCoordinates(teapotST, bob, bob, alice, timeST, spatialST, SharkCS.DIRECTION_INOUT));
-        programmingCP = syncKB.createContextPoint(syncKB.createContextCoordinates(programmingST, alice, alice, bob, timeST, spatialST, SharkCS.DIRECTION_OUT));
+        teapotCP = inMemoKB.createContextPoint(inMemoKB.createContextCoordinates(teapotST, bob, bob, alice, timeST, spatialST, SharkCS.DIRECTION_INOUT));
     }
 
     @After
@@ -59,22 +60,19 @@ public class SyncInformationTests {
 
     @Test
     public void syncInformation_createInformation_hasDefaultVersion() {
-        Information teapotInfo = teapotCP.addInformation();
+        Information teapotInfo = new SyncInformation(InMemoSharkKB.createInMemoInformation());
         assertNotNull(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME), SyncInformation.VERSION_DEFAULT_VALUE);
         
-        teapotInfo = teapotCP.addInformation("Teapots are great.");
+        teapotInfo = new SyncInformation(teapotCP.addInformation("Teapots are great."));
         assertNotNull(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME), SyncInformation.VERSION_DEFAULT_VALUE);
         
-        teapotInfo = teapotCP.addInformation("The best teapots are made from clay".getBytes());
+        teapotInfo = new SyncInformation(teapotCP.addInformation("The best teapots are made from clay".getBytes()));
         assertNotNull(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME), SyncInformation.VERSION_DEFAULT_VALUE);
         
-        // Mock this
-//        teapotInfo = teapotCP.addInformation(new Inputstream(), len)
-        
-        teapotInfo = teapotCP.addInformation();
+        teapotInfo = new SyncInformation(teapotCP.addInformation());
         assertNotNull(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME), SyncInformation.VERSION_DEFAULT_VALUE);
     }
@@ -89,35 +87,36 @@ public class SyncInformationTests {
     
     @Test
     public void syncInformation_removeContent_versionIncreased() {
-        Information programmingInformation = programmingCP.addInformation("Programming is superawesome");
-        programmingInformation.removeContent();
+        Information teapotInformation = new SyncInformation(teapotCP.addInformation("Teapots teapots"));
+        teapotInformation.removeContent();
         
-        assertNotNull(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
-        assertEquals(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "2");
+        assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
+        assertEquals(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "2");
     }
     
     @Test
     public void syncInformation_setContent_versionIncreased() {
-        Information programmingInformation = programmingCP.addInformation("Programming is best with computers.");
+        Information teapotInformation = new SyncInformation(teapotCP.addInformation("I like tea."));
         
-        programmingInformation.setContent("Programming is best with fast computers.");
-        assertNotNull(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
-        assertEquals(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "2");
+        teapotInformation.setContent("Especially green and black tea.");
+        assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
+        assertEquals(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "2");
         
-         programmingInformation.setContent("Programming is best with fast computers running on linux.".getBytes());
-        assertNotNull(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
-        assertEquals(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "3");
+        teapotInformation.setContent("But other tea is good, too.".getBytes());
+        assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
+        assertEquals(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "3");
         
-        // TODO mock this
-//        programmingInformation.setContent(new FileInputStream(""), 5);
-//        assertNotNull(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
-//        assertEquals(programmingInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "2");
+        byte[] textBytes = "Black tea is better with milk.".getBytes();
+        InputStream is = new ByteInputStream(textBytes, textBytes.length + 1);
+        teapotInformation.setContent(is, textBytes.length);
+        assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
+        assertEquals(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "4");
         
     }
     
     @Test
     public void syncInformation_setContentType_versionIncreased() {
-        Information teapotInformation = teapotCP.addInformation("Teapots are best without holes.");
+        Information teapotInformation = new SyncInformation(teapotCP.addInformation("Teapots are a formidable invention."));
         teapotInformation.setContentType("image");
         
         assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
