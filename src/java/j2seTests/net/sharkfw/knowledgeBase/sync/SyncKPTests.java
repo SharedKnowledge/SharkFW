@@ -1,15 +1,15 @@
 package net.sharkfw.knowledgeBase.sync;
 
-import java.io.IOException;
-import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.kep.SharkProtocolNotSupportedException;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
@@ -24,6 +24,7 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.peer.StandardKP;
 import net.sharkfw.system.L;
+import net.sharkfw.system.SharkSecurityException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,11 +37,11 @@ public class SyncKPTests {
     private long connectionTimeOut = 2000;
 	private SyncKB _aliceSyncKB = null;
 	private SyncKB _bobSyncKB = null;
-        private SyncKP _aliceSyncKP, _bobSyncKP;
+        private KnowledgePort _aliceSyncKP, _bobSyncKP;
         private SharkEngine _aliceEngine, _bobEngine;
 	
 	@BeforeClass
-	public void setUpClass(){
+	public static void setUpClass(){
 		L.setLogLevel(L.LOGLEVEL_ALL);
 	}
 	
@@ -67,22 +68,62 @@ public class SyncKPTests {
 	}
 	
         @Test
-        public void syncKP_meetsNonSyncKP_noCommunication() throws SharkKBException {
-            // Create a standard KP with some information in context space
-            // Alice will be a sync KP, bob a standard KP
+        public void syncKP_meetsNonSyncKP_noCommunication() throws InterruptedException, SharkSecurityException, IOException, SharkKBException, SharkProtocolNotSupportedException {
+            // Create some information in context space
             SemanticTag teapotST = InMemoSharkKB.createInMemoSemanticTag("teapot", "www.teapot.de");
             PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice", "mail@alice.de");
             PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob", "mail@bob.de");
-            ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
+            ContextCoordinates teapotAliceCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
+            ContextCoordinates teapotBobCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
+            
+            // Alice will be a sync KP, bob a standard KP
+            SharkKB bobKB = new InMemoSharkKB();
+            Interest bobAnyInterest = bobKB.createInterest(bobKB.createContextCoordinates(null, null, bob, null, null, null, SharkCS.DIRECTION_INOUT));
+            KnowledgePort bobKP = new StandardKP(_bobEngine, bobAnyInterest, bobKB);
             
             // Create mutual CP in alices and bobs kb
-            _aliceSyncKB.createContextPoint(teapotCC);
+            _aliceSyncKB.createContextPoint(teapotAliceCC);
+            bobKB.createContextPoint(teapotBobCC);
             
+            // Start engines (and KPs)
+            _aliceEngine.startTCP(5554);
+            _bobEngine.startTCP(5555);
+            _aliceEngine.publishAllKP();
+            _bobEngine.publishAllKP();
+            
+            // wait until communication happened
+            Thread.sleep(1000);
+            
+            // Neither KB should now know anything about the other contextPoint
+            Assert.assertNull(_aliceSyncKB.getContextPoint(teapotBobCC));
+            Assert.assertNull(bobKB.getContextPoint(teapotAliceCC));
         }
  
         @Test
-        public void syncKP_meetsSyncKP_CommunicationHappening() {
+        public void syncKP_meetsSyncKP_CommunicationHappening() throws Exception {
+            // Create some information in context space
+            SemanticTag teapotST = InMemoSharkKB.createInMemoSemanticTag("teapot", "www.teapot.de");
+            PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice", "mail@alice.de");
+            PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob", "mail@bob.de");
+            ContextCoordinates teapotAliceCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
+            ContextCoordinates teapotBobCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
             
+            // Create mutual CP in alices and bobs kb
+            _aliceSyncKB.createContextPoint(teapotAliceCC);
+            _bobSyncKB.createContextPoint(teapotBobCC);
+            
+            // Start engines (and KPs)
+            _aliceEngine.startTCP(5554);
+            _bobEngine.startTCP(5555);
+            _aliceEngine.publishAllKP();
+            _bobEngine.publishAllKP();
+            
+            // wait until communication happened
+            Thread.sleep(1000);
+            
+            // Neither KB should now know anything about the other contextPoint
+            Assert.assertEquals(_bobSyncKB.getContextPoint(teapotBobCC), _aliceSyncKB.getContextPoint(teapotBobCC));
+            Assert.assertEquals(_bobSyncKB.getContextPoint(teapotAliceCC), _aliceSyncKB.getContextPoint(teapotAliceCC));
         }
         
         @Test
