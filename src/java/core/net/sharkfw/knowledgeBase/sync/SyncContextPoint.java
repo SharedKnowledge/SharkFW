@@ -73,7 +73,7 @@ public class SyncContextPoint implements ContextPoint {
 	@Override
 	public Information addInformation() {
 		Information i = _localCP.addInformation();
-		versionUp(i);
+		this.versionUp();
 		return new SyncInformation(i);
 	}
 
@@ -81,28 +81,29 @@ public class SyncContextPoint implements ContextPoint {
 	//TODO Should this info be converted?
 	// No, document!!! Reference ought to be dropped.
 	public void addInformation(Information source) {
-		versionUp(source);
-		_localCP.addInformation(source);
+            _localCP.addInformation(source);
+            versionUp();
+		
 	}
 
 	@Override
 	public Information addInformation(InputStream is, long len) {
 		Information i =  _localCP.addInformation(is, len);
-		versionUp(i);
+		versionUp();
 		return new SyncInformation(i);
 	}
 
 	@Override
 	public Information addInformation(byte[] content) {
 		Information i = _localCP.addInformation(content);
-		versionUp(i);
+		versionUp();
 		return new SyncInformation(i);
 	}
 
 	@Override
 	public Information addInformation(String content) {
 		Information i = _localCP.addInformation(content);
-		versionUp(i);
+		versionUp();
 		return new SyncInformation(i);
 	}
 
@@ -173,14 +174,16 @@ public class SyncContextPoint implements ContextPoint {
 	}
 	
 	private void versionUp() {
-		int version = 1;
-		try{
+            int oldVersion = Integer.parseInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
+            _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
+//		int version = 1;
+//		try{
 //			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
-		}catch(NumberFormatException e){
-			// TODO: ?
-		}
-		version++;
-		_localCP.setProperty(VERSION_PROPERTY_NAME, Integer.toString(version));
+//		}catch(NumberFormatException e){
+//			// TODO: ?
+//		}
+//		version++;
+//		_localCP.setProperty(VERSION_PROPERTY_NAME, Integer.toString(version));
 	}	
 	
 	private void versionUp(Information info) {

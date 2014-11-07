@@ -10,6 +10,7 @@ import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
@@ -71,7 +72,9 @@ public class SyncContextPointTests {
 
     @Test
     public void SyncCP_addInformation_isSyncInformation()throws SharkKBException {
-        assert(inMemoKB.createContextPoint(teapotCC).addInformation("Kaffeekannen sind doof.") instanceof SyncInformation);
+        ContextPoint teapotCP = new SyncContextPoint(inMemoKB.createContextPoint(teapotCC));
+        Information i = teapotCP.addInformation("Teapots lalala.");
+        assert(i instanceof SyncInformation);
     }
     
     /** 
