@@ -76,13 +76,13 @@ public class SyncInformation implements Information{
 		int version;
 		_localInformation.setContent(is, len);
 		try{
-			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
+//			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
 		}catch(NumberFormatException e){
 			// TODO ?
 			version = 1;
 		}
-		version++;
-		_localInformation.setProperty(VERSION_PROPERTY_NAME,Integer.toString(version));
+//		version++;
+//		_localInformation.setProperty(VERSION_PROPERTY_NAME,Integer.toString(version));
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class SyncInformation implements Information{
 	private void versionUp() {
 		int version = 1;
 		try{
-			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
+//			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
 		}catch(NumberFormatException e){
 			// TODO ?
 		}

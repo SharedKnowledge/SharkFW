@@ -106,10 +106,10 @@ public class SyncContextPointTests {
         teapotCP.addInformation("For example silver, iron or glass.".getBytes());
         assertEquals(teapotCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME), "5");
 
-        byte[] textBytes = "Some were even made from gold.".getBytes();
-        InputStream is = new ByteInputStream(textBytes, textBytes.length + 1);
-        teapotCP.addInformation(is, textBytes.length);
-        assertEquals(teapotCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME), "6");
+//        byte[] textBytes = "Some were even made from gold.".getBytes();
+//        InputStream is = new ByteInputStream(textBytes, textBytes.length + 1);
+//        teapotCP.addInformation(is, textBytes.length);
+//        assertEquals(teapotCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME), "6");
     }
     
     @Test

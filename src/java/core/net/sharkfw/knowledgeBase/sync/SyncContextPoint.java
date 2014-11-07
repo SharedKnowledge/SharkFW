@@ -175,7 +175,7 @@ public class SyncContextPoint implements ContextPoint {
 	private void versionUp() {
 		int version = 1;
 		try{
-			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
+//			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
 		}catch(NumberFormatException e){
 			// TODO: ?
 		}
@@ -186,7 +186,7 @@ public class SyncContextPoint implements ContextPoint {
 	private void versionUp(Information info) {
 		int version = 1;
 		try{
-			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
+//			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
 		}catch(NumberFormatException e){
 			// TODO: ?
 		}
