@@ -11,6 +11,7 @@ import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.SharkKBException;
 
 public class SyncContextPoint implements ContextPoint {
 	
@@ -76,7 +77,7 @@ public class SyncContextPoint implements ContextPoint {
 		this.versionUp();
 		return new SyncInformation(i);
 	}
-
+        
 	@Override
 	//TODO Should this info be converted?
 	// No, document!!! Reference ought to be dropped.

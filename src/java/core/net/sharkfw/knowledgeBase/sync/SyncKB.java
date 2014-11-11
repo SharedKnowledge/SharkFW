@@ -91,7 +91,22 @@ public class SyncKB implements SharkKB {
     public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
     	return new SyncContextPoint(_localKB.createContextPoint(coordinates));
     }
-
+    
+    /**
+     * Replaces contextpoint with another contextpoint
+     * @param cp
+     * @throws SharkKBException 
+     */
+    public void replaceContextPoint(ContextPoint cp) throws SharkKBException {
+        removeContextPoint(cp.getContextCoordinates());
+        ContextPoint newCP = createContextPoint(cp.getContextCoordinates());
+        Iterator<Information> cpInfo = cp.getInformation();
+        while(cpInfo.hasNext()){
+            newCP.addInformation(cpInfo.next());
+        }
+        newCP.setProperty(VERSION_PROPERTY_NAME, cp.getProperty(VERSION_PROPERTY_NAME));
+    }
+    
     @Override
     public Knowledge createKnowledge() {
         return _localKB.createKnowledge();
