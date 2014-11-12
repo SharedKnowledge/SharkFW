@@ -38,6 +38,7 @@ public class SyncKP extends KnowledgePort{
         super(engine, kb);
         this._kb = kb;
         this._engine = engine;
+        this.setInterest(InMemoSharkKB.createInMemoInterest(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT));
     }
     
     /**
