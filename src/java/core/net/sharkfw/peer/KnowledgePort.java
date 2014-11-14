@@ -132,6 +132,7 @@ abstract public class KnowledgePort {
      * Return the {@link Interest} that this AbstractKP handles.
      * 
      * @return The interest which is kept inside this AbstractKP.
+     * @return null if no interest was set
      */
     public SharkCS getInterest() {
         return this.interest;

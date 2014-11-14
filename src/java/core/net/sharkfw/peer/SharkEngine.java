@@ -121,7 +121,7 @@ abstract public class SharkEngine {
     }
 
     /**
-     * TODO: Prüfen, ob wir finalize() noch brauchen
+     * TODO: Prï¿½fen, ob wir finalize() noch brauchen
      */
     @Override
     protected void finalize() {
@@ -1207,6 +1207,10 @@ abstract public class SharkEngine {
          * on the REMOTEPEER dimension.
          */
         SharkCS interest = kp.getInterest();
+        // Return if no interest was set
+        if (interest == null) {
+            return;
+        }
         try {
             PeerSTSet recipients = (PeerSTSet) interest.getSTSet(SharkCS.DIM_REMOTEPEER);
             Enumeration<SemanticTag> recipientTags = recipients.tags();
@@ -1226,12 +1230,11 @@ abstract public class SharkEngine {
         L.d("Publishing all KPs", this);
         // Find all KPs
         @SuppressWarnings("rawtypes")
-        Enumeration kpEnum = this.kps.elements();
+        Enumeration<KnowledgePort> kpEnum = this.kps.elements();
 
         // publish one by one to the environment
         while (kpEnum.hasMoreElements()) {
-            StandardKP kp = (StandardKP) kpEnum.nextElement();
-
+            KnowledgePort kp = kpEnum.nextElement();
 
             this.publishKP(kp);
         }
