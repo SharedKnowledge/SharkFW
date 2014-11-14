@@ -98,7 +98,10 @@ public class SyncKB implements SharkKB {
      * @throws SharkKBException 
      */
     public void replaceContextPoint(ContextPoint cp) throws SharkKBException {
+        // remove the old one
         removeContextPoint(cp.getContextCoordinates());
+        
+        // Create new one and add all information to it
         ContextPoint newCP = createContextPoint(cp.getContextCoordinates());
         Iterator<Information> cpInfo = cp.getInformation();
         while(cpInfo.hasNext()){

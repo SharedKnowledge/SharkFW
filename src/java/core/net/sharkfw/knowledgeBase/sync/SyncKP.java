@@ -5,20 +5,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.KnowledgeListener;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
-import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
-public class SyncKP extends KnowledgePort{
+public class SyncKP extends KnowledgePort  {
+
 
 //	public SyncKP(SharkEngine se) {
 //		super(se);
@@ -27,7 +30,9 @@ public class SyncKP extends KnowledgePort{
 
     protected SyncKB _kb;
     protected SharkEngine _engine;
+    protected Interest _syncInterest;
     private static String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
+    
     
     /**
      * syncs with nobody
@@ -36,10 +41,20 @@ public class SyncKP extends KnowledgePort{
      */
     public SyncKP(SharkEngine engine, SyncKB kb) {
         super(engine, kb);
-        this._kb = kb;
-        this._engine = engine;
-        this.setInterest(InMemoSharkKB.createInMemoInterest(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT));
-    }
+        _kb = kb;
+        _engine = engine;
+        
+        // Create the semantic Tag which is used to identify a SyncKP
+        STSet syncTag;
+        try {
+            syncTag = InMemoSharkKB.createInMemoSTSet();
+            syncTag.createSemanticTag(SYNCHRONIZATION_NAME, SYNCHRONIZATION_NAME);
+        } catch (SharkKBException e) {
+            L.d("Tag SharkKP_synchronization which is used by SyncKP already exists!");
+            return;
+        } 
+        _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, null, null, null, null, SharkCS.DIRECTION_OUT);
+   }
     
     /**
      * ATTENTION!!!! Port will keep this kb with ANY other
@@ -123,5 +138,5 @@ public class SyncKP extends KnowledgePort{
                 Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
 }
