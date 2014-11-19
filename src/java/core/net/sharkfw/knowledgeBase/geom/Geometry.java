@@ -7,4 +7,5 @@ package net.sharkfw.knowledgeBase.geom;
 public interface Geometry {
     public static final String SHARK_POINT_SI_PREFIX = "sharklong://";
     public String getWKT();
+    public String getEWKT();
 }
