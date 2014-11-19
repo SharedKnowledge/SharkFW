@@ -58,4 +58,10 @@ public class InMemoGeometry implements Geometry {
     public String getEWKT() {
         return this.getEWKT();
     }
+
+    @Override
+    public int getSRS() {
+        // TODO: really extract sps from ewkt!!
+        return 4326;
+    }
 }

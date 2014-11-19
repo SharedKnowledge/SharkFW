@@ -8,4 +8,10 @@ public interface Geometry {
     public static final String SHARK_POINT_SI_PREFIX = "sharklong://";
     public String getWKT();
     public String getEWKT();
+    
+    /**
+     * 
+     * @return epsg code of spatial reference system
+     */
+    public int getSRS();
 }
