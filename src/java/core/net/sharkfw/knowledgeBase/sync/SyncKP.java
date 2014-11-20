@@ -7,12 +7,17 @@ import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
 import net.sharkfw.knowledgeBase.KnowledgeListener;
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
@@ -20,29 +25,26 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
-public class SyncKP extends KnowledgePort  {
-
-
-//	public SyncKP(SharkEngine se) {
-//		super(se);
-//		// TODO Auto-generated constructor stub
-//	}
+public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     protected SyncKB _kb;
     protected SharkEngine _engine;
     protected Interest _syncInterest;
-    private static String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
+    private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
+    // Flags for syncing
+    protected boolean _syncOnKBChange;
+    protected boolean _syncOnInsert;
     
-    /**
-     * syncs with nobody
-     * @param engine
-     * @param kb 
-     */
-    public SyncKP(SharkEngine engine, SyncKB kb) {
+    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnKBChange, boolean syncOnInsert) {
         super(engine, kb);
         _kb = kb;
         _engine = engine;
+        _syncOnKBChange = syncOnKBChange;
+        _syncOnInsert = syncOnInsert;
+        
+        // Add a listener so we will be notified when a CP is added
+        _kb.addListener(this);
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -54,7 +56,23 @@ public class SyncKP extends KnowledgePort  {
             return;
         } 
         _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, null, null, null, null, SharkCS.DIRECTION_OUT);
+    }
+    /**
+     * syncs with nobody
+     * @param engine
+     * @param kb 
+     */
+    public SyncKP(SharkEngine engine, SyncKB kb) {
+        this(engine, kb, false, false);
    }
+    
+    public void setSyncOnKBChange(boolean value) {
+        _syncOnKBChange = value;
+    }
+    public void setSyncOnInsert(boolean value) {
+        _syncOnInsert = value;
+    }
+    
     
     /**
      * ATTENTION!!!! Port will keep this kb with ANY other
@@ -139,4 +157,67 @@ public class SyncKP extends KnowledgePort  {
         }
     }
     
+    @Override
+    public void contextPointAdded(ContextPoint cp) {
+    }
+
+    @Override
+    public void cpChanged(ContextPoint cp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void contextPointRemoved(ContextPoint cp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public void topicAdded(SemanticTag tag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void peerAdded(PeerSemanticTag tag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void locationAdded(SpatialSemanticTag location) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void timespanAdded(TimeSemanticTag time) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void topicRemoved(SemanticTag tag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void peerRemoved(PeerSemanticTag tag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void locationRemoved(SpatialSemanticTag tag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void timespanRemoved(TimeSemanticTag tag) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
