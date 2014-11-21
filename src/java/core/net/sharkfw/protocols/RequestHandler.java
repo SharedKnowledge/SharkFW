@@ -28,4 +28,12 @@ public interface RequestHandler {
    * @param con The <code>StreamConnection</code> to handle.
    */
   public void handleStream(StreamConnection con);
+  
+  /**
+   * Ad hoc networks create new connections by their own.
+   * Those stubs should use this method to annonce a newly
+   * created stream connection
+   * @param con 
+   */
+  public void handleNewConnectionStream(StreamConnection con);
 }

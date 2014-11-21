@@ -65,11 +65,12 @@ public class SimpleKEPStub extends KEPStub {
 	public SimpleKEPStub(SharkEngine se) {
 		this.listener = new Vector<KnowledgePort>();
 		this.se = se;
-    this.table = new Hashtable<String, StreamConnection>();
+                this.table = new Hashtable<String, StreamConnection>();
 	}
 
 	/**
-	 * this message is called by underlying stream protocols whenever a new Stream is received.
+	 * this message is called by underlying stream protocols 
+         * whenever a new Stream is established.
 	 * 
 	 * @param is The received stream.
 	 */
@@ -83,9 +84,25 @@ public class SimpleKEPStub extends KEPStub {
                 
 	}
 
+    /**
+     * This message is to be called when a new connection was establised e.g.
+     * in a spontaneous network and this peer shall try to start KEP message
+     * exchange.
+     * 
+     * @param con 
+     */
+    @Override
+    public void handleNewConnectionStream(StreamConnection con) {
+        // handle that stream in stub
+        this.handleStream(con);
+        
+        // force engine to start a communication
+        this.se.handleConnection(con);
+    }
+        
     @Override
 	public final void handleMessage(byte[] msg, MessageStub stub) {
-    // Use byte[] to avoid encoding issues. Encoding is the job of the sending and receiving parties.
+    // Use byte[] to avoid encoding issues. Encoding is job of the sending and receiving parties.
 		L.d("KEPStub: message received: " + msg, this);
 		try {
 			KEPInMessage inMsg = new KEPInMessage(this.se, msg, stub);

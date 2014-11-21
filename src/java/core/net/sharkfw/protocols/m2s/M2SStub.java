@@ -277,4 +277,9 @@ public class M2SStub implements StreamStub, RequestHandler {
     public boolean started() {
         return this.mStub.started();
     }    
+
+    @Override
+    public void handleNewConnectionStream(StreamConnection con) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
 }

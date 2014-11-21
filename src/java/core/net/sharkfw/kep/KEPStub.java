@@ -50,17 +50,6 @@ public abstract class KEPStub implements RequestHandler, KEPConnectionPool, KEPM
     }
     
     /**
-     * This message is to be called when a new connection was establised e.g.
-     * in a spontaneous network and this peer shall try to start KEP message
-     * exchange.
-     * 
-     * @param newConnection 
-     */
-    public void handleNewConnection(StreamConnection newConnection) {
-        // TODO
-    }
-    
-    /**
      * Add a <code>KEPHandlery</code> to this KEPStub.
      * <code>KEPHandler</code> are called when KEP-messages arrive.
      *
