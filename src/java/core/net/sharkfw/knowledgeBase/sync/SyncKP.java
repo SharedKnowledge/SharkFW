@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.Enumeration;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -8,7 +9,6 @@ import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
-import net.sharkfw.knowledgeBase.KnowledgeListener;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -33,18 +33,25 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
-    protected boolean _syncOnKBChange;
-    protected boolean _syncOnInsert;
+    protected boolean _syncOnInsertByOwner;
+    protected boolean _syncOnInsertByOther;
     
-    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnKBChange, boolean syncOnInsert) {
+    // List of peers to sync with
+    
+    /**
+     * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
+     * @param engine
+     * @param kb
+     * @param syncOnInsertByOwner Sync when new information is inserted into the Knowledge Base by the user
+     * @param syncOnInsertByOther Sync when new information is added to the Knowledge base by others (via p2p)
+     */
+    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnInsertByOwner, boolean syncOnInsertByOther) {
         super(engine, kb);
         _kb = kb;
         _engine = engine;
-        _syncOnKBChange = syncOnKBChange;
-        _syncOnInsert = syncOnInsert;
         
-        // Add a listener so we will be notified when a CP is added
-        _kb.addListener(this);
+        _syncOnInsertByOwner = syncOnInsertByOwner;
+        _syncOnInsertByOther = syncOnInsertByOther;
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -58,19 +65,19 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, null, null, null, null, SharkCS.DIRECTION_OUT);
     }
     /**
-     * syncs with nobody
+     * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
      * @param engine
      * @param kb 
      */
     public SyncKP(SharkEngine engine, SyncKB kb) {
-        this(engine, kb, false, false);
+        this(engine, kb, true, false);
    }
     
     public void setSyncOnKBChange(boolean value) {
-        _syncOnKBChange = value;
+        _syncOnInsertByOwner = value;
     }
     public void setSyncOnInsert(boolean value) {
-        _syncOnInsert = value;
+        _syncOnInsertByOther = value;
     }
     
     
@@ -159,6 +166,14 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     
     @Override
     public void contextPointAdded(ContextPoint cp) {
+        // Check if sync on KB insert by owner flag is set and CP was added by this user
+        if (_syncOnInsertByOwner && cp.getContextCoordinates().getOriginator() == _kb.getOwner()) {
+        }
+        // Or if knowledge was inserted by others and sync on insert by others flag is set
+        else if (_syncOnInsertByOther && (cp.getContextCoordinates().getOriginator() != _kb.getOwner())) {
+            
+        }
+        
     }
 
     @Override
