@@ -30,6 +30,7 @@ public interface KEPConnection {
    * Send <code>interest</code> via <code>expose</code> to all entities on the
    * <code>REMOTEPEER</code> dimension of that interest.
    * 
+     * @throws net.sharkfw.system.SharkException
    * @see net.sharkfw.knowledgeBase.ExposedInterest
    * @see net.sharkfw.knowledgeBase.ContextSpace
    * @see net.sharkfw.kep.KEPResponse

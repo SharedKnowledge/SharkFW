@@ -14,7 +14,6 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.peer.SharkEngine.SecurityLevel;
 import net.sharkfw.peer.SharkEngine.SecurityReplyPolicy;
 import net.sharkfw.protocols.RequestHandler;
-import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.system.InterestStore;
 import net.sharkfw.system.KnowledgeStore;
 
@@ -29,7 +28,7 @@ import net.sharkfw.system.KnowledgeStore;
  * @author thsc
  * @author mfi
  */
-public abstract class KEPStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting {
+public abstract class KEPStub implements RequestHandler, /*KEPConnectionPool,*/ KEPMessageAccounting {
     
     private static KEPStub env = null;
     /**
