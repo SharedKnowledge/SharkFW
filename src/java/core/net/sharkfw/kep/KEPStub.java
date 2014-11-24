@@ -28,7 +28,7 @@ import net.sharkfw.system.KnowledgeStore;
  * @author thsc
  * @author mfi
  */
-public abstract class KEPStub implements RequestHandler, /*KEPConnectionPool,*/ KEPMessageAccounting {
+public abstract class KEPStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting {
     
     private static KEPStub env = null;
     /**
