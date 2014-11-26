@@ -1,6 +1,6 @@
 package net.sharkfw.knowledgeBase;
 
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  *
@@ -10,5 +10,5 @@ public interface SpatialSemanticTag extends SemanticTag {
     /**
      * Returns geometry of this given spatial tag
      */
-    public Geometry getGeometry();
+    public SharkGeometry getGeometry();
 }

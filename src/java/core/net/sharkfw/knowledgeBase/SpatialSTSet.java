@@ -2,7 +2,7 @@ package net.sharkfw.knowledgeBase;
 
 import java.util.Enumeration;
 import java.util.Vector;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  *
@@ -16,7 +16,7 @@ public interface SpatialSTSet extends STSet {
     public double getDistance(SpatialSemanticTag gc1, SpatialSemanticTag gc2);
     public boolean isInRange(SpatialSemanticTag gc1, SpatialSemanticTag gc2, double radius);
 
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, Geometry geom) throws SharkKBException;
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry geom) throws SharkKBException;
 
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sI, Vector points) throws SharkKBException;
 

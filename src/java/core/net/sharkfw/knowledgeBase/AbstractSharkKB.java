@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -234,7 +234,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Geometry geom) throws SharkKBException {
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
         return this.getSpatialSTSet().createSpatialSemanticTag(name, sis, geom);
     }
     

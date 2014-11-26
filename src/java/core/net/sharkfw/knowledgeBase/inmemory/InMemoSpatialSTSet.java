@@ -3,7 +3,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 import java.util.Enumeration;
 import java.util.Vector;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  *
@@ -68,7 +68,7 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
     }
 
     @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Geometry geom) throws SharkKBException {
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
         SpatialSemanticTag st = this.getSpatialSemanticTag(sis);
         if (st != null) {
             return st;
