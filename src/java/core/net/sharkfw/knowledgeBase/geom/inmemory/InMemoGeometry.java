@@ -1,67 +1,105 @@
 package net.sharkfw.knowledgeBase.geom.inmemory;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  *
  * @author thsc
  */
-public class InMemoGeometry implements Geometry {
-    private String ewkt;
-    
-    private InMemoGeometry(String ewkt) {
-        this.ewkt = ewkt;
+public class InMemoGeometry implements SharkGeometry {
+
+    // TODO: Test format!!!
+    //Well-Known Text
+    private String wkt;
+    //epsg code of spatial reference system
+    private int srs;
+
+    private InMemoGeometry(String wkt, int srs) {
+        this.wkt = wkt;
+        this.srs = srs;
     }
 
     /**
-     * 
+     *
      * @param wkt
-     * @return
+     * @return InMemoGeometry
      * @throws SharkKBException wrong format
      */
-    public static Geometry createGeomByWKT(String wkt) throws SharkKBException {
+    public static SharkGeometry createGeomByWKT(String wkt) throws SharkKBException {
         // TODO: add default SRS!
-        return new InMemoGeometry(wkt);
+        String validErr = null;
+
+        // empty geometries are always valid!
+        if (wkt.isEmpty()) {
+            throw new SharkKBException("WKT is empty");
+        } else {
+            
+        }
+        return new InMemoGeometry(wkt, 4326);
     }
 
     /**
-     * 
+     *
      * @param ewkt
      * @return
      * @throws SharkKBException wrong format
      */
-    public static Geometry createGeomByEWKT(String ewkt) throws SharkKBException {
-        // TODO: Test format!
-        return new InMemoGeometry(ewkt);
-    }
-    
-//    public static Point createPoint(Double lon, Double lat) {
-//        return new InMemoPoint(lon, lat);
-//    }
-//
-    public static String createSpatialSI(Geometry geom) {
-        return Geometry.SHARK_POINT_SI_PREFIX + geom.getEWKT();
-    }
-//
-//    public static String createSpatialSI(String longitude, String latitude) {
-//        return InMemoPoint.SHARK_POINT_SI_PREFIX + longitude + "/" + latitude;
-//    }
+    public static SharkGeometry createGeomByEWKT(String ewkt) throws SharkKBException {
+        String wkt = null;
+        int srs = 0;
 
+        if (ewkt.isEmpty()) {
+            throw new SharkKBException("WKT is empty");
+        } else {
+            
+        }
+        return new InMemoGeometry(wkt, srs);
+    }
+
+    /**
+     *
+     * @param geom
+     * @return
+     */
+    public static String createSpatialSI(SharkGeometry geom) {
+        return SharkGeometry.SHARK_POINT_SI_PREFIX + geom.getEWKT();
+    }
+
+    /**
+     *
+     * @return
+     */
     @Override
     public String getWKT() {
-        // TODO - withdraw leading srs from string
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.wkt;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getEWKT() {
-        return this.getEWKT();
+        return ("SRID=" + getSRS() + ";" + getWKT());
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int getSRS() {
-        // TODO: really extract sps from ewkt!!
-        return 4326;
+        return this.srs;
     }
+    
+    
+    //    public static Point createPoint(Double lon, Double lat) {
+    //        return new InMemoPoint(lon, lat);
+    //    }
+    //
+    //
+    //    public static String createSpatialSI(String longitude, String latitude) {
+    //        return InMemoPoint.SHARK_POINT_SI_PREFIX + longitude + "/" + latitude;
+    //    }
 }

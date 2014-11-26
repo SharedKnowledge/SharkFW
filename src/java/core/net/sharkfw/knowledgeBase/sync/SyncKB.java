@@ -1,7 +1,7 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -216,7 +216,7 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Geometry geom) throws SharkKBException {
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
         return _localKB.createSpatialSemanticTag(name, sis, geom);
     }
 

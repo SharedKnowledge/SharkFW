@@ -3,7 +3,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkURI;
 import net.sharkfw.knowledgeBase.SpatialSNSemanticTag;
@@ -17,10 +17,10 @@ import net.sharkfw.system.L;
  */
 @SuppressWarnings("unchecked")
 public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implements SpatialSNSemanticTag {
-    private Geometry geom;
+    private SharkGeometry geom;
     public static final String STD_SST_NAME = "SpatialSemanticTag";
     
-    public InMemoSpatialSemanticTag(String name, String si[], Geometry geom) {
+    public InMemoSpatialSemanticTag(String name, String si[], SharkGeometry geom) {
         super(name, si);
         
         this.geom = geom;
@@ -30,7 +30,7 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
         this(STD_SST_NAME, new String[] { SharkURI.geoST() } );
     }
     
-    public InMemoSpatialSemanticTag(Geometry geom) {
+    public InMemoSpatialSemanticTag(SharkGeometry geom) {
         this(STD_SST_NAME, 
                 new String[] { InMemoGeometry.createSpatialSI(geom) }, 
                 geom);
@@ -173,7 +173,7 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
     }
         
     @Override
-    public Geometry getGeometry() {
+    public SharkGeometry getGeometry() {
         if(this.geom == null) {
             this.refreshStatus();
         }

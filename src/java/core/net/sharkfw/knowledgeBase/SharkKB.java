@@ -1,7 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
 import java.util.Enumeration;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  *
@@ -201,7 +201,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
      */
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException;
     
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Geometry geom) throws SharkKBException;
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException;
     
     /**
      * @deprecated forget that stuff, please

@@ -1,7 +1,7 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.Geometry;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.system.Util;
 
 /**
@@ -317,11 +317,11 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * @param geometry
      * @return 
      */
-    public static SpatialSemanticTag createInMemoSpatialSemanticTag(Geometry geometry) {
+    public static SpatialSemanticTag createInMemoSpatialSemanticTag(SharkGeometry geometry) {
         return new InMemoSpatialSemanticTag(geometry);
     }
 
-    public static SpatialSemanticTag createInMemoSpatialSemanticTag(String name, String si[], Geometry geom) {
+    public static SpatialSemanticTag createInMemoSpatialSemanticTag(String name, String si[], SharkGeometry geom) {
         return new InMemoSpatialSemanticTag(name, si, geom);
     }
         
