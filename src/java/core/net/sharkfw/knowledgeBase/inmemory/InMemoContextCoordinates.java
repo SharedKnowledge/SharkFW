@@ -177,4 +177,9 @@ class InMemoContextCoordinates extends InMemoSharkCS implements ContextCoordinat
         
         return this.locations;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return SharkCSAlgebra.identical(this, (ContextCoordinates) obj);
+    }
 }

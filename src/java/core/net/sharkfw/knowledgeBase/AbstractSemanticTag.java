@@ -46,6 +46,11 @@ public abstract class AbstractSemanticTag extends PropertyHolderDelegate
         return SharkCSAlgebra.identical(this, other);
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        return this.identical((SemanticTag) obj);
+    }
+    
     /**
      * Set this tag to be hidden.
      * @param isHidden true if the tag shall be hidden. False if not.

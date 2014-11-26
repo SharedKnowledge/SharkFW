@@ -5,6 +5,7 @@
  */
 package net.sharkfw.knowledgeBase.sync;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
@@ -104,33 +105,51 @@ public class SyncQueueTest {
      */
     @Test
     public void test_addPeer_peerIsAdded() throws SharkKBException {
-        PeerSTSet peers = _kb.getPeerSTSet();
-        peers.removeSemanticTag(_claraPST);
-        SyncQueue mySyncQueue = new SyncQueue(peers);
+        // Create a Peer ST Set with only 2 peers
+        PeerSTSet initialPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+        initialPeerSTSet.merge(_alicePST);
+        initialPeerSTSet.merge(_bobPST);
+        SyncQueue mySyncQueue = new SyncQueue(initialPeerSTSet);
         
         // Test if only 2 peers were added
-        assertTrue(SharkCSAlgebra.identical(peers, mySyncQueue.getPeers()));
+        assertTrue(SharkCSAlgebra.identical(initialPeerSTSet, mySyncQueue.getPeers()));
         
+        // Add one more peer
         mySyncQueue.addPeer(_claraPST);
-        Enumeration<PeerSemanticTag> p  = _kb.getPeerSTSet().peerTags();
-        // Now we should have 3 peers
-        assertTrue(SharkCSAlgebra.identical(_kb.getPeerSTSet(), mySyncQueue.getPeers()));
+        PeerSTSet expectedPeerSTSet = InMemoSharkKB.createInMemoCopy(initialPeerSTSet);
+        expectedPeerSTSet.merge(_claraPST);
         
+        // Now we should have 3 peers and not 2
+        PeerSTSet result = mySyncQueue.getPeers();
+        assertTrue(SharkCSAlgebra.identical(expectedPeerSTSet, result));
+        assertFalse(SharkCSAlgebra.identical(initialPeerSTSet, result));
     }
 
     /**
      * Test of pop method, of class SyncQueue.
      */
     @Test
-    public void testPop() {
-        System.out.println("pop");
-        PeerSemanticTag peer = null;
-        SyncQueue instance = null;
-        List<ContextCoordinates> expResult = null;
-        List<ContextCoordinates> result = instance.pop(peer);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void test_popCCs_correctCCReturned() throws SharkKBException {
+        // Create a sync queue with the peers
+        PeerSTSet peers = _kb.getPeerSTSet();
+        SyncQueue mySyncQueue = new SyncQueue(peers);
+        
+        // Add two context coordinates
+        ContextCoordinates cc1 = _kb.createContextCoordinates(_teapotST, _alicePST, _bobPST, _alicePST, null, null, SharkCS.DIRECTION_OUT);
+        ContextCoordinates cc2 = _kb.createContextCoordinates(_teapotST, _bobPST, _claraPST, _alicePST, null, null, SharkCS.DIRECTION_OUT);
+        mySyncQueue.push(cc1);
+        mySyncQueue.push(cc2);
+        
+        // Create the expected value
+        List<ContextCoordinates> expected = new ArrayList<ContextCoordinates>();
+        expected.add(cc1);
+        expected.add(cc2);
+
+        // Get them and check
+        List<ContextCoordinates> result = mySyncQueue.pop(_bobPST);
+        assertEquals(expected.get(0), result.get(0)); // Why isnt this working?!
+//        assertEquals(expected, mySyncQueue.pop(_alicePST));
+//        assertEquals(expected, mySyncQueue.pop(_claraPST));
+//        assertEquals(null, mySyncQueue.pop(_alicePST));
     }
-    
 }

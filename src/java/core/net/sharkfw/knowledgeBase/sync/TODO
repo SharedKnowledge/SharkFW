@@ -1,3 +1,5 @@
 Change Syncinformation:
 	SyncInformation gets a callback function to its context point which is called as the setContent method is used. This notifies the context point
 	to update its version
+SyncQueue: Clone okay?  um Fehler zu verhindern
+War mal so frei die equals Methode in AbstractSemanticTag und InMemoContextCoordinates zu definieren
