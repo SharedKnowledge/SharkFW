@@ -22,6 +22,10 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 class SyncQueue {
     
     protected List<SyncQueueObject> _syncQueue;
+        
+    public SyncQueue() {
+        _syncQueue = new ArrayList<>();
+    }
     
     public SyncQueue(PeerSTSet peersToSyncWith) {
         _syncQueue = new ArrayList<>();

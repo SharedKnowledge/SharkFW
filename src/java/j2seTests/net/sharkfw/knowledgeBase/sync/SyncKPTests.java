@@ -110,21 +110,28 @@ public class SyncKPTests {
         // Create some information in context space
         ContextCoordinates teapotAliceCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
         ContextCoordinates teapotBobCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
-
+        
+        SyncQueue aliceQueue = new SyncQueue();
+        aliceQueue.addPeer(bob);
+        
+        
+        _aliceSyncKP.setSyncQueue(aliceQueue);
+        
         // Create CPs in bobs and alices KB - they are not the same, so they should be exchanged 
         _aliceSyncKB.createContextPoint(teapotAliceCC);
         _bobSyncKB.createContextPoint(teapotBobCC);
 
         // Start engines (and KPs)
         _aliceEngine.startTCP(5555);
-        _bobEngine.startTCP(5556);
+        //_bobEngine.startTCP(5556);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _aliceEngine.publishAllKP(bob);
+        //_aliceEngine.publishAllKP(bob);
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(5000);
+//        Thread.sleep(Integer.MAX_VALUE);
 
         // Each KB should now know anything about the other contextPoint
         Assert.assertEquals(_bobSyncKB.getContextPoint(teapotBobCC), _aliceSyncKB.getContextPoint(teapotBobCC));
