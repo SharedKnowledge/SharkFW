@@ -6,3 +6,4 @@ War mal so frei die equals Methode in AbstractSemanticTag und InMemoContextCoord
 createInMemoCopy(Bug)!
 KnowledgeBase verwendbar mit mehreren KnowledgePorts?
 Entspricht Implementation der Idee?
+Wie am besten debuggen?
