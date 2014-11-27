@@ -6,18 +6,16 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
 import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.SharkKBException;
 
 public class SyncContextPoint implements ContextPoint {
 	
 	private ContextPoint _localCP = null;
-	public static String VERSION_PROPERTY_NAME = "SyncCP_version";
-	public static String VERSION_DEFAULT_VALUE = "1";
+	protected static String VERSION_PROPERTY_NAME = "SyncCP_version";
+	protected static String VERSION_DEFAULT_VALUE = "1";
 	
 	public SyncContextPoint(ContextPoint c){
 		_localCP = c;

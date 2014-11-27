@@ -3,3 +3,7 @@ Change Syncinformation:
 	to update its version
 SyncQueue: Clone okay?  um Fehler zu verhindern
 War mal so frei die equals Methode in AbstractSemanticTag und InMemoContextCoordinates zu definieren
+createInMemoCopy(Bug)!
+KnowledgeBase verwendbar mit mehreren KnowledgePorts?
+Entspricht Implementation der Idee?
+Wie am besten debuggen?

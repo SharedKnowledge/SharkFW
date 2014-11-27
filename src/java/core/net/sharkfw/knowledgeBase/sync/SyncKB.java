@@ -6,34 +6,16 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSemanticNet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoPeerTaxonomy;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSTSet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSTSet;
-//import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_PeerSemanticTag;
-//import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_SemanticTag;
 
 /**
  * @author simonArnold
  * @author hellerve
  */
 
-//@SuppressWarnings("unchecked")
 public class SyncKB implements SharkKB {
     
-    public static String VERSION_PROPERTY_NAME = "SyncKB_version";
-    public static String VERSION_DEFAULT_VALUE = "1";
+    protected static String VERSION_PROPERTY_NAME = "SyncKB_version";
+    protected static String VERSION_DEFAULT_VALUE = "1";
     
     SharkKB _localKB = null;
 
@@ -43,6 +25,7 @@ public class SyncKB implements SharkKB {
     /**
      * Construct a SyncKB that synchronizes a SharkKB.
      * @param kb The SharkKB that should be synchronized
+     * @throws SharkKBException
      */
     public SyncKB(SharkKB kb) throws SharkKBException{
         _localKB = kb;
@@ -125,7 +108,7 @@ public class SyncKB implements SharkKB {
     @Override
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException {
     	Enumeration<ContextPoint> enumerated = _localKB.getContextPoints(cs);
-		Vector<ContextPoint> temp = new Vector<ContextPoint>();
+	Vector<ContextPoint> temp = new Vector<ContextPoint>();
     	while(enumerated.hasMoreElements()){
     		temp.add(new SyncContextPoint(enumerated.nextElement()));
     	}
@@ -135,7 +118,7 @@ public class SyncKB implements SharkKB {
     @Override
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
     	Enumeration<ContextPoint> enumerated = _localKB.getContextPoints(cs, matchAny);
-		Vector<ContextPoint> temp = new Vector<ContextPoint>();
+	Vector<ContextPoint> temp = new Vector<ContextPoint>();
     	while(enumerated.hasMoreElements()){
     		temp.add(new SyncContextPoint(enumerated.nextElement()));
     	}
@@ -145,7 +128,7 @@ public class SyncKB implements SharkKB {
     @Override
     public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
     	Enumeration<ContextPoint> enumerated = _localKB.getAllContextPoints();
-		Vector<ContextPoint> temp = new Vector<ContextPoint>();
+	Vector<ContextPoint> temp = new Vector<ContextPoint>();
     	while(enumerated.hasMoreElements()){
     		temp.add(new SyncContextPoint(enumerated.nextElement()));
     	}
