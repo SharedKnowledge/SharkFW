@@ -10,6 +10,7 @@ import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;
+import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
@@ -37,12 +38,12 @@ public class SyncKPTests {
     private long connectionTimeOut = 2000;
     private SyncKB _aliceSyncKB = null;
     private SyncKB _bobSyncKB = null;
-    private KnowledgePort _aliceSyncKP, _bobSyncKP;
+    private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;
 
     SemanticTag teapotST =  InMemoSharkKB.createInMemoSemanticTag("teapot", "www.teapot.de");
-    PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice", "mail@alice.de");
-    PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob", "mail@bob.de");
+    PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice", "tcp://localhost:5555");
+    PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob", "tcp://localhost:5556");
     
     @BeforeClass
     public static void setUpClass(){
@@ -65,7 +66,9 @@ public class SyncKPTests {
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() throws SharkProtocolNotSupportedException {
+        _aliceEngine.stopTCP();
+        _bobEngine.stopTCP();
         _aliceSyncKB = null;
         _bobSyncKB = null;
 
@@ -88,11 +91,11 @@ public class SyncKPTests {
         bobKB.createContextPoint(teapotBobCC);
 
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5554);
-        _bobEngine.startTCP(5555);
+        _aliceEngine.startTCP(5555);
+        _bobEngine.startTCP(5556);
         Assert.assertNotNull(_aliceSyncKP);
-        _aliceEngine.publishKP(_aliceSyncKP);
-        _bobEngine.publishKP(bobKP);
+        _aliceEngine.publishAllKP(bob);
+        _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
         Thread.sleep(1000);
@@ -113,15 +116,17 @@ public class SyncKPTests {
         _bobSyncKB.createContextPoint(teapotBobCC);
 
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5556);
-        _bobEngine.startTCP(5557);
-        _aliceEngine.publishAllKP();
-        _bobEngine.publishAllKP();
+        _aliceEngine.startTCP(5555);
+        _bobEngine.startTCP(5556);
+        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.setConnectionTimeOut(connectionTimeOut);
+        _aliceEngine.publishAllKP(bob);
+        _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
         Thread.sleep(1000);
 
-        // Neither KB should now know anything about the other contextPoint
+        // Each KB should now know anything about the other contextPoint
         Assert.assertEquals(_bobSyncKB.getContextPoint(teapotBobCC), _aliceSyncKB.getContextPoint(teapotBobCC));
         Assert.assertEquals(_bobSyncKB.getContextPoint(teapotAliceCC), _aliceSyncKB.getContextPoint(teapotAliceCC));
     }
@@ -139,17 +144,19 @@ public class SyncKPTests {
         _aliceSyncKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
             
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5558);
-        _bobEngine.startTCP(5559);
-        _aliceEngine.publishAllKP();
-        _bobEngine.publishAllKP();
+        _aliceEngine.startTCP(5555);
+        _bobEngine.startTCP(5556);
+        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.setConnectionTimeOut(connectionTimeOut);
+        _aliceEngine.publishAllKP(bob);
+        _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
         Thread.sleep(1000);
 
         // Bob should now have an information attached to his teapot CP!
-        assert(_bobSyncKB.getContextPoint(teapotCC).getNumberInformation() == 1);
-        assert(_bobSyncKB.getContextPoint(teapotCC).getInformation().next().getContentAsString().equals("Teapots freakin rock!"));
+        Assert.assertEquals(_bobSyncKB.getContextPoint(teapotCC).getNumberInformation(), 1);
+        Assert.assertEquals(_bobSyncKB.getContextPoint(teapotCC).getInformation().next().getContentAsString(), "Teapots freakin rock!");
     }
 
     @Test
@@ -167,10 +174,12 @@ public class SyncKPTests {
 
             
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5558);
-        _bobEngine.startTCP(5559);
-        _aliceEngine.publishAllKP();
-        _bobEngine.publishAllKP();
+        _aliceEngine.startTCP(5555);
+        _bobEngine.startTCP(5556);
+        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.setConnectionTimeOut(connectionTimeOut);
+        _aliceEngine.publishAllKP(bob);
+        _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
         Thread.sleep(1000);
@@ -240,7 +249,7 @@ public class SyncKPTests {
 
         // ===========================================
         // Make them talk
-        syncedEngine.publishKP(syncedKP);
+//        syncedEngine.publishAllKP(syncedKP);
 
         Thread.sleep(1000);
 
@@ -280,6 +289,22 @@ public class SyncKPTests {
         byte[] bobShovelContent = bobShovelInfo.getContentAsByte();
         String bobShovelString = new String(bobShovelContent);
         Assert.assertEquals(bobShovelString, "Spaghetti are the best noodles for kids!");
+    }
+    
+    @Test
+    public void test_addCPToKB_CPIsInSyncQueue() throws SharkKBException {
+        _aliceSyncKB.setOwner(alice);
+        
+        PeerSTSet myPSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+        myPSTSet.merge(alice);
+        SyncQueue mySyncQueue = new SyncQueue(myPSTSet);
+        
+        _aliceSyncKP.setSyncQueue(mySyncQueue);
+        
+        ContextCoordinates expected = _aliceSyncKB.createContextCoordinates(teapotST, alice, bob, bob, null, null, SharkCS.DIRECTION_IN);
+        _aliceSyncKB.createContextPoint(expected);
+        
+        Assert.assertEquals(expected, mySyncQueue.pop(alice).get(0));
     }
 
 }

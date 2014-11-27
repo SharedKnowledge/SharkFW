@@ -241,7 +241,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         ti = InMemoSharkKB.createInMemoCopy(cc.getTime());
         
         ContextCoordinates copy = 
-                InMemoSharkKB.createInMemoContextCoordinates(t, o, p, o, ti, l, cc.getDirection());
+                InMemoSharkKB.createInMemoContextCoordinates(t, o, p, rp, ti, l, cc.getDirection());
         
         return copy;
     }

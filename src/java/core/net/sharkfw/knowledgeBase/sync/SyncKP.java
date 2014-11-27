@@ -1,10 +1,7 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.Enumeration;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
@@ -14,7 +11,6 @@ import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
@@ -30,11 +26,12 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     protected SyncKB _kb;
     protected SharkEngine _engine;
     protected Interest _syncInterest;
+    private SyncQueue _syncQueue;
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
-    protected boolean _syncOnInsertByOwner;
-    protected boolean _syncOnInsertByOther;
+    private boolean _syncOnInsertByOwner;
+    private boolean _syncOnInsertByOther;
     
     // List of peers to sync with
     
@@ -45,13 +42,17 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
      * @param syncOnInsertByOwner Sync when new information is inserted into the Knowledge Base by the user
      * @param syncOnInsertByOther Sync when new information is added to the Knowledge base by others (via p2p)
      */
-    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnInsertByOwner, boolean syncOnInsertByOther) {
+    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnInsertByOwner, boolean syncOnInsertByOther) throws SharkKBException {
         super(engine, kb);
         _kb = kb;
         _engine = engine;
+        _kb.addListener(this);
         
         _syncOnInsertByOwner = syncOnInsertByOwner;
         _syncOnInsertByOther = syncOnInsertByOther;
+        
+        // Create a sync queue for all known peers
+        _syncQueue = new SyncQueue(_kb.getPeerSTSet());
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -69,7 +70,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
      * @param engine
      * @param kb 
      */
-    public SyncKP(SharkEngine engine, SyncKB kb) {
+    public SyncKP(SharkEngine engine, SyncKB kb) throws SharkKBException {
         this(engine, kb, true, false);
    }
     
@@ -91,8 +92,27 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     public SharkCS getInterest() {
         // hier ein Interesse senden.
         //
-        this.getKB().getOwner(); // das ist das Peer!
-        return null;
+        return _syncInterest;
+    }
+    
+    @Override
+    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+        try {
+            // Perform a check if the other KP is a Sync KP too
+            SemanticTag tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
+            if (tag != null) {
+                // Create a knowledge of all ContextPoints which need to be synced with that other peer
+                Knowledge k = InMemoSharkKB.createInMemoKnowledge();
+                for (ContextCoordinates cc : _syncQueue.pop(kepConnection.getSender())) {
+                    k.addContextPoint(_kb.getContextPoint(cc));
+                }
+                // And send it as a response
+                kepConnection.insert(k, kepConnection.getSender().getAddresses());
+            }
+        } catch (SharkException e) {
+            L.e(e.getMessage());
+            return;
+        }
     }
     
     @Override
@@ -111,69 +131,29 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                 }
             }
         } catch (SharkKBException ex) {
-            Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-        try{
-            SemanticTag tag;
-            tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
-        
-            XMLSerializer xmlSerializer = new XMLSerializer();
-
-            SharkCS peerCS;
-
-            peerCS = xmlSerializer.deserializeSharkCS(tag.getProperty(SYNCHRONIZATION_NAME));
-
-            if (peerCS.getDirection() == SharkCS.DIRECTION_OUT) {
-                Enumeration<SemanticTag> peerTopics;
-                STSet ownTopics;
-
-                peerTopics = peerCS.getTopics().tags();
-                ownTopics = kb.getTopicSTSet();
-
-                SharkCS ownInterest = InMemoSharkKB.createInMemoInterest(null, null, null, null, null, null, SharkCS.DIRECTION_IN);
-
-                // move to SharkCSAlgebra as STSetIntersection?
-                while (peerTopics.hasMoreElements()) {
-                    SemanticTag peerTag = peerTopics.nextElement();
-                    if (SharkCSAlgebra.isIn(ownTopics, peerTag)) {
-                            ownInterest.getTopics().merge(peerTag);
-                    }
-                }
-
-                String property;
-
-                property = xmlSerializer.serializeSharkCS(ownInterest);
-
-                tag.setProperty(SYNCHRONIZATION_NAME, property);
-                kepConnection.expose(interest, kepConnection.getSender().getAddresses());
-                this.notifyExposeSent(this, interest);
-                
-            } else if(peerCS.getDirection() == SharkCS.DIRECTION_IN) {
-                
-                Knowledge k = SharkCSAlgebra.extract(_kb, peerCS);
-                kepConnection.insert(k, kepConnection.getSender().getAddresses());
-                this.notifyInsertSent(this, k);
-
-            }    
-        } catch(SharkException ex){
-                Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
+            L.e(ex.getMessage());
         }
     }
     
     @Override
     public void contextPointAdded(ContextPoint cp) {
+        
         // Check if sync on KB insert by owner flag is set and CP was added by this user
-        if (_syncOnInsertByOwner && cp.getContextCoordinates().getOriginator() == _kb.getOwner()) {
+        if (_syncOnInsertByOwner && cp.getContextCoordinates().getOriginator().equals(_kb.getOwner())) {
+            try {
+                _syncQueue.push(cp.getContextCoordinates());
+            } catch (SharkKBException e) {
+                L.e(e.getMessage());
+            }
         }
         // Or if knowledge was inserted by others and sync on insert by others flag is set
-        else if (_syncOnInsertByOther && (cp.getContextCoordinates().getOriginator() != _kb.getOwner())) {
-            
+        else if (_syncOnInsertByOther && !(cp.getContextCoordinates().getOriginator().equals(_kb.getOwner()))) {
+            try {
+                _syncQueue.push(cp.getContextCoordinates());
+            } catch (SharkKBException e) {
+                L.e(e.getMessage());
+            }
         }
-        
     }
 
     @Override
@@ -235,4 +215,77 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    protected void setSyncQueue(SyncQueue s) {
+        _syncQueue = s;
+    }
+    
+//    @Override
+//    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
+//        try {
+//            Enumeration<ContextPoint> cps = knowledge.contextPoints();
+//            while (cps.hasMoreElements()) {
+//                ContextPoint remoteCP = cps.nextElement();
+//                ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
+//                int ownCPVersion = (ownCP == null) ? Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) : 0;
+//                
+//                int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+//                if (remoteCPVersion > ownCPVersion) {
+//                    _kb.createContextPoint(remoteCP.getContextCoordinates());
+//                    _kb.replaceContextPoint(remoteCP);
+//                }
+//            }
+//        } catch (SharkKBException ex) {
+//            Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
+//
+//    @Override
+//    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+//        try{
+//            SemanticTag tag;
+//            tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
+//        
+//            XMLSerializer xmlSerializer = new XMLSerializer();
+//
+//            SharkCS peerCS;
+//
+//            peerCS = xmlSerializer.deserializeSharkCS(tag.getProperty(SYNCHRONIZATION_NAME));
+//
+//            if (peerCS.getDirection() == SharkCS.DIRECTION_OUT) {
+//                Enumeration<SemanticTag> peerTopics;
+//                STSet ownTopics;
+//
+//                peerTopics = peerCS.getTopics().tags();
+//                ownTopics = kb.getTopicSTSet();
+//
+//                SharkCS ownInterest = InMemoSharkKB.createInMemoInterest(null, null, null, null, null, null, SharkCS.DIRECTION_IN);
+//
+//                // move to SharkCSAlgebra as STSetIntersection?
+//                while (peerTopics.hasMoreElements()) {
+//                    SemanticTag peerTag = peerTopics.nextElement();
+//                    if (SharkCSAlgebra.isIn(ownTopics, peerTag)) {
+//                            ownInterest.getTopics().merge(peerTag);
+//                    }
+//                }
+//
+//                String property;
+//
+//                property = xmlSerializer.serializeSharkCS(ownInterest);
+//
+//                tag.setProperty(SYNCHRONIZATION_NAME, property);
+//                kepConnection.expose(interest, kepConnection.getSender().getAddresses());
+//                this.notifyExposeSent(this, interest);
+//                
+//            } else if(peerCS.getDirection() == SharkCS.DIRECTION_IN) {
+//                
+//                Knowledge k = SharkCSAlgebra.extract(_kb, peerCS);
+//                kepConnection.insert(k, kepConnection.getSender().getAddresses());
+//                this.notifyInsertSent(this, k);
+//
+//            }    
+//        } catch(SharkException ex){
+//                Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
 }

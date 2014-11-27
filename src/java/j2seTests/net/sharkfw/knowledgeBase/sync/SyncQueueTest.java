@@ -146,10 +146,19 @@ public class SyncQueueTest {
         expected.add(cc2);
 
         // Get them and check
-        List<ContextCoordinates> result = mySyncQueue.pop(_bobPST);
-        assertEquals(expected.get(0), result.get(0)); // Why isnt this working?!
-//        assertEquals(expected, mySyncQueue.pop(_alicePST));
-//        assertEquals(expected, mySyncQueue.pop(_claraPST));
-//        assertEquals(null, mySyncQueue.pop(_alicePST));
+//        List<ContextCoordinates> result = mySyncQueue.pop(_bobPST);
+//        assertEquals(expected, result); // Why isnt this working?!
+        assertEquals(expected, mySyncQueue.pop(_bobPST));
+        assertEquals(expected, mySyncQueue.pop(_alicePST));
+        assertEquals(expected, mySyncQueue.pop(_claraPST));
+        assertEquals(new ArrayList<ContextCoordinates>(), mySyncQueue.pop(_alicePST));
+    }
+    
+    @Test
+    public void myTest() throws SharkKBException {
+        ContextCoordinates cc = _kb.createContextCoordinates(_teapotST, _alicePST, _bobPST, _claraPST, null, null, SharkCS.DIRECTION_OUT);
+        ContextCoordinates clonedCC = InMemoSharkKB.createInMemoCopy(cc);
+        
+        assertEquals(cc, clonedCC);
     }
 }

@@ -78,7 +78,9 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-    	SyncContextPoint sp = new SyncContextPoint(_localKB.getContextPoint(coordinates));
+        ContextPoint localCP = _localKB.getContextPoint(coordinates);
+        if (localCP == null) return null;
+    	SyncContextPoint sp = new SyncContextPoint(localCP);
     	return sp;
     }
 
