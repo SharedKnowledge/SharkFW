@@ -133,15 +133,17 @@ public class SyncKPTests {
 //        Thread.sleep(Integer.MAX_VALUE);
 
         // Bob should now know about alices CP
-        Assert.assertEquals(_bobSyncKB.getContextPoint(teapotAliceCC), _aliceSyncKB.getContextPoint(teapotAliceCC));
+        Assert.assertTrue(_bobSyncKB.getContextPoint(teapotAliceCC).equals(_aliceSyncKB.getContextPoint(teapotAliceCC)));
     }
 
     @Test
     public void syncKP_CPIsWithLowerVersionInKB_CPInformationAssimilated() throws Exception {
         // Create some information in context space
         ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
-
+      
+        SyncBucketList aliceQueue = new SyncBucketList();
         // Create CPs in bobs and alices KB - they ARE the same
+        _aliceSyncKP.setSyncQueue(aliceQueue);
         _aliceSyncKB.createContextPoint(teapotCC);
         _bobSyncKB.createContextPoint(teapotCC);
         // However, alice now adds some information to it! The version should be increased and 
@@ -157,7 +159,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(5000);
 
         // Bob should now have an information attached to his teapot CP!
         Assert.assertEquals(1, _bobSyncKB.getContextPoint(teapotCC).getNumberInformation());
@@ -232,7 +234,7 @@ public class SyncKPTests {
         // Create a standard knowledgeport (and interest) from this information
         SyncKP syncerKP = new SyncKP(syncerEngine, _aliceSyncKB);
 
-        syncerEngine.startTCP(5558);
+        syncerEngine.startTCP(555);
         syncerEngine.setConnectionTimeOut(connectionTimeOut);
 
         // =========================================

@@ -28,6 +28,11 @@ public class SyncContextPoint implements ContextPoint {
 				info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
 		}
 	}
+        
+        @Override
+        public boolean equals(Object obj){
+            return _localCP.equals(((SyncContextPoint)obj)._localCP);
+        }
 
 	@Override
 	public void setSystemProperty(String name, String value) {
