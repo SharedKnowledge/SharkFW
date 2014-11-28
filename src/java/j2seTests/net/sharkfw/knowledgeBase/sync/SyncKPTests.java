@@ -60,6 +60,9 @@ public class SyncKPTests {
         // Set up engines
         _aliceEngine = new J2SEAndroidSharkEngine();
         _bobEngine = new J2SEAndroidSharkEngine();
+        // Set owner
+        _aliceSyncKB.setOwner(alice);
+        _bobSyncKB.setOwner(bob);
         // Kps
         _aliceSyncKP = new SyncKP(_aliceEngine, _aliceSyncKB);
         _bobSyncKP = new SyncKP(_bobEngine, _bobSyncKB);
@@ -111,30 +114,25 @@ public class SyncKPTests {
         ContextCoordinates teapotAliceCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
         ContextCoordinates teapotBobCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
         
+        // add bob to alices syncQueue
         SyncQueue aliceQueue = new SyncQueue();
         aliceQueue.addPeer(bob);
-        
-        
         _aliceSyncKP.setSyncQueue(aliceQueue);
         
-        // Create CPs in bobs and alices KB - they are not the same, so they should be exchanged 
+        // Create a CP alices KB
         _aliceSyncKB.createContextPoint(teapotAliceCC);
-        _bobSyncKB.createContextPoint(teapotBobCC);
 
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5555);
-        //_bobEngine.startTCP(5556);
+        _bobEngine.startTCP(5556);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        //_aliceEngine.publishAllKP(bob);
-        _bobEngine.publishAllKP(alice);
+        _aliceEngine.publishAllKP(bob);
 
         // wait until communication happened
-        Thread.sleep(5000);
-//        Thread.sleep(Integer.MAX_VALUE);
+//        Thread.sleep(5000);
+        Thread.sleep(Integer.MAX_VALUE);
 
-        // Each KB should now know anything about the other contextPoint
-        Assert.assertEquals(_bobSyncKB.getContextPoint(teapotBobCC), _aliceSyncKB.getContextPoint(teapotBobCC));
+        // Bob should now know about alices CP
         Assert.assertEquals(_bobSyncKB.getContextPoint(teapotAliceCC), _aliceSyncKB.getContextPoint(teapotAliceCC));
     }
 

@@ -7,3 +7,6 @@ createInMemoCopy(Bug)!
 KnowledgeBase verwendbar mit mehreren KnowledgePorts?
 Entspricht Implementation der Idee?
 Wie am besten debuggen?
+
+public void response.insert(Knowledge k, String receiveraddress) throws SharkException; in KEPConnection 2. Argument
+entfernen, antwort soll immer an den sender zurrückgeschickt werden

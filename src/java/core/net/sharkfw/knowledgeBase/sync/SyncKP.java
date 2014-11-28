@@ -6,6 +6,7 @@ import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
+import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -30,8 +31,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
-    private boolean _syncOnInsertByOwner;
-    private boolean _syncOnInsertByOther;
+    private boolean _syncOnInsertByNotSyncKP;
+    private boolean _syncOnInsertBySyncKP;
     
     // List of peers to sync with
     
@@ -42,14 +43,14 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
      * @param syncOnInsertByOwner Sync when new information is inserted into the Knowledge Base by the user
      * @param syncOnInsertByOther Sync when new information is added to the Knowledge base by others (via p2p)
      */
-    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnInsertByOwner, boolean syncOnInsertByOther) throws SharkKBException {
+    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnInsertByNotSyncKP, boolean syncOnInsertBySyncKP) throws SharkKBException {
         super(engine, kb);
         _kb = kb;
         _engine = engine;
         _kb.addListener(this);
         
-        _syncOnInsertByOwner = syncOnInsertByOwner;
-        _syncOnInsertByOther = syncOnInsertByOther;
+        _syncOnInsertByNotSyncKP = syncOnInsertByNotSyncKP;
+        _syncOnInsertBySyncKP = syncOnInsertBySyncKP;
         
         // Create a sync queue for all known peers
         _syncQueue = new SyncQueue(_kb.getPeerSTSet());
@@ -63,7 +64,15 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
             L.d("Tag SharkKP_synchronization which is used by SyncKP already exists!");
             return;
         } 
-        _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, null, null, null, null, SharkCS.DIRECTION_OUT);
+        // And an interest with me as the peer dimension set
+        // We need to have an owner of the kb
+        if (_kb.getOwner() == null) {
+            L.e("SharkKB for SyncKP needs to have an owner! Cant create SyncKP.");
+            return;
+        }
+        PeerSTSet ownerPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+        ownerPeerSTSet.merge(_kb.getOwner());
+        _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, ownerPeerSTSet, null, null, null, SharkCS.DIRECTION_OUT);
     }
     /**
      * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
@@ -75,10 +84,10 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
    }
     
     public void setSyncOnKBChange(boolean value) {
-        _syncOnInsertByOwner = value;
+        _syncOnInsertByNotSyncKP = value;
     }
     public void setSyncOnInsert(boolean value) {
-        _syncOnInsertByOther = value;
+        _syncOnInsertBySyncKP = value;
     }
     
     
@@ -103,7 +112,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
             if (tag != null) {
                 // Create a knowledge of all ContextPoints which need to be synced with that other peer
                 Knowledge k = InMemoSharkKB.createInMemoKnowledge();
-                for (ContextCoordinates cc : _syncQueue.pop(kepConnection.getSender())) {
+                PeerSemanticTag sender = kepConnection.getSender();
+                for (ContextCoordinates cc : _syncQueue.pop(sender)) {
                     k.addContextPoint(_kb.getContextPoint(cc));
                 }
                 // And send it as a response
@@ -139,7 +149,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     public void contextPointAdded(ContextPoint cp) {
         
         // Check if sync on KB insert by owner flag is set and CP was added by this user
-        if (_syncOnInsertByOwner && cp.getContextCoordinates().getOriginator().equals(_kb.getOwner())) {
+        if (_syncOnInsertByNotSyncKP && cp.getContextCoordinates().getOriginator().equals(_kb.getOwner())) {
             try {
                 _syncQueue.push(cp.getContextCoordinates());
             } catch (SharkKBException e) {
@@ -147,7 +157,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
             }
         }
         // Or if knowledge was inserted by others and sync on insert by others flag is set
-        else if (_syncOnInsertByOther && !(cp.getContextCoordinates().getOriginator().equals(_kb.getOwner()))) {
+        else if (_syncOnInsertBySyncKP && !(cp.getContextCoordinates().getOriginator().equals(_kb.getOwner()))) {
             try {
                 _syncQueue.push(cp.getContextCoordinates());
             } catch (SharkKBException e) {

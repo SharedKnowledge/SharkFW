@@ -61,11 +61,12 @@ public interface KEPConnection {
   /**
    * Send <code>Knowledge</code> to a specified address.
    *
+     * @throws net.sharkfw.system.SharkException
    * @see net.sharkfw.knowledgeBase.Knowledge
    * @see net.sharkfw.kep.KEPResponse
    *
    * @param k The <code>Knowledge</code> to send.
-   * @param receiveraddress The address to send the <code>Knowledge</code> to.
+   * @param receiveraddress The address to send the <code>Knowledge</code> to (sent back to sender when null).
    */
   public void insert(Knowledge k, String receiveraddress) throws SharkException;
 

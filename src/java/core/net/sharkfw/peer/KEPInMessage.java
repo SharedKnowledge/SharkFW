@@ -1096,6 +1096,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
   /**
    * @param k The knowledge to send
    * @param receiveraddresses An Array of Strings containing addresses to which the knowledge shall be sent
+     * @throws net.sharkfw.system.SharkException
    */
     @Override
     public void insert(Knowledge k, String[] receiveraddresses) throws SharkException {
