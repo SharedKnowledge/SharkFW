@@ -5,8 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import net.sharkfw.knowledgeBase.*;
 
 /**
@@ -237,6 +240,12 @@ public class L {
      */
     public static String knowledge2String(Enumeration<ContextPoint> cpEnum) {
         return cps2String(cpEnum);
+    }
+    
+    public static String cp2String(ContextPoint cp) {
+        List<ContextPoint> cpList = new ArrayList<>(1);
+        cpList.add(cp);
+        return cps2String(Collections.enumeration(cpList));
     }
     
     public static String cps2String(Enumeration<ContextPoint> cpEnum) {
