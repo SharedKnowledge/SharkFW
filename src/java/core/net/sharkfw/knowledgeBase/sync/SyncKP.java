@@ -107,7 +107,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                     k.addContextPoint(_kb.getContextPoint(cc));
                 }
                 // And send it as a response
-                kepConnection.insert(k, kepConnection.getSender().getAddresses());
+                kepConnection.insert(k, (String) null);
+                this.notifyInsertSent(this, k);
             }
         } catch (SharkException e) {
             L.e(e.getMessage());
@@ -130,6 +131,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                     _kb.replaceContextPoint(remoteCP);
                 }
             }
+            this.notifyKnowledgeReceived(knowledge);
         } catch (SharkKBException ex) {
             L.e(ex.getMessage());
         }

@@ -113,8 +113,7 @@ public class SyncKPTests {
         
         SyncBucketList aliceQueue = new SyncBucketList();
         aliceQueue.appendPeer(bob);
-        
-        
+                
         _aliceSyncKP.setSyncQueue(aliceQueue);
         
         // Create CPs in bobs and alices KB - they are not the same, so they should be exchanged 
@@ -130,8 +129,8 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(5000);
-//        Thread.sleep(Integer.MAX_VALUE);
+//        Thread.sleep(5000);
+        Thread.sleep(Integer.MAX_VALUE);
 
         // Each KB should now know anything about the other contextPoint
         Assert.assertEquals(_bobSyncKB.getContextPoint(teapotBobCC), _aliceSyncKB.getContextPoint(teapotBobCC));
