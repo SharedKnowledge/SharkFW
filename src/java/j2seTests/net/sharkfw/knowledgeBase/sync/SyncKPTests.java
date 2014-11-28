@@ -35,7 +35,7 @@ import org.junit.Test;
 
 public class SyncKPTests {
 
-    private long connectionTimeOut = 2000;
+    private final long connectionTimeOut = 2000;
     private SyncKB _aliceSyncKB = null;
     private SyncKB _bobSyncKB = null;
     private SyncKP _aliceSyncKP, _bobSyncKP;
@@ -111,8 +111,8 @@ public class SyncKPTests {
         ContextCoordinates teapotAliceCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
         ContextCoordinates teapotBobCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
         
-        SyncQueue aliceQueue = new SyncQueue();
-        aliceQueue.addPeer(bob);
+        SyncBucketList aliceQueue = new SyncBucketList();
+        aliceQueue.appendPeer(bob);
         
         
         _aliceSyncKP.setSyncQueue(aliceQueue);
@@ -162,8 +162,8 @@ public class SyncKPTests {
         Thread.sleep(1000);
 
         // Bob should now have an information attached to his teapot CP!
-        Assert.assertEquals(_bobSyncKB.getContextPoint(teapotCC).getNumberInformation(), 1);
-        Assert.assertEquals(_bobSyncKB.getContextPoint(teapotCC).getInformation().next().getContentAsString(), "Teapots freakin rock!");
+        Assert.assertEquals(1, _bobSyncKB.getContextPoint(teapotCC).getNumberInformation());
+        Assert.assertEquals("Teapots freakin rock!", _bobSyncKB.getContextPoint(teapotCC).getInformation().next().getContentAsString());
     }
 
     @Test
@@ -295,7 +295,7 @@ public class SyncKPTests {
         Information bobShovelInfo = (Information) bobSpaghettiInfoEnum.nextElement();
         byte[] bobShovelContent = bobShovelInfo.getContentAsByte();
         String bobShovelString = new String(bobShovelContent);
-        Assert.assertEquals(bobShovelString, "Spaghetti are the best noodles for kids!");
+        Assert.assertEquals("Spaghetti are the best noodles for kids!", bobShovelString);
     }
     
     @Test
@@ -304,14 +304,14 @@ public class SyncKPTests {
         
         PeerSTSet myPSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         myPSTSet.merge(alice);
-        SyncQueue mySyncQueue = new SyncQueue(myPSTSet);
+        SyncBucketList mySyncQueue = new SyncBucketList(myPSTSet);
         
         _aliceSyncKP.setSyncQueue(mySyncQueue);
         
         ContextCoordinates expected = _aliceSyncKB.createContextCoordinates(teapotST, alice, bob, bob, null, null, SharkCS.DIRECTION_IN);
         _aliceSyncKB.createContextPoint(expected);
         
-        Assert.assertEquals(expected, mySyncQueue.pop(alice).get(0));
+        Assert.assertEquals(expected, mySyncQueue.popFromBucket(alice).get(0));
     }
 
 }

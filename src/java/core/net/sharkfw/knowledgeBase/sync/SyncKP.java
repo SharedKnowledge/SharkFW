@@ -26,7 +26,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     protected SyncKB _kb;
     protected SharkEngine _engine;
     protected Interest _syncInterest;
-    private SyncQueue _syncQueue;
+    private SyncBucketList _syncBuckets;
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
@@ -52,7 +52,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         _syncOnInsertByOther = syncOnInsertByOther;
         
         // Create a sync queue for all known peers
-        _syncQueue = new SyncQueue(_kb.getPeerSTSet());
+        _syncBuckets = new SyncBucketList(_kb.getPeerSTSet());
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -103,7 +103,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
             if (tag != null) {
                 // Create a knowledge of all ContextPoints which need to be synced with that other peer
                 Knowledge k = InMemoSharkKB.createInMemoKnowledge();
-                for (ContextCoordinates cc : _syncQueue.pop(kepConnection.getSender())) {
+                for (ContextCoordinates cc : _syncBuckets.popFromBucket(kepConnection.getSender())) {
                     k.addContextPoint(_kb.getContextPoint(cc));
                 }
                 // And send it as a response
@@ -141,7 +141,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         // Check if sync on KB insert by owner flag is set and CP was added by this user
         if (_syncOnInsertByOwner && cp.getContextCoordinates().getOriginator().equals(_kb.getOwner())) {
             try {
-                _syncQueue.push(cp.getContextCoordinates());
+                _syncBuckets.addToBuckets(cp.getContextCoordinates());
             } catch (SharkKBException e) {
                 L.e(e.getMessage());
             }
@@ -149,7 +149,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         // Or if knowledge was inserted by others and sync on insert by others flag is set
         else if (_syncOnInsertByOther && !(cp.getContextCoordinates().getOriginator().equals(_kb.getOwner()))) {
             try {
-                _syncQueue.push(cp.getContextCoordinates());
+                _syncBuckets.addToBuckets(cp.getContextCoordinates());
             } catch (SharkKBException e) {
                 L.e(e.getMessage());
             }
@@ -216,8 +216,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    protected void setSyncQueue(SyncQueue s) {
-        _syncQueue = s;
+    protected void setSyncQueue(SyncBucketList s) {
+        _syncBuckets = s;
     }
     
 //    @Override
