@@ -27,7 +27,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     protected SyncKB _kb;
     protected SharkEngine _engine;
     protected Interest _syncInterest;
-    private SyncQueue _syncQueue;
+    private SyncBucketList _syncBuckets;
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
@@ -53,7 +53,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         _syncOnInsertBySyncKP = syncOnInsertBySyncKP;
         
         // Create a sync queue for all known peers
-        _syncQueue = new SyncQueue(_kb.getPeerSTSet());
+        _syncBuckets = new SyncBucketList(_kb.getPeerSTSet());
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -113,11 +113,12 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                 // Create a knowledge of all ContextPoints which need to be synced with that other peer
                 Knowledge k = InMemoSharkKB.createInMemoKnowledge();
                 PeerSemanticTag sender = kepConnection.getSender();
-                for (ContextCoordinates cc : _syncQueue.pop(sender)) {
+                for (ContextCoordinates cc : _syncBuckets.popFromBucket(sender)) {
                     k.addContextPoint(_kb.getContextPoint(cc));
                 }
                 // And send it as a response
-                kepConnection.insert(k, kepConnection.getSender().getAddresses());
+                kepConnection.insert(k, (String) null);
+                this.notifyInsertSent(this, k);
             }
         } catch (SharkException e) {
             L.e(e.getMessage());
@@ -132,7 +133,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
             while (cps.hasMoreElements()) {
                 ContextPoint remoteCP = cps.nextElement();
                 ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
-                int ownCPVersion = (ownCP == null) ? Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) : 0;
+                int ownCPVersion = (ownCP == null) ? 0 : Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
                 
                 int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
                 if (remoteCPVersion > ownCPVersion) {
@@ -140,6 +141,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                     _kb.replaceContextPoint(remoteCP);
                 }
             }
+            this.notifyKnowledgeReceived(knowledge);
         } catch (SharkKBException ex) {
             L.e(ex.getMessage());
         }
@@ -151,7 +153,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         // Check if sync on KB insert by owner flag is set and CP was added by this user
         if (_syncOnInsertByNotSyncKP && cp.getContextCoordinates().getOriginator().equals(_kb.getOwner())) {
             try {
-                _syncQueue.push(cp.getContextCoordinates());
+                _syncBuckets.addToBuckets(cp.getContextCoordinates());
             } catch (SharkKBException e) {
                 L.e(e.getMessage());
             }
@@ -159,7 +161,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         // Or if knowledge was inserted by others and sync on insert by others flag is set
         else if (_syncOnInsertBySyncKP && !(cp.getContextCoordinates().getOriginator().equals(_kb.getOwner()))) {
             try {
-                _syncQueue.push(cp.getContextCoordinates());
+                _syncBuckets.addToBuckets(cp.getContextCoordinates());
             } catch (SharkKBException e) {
                 L.e(e.getMessage());
             }
@@ -168,66 +170,64 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void cpChanged(ContextPoint cp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void contextPointRemoved(ContextPoint cp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
     public void topicAdded(SemanticTag tag) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void peerAdded(PeerSemanticTag tag) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void locationAdded(SpatialSemanticTag location) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void timespanAdded(TimeSemanticTag time) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void topicRemoved(SemanticTag tag) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void peerRemoved(PeerSemanticTag tag) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void locationRemoved(SpatialSemanticTag tag) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void timespanRemoved(TimeSemanticTag tag) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
     
-    protected void setSyncQueue(SyncQueue s) {
-        _syncQueue = s;
+    protected void setSyncQueue(SyncBucketList s) {
+        _syncBuckets = s;
     }
     
 //    @Override

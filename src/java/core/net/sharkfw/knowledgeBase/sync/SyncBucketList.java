@@ -19,20 +19,20 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
  *
  * @author s0539710
  */
-class SyncQueue {
+class SyncBucketList {
     
-    protected List<SyncQueueObject> _syncQueue;
+    protected List<SyncBucket> _syncList;
         
-    public SyncQueue() {
-        _syncQueue = new ArrayList<>();
+    public SyncBucketList() {
+        _syncList = new ArrayList<>();
     }
     
-    public SyncQueue(PeerSTSet peersToSyncWith) {
-        _syncQueue = new ArrayList<>();
+    public SyncBucketList(PeerSTSet peersToSyncWith) {
+        _syncList = new ArrayList<>();
         // Add all possible peers to queue
         Enumeration<PeerSemanticTag> peerEnum = peersToSyncWith.peerTags();
         while (peerEnum.hasMoreElements()) {
-            _syncQueue.add(new SyncQueueObject(peerEnum.nextElement()));
+            _syncList.add(new SyncBucket(peerEnum.nextElement()));
         }
     }
     
@@ -40,8 +40,8 @@ class SyncQueue {
      * Adds a context coordinate to all peers that do not already have this cc in their sync list.
      * @param cc 
      */
-    public void push(ContextCoordinates cc)throws SharkKBException {
-        for (SyncQueueObject s : _syncQueue) {
+    public void addToBuckets(ContextCoordinates cc)throws SharkKBException {
+        for (SyncBucket s : _syncList) {
             s.addCoordinate(cc);
         }
     }
@@ -50,13 +50,13 @@ class SyncQueue {
      * Add a peer that will be synced with in the future
      * @param peer 
      */
-    public void addPeer(PeerSemanticTag peer) {
-        _syncQueue.add(new SyncQueueObject(peer));
+    public void appendPeer(PeerSemanticTag peer) {
+        _syncList.add(new SyncBucket(peer));
     }
     
     public PeerSTSet getPeers() throws SharkKBException {
         PeerSTSet myPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
-        for (SyncQueueObject s : _syncQueue) {
+        for (SyncBucket s : _syncList) {
             myPeerSTSet.merge(s.getPeer());
         }
         return myPeerSTSet;
@@ -67,23 +67,25 @@ class SyncQueue {
      * @param peer
      * @return 
      */
-    public List<ContextCoordinates> pop(PeerSemanticTag peer) {
+    public List<ContextCoordinates> popFromBucket(PeerSemanticTag peer) {
         // Find the peer in our list
-        Iterator<SyncQueueObject> i = _syncQueue.iterator();
-        SyncQueueObject waldo;
+        Iterator<SyncBucket> i = _syncList.iterator();
+        SyncBucket waldo;
         // Lets look for waldo
-        do {
+        while(i.hasNext()) {
             waldo = i.next();
-        } while (!waldo.getPeer().equals(peer));
+            if(waldo.getPeer().equals(peer))
+                return waldo.popCoordinates();
+        }
         
-        return waldo.popCoordinates();
+        return new ArrayList<>();
     }
     
-    class SyncQueueObject {
-        private ArrayList<ContextCoordinates> _ccList;
-        private PeerSemanticTag _peer;
+    class SyncBucket {
+        private final ArrayList<ContextCoordinates> _ccList;
+        private final PeerSemanticTag _peer;
         
-        public SyncQueueObject(PeerSemanticTag peer) {
+        public SyncBucket(PeerSemanticTag peer) {
             _peer = InMemoSharkKB.createInMemoCopy(peer);
             _ccList = new ArrayList<>();
         }

@@ -197,4 +197,9 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
         this.coords = cc;
         this.persist();
     }    
+    
+    @Override
+    public boolean equals(Object obj) {
+        return SharkCSAlgebra.identical(this.getContextCoordinates(), ((ContextPoint)obj).getContextCoordinates());
+    }
 }
