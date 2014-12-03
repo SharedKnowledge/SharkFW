@@ -26,6 +26,10 @@ public class InMemoGenericTagStorage<ST extends SemanticTag> {
 //        this.initSi();
     }
     
+    public int number() {
+        return this.tags.size();
+    }
+    
     /**
     * create and the si2id table for easy retrieval of tags from this stset.
     * A previous version is discarded without any mercy.

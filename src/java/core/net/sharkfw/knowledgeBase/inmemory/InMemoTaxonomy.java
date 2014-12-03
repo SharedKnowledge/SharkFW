@@ -352,4 +352,9 @@ public class InMemoTaxonomy implements Taxonomy, STSet {
     public Taxonomy fragmentTaxonomy(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
         return this.fragment(anchor, fp);
     }
+
+    @Override
+    public int number() {
+        return this.storage.number();
+    }
 }

@@ -189,4 +189,9 @@ public interface STSet {
      */
     public boolean isEmpty();
     
+    /**
+     * 
+     * @return number of tags in this set
+     */
+    public int number();
 }
