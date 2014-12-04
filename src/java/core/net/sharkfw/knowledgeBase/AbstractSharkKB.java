@@ -211,7 +211,9 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException {
-        return this.getPeerSTSet().createPeerSemanticTag(name, new String[]{si}, new String[]{address});
+        PeerSemanticTag pst = this.getPeerSTSet().createPeerSemanticTag(name, new String[]{si}, new String[]{address});
+        this.notifyPeerCreated(pst);
+        return pst;
     }
 
     @Override
