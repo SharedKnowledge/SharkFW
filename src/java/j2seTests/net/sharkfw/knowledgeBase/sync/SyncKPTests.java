@@ -116,10 +116,9 @@ public class SyncKPTests {
         
         SyncBucketList aliceQueue = new SyncBucketList();
         aliceQueue.appendPeer(bob);
-                
         _aliceSyncKP.setSyncQueue(aliceQueue);
         
-        // Create a CP alices KB
+        // Create a CP in alices KB
         _aliceSyncKB.createContextPoint(teapotAliceCC);
 
         // Start engines (and KPs)
@@ -129,7 +128,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(5000);
+        Thread.sleep(1000);
 //        Thread.sleep(Integer.MAX_VALUE);
 
         // Bob should now know about alices CP
@@ -139,29 +138,30 @@ public class SyncKPTests {
     @Test
     public void syncKP_CPIsWithLowerVersionInKB_CPInformationAssimilated() throws Exception {
         // Create some information in context space
-        ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
+        ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
       
         SyncBucketList aliceQueue = new SyncBucketList();
-        // Create CPs in bobs and alices KB - they ARE the same
+        aliceQueue.appendPeer(bob);
         _aliceSyncKP.setSyncQueue(aliceQueue);
+
+        // Create CPs in bobs and alices KB - they ARE the same
         _aliceSyncKB.createContextPoint(teapotCC);
-        _bobSyncKB.createContextPoint(teapotCC);
-        // However, alice now adds some information to it! The version should be increased and 
+//        _bobSyncKB.createContextPoint(teapotCC);
+//         However, alice now adds some information to it! The version should be increased and 
         // the information updated in Bobs KB
         _aliceSyncKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
             
         // Start engines (and KPs)
         _aliceEngine.startTCP(5555);
-        _bobEngine.startTCP(5556);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _aliceEngine.publishAllKP(bob);
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(5000);
+        Thread.sleep(1000);
 
         // Bob should now have an information attached to his teapot CP!
+        Assert.assertNotNull(_bobSyncKB.getContextPoint(teapotCC));
         Assert.assertEquals(1, _bobSyncKB.getContextPoint(teapotCC).getNumberInformation());
         Assert.assertEquals("Teapots freakin rock!", _bobSyncKB.getContextPoint(teapotCC).getInformation().next().getContentAsString());
     }
@@ -174,25 +174,23 @@ public class SyncKPTests {
         // Create CPs in bobs and alices KB - they ARE the same
         _aliceSyncKB.createContextPoint(teapotCC);
         _bobSyncKB.createContextPoint(teapotCC);
-        // Both add information to it. Alice just adds MORE information and has a higher version!
+        // Both add information to it. Bob just adds MORE information and has a higher version!
         _bobSyncKB.getContextPoint(teapotCC).addInformation("Bob does not like teapots.");
-        _aliceSyncKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
+        _bobSyncKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
         _aliceSyncKB.getContextPoint(teapotCC).addInformation("Tea is very healthy.");
 
             
         // Start engines (and KPs)
         _aliceEngine.startTCP(5555);
-        _bobEngine.startTCP(5556);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _aliceEngine.publishAllKP(bob);
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
         Thread.sleep(1000);
 
-        // Alice should NOT get the information from bob so the count stays at 2
-        assert(_aliceSyncKB.getContextPoint(teapotCC).getNumberInformation() == 2);
+        // Bob should NOT get the information from alice so the count stays at 2
+        assert(_bobSyncKB.getContextPoint(teapotCC).getNumberInformation() == 2);
     }
 
 
