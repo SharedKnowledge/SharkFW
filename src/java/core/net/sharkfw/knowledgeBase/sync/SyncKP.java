@@ -183,7 +183,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void peerAdded(PeerSemanticTag tag) {
-        
+        _syncBuckets.appendPeer(tag);
     }
 
     @Override
@@ -228,6 +228,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     
     protected void setSyncQueue(SyncBucketList s) {
         _syncBuckets = s;
+    }
+    protected SyncBucketList getSyncBucketList() {
+        return _syncBuckets;
     }
     
 //    @Override

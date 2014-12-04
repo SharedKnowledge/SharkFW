@@ -10,3 +10,9 @@ Wie am besten debuggen?
 
 public void response.insert(Knowledge k, String receiveraddress) throws SharkException; in KEPConnection 2. Argument
 entfernen, antwort soll immer an den sender zurrückgeschickt werden
+
+
+AbstractSharkKB.notifyPeerAdded etc wurden nie aufgerufen. In AbstractSharkKB auch bei createPeerSemanticTag aufrufen?
+
+Wie ist das Verhalten wenn in einer KnowledgeBase schon einiges an Wissen existiert und es dann mit einem SyncKP verwendet wird? Erhalten alle Peers
+die man trifft erstmal das gesamte Wissen beim nächsten Treffen?
