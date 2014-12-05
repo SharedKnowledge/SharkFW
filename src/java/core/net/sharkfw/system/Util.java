@@ -1029,9 +1029,7 @@ public class Util {
             Util.copyPropertiesFromPropertyHolderToPropertyHolder(original, copy);
             
             OutputStream os = localInfo.getOutputStream();
-			localInfo.obtainLock(os);
             info.streamContent(os);
-			localInfo.releaseLock();
             // Also copy all props from the original information to the newly created information
             Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, localInfo);
             L.d("Creating Information with name:" + info, Util.class);

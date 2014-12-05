@@ -152,10 +152,8 @@ public class SharkKBMessageStorage implements MessageStorage {
         
         try {
             OutputStream infoOS = i.getOutputStream();
-            i.obtainLock(infoOS);
 
             int size = Streamer.stream(is, infoOS, 100);
-            i.releaseLock();
 
             i.setProperty(IS_LAST, Boolean.toString(last));
             i.setProperty(PACKAGENUMBER, Integer.toString(packageNumber));

@@ -1639,9 +1639,7 @@ abstract public class SharkEngine {
             Information i = cp.addInformation();
             OutputStream os = i.getOutputStream();
             SharkOutputStream sos = new UTF8SharkOutputStream(os);
-            i.obtainLock(os);
             this.getXMLSerializer().write(k, sos);
-            i.releaseLock();
             i.setContentType(KNOWLEDGE_CONTENT_TYPE);
         } catch (Exception ex) {
             L.d("cannot serialize knowledge", this);
