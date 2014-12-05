@@ -114,7 +114,7 @@ public class KEPSession extends Thread {
                 Streamer.stream(inputStream, System.err, 5);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            L.l("Closing TCPConnection although there is more data on the stream: " + e.getMessage(), this);
         }
 
         this.kepStub.removeStreamConnection(con);
