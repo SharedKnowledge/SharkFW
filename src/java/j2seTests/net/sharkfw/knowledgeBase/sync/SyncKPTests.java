@@ -69,7 +69,7 @@ public class SyncKPTests {
     }
 
     @After
-    public void tearDown() throws SharkProtocolNotSupportedException {
+    public void tearDown() throws SharkProtocolNotSupportedException, InterruptedException {
         _aliceEngine.stopTCP();
         _bobEngine.stopTCP();
         _aliceSyncKB = null;
@@ -101,7 +101,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         // Neither KB should now know anything about the other contextPoint
         Assert.assertNull(_aliceSyncKB.getContextPoint(teapotBobCC));
@@ -128,7 +128,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 //        Thread.sleep(Integer.MAX_VALUE);
 
         // Bob should now know about alices CP
@@ -158,7 +158,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         // Bob should now have an information attached to his teapot CP!
         Assert.assertEquals(1, _bobSyncKB.getContextPoint(teapotCC).getNumberInformation());
@@ -195,7 +195,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         // Bob should NOT get the information from alice so the count stays at 2
         Assert.assertEquals(2, _bobSyncKB.getContextPoint(teapotCC).getNumberInformation());
@@ -240,6 +240,7 @@ public class SyncKPTests {
         Assert.assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));
         
     }
+    
     
     /**
      * This test does it from scratch!
@@ -286,7 +287,7 @@ public class SyncKPTests {
         aliceEngine.publishAllKP(bob);
         bobEngine.publishAllKP(alice);
         
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         
         // Make sure really all information is transferred
         Assert.assertNotNull(bobKB.getContextPoint(aliceCC));

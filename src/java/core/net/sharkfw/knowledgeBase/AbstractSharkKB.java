@@ -196,58 +196,70 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        return this.getTopicSTSet().createSemanticTag(name, sis);
+        SemanticTag st = this.getTopicSTSet().createSemanticTag(name, sis);
+        this.notifySemanticTagCreated(st);
+        return st;
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        return this.getTopicSTSet().createSemanticTag(name, si);
+        return this.createSemanticTag(name, new String[] {si});
     }
 
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
-        return this.getPeerSTSet().createPeerSemanticTag(name, sis, addresses);
+        PeerSemanticTag pst = this.getPeerSTSet().createPeerSemanticTag(name, sis, addresses);
+        this.notifyPeerCreated(pst);
+        return pst;
     }
     
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException {
-        PeerSemanticTag pst = this.getPeerSTSet().createPeerSemanticTag(name, new String[]{si}, new String[]{address});
-        this.notifyPeerCreated(pst);
-        return pst;
+        return this.createPeerSemanticTag(name, new String[] {si}, new String[] {address});
     }
 
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException {
-        return this.getPeerSTSet().createPeerSemanticTag(name, sis, new String[]{address});
+        return this.createPeerSemanticTag(name, sis, new String[] {address});
     }
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
-        return this.getPeerSTSet().createPeerSemanticTag(name, new String[]{si}, addresses);
+        return this.createPeerSemanticTag(name, new String[] {si}, addresses);
     }
     
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException {
-        return this.getSpatialSTSet().createSpatialSemanticTag(name, sis, (Double[][]) null);
+        SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, (Double[][]) null);
+        this.notifyLocationCreated(sst);
+        return sst;
     }
 
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Double[] spatialCoo, double radius) throws SharkKBException {
-        return this.getSpatialSTSet().createSpatialSemanticTag(name, sis, spatialCoo, radius);
+        SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, spatialCoo, radius);
+        this.notifyLocationCreated(sst);
+        return sst;
     }
     
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
-        return this.getSpatialSTSet().createSpatialSemanticTag(name, sis, geom);
+        SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, geom);
+        this.notifyLocationCreated(sst);
+        return sst;
     }
     
     @Override
     public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException {
-        return this.getTimeSTSet().createTimeSemanticTag(name, sis);
+        TimeSemanticTag tst = this.getTimeSTSet().createTimeSemanticTag(name, sis);
+        this.notifyTimeCreated(tst);
+        return tst;
     }
     
     @Override
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
-        return this.getTimeSTSet().createTimeSemanticTag(from, duration);
+        TimeSemanticTag tst = this.getTimeSTSet().createTimeSemanticTag(from, duration);
+        this.notifyTimeCreated(tst);
+        return tst;
     }
     
     @Override
@@ -618,12 +630,12 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public void semanticTagCreated(SemanticTag tag, STSet stset) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.notifySemanticTagCreated(tag);
     }
 
     @Override
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.notifySemanticTagRemoved(tag);
     }
 
     @Override
@@ -875,7 +887,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         }
     }
 
-    protected void notifyTopicCreated(SemanticTag tag) {
+    protected void notifySemanticTagCreated(SemanticTag tag) {
         Iterator<KnowledgeBaseListener> listenerIterator = this.listeners.iterator();
         while(listenerIterator.hasNext()) {
             KnowledgeBaseListener listener = listenerIterator.next();
@@ -907,7 +919,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         }
     }
 
-    protected void notifyTopicRemoved(SemanticTag tag) {
+    protected void notifySemanticTagRemoved(SemanticTag tag) {
         Iterator<KnowledgeBaseListener> listenerIterator = this.listeners.iterator();
         while(listenerIterator.hasNext()) {
             KnowledgeBaseListener listener = listenerIterator.next();

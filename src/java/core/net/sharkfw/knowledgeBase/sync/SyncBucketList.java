@@ -14,6 +14,7 @@ import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
 /**
  *
@@ -52,6 +53,24 @@ class SyncBucketList {
      */
     public void appendPeer(PeerSemanticTag peer) {
         _syncList.add(new SyncBucket(peer));
+    }
+    
+    public void removePeer(PeerSemanticTag peer) {
+        // Find index of that peer
+        Iterator<SyncBucket> i = _syncList.iterator();
+        SyncBucket waldo = null;
+        // Lets look for waldo
+        while(i.hasNext()) {
+            waldo = i.next();
+            if(waldo.getPeer().equals(peer)) 
+                break;
+        }
+        if (waldo == null) {
+            L.w("Tried to remove an unexisting peer from a SyncKP SyncBucketList.");
+        }
+        else {
+            _syncList.remove(waldo);
+        }
     }
     
     public PeerSTSet getPeers() throws SharkKBException {

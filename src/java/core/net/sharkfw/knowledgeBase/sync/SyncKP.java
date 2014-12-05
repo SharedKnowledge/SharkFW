@@ -34,14 +34,23 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     private boolean _syncOnInsertByNotSyncKP;
     private boolean _syncOnInsertBySyncKP;
     
-    // List of peers to sync with
+    // Keep the context coordinates of the last context point we inserted (for syncOnInsertByNotSyncKP)
+    private ContextCoordinates _lastInsertedCC;
     
     /**
-     * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
+     * This SyncKP will keep the assigned Knowledge Base synchronized with all peers.
+     * When activating the syncOnInsertByNotSyncKP flag, the Sync KP will just tell every peer it knows about
+     *  every new ContextPoints that were added for example by the application - but not about new ContextPoints it
+     *  learned from another Sync KP
+     * When activating the syncOnInsertBySyncKP flag, sync KPs will act like a snowball system - 
+     *  upon receiving a context point from another sync KP we also sync it again with everyone we know, and they
+     *  might sync it again and again.. which might cause a traffic spike but quickly distributes information to everyone
      * @param engine
      * @param kb
-     * @param syncOnInsertByOwner Sync when new information is inserted into the Knowledge Base by the user
-     * @param syncOnInsertByOther Sync when new information is added to the Knowledge base by others (via p2p)
+     * @param syncOnInsertByNotSyncKP Sync when new information is inserted into the Knowledge Base somehow except
+     *  by the doInsert method of THIS Sync KP
+     * @param syncOnInsertBySyncKP Always sync when new information is added to the Knowledge Base even if it was
+     *  added by this sync KP - which may cause traffic spikes 
      */
     public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnInsertByNotSyncKP, boolean syncOnInsertBySyncKP) throws SharkKBException {
         super(engine, kb);
@@ -67,12 +76,13 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         // And an interest with me as the peer dimension set
         // We need to have an owner of the kb
         if (_kb.getOwner() == null) {
-            L.e("SharkKB for SyncKP needs to have an owner! Cant create SyncKP.");
+            L.e("SharkKB for SyncKP needs to have an owner set! Can't create SyncKP.");
             return;
         }
         PeerSTSet ownerPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         ownerPeerSTSet.merge(_kb.getOwner());
         _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, ownerPeerSTSet, null, null, null, SharkCS.DIRECTION_OUT);
+        this.setInterest(_syncInterest);
     }
     /**
      * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
@@ -83,9 +93,19 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         this(engine, kb, true, false);
    }
     
-    public void setSyncOnKBChange(boolean value) {
+    /**
+     * 
+     * @param value If set to true, all ContextPoints that are inserted into the Knowledge Base somehow, except
+     *  by the doInsert method of THIS Sync KP, will be synchronized with others
+     */
+    public void setSyncOnInsertByNotSyncKP(boolean value) {
         _syncOnInsertByNotSyncKP = value;
     }
+    /**
+     * 
+     * @param value If set to true, all ContextPoints that are added to the Knowledge Base, even if it was
+     *  added by this sync KP, will be synchronized with others - which may cause traffic spikes 
+     */
     public void setSyncOnInsert(boolean value) {
         _syncOnInsertBySyncKP = value;
     }
@@ -96,12 +116,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
      * peer..
      */
     public void syncWithAnyPeer() {
-    }
-    
-    public SharkCS getInterest() {
-        // hier ein Interesse senden.
-        //
-        return _syncInterest;
     }
     
     @Override
@@ -131,12 +145,18 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         try {
             Enumeration<ContextPoint> cps = knowledge.contextPoints();
             while (cps.hasMoreElements()) {
+                // Get own and received context point
                 ContextPoint remoteCP = cps.nextElement();
                 ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
+                // Set version of our own CP to it's version or null if we don't have that context point
                 int ownCPVersion = (ownCP == null) ? 0 : Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
-                
+                // Get version of the received context point
                 int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+                
+                // Now compare. If our context point's version is 0 or lower than the version of
+                // the received context point, assimilate it into our knowledge base
                 if (remoteCPVersion > ownCPVersion) {
+                    _lastInsertedCC = remoteCP.getContextCoordinates();
                     _kb.createContextPoint(remoteCP.getContextCoordinates());
                     _kb.replaceContextPoint(remoteCP);
                 }
@@ -147,6 +167,10 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         }
     }
     
+    /**
+     * STILL A HUGE TODO HERE - syncOnInsertByNotSyncKP should check if that CP was added by THIS KP
+     * @param cp 
+     */
     @Override
     public void contextPointAdded(ContextPoint cp) {
         
@@ -203,7 +227,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void peerRemoved(PeerSemanticTag tag) {
-        
     }
 
     @Override

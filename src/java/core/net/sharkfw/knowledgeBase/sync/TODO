@@ -13,6 +13,10 @@ entfernen, antwort soll immer an den sender zurrückgeschickt werden
 
 
 AbstractSharkKB.notifyPeerAdded etc wurden nie aufgerufen. In AbstractSharkKB auch bei createPeerSemanticTag aufrufen?
+==> NotificationThreadPool der je einen Thread in AbstractSharkKB.notify* spawnt
 
 Wie ist das Verhalten wenn in einer KnowledgeBase schon einiges an Wissen existiert und es dann mit einem SyncKP verwendet wird? Erhalten alle Peers
 die man trifft erstmal das gesamte Wissen beim nächsten Treffen?
+    Gesamte KB wird bei SyncKP Creation auf zu synchronisieren gesetzt
+
+AbstractSharkKB semanticTagCreated wirft notSupportedException. Is vllt noch nie aufgefallen weil nie benutzt.
