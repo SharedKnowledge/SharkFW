@@ -47,7 +47,7 @@ public class SyncInformationTests {
         PeerSemanticTag alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
         PeerSemanticTag bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
         TimeSemanticTag timeST = inMemoKB.createTimeSemanticTag(100, 9000);
-        SpatialSemanticTag spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
+        SpatialSemanticTag spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" });
         
         teapotCP = inMemoKB.createContextPoint(inMemoKB.createContextCoordinates(teapotST, bob, bob, alice, timeST, spatialST, SharkCS.DIRECTION_INOUT));
     }

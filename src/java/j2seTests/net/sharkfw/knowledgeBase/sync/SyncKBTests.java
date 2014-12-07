@@ -47,7 +47,7 @@ public class SyncKBTests{
             alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
             bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
             timeST = inMemoKB.createTimeSemanticTag(100, 9000);
-            spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" }, null);
+            spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" });
         } catch (SharkKBException e) {
             fail(e.toString());
         }
