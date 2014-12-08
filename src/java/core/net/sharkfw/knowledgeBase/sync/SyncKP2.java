@@ -48,14 +48,12 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
      *  might sync it again and again.. which might cause a traffic spike but quickly distributes information to everyone
      * @param engine
      * @param kb
-     * @param syncOnInsertByNotSyncKP Sync when new information is inserted into the Knowledge Base somehow except
-     *  by the doInsert method of THIS Sync KP
-     * @param syncOnInsertBySyncKP Always sync when new information is added to the Knowledge Base even if it was
+     * @param snowballing Always sync when new information is added to the Knowledge Base even if it was
      *  added by this sync KP - which may cause traffic spikes 
      */
-    public SyncKP2(SharkEngine engine, SharkKB kb, boolean snowballing) throws SharkKBException {
+    public SyncKP2(SharkEngine engine, SyncKB kb, boolean snowballing) throws SharkKBException {
         super(engine, kb);
-        _kb = new SyncKB(kb);
+        _kb = kb;
         _engine = engine;
         _kb.addListener(this);
         
@@ -89,13 +87,13 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
      * @param engine
      * @param kb 
      */
-    public SyncKP2(SharkEngine engine, SharkKB kb) throws SharkKBException {
+    public SyncKP2(SharkEngine engine, SyncKB kb) throws SharkKBException {
         this(engine, kb, false);
    }
     
     /**
      * 
-     * @param value If set to true, all ContextPoints that are added to the Knowledge Base, even if it was
+     * @param flag If set to true, all ContextPoints that are added to the Knowledge Base, even if it was
      *  added by this sync KP, will be synchronized with others - which may cause traffic spikes 
      */
     public void setSnowballing(boolean flag) {
@@ -231,73 +229,4 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
     protected SyncBucketList getSyncBucketList() {
         return _syncBuckets;
     }
-    
-//    @Override
-//    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
-//        try {
-//            Enumeration<ContextPoint> cps = knowledge.contextPoints();
-//            while (cps.hasMoreElements()) {
-//                ContextPoint remoteCP = cps.nextElement();
-//                ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
-//                int ownCPVersion = (ownCP == null) ? Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) : 0;
-//                
-//                int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
-//                if (remoteCPVersion > ownCPVersion) {
-//                    _kb.createContextPoint(remoteCP.getContextCoordinates());
-//                    _kb.replaceContextPoint(remoteCP);
-//                }
-//            }
-//        } catch (SharkKBException ex) {
-//            Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
-//
-//    @Override
-//    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-//        try{
-//            SemanticTag tag;
-//            tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
-//        
-//            XMLSerializer xmlSerializer = new XMLSerializer();
-//
-//            SharkCS peerCS;
-//
-//            peerCS = xmlSerializer.deserializeSharkCS(tag.getProperty(SYNCHRONIZATION_NAME));
-//
-//            if (peerCS.getDirection() == SharkCS.DIRECTION_OUT) {
-//                Enumeration<SemanticTag> peerTopics;
-//                STSet ownTopics;
-//
-//                peerTopics = peerCS.getTopics().tags();
-//                ownTopics = kb.getTopicSTSet();
-//
-//                SharkCS ownInterest = InMemoSharkKB.createInMemoInterest(null, null, null, null, null, null, SharkCS.DIRECTION_IN);
-//
-//                // move to SharkCSAlgebra as STSetIntersection?
-//                while (peerTopics.hasMoreElements()) {
-//                    SemanticTag peerTag = peerTopics.nextElement();
-//                    if (SharkCSAlgebra.isIn(ownTopics, peerTag)) {
-//                            ownInterest.getTopics().merge(peerTag);
-//                    }
-//                }
-//
-//                String property;
-//
-//                property = xmlSerializer.serializeSharkCS(ownInterest);
-//
-//                tag.setProperty(SYNCHRONIZATION_NAME, property);
-//                kepConnection.expose(interest, kepConnection.getSender().getAddresses());
-//                this.notifyExposeSent(this, interest);
-//                
-//            } else if(peerCS.getDirection() == SharkCS.DIRECTION_IN) {
-//                
-//                Knowledge k = SharkCSAlgebra.extract(_kb, peerCS);
-//                kepConnection.insert(k, kepConnection.getSender().getAddresses());
-//                this.notifyInsertSent(this, k);
-//
-//            }    
-//        } catch(SharkException ex){
-//                Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
 }
