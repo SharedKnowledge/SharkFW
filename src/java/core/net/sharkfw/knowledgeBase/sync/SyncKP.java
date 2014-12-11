@@ -58,7 +58,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         _kb.addListener(this);
         
         _snowballing = snowballing;
-        
+                
         // We need to have an owner of the kb
         if (_kb.getOwner() == null) {
             L.e("SharkKB for SyncKP needs to have an owner set! Can't create SyncKP.");
@@ -130,13 +130,17 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                 for (ContextCoordinates cc : _syncBuckets.popFromBucket(sender)) {
                     k.addContextPoint(_kb.getContextPoint(cc));
                 }
+                // tell the engine to allow sending empty cps
+                boolean defaultBehaviour = _engine.getAllowSendingEmptyContextPoints();
+                _engine.setAllowSendingEmptyContextPoints(true);
                 // And send it as a response
                 kepConnection.insert(k, (String) null);
+                // now back to default behaviour
+                _engine.setAllowSendingEmptyContextPoints(defaultBehaviour);
                 this.notifyInsertSent(this, k);
             }
         } catch (SharkException e) {
             L.e(e.getMessage());
-            return;
         }
     }
     
@@ -154,9 +158,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                 int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
                 
                 // Now compare. If our context point's version is 0 or lower than the version of
-                // the received context point and it comprises information, assimilate it into our 
-                // knowledge base
-                if (remoteCPVersion > ownCPVersion && remoteCP.getInformation() != null) {
+                // the received context poin, assimilate it into our knowledge base
+                if (remoteCPVersion > ownCPVersion) {
                     _lastInsertedCC = remoteCP.getContextCoordinates();
                     _kb.createContextPoint(remoteCP.getContextCoordinates());
                     _kb.replaceContextPoint(remoteCP);
@@ -189,7 +192,12 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     @Override
     public void cpChanged(ContextPoint cp) {
         try {
-            _syncBuckets.addToBuckets(cp.getContextCoordinates());
+            if ( _lastInsertedCC == null
+                    || !_lastInsertedCC.equals(cp.getContextCoordinates())
+                    || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
+                ) {
+                    _syncBuckets.addToBuckets(cp.getContextCoordinates());
+            }
         } catch (SharkKBException ex) {
             L.d("SyncKPListener received empty CP: " + ex.getMessage());
         }

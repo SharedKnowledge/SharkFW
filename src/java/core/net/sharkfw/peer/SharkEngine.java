@@ -1420,7 +1420,7 @@ abstract public class SharkEngine {
         this.allowEmptyContextPoints = allowed;
     }
     
-    public boolean getAllowSendingEmptyContextPoints(boolean allowed) {
+    public boolean getAllowSendingEmptyContextPoints() {
         return this.allowEmptyContextPoints;
     }
     

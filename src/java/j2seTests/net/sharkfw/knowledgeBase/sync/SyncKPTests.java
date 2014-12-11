@@ -2,17 +2,16 @@ package net.sharkfw.knowledgeBase.sync;
 
 
 import java.io.IOException;
-import java.util.Enumeration;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
@@ -209,30 +208,31 @@ public class SyncKPTests {
 
     @Test
     public void syncKP_create_allKBPeersAreInBucketList() throws SharkKBException {
-        // Create a new syncKB
-        SyncKB aliceKB = new SyncKB(new InMemoSharkKB());
-        // Add two peers to it
-        PeerSemanticTag bob = aliceKB.createPeerSemanticTag("Bob", "BobIdentifier", "mail@bob.de");
-        PeerSemanticTag clara = aliceKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
-        
-        // Now use a sync KP
-        SharkEngine aliceEngine = new J2SEAndroidSharkEngine();
-        SyncKP aliceKP = new SyncKP(aliceEngine, aliceKB);
-        
-        PeerSTSet bucketListPeers = aliceKP.getSyncBucketList().getPeers();
-        assertNotNull(bucketListPeers.getSemanticTag("BobIdentifier"));
-        assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));
+        PeerSTSet bucketListPeers = _aliceSyncKP.getSyncBucketList().getPeers();
+        assertNotNull(bucketListPeers.getSemanticTag("bobIdentifier"));
+        bucketListPeers = _bobSyncKP.getSyncBucketList().getPeers();
+        assertNotNull(bucketListPeers.getSemanticTag("aliceIdentifier"));
     }
     
     @Test
-    public void syncKP_addPeerToKB_peerIsInBucketList() throws SharkKBException {
+    public void syncKP_createPeerInKB_peerIsInBucketList() throws SharkKBException {
         // Add a new peer to Alice's knowledge base
         PeerSemanticTag clara = _aliceKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
         
         PeerSTSet bucketListPeers = _aliceSyncKP.getSyncBucketList().getPeers();
         assertNotNull(bucketListPeers.getSemanticTag("bobIdentifier"));
-        assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));
+        assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));    
+    }
+    
+    @Test
+    public void syncKP_mergePeerInKB_peerIsInBucketList() throws SharkKBException {
+        // Add a new peer to Alice's knowledge base
+        PeerSemanticTag clara = InMemoSharkKB.createInMemoPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
+        _aliceKB.getPeerSTSet().merge(clara);
         
+        PeerSTSet bucketListPeers = _aliceSyncKP.getSyncBucketList().getPeers();
+        assertNotNull(bucketListPeers.getSemanticTag("bobIdentifier"));
+        assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));    
     }
     
     
@@ -428,17 +428,121 @@ public class SyncKPTests {
     }
     
     @Test
-    public void test_snowballingInactive_CPNotForwarded() {
+    public void test_snowballingInactive_CPNotForwarded() throws Exception {
+         // We need a Clara for this
+        SyncKB claraKB = new SyncKB(new InMemoSharkKB());
+        int claraPort = getPort();
+        PeerSemanticTag clara = claraKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "tcp://localhost:"+claraPort);
+        claraKB.setOwner(clara);
+        SharkEngine claraEngine = new J2SEAndroidSharkEngine();
+        SyncKP claraSyncKP = new SyncKP(claraEngine, claraKB);
+        // Let Bob know about Clara
+        claraKB.getPeerSTSet().merge(_bob);
+        _bobKB.getPeerSTSet().merge(clara);
         
+        // Alice has Knowledge 
+        ContextCoordinates teapotAliceCC = _aliceKB.createContextCoordinates(_teapotST, _alice, _alice, _bob, null, null, SharkCS.DIRECTION_INOUT);
+        ContextPoint teapotAliceCP = _aliceKB.createContextPoint(teapotAliceCC);
+        teapotAliceCP.addInformation("Teapots yay");
+        
+        // Start engines (and KPs)
+        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.setConnectionTimeOut(connectionTimeOut);
+        claraEngine.setConnectionTimeOut(connectionTimeOut);
+        claraEngine.startTCP(claraPort);
+        _bobEngine.startTCP(_bobPort);
+        _aliceEngine.startTCP(_alicePort);
+        claraEngine.publishAllKP(_bob);
+        _bobEngine.publishAllKP(_alice);
+        
+        Thread.sleep(1000);
+        
+        assertEquals(teapotAliceCP, _bobKB.getContextPoint(teapotAliceCC));
+        assertNull(claraKB.getContextPoint(teapotAliceCC));
     }
     
     @Test
-    public void test_snowballingActive_CPForwarded() {
+    public void test_snowballingActive_CPForwarded() throws Exception {
+         // We need a Clara for this
+        SyncKB claraKB = new SyncKB(new InMemoSharkKB());
+        int claraPort = getPort();
+        PeerSemanticTag clara = claraKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "tcp://localhost:"+claraPort);
+        claraKB.setOwner(clara);
+        SharkEngine claraEngine = new J2SEAndroidSharkEngine();
+        SyncKP claraSyncKP = new SyncKP(claraEngine, claraKB);
+        // Let Bob know about Clara
+        claraKB.getPeerSTSet().merge(_bob);
+        _bobKB.getPeerSTSet().merge(clara);
+        
+        // Alice has Knowledge 
+        ContextCoordinates teapotAliceCC = _aliceKB.createContextCoordinates(_teapotST, _alice, _alice, _bob, null, null, SharkCS.DIRECTION_INOUT);
+        ContextPoint teapotAliceCP = _aliceKB.createContextPoint(teapotAliceCC);
+        teapotAliceCP.addInformation("Teapots yay");
+        
+        // Bob forwards
+        _bobSyncKP.setSnowballing(true);
+        _bobSyncKP.getSyncBucketList().appendPeer(clara);
+        
+        // Start engines (and KPs)
+        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.setConnectionTimeOut(connectionTimeOut);
+        claraEngine.setConnectionTimeOut(connectionTimeOut);
+        claraEngine.startTCP(claraPort);
+        _bobEngine.startTCP(_bobPort);
+        _aliceEngine.startTCP(_alicePort);       
+        _bobEngine.publishAllKP(_alice);
+        claraEngine.publishAllKP(_bob);
+        
+        Thread.sleep(1000);
+        
+        assertEquals(teapotAliceCP, _bobKB.getContextPoint(teapotAliceCC));
+        assertEquals(teapotAliceCP, claraKB.getContextPoint(teapotAliceCC));
         
     }
 
     @Test
-    public void test_clearInformationFromContextPoint_informationRemovalSynced() {
+    public void test_clearInformationFromContextPoint_informationRemovalSynced() throws Exception{  
+        // Create some information in both knowledge bases with the SAME coordinates
+        ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(_teapotST, _alice, _bob, _alice, null, null, SharkCS.DIRECTION_INOUT);
+        _aliceKB.createContextPoint(teapotCC);
+        _bobKB.createContextPoint(teapotCC);
+        
+        // However, alice now adds some information to it! The version should be increased.
+        Information aliceInfo = _aliceKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
+        assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());    
+        
+        // Start engines (and KPs)
+        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.startTCP(_bobPort);
+        _aliceEngine.startTCP(_alicePort);
+        _bobEngine.publishAllKP(_alice);
+
+        // wait until communication happened
+        Thread.sleep(5000);
+
+        // Bob should now have an information attached to his teapot CP!
+        assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());
+        // It should have the correct content
+        assertEquals("Teapots freakin rock!", _bobKB.getContextPoint(teapotCC).getInformation().next().getContentAsString());
+        // And the CP should have version 2
+        assertEquals(2, ((SyncContextPoint)_bobKB.getContextPoint(teapotCC)).getVersion());
+             
+        // Alice deletes the information
+        _aliceKB.getContextPoint(teapotCC).removeInformation(aliceInfo);
+        assertEquals(3, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());    
+        
+        // publish again
+        _bobEngine.publishAllKP(_alice);
+
+        // wait until communication happened
+        Thread.sleep(50000);
+
+        // Bob should now have no information attached to his teapot CP!
+        assertEquals(0, _bobKB.getContextPoint(teapotCC).getNumberInformation());
+        // And the CP should have version 3
+        assertEquals(3, ((SyncContextPoint)_bobKB.getContextPoint(teapotCC)).getVersion());
+        
         
     }
     
