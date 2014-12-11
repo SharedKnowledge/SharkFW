@@ -142,8 +142,9 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
                 int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
                 
                 // Now compare. If our context point's version is 0 or lower than the version of
-                // the received context point, assimilate it into our knowledge base
-                if (remoteCPVersion > ownCPVersion) {
+                // the received context point and it comprises information, assimilate it into our 
+                // knowledge base
+                if (remoteCPVersion > ownCPVersion && remoteCP.getInformation() != null) {
                     _lastInsertedCC = remoteCP.getContextCoordinates();
                     _kb.createContextPoint(remoteCP.getContextCoordinates());
                     _kb.replaceContextPoint(remoteCP);
@@ -184,6 +185,7 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void contextPointRemoved(ContextPoint cp) {
+        // ?
     }
     
     @Override

@@ -20,3 +20,6 @@ die man trifft erstmal das gesamte Wissen beim nächsten Treffen?
     Gesamte KB wird bei SyncKP Creation auf zu synchronisieren gesetzt
 
 AbstractSharkKB semanticTagCreated wirft notSupportedException. Is vllt noch nie aufgefallen weil nie benutzt.
+
+Soll ein Peer die Möglichkeit haben, ein anderes Peer darum zu bitten, die Information zu löschen?
+Sollten leere ContextPoints nicht gesynct werden?
