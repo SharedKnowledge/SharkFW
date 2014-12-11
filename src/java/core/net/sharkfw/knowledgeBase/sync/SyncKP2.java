@@ -175,8 +175,11 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void cpChanged(ContextPoint cp) {
-        
-        
+        try {
+            _syncBuckets.addToBuckets(cp.getContextCoordinates());
+        } catch (SharkKBException ex) {
+            L.d("SyncKPListener received empty CP: " + ex.getMessage());
+        }
     }
 
     @Override
