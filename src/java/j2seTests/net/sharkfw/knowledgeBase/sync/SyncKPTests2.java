@@ -385,6 +385,7 @@ public class SyncKPTests2 {
         SyncKB claraKB = new SyncKB(new InMemoSharkKB());
         int claraPort = getPort();
         PeerSemanticTag clara = claraKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "tcp://localhost:"+claraPort);
+        claraKB.setOwner(clara);
         SharkEngine claraEngine = new J2SEAndroidSharkEngine();
         SyncKP2 claraSyncKP = new SyncKP2(claraEngine, claraKB);
         // Alice and Clara need to know about each other
@@ -403,7 +404,7 @@ public class SyncKPTests2 {
         assertEquals(0, _aliceSyncKP.getSyncBucketList().popFromBucket(_bob).size());
         
         // Push the button!
-        _aliceSyncKP.syncAllKnowledge();
+        _aliceSyncKP.syncAllKnowledge(_bob);
         
         // Start engines (and KPs)
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
@@ -418,10 +419,11 @@ public class SyncKPTests2 {
         // Let them talk
         Thread.sleep(1000);
         
+        // Only bob should know about the CCs now, not clara! We don't like clara.
         assertNotNull(_bobKB.getContextPoint(teapotCC));
         assertNotNull(_bobKB.getContextPoint(noodlesCC));
-        assertNotNull(claraKB.getContextPoint(teapotCC));
-        assertNotNull(claraKB.getContextPoint(noodlesCC));
+        assertNull(claraKB.getContextPoint(teapotCC));
+        assertNull(claraKB.getContextPoint(noodlesCC));
         
     }
     
@@ -437,6 +439,11 @@ public class SyncKPTests2 {
 
     @Test
     public void test_clearInformationFromContextPoint_informationRemovalSynced() {
+        
+    }
+    
+    @Test
+    public void test_createSyncKP_ownerNotInSyncBuckets() {
         
     }
 }
