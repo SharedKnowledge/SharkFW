@@ -106,6 +106,20 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
         _snowballing = flag;
     }
     
+    public void syncAllKnowledge() throws SharkKBException {
+        Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
+        while(cps.hasMoreElements()){
+            _syncBuckets.addToBuckets(cps.nextElement().getContextCoordinates());
+        }
+    }
+    
+    public void syncAllKnowledge(PeerSemanticTag peer) throws SharkKBException {
+        Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
+        while(cps.hasMoreElements()){
+            _syncBuckets.addToBuckets(cps.nextElement().getContextCoordinates(), peer);
+        }
+    }
+    
     @Override
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
         try {

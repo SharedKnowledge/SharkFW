@@ -23,3 +23,6 @@ AbstractSharkKB semanticTagCreated wirft notSupportedException. Is vllt noch nie
 
 Soll ein Peer die Möglichkeit haben, ein anderes Peer darum zu bitten, die Information zu löschen?
 Sollten leere ContextPoints nicht gesynct werden?
+
+KnowledgeBaseListener & STSetListener:
+    - contextPointChanged wird nicht getriggert

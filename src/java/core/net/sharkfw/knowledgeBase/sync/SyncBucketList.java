@@ -48,6 +48,18 @@ class SyncBucketList {
     }
     
     /**
+     * Adds a context coordinate to a specific peer.
+     * @param cc 
+     */
+    public void addToBuckets(ContextCoordinates cc, PeerSemanticTag peer)throws SharkKBException {
+        for (SyncBucket s : _syncList) {
+            if(s._peer.equals(peer)) {
+                s.addCoordinate(cc);
+            }
+        }
+    }
+    
+    /**
      * Add a peer that will be synced with in the future
      * @param peer 
      */
