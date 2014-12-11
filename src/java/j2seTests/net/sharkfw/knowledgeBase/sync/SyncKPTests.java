@@ -110,7 +110,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP();
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         // Neither KB should now know anything about the other contextPoint
         assertNull(_aliceKB.getContextPoint(noodlesBobCC));
@@ -136,7 +136,7 @@ public class SyncKPTests {
         _aliceEngine.publishAllKP(_bob);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         // Bob should now know about alice's CP and the other way round
         ContextPoint retrievedCPAlice = _aliceKB.getContextPoint(noodlesBobCC);
@@ -167,7 +167,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         // Bob should now have an information attached to his teapot CP!
         assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -199,7 +199,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         // Bob should NOT get the information from alice so the count stays at 2
         assertEquals(2, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -282,7 +282,7 @@ public class SyncKPTests {
         aliceEngine.publishAllKP(_bob);
         bobEngine.publishAllKP(_alice);
         
-        Thread.sleep(1000);
+        Thread.sleep(600);
         
         // Make sure really all information is transferred
         assertNotNull(bobKB.getContextPoint(aliceCC));
@@ -318,7 +318,8 @@ public class SyncKPTests {
         assertEquals(_bob, peerInSyncBucket);
         
         // Now remove bob from alice's peers
-        _aliceKB.getPeerSTSet().removeSemanticTag(_bob);
+        _aliceKB.removeSemanticTag(_bob.getSI());
+//        _aliceKB.getPeerSTSet().removeSemanticTag(_bob);
         
         assertEquals(0, _aliceSyncKP.getSyncBucketList().getPeers().number());
     }   
@@ -343,7 +344,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
         
         // Let them talk
-        Thread.sleep(1000);
+        Thread.sleep(600);
         
         // Now Bob should have alice's cp
         assertEquals(teapotCP, _bobKB.getContextPoint(teapotCC));
@@ -374,7 +375,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
         
         // Let them talk
-        Thread.sleep(1000);
+        Thread.sleep(600);
         
         assertNotNull(_bobKB.getContextPoint(teapotCC));
         assertNotNull(_bobKB.getContextPoint(noodlesCC));
@@ -418,7 +419,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
         
         // Let them talk
-        Thread.sleep(1000);
+        Thread.sleep(600);
         
         // Only bob should know about the CCs now, not clara! We don't like clara.
         assertNotNull(_bobKB.getContextPoint(teapotCC));
@@ -456,7 +457,7 @@ public class SyncKPTests {
         claraEngine.publishAllKP(_bob);
         _bobEngine.publishAllKP(_alice);
         
-        Thread.sleep(1000);
+        Thread.sleep(600);
         
         assertEquals(teapotAliceCP, _bobKB.getContextPoint(teapotAliceCC));
         assertNull(claraKB.getContextPoint(teapotAliceCC));
@@ -494,7 +495,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
         claraEngine.publishAllKP(_bob);
         
-        Thread.sleep(1000);
+        Thread.sleep(600);
         
         assertEquals(teapotAliceCP, _bobKB.getContextPoint(teapotAliceCC));
         assertEquals(teapotAliceCP, claraKB.getContextPoint(teapotAliceCC));
@@ -520,7 +521,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         // Bob should now have an information attached to his teapot CP!
         assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -537,7 +538,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(1000);
+        Thread.sleep(600);
 
         // Bob should now have no information attached to his teapot CP!
         assertEquals(0, _bobKB.getContextPoint(teapotCC).getNumberInformation());

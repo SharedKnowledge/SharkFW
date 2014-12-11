@@ -22,6 +22,27 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
+/**
+ * The SyncKP realizes a KnowledgePort that constantly tracks changes in the assigned knowledge
+ * base and tries to propagate them to all known peers (peers that are in the knowledge base).
+ * That way a synchronization between this and every other Sync KP happens. 
+ * 
+ * The identification of a Sync KP happens with a semantic tag with the subject identifier "SarkKP_synchronization",
+ * so this subject identifier may not be used in a knowledge base that is assigned to a Sync KP.
+ * 
+ * Peers in the knowledge base will only be propagated the future changes in the knowledge base!
+ * Means, when a knowledge base already contains knowledge and a peer is added AFTER that, the peer 
+ * will NOT receive the entire knowledge, only the changes that happened after she or he was added.
+ * If you want to get this peer "up to date", use the syncAllKnowledge method
+ * 
+ * The Sync KP offers a flag for snowballing, which enables the forwarding of knowledge. Peers who
+ * receive a new or updated Context Point from someone using a SyncKP will send this again to all known 
+ * peers, when this feature is activated. And they will continue to send it to everyone and so on.
+ * Because a Context Point is not assimilated when it already exists in the knowledge base
+ * (with the current or a higher version), this feature will not create an endless loop of
+ * sending between peers. It might cause a traffic spike though.
+ * @author simon
+ */
 public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     protected SyncKB _kb;
@@ -96,7 +117,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
    }
     
     /**
-     * 
+     * Activate snowballing, that forwards all changes inserted by other SyncKPs again to all known peers.
      * @param flag If set to true, all ContextPoints that are added to the Knowledge Base, even if it was
      *  added by this sync KP, will be synchronized with others - which may cause traffic spikes 
      */
@@ -104,6 +125,11 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         _snowballing = flag;
     }
     
+    /**
+     * Explicitly sync the entire knowledge base again with all peers.
+     * Will cause a huge traffic with big knowledge bases.
+     * @throws SharkKBException 
+     */
     public void syncAllKnowledge() throws SharkKBException {
         Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
         while(cps.hasMoreElements()){
@@ -111,6 +137,12 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         }
     }
     
+    /**
+     * Explicitly sync the entire knowledge base again with a peer.
+     * This can be used when a new peer is added to the knowledge base to get her or him "up to date".
+     * @param peer The peer the knowledge base will be completely synced with
+     * @throws SharkKBException 
+     */
     public void syncAllKnowledge(PeerSemanticTag peer) throws SharkKBException {
         Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
         while(cps.hasMoreElements()){
@@ -171,10 +203,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
         }
     }
     
-    /**
-     * STILL A HUGE TODO HERE - syncOnInsertByNotSyncKP should check if that CP was added by THIS KP
-     * @param cp 
-     */
     @Override
     public void contextPointAdded(ContextPoint cp) {
         try {

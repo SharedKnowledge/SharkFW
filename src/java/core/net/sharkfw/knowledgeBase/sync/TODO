@@ -23,6 +23,16 @@ AbstractSharkKB semanticTagCreated wirft notSupportedException. Is vllt noch nie
 
 Soll ein Peer die Möglichkeit haben, ein anderes Peer darum zu bitten, die Information zu löschen?
 Sollten leere ContextPoints nicht gesynct werden?
+    => Entweder ein leerer CP wird so übernommen, also werden alle Informationen auf der Empfängerseite gelöscht
+    => Oder der CP wird bei Empfangen eines leeren CPs explizit gedroppt - was kein weitergeben der Information ermöglicht
+
+Wie wird Löschaufforderung eines ganzen ContextPoints sonst vermittelt?
 
 KnowledgeBaseListener & STSetListener:
-    - contextPointChanged wird nicht getriggert
+    - contextPointChanged wird nicht getriggert (weder ändern noch hinzufügen noch löschen einer Information triggert das)
+    - getPeerSTSet().merge triggert nicht peerAdded
+    - getPeerSTSet().remove triggert nicht peerRemoved
+    - removeSemanticTag triggtert nicht
+        => im Prinzip muss die AbstractSharkKb auf ihre peerSTSet, SpatialSTSet etc listener setzen
+
+SharkKB.removeSemanticTag geht gerade nur mit SI als parameter, warum nicht SemanticTag als Parameter?
