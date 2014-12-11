@@ -1,6 +1,8 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
@@ -12,7 +14,6 @@ import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
@@ -50,6 +51,7 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
      * @param kb
      * @param snowballing Always sync when new information is added to the Knowledge Base even if it was
      *  added by this sync KP - which may cause traffic spikes 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public SyncKP2(SharkEngine engine, SyncKB kb, boolean snowballing) throws SharkKBException {
         super(engine, kb);
@@ -59,8 +61,16 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
         
         _snowballing = snowballing;
         
+        // We need to have an owner of the kb
+        if (_kb.getOwner() == null) {
+            L.e("SharkKB for SyncKP needs to have an owner set! Can't create SyncKP.");
+            return;
+        }
+        
         // Create a sync queue for all known peers
-        _syncBuckets = new SyncBucketList(_kb.getPeerSTSet());
+        PeerSTSet bucketSet = _kb.getPeerSTSet();
+        bucketSet.removeSemanticTag(_kb.getOwner());
+        _syncBuckets = new SyncBucketList(bucketSet);
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -72,11 +82,6 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
             return;
         } 
         // And an interest with me as the peer dimension set
-        // We need to have an owner of the kb
-        if (_kb.getOwner() == null) {
-            L.e("SharkKB for SyncKP needs to have an owner set! Can't create SyncKP.");
-            return;
-        }
         PeerSTSet ownerPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         ownerPeerSTSet.merge(_kb.getOwner());
         _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, ownerPeerSTSet, null, null, null, SharkCS.DIRECTION_OUT);
@@ -86,6 +91,7 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
      * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
      * @param engine
      * @param kb 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public SyncKP2(SharkEngine engine, SyncKB kb) throws SharkKBException {
         this(engine, kb, false);
@@ -169,6 +175,8 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void cpChanged(ContextPoint cp) {
+        
+        
     }
 
     @Override
