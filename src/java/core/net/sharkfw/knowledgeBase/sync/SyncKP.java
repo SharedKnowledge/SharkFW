@@ -1,8 +1,6 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
@@ -24,7 +22,7 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
-public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
+public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     protected SyncKB _kb;
     protected SharkEngine _engine;
@@ -53,7 +51,7 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
      *  added by this sync KP - which may cause traffic spikes 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
-    public SyncKP2(SharkEngine engine, SyncKB kb, boolean snowballing) throws SharkKBException {
+    public SyncKP(SharkEngine engine, SyncKB kb, boolean snowballing) throws SharkKBException {
         super(engine, kb);
         _kb = kb;
         _engine = engine;
@@ -93,7 +91,7 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
      * @param kb 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
-    public SyncKP2(SharkEngine engine, SyncKB kb) throws SharkKBException {
+    public SyncKP(SharkEngine engine, SyncKB kb) throws SharkKBException {
         this(engine, kb, false);
    }
     

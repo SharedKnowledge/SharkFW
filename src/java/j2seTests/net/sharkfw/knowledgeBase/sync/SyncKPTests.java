@@ -28,11 +28,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SyncKPTests2 {
+public class SyncKPTests {
 
     private final long connectionTimeOut = 2000;
     private SyncKB _aliceKB, _bobKB;
-    private SyncKP2 _aliceSyncKP, _bobSyncKP;
+    private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;
     
     // have smth to talk about
@@ -74,8 +74,8 @@ public class SyncKPTests2 {
         _aliceKB.setOwner(_alice);
         _bobKB.setOwner(_bob);
         // Kps
-        _aliceSyncKP = new SyncKP2(_aliceEngine, _aliceKB);
-        _bobSyncKP = new SyncKP2(_bobEngine, _bobKB);
+        _aliceSyncKP = new SyncKP(_aliceEngine, _aliceKB);
+        _bobSyncKP = new SyncKP(_bobEngine, _bobKB);
     }
 
     @After
@@ -387,7 +387,7 @@ public class SyncKPTests2 {
         PeerSemanticTag clara = claraKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "tcp://localhost:"+claraPort);
         claraKB.setOwner(clara);
         SharkEngine claraEngine = new J2SEAndroidSharkEngine();
-        SyncKP2 claraSyncKP = new SyncKP2(claraEngine, claraKB);
+        SyncKP claraSyncKP = new SyncKP(claraEngine, claraKB);
         // Alice and Clara need to know about each other
         _aliceKB.getPeerSTSet().merge(clara);
         claraKB.getPeerSTSet().merge(_alice);
