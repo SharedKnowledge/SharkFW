@@ -1420,8 +1420,12 @@ abstract public class SharkEngine {
         this.allowEmptyContextPoints = allowed;
     }
     
-    private HashMap<Integer,String> deliveredInformation = 
-            new HashMap<Integer, String>();
+    public boolean getAllowSendingEmptyContextPoints(boolean allowed) {
+        return this.allowEmptyContextPoints;
+    }
+    
+    private final HashMap<Integer,String> deliveredInformation = 
+            new HashMap<>();
     
     private boolean allowEmptyContextPoints = true;
     
