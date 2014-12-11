@@ -2,23 +2,17 @@ package net.sharkfw.knowledgeBase.sync;
 
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Iterator;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.TXSemanticTag;
-import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.peer.KnowledgePort;
@@ -28,7 +22,7 @@ import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
 
 import org.junit.After;
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,14 +30,23 @@ import org.junit.Test;
 public class SyncKPTests {
 
     private final long connectionTimeOut = 2000;
-    private SyncKB _aliceSyncKB = null;
-    private SyncKB _bobSyncKB = null;
+    private SyncKB _aliceKB, _bobKB;
     private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;
-
-    SemanticTag teapotST =  InMemoSharkKB.createInMemoSemanticTag("teapot", "www.teapot.de");
-    PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice", "tcp://localhost:5555");
-    PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob", "tcp://localhost:5556");
+    
+    // have smth to talk about
+    SemanticTag _teapotST =  InMemoSharkKB.createInMemoSemanticTag("teapot", "www.teapot.de");
+    SemanticTag _noodlesST = InMemoSharkKB.createInMemoSemanticTag("noodles", "www.noodles.de");
+    PeerSemanticTag _alice, _bob;
+    int _alicePort, _bobPort;
+//    PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice", "tcp://localhost:5555");
+//    PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob", "tcp://localhost:5556");
+    
+    static int currentPort = 5555;
+    private int getPort() {
+        return currentPort++;
+    }
+    
     
     @BeforeClass
     public static void setUpClass(){
@@ -53,154 +56,154 @@ public class SyncKPTests {
     @Before
     public void setUp() throws SharkKBException{
         // Set up KBs
-        SharkKB syncerInternal = new InMemoSharkKB();
-        _aliceSyncKB = new SyncKB(syncerInternal);
-        SharkKB syncedInternal = new InMemoSharkKB();
-        _bobSyncKB = new SyncKB(syncedInternal);
+        _aliceKB = new SyncKB(new InMemoSharkKB());
+        _bobKB = new SyncKB(new InMemoSharkKB());
+        // Set up peers with new ports
+        _alicePort = getPort();
+        _alice = _aliceKB.createPeerSemanticTag("Alice", "aliceIdentifier", "tcp://localhost:"+_alicePort);
+        _bobPort = getPort();
+        _bob = _bobKB.createPeerSemanticTag("Bob", "bobIdentifier", "tcp://localhost:"+_bobPort);
+        // Let each know about each other
+        _aliceKB.getPeerSTSet().merge(_bob);
+        _bobKB.getPeerSTSet().merge(_alice);
         // Set up engines
         _aliceEngine = new J2SEAndroidSharkEngine();
         _bobEngine = new J2SEAndroidSharkEngine();
         // Set owner
-        _aliceSyncKB.setOwner(alice);
-        _bobSyncKB.setOwner(bob);
+        _aliceKB.setOwner(_alice);
+        _bobKB.setOwner(_bob);
         // Kps
-        _aliceSyncKP = new SyncKP(_aliceEngine, _aliceSyncKB);
-        _bobSyncKP = new SyncKP(_bobEngine, _bobSyncKB);
+        _aliceSyncKP = new SyncKP(_aliceEngine, _aliceKB);
+        _bobSyncKP = new SyncKP(_bobEngine, _bobKB);
     }
 
     @After
     public void tearDown() throws SharkProtocolNotSupportedException, InterruptedException {
         _aliceEngine.stopTCP();
         _bobEngine.stopTCP();
-        _aliceSyncKB = null;
-        _bobSyncKB = null;
-
+        _aliceKB = null;
+        _bobKB = null;
     }
 
     @Test
     public void syncKP_meetsNonSyncKP_noCommunication() throws InterruptedException, SharkSecurityException, IOException, SharkKBException, SharkProtocolNotSupportedException {
-        // Create some information in context space
-        ContextCoordinates teapotAliceCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
-        ContextCoordinates teapotBobCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
-
-        // Alice will be a sync KP, bob a standard KP
-        SharkKB bobKB = new InMemoSharkKB();
-        // Bob is interested in anything
-        Interest bobAnyInterest = bobKB.createInterest(bobKB.createContextCoordinates(null, null, bob, null, null, null, SharkCS.DIRECTION_INOUT));
-        KnowledgePort bobKP = new StandardKP(_bobEngine, bobAnyInterest, bobKB);
-
-        // Create CPs in bobs and alices KB - they are not the same, so they should be exchanged (if both were sync KPs)
-        _aliceSyncKB.createContextPoint(teapotAliceCC);
-        bobKB.createContextPoint(teapotBobCC);
-
+        // Bob will have a standard KP for this and is interested in anything.
+        Interest bobAnyInterest = _bobKB.createInterest(_bobKB.createContextCoordinates(null, null, _bob, null, null, null, SharkCS.DIRECTION_INOUT));
+        _bobEngine = new J2SEAndroidSharkEngine();
+        KnowledgePort bobStandardKP = new StandardKP(_bobEngine, bobAnyInterest, _bobKB);
+        
+        
+        // Create some information in alice Knowledge base - this would be synced IF bob was a sync KP
+        ContextCoordinates teapotAliceCC = _aliceKB.createContextCoordinates(_teapotST, _alice, _alice, _bob, null, null, SharkCS.DIRECTION_INOUT);
+        ContextPoint teapotAliceCP = _aliceKB.createContextPoint(teapotAliceCC);
+        teapotAliceCP.addInformation("Teapots yay");
+        // Create some information in bobs knowledge base
+        ContextCoordinates noodlesBobCC = _bobKB.createContextCoordinates(_noodlesST, _bob, _alice, _bob, null, null, SharkCS.DIRECTION_OUT);
+        ContextPoint noodlesBobCP = _bobKB.createContextPoint(noodlesBobCC);
+        noodlesBobCP.addInformation("I like noodles");
+        
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5555);
-        _bobEngine.startTCP(5556);
-        Assert.assertNotNull(_aliceSyncKP);
-        _aliceEngine.publishAllKP(bob);
-        _bobEngine.publishAllKP(alice);
+        _aliceEngine.startTCP(_alicePort);
+        _bobEngine.startTCP(_bobPort);
+        _aliceEngine.publishAllKP(_bob);
+        _bobEngine.publishAllKP();
 
         // wait until communication happened
-        Thread.sleep(1500);
+        Thread.sleep(1000);
 
         // Neither KB should now know anything about the other contextPoint
-        Assert.assertNull(_aliceSyncKB.getContextPoint(teapotBobCC));
-        Assert.assertNull(bobKB.getContextPoint(teapotAliceCC));
+        assertNull(_aliceKB.getContextPoint(noodlesBobCC));
+        assertNull(_bobKB.getContextPoint(teapotAliceCC));
     }
 
     @Test
-    public void syncKP_CPIsNotInKB_CPAssimilated() throws Exception {
-        // Create some information in context space
-        ContextCoordinates teapotAliceCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
-        ContextCoordinates teapotBobCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, bob, alice, bob, null, null, SharkCS.DIRECTION_INOUT);
+    public void syncKP_createCPInKB_CPSynced() throws Exception {
+        // Each creates some information in their KB
+        ContextCoordinates teapotAliceCC = _aliceKB.createContextCoordinates(_teapotST, _alice, _alice, _bob, null, null, SharkCS.DIRECTION_INOUT);
+        ContextCoordinates noodlesBobCC = _bobKB.createContextCoordinates(_noodlesST, _bob, _alice, _bob, null, null, SharkCS.DIRECTION_INOUT);
+        ContextPoint teapotAliceCP = _aliceKB.createContextPoint(teapotAliceCC);
+        teapotAliceCP.addInformation("Teapots yay");
+        ContextPoint noodlesBobCP = _bobKB.createContextPoint(noodlesBobCC);
+        noodlesBobCP.addInformation("I like noodles.");
         
-        SyncBucketList aliceQueue = new SyncBucketList();
-        aliceQueue.appendPeer(bob);
-        _aliceSyncKP.setSyncQueue(aliceQueue);
-        
-        // Create a CP in alices KB
-        _aliceSyncKB.createContextPoint(teapotAliceCC);
-
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5555);
+        _aliceEngine.startTCP(_alicePort);
+        _bobEngine.startTCP(_bobPort);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.publishAllKP(alice);
+        _bobEngine.publishAllKP(_alice);
+        _aliceEngine.publishAllKP(_bob);
 
         // wait until communication happened
-        Thread.sleep(1500);
-//        Thread.sleep(Integer.MAX_VALUE);
+        Thread.sleep(1000);
 
-        // Bob should now know about alices CP
-        Assert.assertTrue(_bobSyncKB.getContextPoint(teapotAliceCC).equals(_aliceSyncKB.getContextPoint(teapotAliceCC)));
+        // Bob should now know about alice's CP and the other way round
+        ContextPoint retrievedCPAlice = _aliceKB.getContextPoint(noodlesBobCC);
+        assertNotNull(retrievedCPAlice);
+        assertEquals(1, retrievedCPAlice.getNumberInformation());
+        
+        ContextPoint retrievedCPBob = _bobKB.getContextPoint(teapotAliceCC);
+        assertNotNull(retrievedCPBob);
+        assertEquals(1, retrievedCPBob.getNumberInformation());
     }
 
     @Test
     public void syncKP_CPIsWithLowerVersionInKB_CPInformationAssimilated() throws Exception {
-        // Create some information in context space
-        ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
-      
-        SyncBucketList aliceQueue = new SyncBucketList();
-        aliceQueue.appendPeer(bob);
-        _aliceSyncKP.setSyncQueue(aliceQueue);
-
-        // Create CPs in bobs and alices KB - they ARE the same
-        _aliceSyncKB.createContextPoint(teapotCC);
-        _bobSyncKB.createContextPoint(teapotCC);
-//         However, alice now adds some information to it! The version should be increased and 
-        _aliceSyncKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
-        Assert.assertEquals(2, ((SyncContextPoint)_aliceSyncKB.getContextPoint(teapotCC)).getVersion());    
+        // Create some information in both knowledge bases with the SAME coordinates
+        ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(_teapotST, _alice, _bob, _alice, null, null, SharkCS.DIRECTION_INOUT);
+        _aliceKB.createContextPoint(teapotCC);
+        _bobKB.createContextPoint(teapotCC);
+        
+        // However, alice now adds some information to it! The version should be increased.
+        _aliceKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
+        assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());    
         
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5555);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.publishAllKP(alice);
+        _bobEngine.startTCP(_bobPort);
+        _aliceEngine.startTCP(_alicePort);
+        _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(1500);
+        Thread.sleep(1000);
 
         // Bob should now have an information attached to his teapot CP!
-        Assert.assertEquals(1, _bobSyncKB.getContextPoint(teapotCC).getNumberInformation());
+        assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());
         // It should have the correct content
-        Assert.assertEquals("Teapots freakin rock!", _bobSyncKB.getContextPoint(teapotCC).getInformation().next().getContentAsString());
+        assertEquals("Teapots freakin rock!", _bobKB.getContextPoint(teapotCC).getInformation().next().getContentAsString());
         // And the CP should have version 2
-        Assert.assertEquals(2, ((SyncContextPoint)_bobSyncKB.getContextPoint(teapotCC)).getVersion());
+        assertEquals(2, ((SyncContextPoint)_bobKB.getContextPoint(teapotCC)).getVersion());
     }
 
     @Test
     public void syncKP_CPIsWithGreaterEqualVersionInKB_CPInformationNotAssimilated() throws Exception {
-        // Create some information in context space
-        ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(teapotST, alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
-
-        SyncBucketList aliceQueue = new SyncBucketList();
-        aliceQueue.appendPeer(bob);
-        _aliceSyncKP.setSyncQueue(aliceQueue);
+        // Create some information in both knowledge bases with the SAME coordinates
+        ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(_teapotST, _alice, _bob, _alice, null, null, SharkCS.DIRECTION_INOUT);
+        _aliceKB.createContextPoint(teapotCC);
+        _bobKB.createContextPoint(teapotCC);
         
-        // Create CPs in bobs and alices KB - they ARE the same
-        _aliceSyncKB.createContextPoint(teapotCC);
-        _bobSyncKB.createContextPoint(teapotCC);
-        // Both add information to it. Bob just adds MORE information and has a higher version!
-        _bobSyncKB.getContextPoint(teapotCC).addInformation("Bob does not like teapots.");
-        _bobSyncKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
-        _aliceSyncKB.getContextPoint(teapotCC).addInformation("Tea is very healthy.");
+        // Alice now adds some information to it! The version should be increased.
+        _aliceKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
+        assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());    
+        // But Bob too! And he adds more so his version is bigger
+        _bobKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
+        _bobKB.getContextPoint(teapotCC).addInformation("And I also know more about them than Alice.");
         
-        Assert.assertEquals(2, ((SyncContextPoint)_aliceSyncKB.getContextPoint(teapotCC)).getVersion());
-        Assert.assertEquals(3, ((SyncContextPoint)_bobSyncKB.getContextPoint(teapotCC)).getVersion());
-            
         // Start engines (and KPs)
-        _aliceEngine.startTCP(5555);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.publishAllKP(alice);
+        _bobEngine.startTCP(_bobPort);
+        _aliceEngine.startTCP(_alicePort);
+        _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(1500);
+        Thread.sleep(1000);
 
         // Bob should NOT get the information from alice so the count stays at 2
-        Assert.assertEquals(2, _bobSyncKB.getContextPoint(teapotCC).getNumberInformation());
+        assertEquals(2, _bobKB.getContextPoint(teapotCC).getNumberInformation());
         // And his version stays at 3
-        Assert.assertEquals(3, ((SyncContextPoint)_bobSyncKB.getContextPoint(teapotCC)).getVersion());
+        assertEquals(3, ((SyncContextPoint)_bobKB.getContextPoint(teapotCC)).getVersion());
     }
 
     @Test
@@ -216,28 +219,18 @@ public class SyncKPTests {
         SyncKP aliceKP = new SyncKP(aliceEngine, aliceKB);
         
         PeerSTSet bucketListPeers = aliceKP.getSyncBucketList().getPeers();
-        Assert.assertNotNull(bucketListPeers.getSemanticTag("BobIdentifier"));
-        Assert.assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));
+        assertNotNull(bucketListPeers.getSemanticTag("BobIdentifier"));
+        assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));
     }
     
     @Test
     public void syncKP_addPeerToKB_peerIsInBucketList() throws SharkKBException {
-        // Create a new syncKB
-        SyncKB aliceKB = new SyncKB(new InMemoSharkKB());
+        // Add a new peer to Alice's knowledge base
+        PeerSemanticTag clara = _aliceKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
         
-        // Now use a sync KP
-        SharkEngine aliceEngine = new J2SEAndroidSharkEngine();
-        SyncKP aliceKP = new SyncKP(aliceEngine, aliceKB);
-        
-//        aliceKB.createContextPoint(aliceKB.createContextCoordinates(teapotST, alice, bob, alice, null, null, SharkCS.DIRECTION_IN));
-        
-        // Add two peers to it
-        PeerSemanticTag bob = aliceKB.createPeerSemanticTag("Bob", "BobIdentifier", "mail@bob.de");
-        PeerSemanticTag clara = aliceKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
-        
-        PeerSTSet bucketListPeers = aliceKP.getSyncBucketList().getPeers();
-        Assert.assertNotNull(bucketListPeers.getSemanticTag("BobIdentifier"));
-        Assert.assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));
+        PeerSTSet bucketListPeers = _aliceSyncKP.getSyncBucketList().getPeers();
+        assertNotNull(bucketListPeers.getSemanticTag("bobIdentifier"));
+        assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));
         
     }
     
@@ -249,31 +242,31 @@ public class SyncKPTests {
     public void syncKP_synchronizeTwoPreexistingKBs_syncKBsHaveSameCPs() throws Exception {
         SyncKB aliceKB = new SyncKB(new InMemoSharkKB());
         SyncKB bobKB = new SyncKB(new InMemoSharkKB());
-        aliceKB.setOwner(alice);
-        bobKB.setOwner(bob);
+        aliceKB.setOwner(_alice);
+        bobKB.setOwner(_bob);
         
         // Create some knowledge. We ain't stupid right?
         // First, each peer should know about each other.
-        aliceKB.getPeerSTSet().merge(bob);
-        bobKB.getPeerSTSet().merge(alice);
+        aliceKB.getPeerSTSet().merge(_bob);
+        bobKB.getPeerSTSet().merge(_alice);
         SharkEngine aliceEngine = new J2SEAndroidSharkEngine();
         SharkEngine bobEngine = new J2SEAndroidSharkEngine();
         SyncKP aliceSyncKP = new SyncKP(aliceEngine, aliceKB);
         SyncKP bobSyncKP = new SyncKP(bobEngine, bobKB);
         
         // Now Alice gets some knowledge about teapots
-        ContextCoordinates aliceCC = aliceKB.createContextCoordinates(teapotST, alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
+        ContextCoordinates aliceCC = aliceKB.createContextCoordinates(_teapotST, _alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
         ContextPoint aliceCP = aliceKB.createContextPoint(aliceCC);
         aliceCP.addInformation("I like teapots.");
         // And bob some about noodles 
         SemanticTag noodlesST = bobKB.createSemanticTag("Noodles", "NoodlesIdentifier");
-        ContextCoordinates bobCC = bobKB.createContextCoordinates(noodlesST, bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
+        ContextCoordinates bobCC = bobKB.createContextCoordinates(noodlesST, _bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
         ContextPoint bobCP = bobKB.createContextPoint(bobCC);
         bobCP.addInformation("Noodles are very good when you're hungry.");
         bobCP.addInformation("Unlike teapots. They suck.");
         // And about sauce
         SemanticTag sauceST = bobKB.createSemanticTag("Sauce", "SauceIdentifier");
-        ContextCoordinates bobCC2 = bobKB.createContextCoordinates(sauceST, bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
+        ContextCoordinates bobCC2 = bobKB.createContextCoordinates(sauceST, _bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
         ContextPoint bobCP2 = bobKB.createContextPoint(bobCC2);
         bobCP2.addInformation("Sauces make noodles even better.");
         
@@ -282,38 +275,38 @@ public class SyncKPTests {
         bobEngine.setConnectionTimeOut(connectionTimeOut);
         
         // First alice listens and bob publishes
-        aliceEngine.startTCP(5555);
-        bobEngine.startTCP(5556);
-        aliceEngine.publishAllKP(bob);
-        bobEngine.publishAllKP(alice);
+        aliceEngine.startTCP(_alicePort);
+        bobEngine.startTCP(_bobPort);
+        aliceEngine.publishAllKP(_bob);
+        bobEngine.publishAllKP(_alice);
         
-        Thread.sleep(1500);
+        Thread.sleep(1000);
         
         // Make sure really all information is transferred
-        Assert.assertNotNull(bobKB.getContextPoint(aliceCC));
-        Assert.assertEquals(1, bobKB.getContextPoint(aliceCC).getNumberInformation());
+        assertNotNull(bobKB.getContextPoint(aliceCC));
+        assertEquals(1, bobKB.getContextPoint(aliceCC).getNumberInformation());
         
-        Assert.assertNotNull(aliceKB.getContextPoint(bobCC));
-        Assert.assertEquals(2, aliceKB.getContextPoint(bobCC).getNumberInformation());
+        assertNotNull(aliceKB.getContextPoint(bobCC));
+        assertEquals(2, aliceKB.getContextPoint(bobCC).getNumberInformation());
         
-        Assert.assertNotNull(aliceKB.getContextPoint(bobCC2));
-        Assert.assertEquals(1, aliceKB.getContextPoint(bobCC2).getNumberInformation());
+        assertNotNull(aliceKB.getContextPoint(bobCC2));
+        assertEquals(1, aliceKB.getContextPoint(bobCC2).getNumberInformation());
     }
     
     @Test
     public void test_addCPToKB_CPIsInSyncQueue() throws SharkKBException {
-        _aliceSyncKB.setOwner(alice);
+        _aliceKB.setOwner(_alice);
         
         PeerSTSet myPSTSet = InMemoSharkKB.createInMemoPeerSTSet();
-        myPSTSet.merge(alice);
+        myPSTSet.merge(_alice);
         SyncBucketList mySyncQueue = new SyncBucketList(myPSTSet);
         
         _aliceSyncKP.setSyncQueue(mySyncQueue);
         
-        ContextCoordinates expected = _aliceSyncKB.createContextCoordinates(teapotST, alice, bob, bob, null, null, SharkCS.DIRECTION_IN);
-        _aliceSyncKB.createContextPoint(expected);
+        ContextCoordinates expected = _aliceKB.createContextCoordinates(_teapotST, _alice, _bob, _bob, null, null, SharkCS.DIRECTION_IN);
+        _aliceKB.createContextPoint(expected);
         
-        Assert.assertEquals(expected, mySyncQueue.popFromBucket(alice).get(0));
+        assertEquals(expected, mySyncQueue.popFromBucket(_alice).get(0));
     }
     
     @Test
@@ -323,6 +316,21 @@ public class SyncKPTests {
     
     @Test
     public void test_changeCPInformationInKB_CPIsSynced() {
+        
+    }
+    
+    @Test
+    public void test_syncAllKnowledge_allCPsInSynced() {
+        
+    }
+    
+    @Test
+    public void test_snowballingInactive_CPNotForwarded() {
+        
+    }
+    
+    @Test
+    public void test_snowballingActive_CPForwarded() {
         
     }
 

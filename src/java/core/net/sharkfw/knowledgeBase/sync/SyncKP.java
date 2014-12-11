@@ -1,6 +1,8 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
@@ -26,13 +28,13 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     protected SyncKB _kb;
     protected SharkEngine _engine;
-    protected Interest _syncInterest;
+    
+    private Interest _syncInterest;
     private SyncBucketList _syncBuckets;
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
-    private boolean _syncOnInsertByNotSyncKP;
-    private boolean _syncOnInsertBySyncKP;
+    private boolean _snowballing;
     
     // Keep the context coordinates of the last context point we inserted (for syncOnInsertByNotSyncKP)
     private ContextCoordinates _lastInsertedCC;
@@ -47,22 +49,28 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
      *  might sync it again and again.. which might cause a traffic spike but quickly distributes information to everyone
      * @param engine
      * @param kb
-     * @param syncOnInsertByNotSyncKP Sync when new information is inserted into the Knowledge Base somehow except
-     *  by the doInsert method of THIS Sync KP
-     * @param syncOnInsertBySyncKP Always sync when new information is added to the Knowledge Base even if it was
+     * @param snowballing Always sync when new information is added to the Knowledge Base even if it was
      *  added by this sync KP - which may cause traffic spikes 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
-    public SyncKP(SharkEngine engine, SyncKB kb, boolean syncOnInsertByNotSyncKP, boolean syncOnInsertBySyncKP) throws SharkKBException {
+    public SyncKP(SharkEngine engine, SyncKB kb, boolean snowballing) throws SharkKBException {
         super(engine, kb);
         _kb = kb;
         _engine = engine;
         _kb.addListener(this);
         
-        _syncOnInsertByNotSyncKP = syncOnInsertByNotSyncKP;
-        _syncOnInsertBySyncKP = syncOnInsertBySyncKP;
+        _snowballing = snowballing;
+        
+        // We need to have an owner of the kb
+        if (_kb.getOwner() == null) {
+            L.e("SharkKB for SyncKP needs to have an owner set! Can't create SyncKP.");
+            return;
+        }
         
         // Create a sync queue for all known peers
-        _syncBuckets = new SyncBucketList(_kb.getPeerSTSet());
+        PeerSTSet bucketSet = _kb.getPeerSTSet();
+        bucketSet.removeSemanticTag(_kb.getOwner());
+        _syncBuckets = new SyncBucketList(bucketSet);
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -74,11 +82,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
             return;
         } 
         // And an interest with me as the peer dimension set
-        // We need to have an owner of the kb
-        if (_kb.getOwner() == null) {
-            L.e("SharkKB for SyncKP needs to have an owner set! Can't create SyncKP.");
-            return;
-        }
         PeerSTSet ownerPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         ownerPeerSTSet.merge(_kb.getOwner());
         _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, ownerPeerSTSet, null, null, null, SharkCS.DIRECTION_OUT);
@@ -88,34 +91,33 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
      * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
      * @param engine
      * @param kb 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public SyncKP(SharkEngine engine, SyncKB kb) throws SharkKBException {
-        this(engine, kb, true, false);
+        this(engine, kb, false);
    }
     
     /**
      * 
-     * @param value If set to true, all ContextPoints that are inserted into the Knowledge Base somehow, except
-     *  by the doInsert method of THIS Sync KP, will be synchronized with others
-     */
-    public void setSyncOnInsertByNotSyncKP(boolean value) {
-        _syncOnInsertByNotSyncKP = value;
-    }
-    /**
-     * 
-     * @param value If set to true, all ContextPoints that are added to the Knowledge Base, even if it was
+     * @param flag If set to true, all ContextPoints that are added to the Knowledge Base, even if it was
      *  added by this sync KP, will be synchronized with others - which may cause traffic spikes 
      */
-    public void setSyncOnInsert(boolean value) {
-        _syncOnInsertBySyncKP = value;
+    public void setSnowballing(boolean flag) {
+        _snowballing = flag;
     }
     
+    public void syncAllKnowledge() throws SharkKBException {
+        Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
+        while(cps.hasMoreElements()){
+            _syncBuckets.addToBuckets(cps.nextElement().getContextCoordinates());
+        }
+    }
     
-    /**
-     * ATTENTION!!!! Port will keep this kb with ANY other
-     * peer..
-     */
-    public void syncWithAnyPeer() {
+    public void syncAllKnowledge(PeerSemanticTag peer) throws SharkKBException {
+        Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
+        while(cps.hasMoreElements()){
+            _syncBuckets.addToBuckets(cps.nextElement().getContextCoordinates(), peer);
+        }
     }
     
     @Override
@@ -154,8 +156,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                 int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
                 
                 // Now compare. If our context point's version is 0 or lower than the version of
-                // the received context point, assimilate it into our knowledge base
-                if (remoteCPVersion > ownCPVersion) {
+                // the received context point and it comprises information, assimilate it into our 
+                // knowledge base
+                if (remoteCPVersion > ownCPVersion && remoteCP.getInformation() != null) {
                     _lastInsertedCC = remoteCP.getContextCoordinates();
                     _kb.createContextPoint(remoteCP.getContextCoordinates());
                     _kb.replaceContextPoint(remoteCP);
@@ -173,36 +176,35 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
      */
     @Override
     public void contextPointAdded(ContextPoint cp) {
-        
-        // Check if sync on KB insert by owner flag is set and CP was added by this user
-        if (_syncOnInsertByNotSyncKP && cp.getContextCoordinates().getOriginator().equals(_kb.getOwner())) {
-            try {
-                _syncBuckets.addToBuckets(cp.getContextCoordinates());
-            } catch (SharkKBException e) {
-                L.e(e.getMessage());
+        try {
+            if ( _lastInsertedCC == null
+                    || !_lastInsertedCC.equals(cp.getContextCoordinates())
+                    || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
+                ) {
+                    _syncBuckets.addToBuckets(cp.getContextCoordinates());
             }
-        }
-        // Or if knowledge was inserted by others and sync on insert by others flag is set
-        else if (_syncOnInsertBySyncKP && !(cp.getContextCoordinates().getOriginator().equals(_kb.getOwner()))) {
-            try {
-                _syncBuckets.addToBuckets(cp.getContextCoordinates());
-            } catch (SharkKBException e) {
-                L.e(e.getMessage());
-            }
+        } catch (SharkKBException e) {
+            L.e(e.getMessage());
         }
     }
 
     @Override
     public void cpChanged(ContextPoint cp) {
+        try {
+            _syncBuckets.addToBuckets(cp.getContextCoordinates());
+        } catch (SharkKBException ex) {
+            L.d("SyncKPListener received empty CP: " + ex.getMessage());
+        }
     }
 
     @Override
     public void contextPointRemoved(ContextPoint cp) {
+        // ?
     }
     
     @Override
     public void topicAdded(SemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
@@ -212,41 +214,42 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void locationAdded(SpatialSemanticTag location) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void timespanAdded(TimeSemanticTag time) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void topicRemoved(SemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void peerRemoved(PeerSemanticTag tag) {
+        _syncBuckets.removePeer(tag);
     }
 
     @Override
     public void locationRemoved(SpatialSemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void timespanRemoved(TimeSemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
-        
+        // Ignored because we only track peers and context points
     }
     
     protected void setSyncQueue(SyncBucketList s) {
@@ -255,73 +258,4 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
     protected SyncBucketList getSyncBucketList() {
         return _syncBuckets;
     }
-    
-//    @Override
-//    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
-//        try {
-//            Enumeration<ContextPoint> cps = knowledge.contextPoints();
-//            while (cps.hasMoreElements()) {
-//                ContextPoint remoteCP = cps.nextElement();
-//                ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
-//                int ownCPVersion = (ownCP == null) ? Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) : 0;
-//                
-//                int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
-//                if (remoteCPVersion > ownCPVersion) {
-//                    _kb.createContextPoint(remoteCP.getContextCoordinates());
-//                    _kb.replaceContextPoint(remoteCP);
-//                }
-//            }
-//        } catch (SharkKBException ex) {
-//            Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
-//
-//    @Override
-//    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-//        try{
-//            SemanticTag tag;
-//            tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
-//        
-//            XMLSerializer xmlSerializer = new XMLSerializer();
-//
-//            SharkCS peerCS;
-//
-//            peerCS = xmlSerializer.deserializeSharkCS(tag.getProperty(SYNCHRONIZATION_NAME));
-//
-//            if (peerCS.getDirection() == SharkCS.DIRECTION_OUT) {
-//                Enumeration<SemanticTag> peerTopics;
-//                STSet ownTopics;
-//
-//                peerTopics = peerCS.getTopics().tags();
-//                ownTopics = kb.getTopicSTSet();
-//
-//                SharkCS ownInterest = InMemoSharkKB.createInMemoInterest(null, null, null, null, null, null, SharkCS.DIRECTION_IN);
-//
-//                // move to SharkCSAlgebra as STSetIntersection?
-//                while (peerTopics.hasMoreElements()) {
-//                    SemanticTag peerTag = peerTopics.nextElement();
-//                    if (SharkCSAlgebra.isIn(ownTopics, peerTag)) {
-//                            ownInterest.getTopics().merge(peerTag);
-//                    }
-//                }
-//
-//                String property;
-//
-//                property = xmlSerializer.serializeSharkCS(ownInterest);
-//
-//                tag.setProperty(SYNCHRONIZATION_NAME, property);
-//                kepConnection.expose(interest, kepConnection.getSender().getAddresses());
-//                this.notifyExposeSent(this, interest);
-//                
-//            } else if(peerCS.getDirection() == SharkCS.DIRECTION_IN) {
-//                
-//                Knowledge k = SharkCSAlgebra.extract(_kb, peerCS);
-//                kepConnection.insert(k, kepConnection.getSender().getAddresses());
-//                this.notifyInsertSent(this, k);
-//
-//            }    
-//        } catch(SharkException ex){
-//                Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
 }
