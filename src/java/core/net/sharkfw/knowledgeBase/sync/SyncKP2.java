@@ -258,4 +258,7 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
     protected SyncBucketList getSyncBucketList() {
         return _syncBuckets;
     }
+    protected void resetSyncQueue() throws SharkKBException {
+        _syncBuckets = new SyncBucketList(_kb.getPeerSTSet());
+    }
 }
