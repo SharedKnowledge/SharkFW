@@ -158,7 +158,8 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
         try {
             if ( _lastInsertedCC == null
                     || !_lastInsertedCC.equals(cp.getContextCoordinates())
-                    || _lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing) {
+                    || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
+                ) {
                     _syncBuckets.addToBuckets(cp.getContextCoordinates());
             }
         } catch (SharkKBException e) {
@@ -176,7 +177,7 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
     
     @Override
     public void topicAdded(SemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
@@ -186,41 +187,42 @@ public class SyncKP2 extends KnowledgePort implements KnowledgeBaseListener  {
 
     @Override
     public void locationAdded(SpatialSemanticTag location) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void timespanAdded(TimeSemanticTag time) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void topicRemoved(SemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void peerRemoved(PeerSemanticTag tag) {
+        _syncBuckets.removePeer(tag);
     }
 
     @Override
     public void locationRemoved(SpatialSemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void timespanRemoved(TimeSemanticTag tag) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
-        
+        // Ignored because we only track peers and context points
     }
 
     @Override
     public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
-        
+        // Ignored because we only track peers and context points
     }
     
     protected void setSyncQueue(SyncBucketList s) {

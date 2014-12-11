@@ -83,7 +83,6 @@ public class SyncKPTests2 {
         _bobEngine.stopTCP();
         _aliceKB = null;
         _bobKB = null;
-        Thread.sleep(1000);
     }
 
     @Test
@@ -276,8 +275,8 @@ public class SyncKPTests2 {
         bobEngine.setConnectionTimeOut(connectionTimeOut);
         
         // First alice listens and bob publishes
-        aliceEngine.startTCP(5555);
-        bobEngine.startTCP(5556);
+        aliceEngine.startTCP(_alicePort);
+        bobEngine.startTCP(_bobPort);
         aliceEngine.publishAllKP(_bob);
         bobEngine.publishAllKP(_alice);
         
@@ -317,6 +316,21 @@ public class SyncKPTests2 {
     
     @Test
     public void test_changeCPInformationInKB_CPIsSynced() {
+        
+    }
+    
+    @Test
+    public void test_syncAllKnowledge_allCPsInSynced() {
+        
+    }
+    
+    @Test
+    public void test_snowballingInactive_CPNotForwarded() {
+        
+    }
+    
+    @Test
+    public void test_snowballingActive_CPForwarded() {
         
     }
 
