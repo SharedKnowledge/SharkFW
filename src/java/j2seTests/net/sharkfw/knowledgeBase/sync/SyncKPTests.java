@@ -12,6 +12,7 @@ import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
@@ -519,7 +520,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(5000);
+        Thread.sleep(1000);
 
         // Bob should now have an information attached to his teapot CP!
         assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -536,7 +537,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP(_alice);
 
         // wait until communication happened
-        Thread.sleep(50000);
+        Thread.sleep(1000);
 
         // Bob should now have no information attached to his teapot CP!
         assertEquals(0, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -547,7 +548,7 @@ public class SyncKPTests {
     }
     
     @Test
-    public void test_createSyncKP_ownerNotInSyncBuckets() {
-        
+    public void test_createSyncKP_ownerNotInSyncBuckets() throws SharkKBException{
+        assertFalse(SharkCSAlgebra.isIn(_aliceSyncKP.getSyncBucketList().getPeers(), _alice));
     }
 }
