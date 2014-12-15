@@ -226,6 +226,11 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
+    public void removeSemanticTag(SemanticTag st) throws SharkKBException {
+        this.removeSemanticTag(st.getSI());
+    }
+
+    @Override
     public void persist() {
     	_localKB.persist();
     }

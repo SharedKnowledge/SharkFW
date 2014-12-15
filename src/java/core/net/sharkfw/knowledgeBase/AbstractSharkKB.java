@@ -669,11 +669,22 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      */
     @Override
     public void removeSemanticTag(String[] sis) throws SharkKBException {
+        if(sis == null || sis.length == 0) {
+            return;
+        }
+        
         this.removeSemanticTag(this.getTopicSTSet(), sis);
         this.removeSemanticTag(this.getPeerSTSet(), sis);
         this.removeSemanticTag(this.getSpatialSTSet(), sis);
         this.removeSemanticTag(this.getTimeSTSet(), sis);
     }
+    
+    @Override
+    public void removeSemanticTag(SemanticTag st) throws SharkKBException {
+        if(st == null) return;
+        
+        this.removeSemanticTag(st.getSI());
+    }    
     
     private void removeSemanticTag(STSet set, String[] sis) throws SharkKBException {
         SemanticTag tag = set.getSemanticTag(sis);

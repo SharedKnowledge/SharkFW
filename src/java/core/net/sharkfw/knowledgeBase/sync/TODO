@@ -36,6 +36,7 @@ KnowledgeBaseListener & STSetListener:
         => im Prinzip muss die AbstractSharkKb auf ihre peerSTSet, SpatialSTSet etc listener setzen
 
 SharkKB.removeSemanticTag geht gerade nur mit SI als parameter, warum nicht SemanticTag als Parameter?
+- gute Frage - erledigt (ts)
 
 Features:
     - Vorhaben(Syncs) => Protokoll implementieren
