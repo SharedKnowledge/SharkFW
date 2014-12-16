@@ -226,6 +226,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
     
     /**
      * Delete tag in any dimension - if it can be found
+     * @param st
      * @throws SharkKBException 
      */
     public void removeSemanticTag(SemanticTag st) throws SharkKBException;
