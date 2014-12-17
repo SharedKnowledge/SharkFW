@@ -170,6 +170,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener  {
                 // now back to default behaviour
                 _engine.setAllowSendingEmptyContextPoints(defaultBehaviour);
                 this.notifyInsertSent(this, k);
+            } else {
+                // if interest is WiFiDirect interest, handle accordingly
             }
         } catch (SharkException e) {
             L.e(e.getMessage());

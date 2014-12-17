@@ -40,6 +40,10 @@ SharkKB.removeSemanticTag geht gerade nur mit SI als parameter, warum nicht Sema
 
 Features:
     - Vorhaben(Syncs) => Protokoll implementieren
+        1. Interests festmachen
+        2. Contextcoordiantes vergleichen
+        3. Daten senden
+        -> ausser für WifiDirect(zweiter Check)
     - Contextspaces syncen
     - Bucketlist persistent
     - eigeninformation auf allinteresse
