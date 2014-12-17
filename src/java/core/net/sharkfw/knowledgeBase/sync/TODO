@@ -43,7 +43,7 @@ Features:
         1. Interests festmachen
         2. Contextcoordiantes vergleichen
         3. Daten senden
-        -> ausser für WifiDirect(zweiter Check)
+        -> ausser für WifiDirect(zweiter Check auf leeres all interesse; siehe unten)
     - Contextspaces syncen
     - Bucketlist persistent
     - eigeninformation auf allinteresse
