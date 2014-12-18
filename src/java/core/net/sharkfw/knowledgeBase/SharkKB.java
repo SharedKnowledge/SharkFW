@@ -50,6 +50,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
     
     public void setOwner(PeerSemanticTag owner);
     
+    public PeerSemanticTag getOwner();
   /**
    * Return the ContextPoint at the given coordinates. Exact match.
    *

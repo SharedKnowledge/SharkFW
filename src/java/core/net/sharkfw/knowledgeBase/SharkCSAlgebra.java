@@ -968,6 +968,21 @@ public abstract class SharkCSAlgebra {
         
         return false;
     }
+    /**
+     * Check whether a SharkCS is any (all dimensions any).
+     * @param dim
+     * @return 
+     */
+    public static boolean isAny(SharkCS source) {
+        return (source.isAny(SharkCS.DIM_TOPIC)
+            && source.isAny(SharkCS.DIM_ORIGINATOR)
+            && source.isAny(SharkCS.DIM_PEER)
+            && source.isAny(SharkCS.DIM_REMOTEPEER)
+            && source.isAny(SharkCS.DIM_TIME)
+            && source.isAny(SharkCS.DIM_LOCATION)
+            && source.isAny(SharkCS.DIM_DIRECTION)
+        );
+    }
     
     public static boolean isAny(STSet set) {
         return (set == null || set.isEmpty());
