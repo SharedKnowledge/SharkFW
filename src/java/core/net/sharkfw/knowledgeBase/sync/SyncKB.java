@@ -1,18 +1,19 @@
 package net.sharkfw.knowledgeBase.sync;
 
-import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  * @author simonArnold
  * @author hellerve
  */
 
-public class SyncKB implements SharkKB, ContextPointListener {
+public class SyncKB implements SharkKB, SyncContextPointListener {
     
     protected static String VERSION_PROPERTY_NAME = "SyncKB_version";
     protected static String VERSION_DEFAULT_VALUE = "1";
@@ -381,13 +382,25 @@ public class SyncKB implements SharkKB, ContextPointListener {
     }
 
     @Override
-    public void addedInformation(Information info, ContextPoint cp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void versionChanged(SyncContextPoint p) {
+        notifyCPChanged(p);
     }
-
-    @Override
-    public void removedInformation(Information info, ContextPoint cp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    /* Listeners */
+    Collection<SyncKnowledgeBaseListener> listeners = new ArrayList<>();
+    
+    public void addListener(SyncKnowledgeBaseListener l){
+        listeners.add(l);
+    }
+    
+    public void removeListener(SyncKnowledgeBaseListener l){
+        listeners.remove(l);
+    }
+    
+    private void notifyCPChanged(SyncContextPoint p){
+        for (SyncKnowledgeBaseListener l : listeners) {
+            l.syncCPChanged(p);
+        }
     }
     
     

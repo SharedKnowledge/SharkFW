@@ -195,6 +195,7 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
 	private void versionUp() {
             int oldVersion = Integer.parseInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
             _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
+            notifyChanged();
 	}	
 	
     public int getVersion() {
@@ -216,5 +217,20 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
         versionUp();
     }
         
-        
+    /* Listeners */
+    Collection<SyncContextPointListener> listeners = new ArrayList<>();
+    
+    public void addListener(SyncContextPointListener l){
+        listeners.add(l);
+    }
+    
+    public void removeListener(SyncContextPointListener l){
+        listeners.remove(l);
+    }
+    
+    private void notifyChanged(){
+        for (SyncContextPointListener l : listeners) {
+            l.versionChanged(this);
+        }
+    }
 }

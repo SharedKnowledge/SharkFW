@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.sync;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import jdk.nashorn.internal.objects.NativeArray;
 
@@ -165,7 +166,7 @@ public class SyncInformation implements Information{
 	}
         
         /* Listeners */
-        private ArrayList<InformationListener> listeners;
+        private Collection<InformationListener> listeners = new ArrayList<>();
         
         public void addListener(InformationListener l) {
             listeners.add(l);

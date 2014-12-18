@@ -1,25 +1,5 @@
-Change Syncinformation:
-	SyncInformation gets a callback function to its context point which is called as the setContent method is used. This notifies the context point
-	to update its version
-SyncQueue: Clone okay?  um Fehler zu verhindern
-War mal so frei die equals Methode in AbstractSemanticTag und InMemoContextCoordinates zu definieren
-createInMemoCopy(Bug)!
-KnowledgeBase verwendbar mit mehreren KnowledgePorts?
-Entspricht Implementation der Idee?
-Wie am besten debuggen?
-
-public void response.insert(Knowledge k, String receiveraddress) throws SharkException; in KEPConnection 2. Argument
+[?] public void response.insert(Knowledge k, String receiveraddress) throws SharkException; in KEPConnection 2. Argument
 entfernen, antwort soll immer an den sender zurrückgeschickt werden
-
-
-AbstractSharkKB.notifyPeerAdded etc wurden nie aufgerufen. In AbstractSharkKB auch bei createPeerSemanticTag aufrufen?
-==> NotificationThreadPool der je einen Thread in AbstractSharkKB.notify* spawnt
-
-Wie ist das Verhalten wenn in einer KnowledgeBase schon einiges an Wissen existiert und es dann mit einem SyncKP verwendet wird? Erhalten alle Peers
-die man trifft erstmal das gesamte Wissen beim nächsten Treffen?
-    Gesamte KB wird bei SyncKP Creation auf zu synchronisieren gesetzt
-
-AbstractSharkKB semanticTagCreated wirft notSupportedException. Is vllt noch nie aufgefallen weil nie benutzt.
 
 Soll ein Peer die Möglichkeit haben, ein anderes Peer darum zu bitten, die Information zu löschen?
 Sollten leere ContextPoints nicht gesynct werden?
@@ -34,9 +14,6 @@ KnowledgeBaseListener & STSetListener:
     - getPeerSTSet().remove triggert nicht peerRemoved
     - removeSemanticTag triggtert nicht
         => im Prinzip muss die AbstractSharkKb auf ihre peerSTSet, SpatialSTSet etc listener setzen
-
-SharkKB.removeSemanticTag geht gerade nur mit SI als parameter, warum nicht SemanticTag als Parameter?
-- gute Frage - erledigt (ts)
 
 Features:
     - Vorhaben(Syncs) => Protokoll implementieren
