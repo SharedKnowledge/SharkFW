@@ -2,9 +2,12 @@ package net.sharkfw.knowledgeBase.sync;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import jdk.nashorn.internal.objects.NativeArray;
 
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.InformationListener;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
 public class SyncInformation implements Information{
@@ -73,42 +76,37 @@ public class SyncInformation implements Information{
 
 	@Override
 	public void setContent(InputStream is, long len) {
-//		int version;
-//		_localInformation.setContent(is, len);
-//		try{
-//			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
-//		}catch(NumberFormatException e){
-//			// TODO ?
-//			version = 1;
-//		}
-//		version++;
-//		_localInformation.setProperty(VERSION_PROPERTY_NAME,Integer.toString(version));
             _localInformation.setContent(is, len);
             this.versionUp();
+            notifyContentChanged();
 	}
 
 	@Override
 	public void setContent(byte[] content) {
-		_localInformation.setContent(content);
-		versionUp();
+            _localInformation.setContent(content);
+            versionUp();
+            notifyContentChanged();
 	}
 
 	@Override
 	public void setContent(String content) {
-		_localInformation.setContent(content);
-		versionUp();
+            _localInformation.setContent(content);
+            versionUp();
+            notifyContentChanged();
 	}
 
 	@Override
 	public void removeContent() {
-		_localInformation.removeContent();
-		versionUp();
+            _localInformation.removeContent();
+            versionUp();
+            notifyContentRemoved();
 	}
 
 	@Override
 	public void setContentType(String mimetype) {
-		_localInformation.setContentType(mimetype);
-		versionUp();
+            _localInformation.setContentType(mimetype);
+            versionUp();
+            notifyContentTypeChanged();
 	}
 
 	@Override
@@ -164,14 +162,31 @@ public class SyncInformation implements Information{
 	private void versionUp() {
             int oldVersion = Integer.parseInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
             _localInformation.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
-            
-//		int version = 1;
-//		try{
-//			version = Integer.parseUnsignedInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
-//		}catch(NumberFormatException e){
-//			// TODO ?
-//		}
-//		version++;
-//		_localInformation.setProperty(VERSION_PROPERTY_NAME,Integer.toString(version));
 	}
+        
+        /* Listeners */
+        private ArrayList<InformationListener> listeners;
+        
+        public void addListener(InformationListener l) {
+            listeners.add(l);
+        }
+        public void removeListener(InformationListener l) {
+            listeners.remove(l);
+        }
+        
+        private void notifyContentChanged() {
+            for (InformationListener l : listeners) {
+                l.contentChanged();
+            }
+        }
+        private void notifyContentRemoved() {
+            for (InformationListener l : listeners) {
+                l.contentRemoved();
+            }
+        }
+        private void notifyContentTypeChanged() {
+            for (InformationListener l : listeners) {
+                l.contentTypeChanged();
+            }
+        }
 }

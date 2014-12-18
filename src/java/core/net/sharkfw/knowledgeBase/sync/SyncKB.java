@@ -12,7 +12,7 @@ import java.util.Vector;
  * @author hellerve
  */
 
-public class SyncKB implements SharkKB {
+public class SyncKB implements SharkKB, ContextPointListener {
     
     protected static String VERSION_PROPERTY_NAME = "SyncKB_version";
     protected static String VERSION_DEFAULT_VALUE = "1";
@@ -27,7 +27,7 @@ public class SyncKB implements SharkKB {
      * @param kb The SharkKB that should be synchronized
      * @throws SharkKBException
      */
-    public SyncKB(SharkKB kb) throws SharkKBException{
+    public SyncKB(SharkKB kb) throws SharkKBException  {
         _localKB = kb;
         
         Enumeration<ContextPoint> contextPoints = _localKB.getAllContextPoints();
@@ -379,4 +379,16 @@ public class SyncKB implements SharkKB {
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
         _localKB.semanticTagRemoved(tag, stset);
     }
+
+    @Override
+    public void addedInformation(Information info, ContextPoint cp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removedInformation(Information info, ContextPoint cp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 }

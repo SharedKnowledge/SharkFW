@@ -10,8 +10,10 @@ import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.InformationListener;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
-public class SyncContextPoint implements ContextPoint {
+public class SyncContextPoint implements ContextPoint, InformationListener {
 	
 	private ContextPoint _localCP = null;
 	protected static String VERSION_PROPERTY_NAME = "SyncCP_version";
@@ -76,39 +78,52 @@ public class SyncContextPoint implements ContextPoint {
 
 	@Override
 	public Information addInformation() {
-		Information i = _localCP.addInformation();
-		this.versionUp();
-		return new SyncInformation(i);
+            SyncInformation s = new SyncInformation(InMemoSharkKB.createInMemoInformation());
+            s.addListener(this);
+            _localCP.addInformation(s);
+            this.versionUp();
+            return s;
 	}
         
 	@Override
 	//TODO Should this info be converted?
 	// No, document!!! Reference ought to be dropped.
 	public void addInformation(Information source) {
-            _localCP.addInformation(source);
+            SyncInformation s = new SyncInformation(source);
+            s.addListener(this);
+            _localCP.addInformation(s);
             versionUp();
 		
 	}
 
 	@Override
 	public Information addInformation(InputStream is, long len) {
-		Information i =  _localCP.addInformation(is, len);
-		versionUp();
-		return new SyncInformation(i);
+            SyncInformation s = new SyncInformation(InMemoSharkKB.createInMemoInformation());
+            s.setContent(is, len);
+            s.addListener(this);
+            _localCP.addInformation(s);
+            versionUp();
+            return s;
 	}
 
 	@Override
 	public Information addInformation(byte[] content) {
-		Information i = _localCP.addInformation(content);
-		versionUp();
-		return new SyncInformation(i);
+            SyncInformation s = new SyncInformation(InMemoSharkKB.createInMemoInformation());
+            s.setContent(content);
+            s.addListener(this);
+            _localCP.addInformation(s);
+            versionUp();
+            return s;
 	}
 
 	@Override
 	public Information addInformation(String content) {
-		Information i = _localCP.addInformation(content);
-		versionUp();
-		return new SyncInformation(i);
+            SyncInformation s = new SyncInformation(InMemoSharkKB.createInMemoInformation());
+            s.setContent(content);
+            s.addListener(this);
+            _localCP.addInformation(s);
+            versionUp();
+            return s;
 	}
 
 	@Override
@@ -180,31 +195,26 @@ public class SyncContextPoint implements ContextPoint {
 	private void versionUp() {
             int oldVersion = Integer.parseInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
             _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
-//		int version = 1;
-//		try{
-//			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
-//		}catch(NumberFormatException e){
-//			// TODO: ?
-//		}
-//		version++;
-//		_localCP.setProperty(VERSION_PROPERTY_NAME, Integer.toString(version));
 	}	
 	
-	private void versionUp(Information info) {
-		int version = 1;
-		try{
-//			version = Integer.parseUnsignedInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
-		}catch(NumberFormatException e){
-			// TODO: ?
-		}
-		version++;
-		_localCP.setProperty(VERSION_PROPERTY_NAME, Integer.toString(version));
-		
-		if(info.getProperty(SyncInformation.VERSION_PROPERTY_NAME) == null)
-			info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
-	}
+    public int getVersion() {
+        return Integer.parseInt(getProperty(VERSION_PROPERTY_NAME));
+    }
 
-        public int getVersion() {
-            return Integer.parseInt(getProperty(VERSION_PROPERTY_NAME));
-        }
+    @Override
+    public void contentChanged() {
+        versionUp();
+    }
+
+    @Override
+    public void contentRemoved() {
+        versionUp();
+    }
+
+    @Override
+    public void contentTypeChanged() {
+        versionUp();
+    }
+        
+        
 }
