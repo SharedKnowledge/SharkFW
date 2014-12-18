@@ -45,7 +45,7 @@ import net.sharkfw.protocols.tcp.TCPStreamStub;
 // Make sure that you call stop() at the end of your application!
 
 public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStub, PeerListListener, ConnectionInfoListener, ConnectionStatusListener {
-	/** Used for initial Authentifkation */
+	/** Used for initial Authentication when wifi direct establishes a Connection to another peer */
 	public final static String WIFI_DIRECT_CONNECTION_TOPIC = "WIFI_DIRECT_INITIAL_IDENTIFIKATION";
 	/** TCP port */
 	private final static int PORT = 8955;
