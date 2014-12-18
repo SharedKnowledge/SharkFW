@@ -1039,10 +1039,8 @@ public class XMLSerializer implements KnowledgeSerializer {
                         info.setContentType(type);
 
                         OutputStream os = info.getOutputStream();
-						info.obtainLock(os);
                         Streamer.stream(is.getInputStream(), os, 
                                 UTF8SharkOutputStream.STREAM_BUFFER_SIZE, len);
-						info.releaseLock();
                     }
                     
                     // there was at least a single information - add cp

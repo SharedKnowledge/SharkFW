@@ -831,10 +831,8 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
             Information i = cp.addInformation();
             OutputStream os = i.getOutputStream();
             SharkOutputStream sos = new UTF8SharkOutputStream(os);
-            i.obtainLock(os);
             this.getXMLSerializer().write(k, sos);
             i.setContentType(KNOWLEDGE_CONTENT_TYPE);
-            i.releaseLock();
         } catch (Exception ex) {
             L.d("cannot serialize knowledge", this);
         }

@@ -1079,6 +1079,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
    * Call the method for single addresses subsequently until all addresses have been triggered.
    * @param interest The interest to send
    * @param receiveraddresses
+     * @throws net.sharkfw.system.SharkException
    */
     @Override
     public void expose(SharkCS interest, String[] receiveraddresses) throws SharkException {

@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
+import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
 
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -36,10 +37,20 @@ public abstract class SharkCSAlgebra {
         String si_a[] = tagA.getSI();
         String si_b[] = tagB.getSI();
         
-        return SharkCSAlgebra.identical(si_a, si_b);
-
+        boolean sisIdentical = SharkCSAlgebra.identical(si_a, si_b);
+        
+        if(!sisIdentical) return false;
+        
+        if(tagA instanceof SpatialSemanticTag && tagB instanceof SpatialSemanticTag) {
+            SpatialSemanticTag sTagA = (SpatialSemanticTag)tagA;
+            SpatialSemanticTag sTagB = (SpatialSemanticTag)tagB;
+            
+            return SpatialAlgebra.getSpatialAlgebra().identical(sTagA, sTagB);
+        }
+        
+        return sisIdentical;
     }
-    
+
     /**
      * Checks whether two semantic tags are identical based on their subject
      * identifiers. Null is interpreted as any.

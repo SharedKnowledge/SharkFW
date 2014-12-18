@@ -204,4 +204,7 @@ public class SyncContextPoint implements ContextPoint {
 			info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
 	}
 
+        public int getVersion() {
+            return Integer.parseInt(getProperty(VERSION_PROPERTY_NAME));
+        }
 }

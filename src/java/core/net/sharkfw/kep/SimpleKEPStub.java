@@ -338,6 +338,7 @@ public class SimpleKEPStub extends KEPStub {
     }
   }
 
+        @Override
   public void sentKnowledge(Knowledge knowledge) {
         /* there are two list of knowledge for two different purposes.
          * Will be revised soon
@@ -375,6 +376,7 @@ public class SimpleKEPStub extends KEPStub {
     }
   }
 
+        @Override
   public boolean interestAllowed(SharkCS interest) {
 
     if (interest == null) {
@@ -388,24 +390,24 @@ public class SimpleKEPStub extends KEPStub {
 
       // Find out when the interest has been sent last
       Long timestamp = null;
-      timestamp = (Long) this.messages.get(key);
+      timestamp = this.messages.get(key);
 
       if(timestamp == null) {
-        L.d("Interest is not inside the silence table. Allowed.", this);
+        // Interest is not inside the silence table. Allowed.
         return true;
       }
 
-      Long currentTime = new Long(System.currentTimeMillis());
-      Long delta = new Long(currentTime.longValue() - timestamp.longValue());
+      Long currentTime = System.currentTimeMillis();
+      Long delta = currentTime - timestamp;
       // Check if it is still inside the silence period. Return true.
-      if(delta.longValue() > this.silentPeriod) {
+      if(delta > this.silentPeriod) {
         // It's not. Remove it from the table.
         this.messages.remove(key);
         L.d("Interest is allowed. Silence period is over.", this);
         return true;
       } else {
         // It is INSIDE the silence period. Return false.
-        L.l("Interest is inside silence period. Not allowed.", this);
+        L.l("Interest is inside silence period. Interest won't be sent.", this);
         return false;
 //        L.d("Silence feature was switched OFF, though", this);
 //        return true;
@@ -421,6 +423,7 @@ public class SimpleKEPStub extends KEPStub {
     return true;
   }
 
+        @Override
   public boolean knowledgeAllowed(Knowledge knowledge) {
     if (knowledge == null) {
       return false;
@@ -441,24 +444,24 @@ public class SimpleKEPStub extends KEPStub {
 
       // Find out when the knowledge has been sent last
       Long timestamp = null;
-      timestamp = (Long) this.knowledges.get(key);
+      timestamp = this.knowledges.get(key);
 
       if(timestamp == null) {
         L.d("Knowledge is not inside the silence table. Allowed.", this);
         return true;
       }
 
-      Long currentTime = new Long(System.currentTimeMillis());
-      Long delta = new Long(currentTime.longValue() - timestamp.longValue());
+      Long currentTime = System.currentTimeMillis();
+      Long delta = currentTime - timestamp;
       // Check if it is still inside the silence period. Return true.
-      if(delta.longValue() > this.silentPeriod) {
+      if(delta > this.silentPeriod) {
         // It's not. Remove it from the table.
         this.knowledges.remove(key);
         L.d("Knowledge is allowed. Silence period is over.", this);
         return true;
       } else {
         // It is INSIDE the silence period. Return false.
-        L.d("Knowledge is inside silence period. Not allowed.", this);
+        L.d("Knowledge is inside silence period. Won't be sent.", this);
         return false;
       }
 

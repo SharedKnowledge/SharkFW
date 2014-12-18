@@ -17,7 +17,8 @@ public interface SharkGeometry {
 
     /**
      *
-     * @return vector geometry objects as Extended Well-Known Text (include epsg code of spatial reference system)
+     * @return vector geometry objects as Extended Well-Known Text (include epsg
+     * code of spatial reference system)
      */
     public String getEWKT();
 

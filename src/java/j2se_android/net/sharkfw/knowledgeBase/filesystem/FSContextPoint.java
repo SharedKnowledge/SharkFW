@@ -77,14 +77,10 @@ public class FSContextPoint extends InMemoContextPoint {
         InputStream readAccess = null;
         try {
             readAccess = info.getInputStream();
-            info.obtainLock(readAccess);
         } catch (SharkKBException e) {
         }
         
-		infoCopy.obtainLock(writeAccess);
         info.streamContent(writeAccess);
-		infoCopy.releaseLock();
-		info.releaseLock();
 
         try {
             // close stream

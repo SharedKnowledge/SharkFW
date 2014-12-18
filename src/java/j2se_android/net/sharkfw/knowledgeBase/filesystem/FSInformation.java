@@ -49,8 +49,6 @@ public class FSInformation extends InMemoInformation {
      */
     private void setupContentFile() throws SharkKBException {
 		
-		spinLock.enter();
-		
         // is there already a content file
         if(this.contentFile != null) {
             if(this.contentFile.exists()) {
@@ -59,7 +57,6 @@ public class FSInformation extends InMemoInformation {
                     this.setSystemProperty(INFO_FILE, this.contentFile.getCanonicalPath());
                 }
                 catch(IOException ioe) {
-                	spinLock.leave();
                     throw new SharkKBException(ioe.getMessage());
                 }
             }
@@ -95,14 +92,12 @@ public class FSInformation extends InMemoInformation {
                     this.setSystemProperty(INFO_FILE, this.contentFile.getCanonicalPath());
                 }
                 catch(IOException ieo) {
-					spinLock.leave();
                     throw new SharkKBException(ieo.getMessage());
                 }
             }
         } else {
             this.contentFile = newContentFile;
         }
-		spinLock.leave();
     }
     
     /*
@@ -125,13 +120,10 @@ public class FSInformation extends InMemoInformation {
     
     @Override
     public long getContentLength() {
-		spinLock.enter();
 		if(this.contentFile != null) {
 			long sz = this.contentFile.length();
-			spinLock.leave();
 			return sz;
 		}
-		spinLock.leave();
 		return 0;
     }
     
@@ -140,7 +132,6 @@ public class FSInformation extends InMemoInformation {
         FileOutputStream fos;
         this.setContentType("text/plain");
         
-		spinLock.enter();
         try {
             fos = new FileOutputStream(this.contentFile);
 			lockFile(fos.getChannel(), true);
@@ -158,13 +149,11 @@ public class FSInformation extends InMemoInformation {
             L.e("setContent("+content+"): couldn't write information to file: " + ex.getMessage(), this);
 			ex.printStackTrace();
         }
-		releaseLock();
     }
     
     @Override
     public void setContent(byte[] content) {
         FileOutputStream fos;
-		spinLock.enter();
         try {
             fos = new FileOutputStream(this.contentFile);
 			lockFile(fos.getChannel(), true);	
@@ -179,7 +168,6 @@ public class FSInformation extends InMemoInformation {
             L.e("setContent(byte[]): couldn't write information to file: " + ex.getMessage(), this);
 			ex.printStackTrace();
         }
-		releaseLock();
     }
     
     private static final int MAX_BUFFER_LEN = 1024*100; // 100 kByte
@@ -189,7 +177,6 @@ public class FSInformation extends InMemoInformation {
         byte[] buffer = null;
         int index = 0;
         
-		spinLock.enter();
         FileOutputStream fos;
         try {
             fos = new FileOutputStream(this.contentFile);
@@ -219,12 +206,10 @@ public class FSInformation extends InMemoInformation {
             L.e("setContent(InputStream,"+len+"): couldn't write information to file: " + ex.getMessage(), this);
             ex.printStackTrace();
         }
-        releaseLock();
     }
     
     @Override
     public void removeContent() {
-    	spinLock.enter();
 		try {
         this.contentFile.delete();
         this.setTimes();
@@ -232,13 +217,11 @@ public class FSInformation extends InMemoInformation {
 			e.printStackTrace();
 			
 		}
-		spinLock.leave();
     }
     
     @Override
     public void streamContent(OutputStream os) {
         FileInputStream fis;
-		spinLock.enter();
         try {
             fis = new FileInputStream(this.contentFile);
 			lockFile(fis.getChannel(), false);	
@@ -260,7 +243,6 @@ public class FSInformation extends InMemoInformation {
 //                // ignore
 //            }
 //        }
-        releaseLock();
     }
     
     /**
@@ -277,7 +259,6 @@ public class FSInformation extends InMemoInformation {
         byte[] content = new byte[len];
         
         FileInputStream fis = null;
-		spinLock.enter();
         try {
             fis = new FileInputStream(this.contentFile);
 		} catch (FileNotFoundException e) {
@@ -310,7 +291,6 @@ public class FSInformation extends InMemoInformation {
 				e.printStackTrace();
         }
         }
-		releaseLock();
         return content;
     }
     
@@ -502,7 +482,6 @@ public class FSInformation extends InMemoInformation {
 
 	@Override
 	public void obtainLock(InputStream i) {
-		spinLock.enter();
 		if (i instanceof FileInputStream) {
 			lockFile(((FileInputStream)i).getChannel(), false);	
 		}	    		
@@ -510,7 +489,6 @@ public class FSInformation extends InMemoInformation {
 	
 	@Override
 	public void obtainLock(OutputStream o) {
-		spinLock.enter();
 		if (o instanceof FileOutputStream) {
 			lockFile(((FileOutputStream)o).getChannel(), true);
 		}			
@@ -519,7 +497,6 @@ public class FSInformation extends InMemoInformation {
 	@Override
 	public void releaseLock() {		
 		unlockFile();
-		spinLock.leave();
 	}
 
 	private void lockFile(FileChannel _fChannel, boolean write) {

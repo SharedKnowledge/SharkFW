@@ -161,21 +161,6 @@ public class SyncInformation implements Information{
 		return _localInformation.getUniqueID();
 	}
 
-	@Override
-	public void obtainLock(InputStream i) {
-		_localInformation.obtainLock(i);
-	}
-
-	@Override
-	public void obtainLock(OutputStream o) {
-		_localInformation.obtainLock(o);
-	}
-
-	@Override
-	public void releaseLock() {
-		_localInformation.releaseLock();
-	}
-	
 	private void versionUp() {
             int oldVersion = Integer.parseInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
             _localInformation.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));

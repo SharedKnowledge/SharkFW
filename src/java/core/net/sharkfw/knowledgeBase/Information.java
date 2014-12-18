@@ -165,19 +165,5 @@ public interface Information extends SystemPropertyHolder {
      * @return unique ID as String, "" if there is no unique ID set
      */
     public String getUniqueID();
-        
-    /**
-     * enters a critical section 
-     */
-    public void obtainLock(InputStream i);    
-    
-    /**
-     * enters a critical section 
-     */
-    public void obtainLock(OutputStream o);    
-    
-    /**
-     * leaves a critical section 
-     */
-    public void releaseLock();
+       
 }

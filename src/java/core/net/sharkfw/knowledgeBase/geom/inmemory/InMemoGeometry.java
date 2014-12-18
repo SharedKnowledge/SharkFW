@@ -2,18 +2,24 @@ package net.sharkfw.knowledgeBase.geom.inmemory;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import static net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra.checkWKTwithJTS;
 
 /**
+ * *
+ * @author thsc, s0542709, s0542541
+ * @version
  *
- * @author thsc
+ * This class provides some tests for SharkGeometry which uses the JTS-Library.
+ * Hint: - Well-known text (WKT) with SRS = Extended Well-Known Text (EWKT) -
+ * Spatial Reference System Identifier (SRID) == (SRS) Spatial Reference System
+ * default value = 4326 == WGS84; SRS bis 8 stellen
+ * http://spatialreference.org/ref/epsg/?page=88
+ *
  */
 public class InMemoGeometry implements SharkGeometry {
 
-    // TODO: Test format!!!
-    //Well-Known Text
-    private String wkt;
-    //epsg code of spatial reference system
-    private int srs;
+    private final String wkt;
+    private final int srs;
 
     private InMemoGeometry(String wkt, int srs) {
         this.wkt = wkt;
@@ -27,15 +33,8 @@ public class InMemoGeometry implements SharkGeometry {
      * @throws SharkKBException wrong format
      */
     public static SharkGeometry createGeomByWKT(String wkt) throws SharkKBException {
-        // TODO: add default SRS!
-        String validErr = null;
-
-        // empty geometries are always valid!
-        if (wkt.isEmpty()) {
-            throw new SharkKBException("WKT is empty");
-        } else {
-            
-        }
+        wkt = wkt.replace(";", "").trim();
+        checkWKTwithJTS(wkt);
         return new InMemoGeometry(wkt, 4326);
     }
 
@@ -46,21 +45,31 @@ public class InMemoGeometry implements SharkGeometry {
      * @throws SharkKBException wrong format
      */
     public static SharkGeometry createGeomByEWKT(String ewkt) throws SharkKBException {
+        ewkt = ewkt.toUpperCase();
         String wkt = null;
         int srs = 0;
 
-        if (ewkt.isEmpty()) {
-            throw new SharkKBException("WKT is empty");
-        } else {
-            
+        try {
+            int postionSRSstart = ewkt.indexOf("SRID");
+            int positionSRSend = ewkt.indexOf(";", postionSRSstart);
+            if (positionSRSend == -1) {
+                positionSRSend = ewkt.length();
+            }
+            srs = Integer.parseInt(ewkt.substring(postionSRSstart + 5, positionSRSend));
+            wkt = (ewkt.substring(0, postionSRSstart)) + (ewkt.substring(positionSRSend, ewkt.length()));
+            wkt = wkt.replace(";", "").trim();
+        } catch (Exception e) {
+            throw new SharkKBException("SRID parsing problem, check syntax restriction ");
         }
+
+        checkWKTwithJTS(wkt);
         return new InMemoGeometry(wkt, srs);
     }
 
     /**
      *
      * @param geom
-     * @return
+     * @return SpatialSI
      */
     public static String createSpatialSI(SharkGeometry geom) {
         return SharkGeometry.SHARK_POINT_SI_PREFIX + geom.getEWKT();
@@ -68,7 +77,7 @@ public class InMemoGeometry implements SharkGeometry {
 
     /**
      *
-     * @return
+     * @return WKT
      */
     @Override
     public String getWKT() {
@@ -77,7 +86,7 @@ public class InMemoGeometry implements SharkGeometry {
 
     /**
      *
-     * @return
+     * @return EWKT
      */
     @Override
     public String getEWKT() {
@@ -92,14 +101,5 @@ public class InMemoGeometry implements SharkGeometry {
     public int getSRS() {
         return this.srs;
     }
-    
-    
-    //    public static Point createPoint(Double lon, Double lat) {
-    //        return new InMemoPoint(lon, lat);
-    //    }
-    //
-    //
-    //    public static String createSpatialSI(String longitude, String latitude) {
-    //        return InMemoPoint.SHARK_POINT_SI_PREFIX + longitude + "/" + latitude;
-    //    }
+
 }
