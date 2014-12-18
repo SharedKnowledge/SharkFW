@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.content.BroadcastReceiver;
@@ -23,9 +25,13 @@ import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.net.wifi.p2p.WifiP2pManager.DnsSdTxtRecordListener;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
+import android.net.wifi.p2p.nsd.WifiP2pServiceInfo;
 import android.util.Log;
 import android.widget.Toast;
+import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.peer.SharkEngine;
 
 import net.sharkfw.protocols.ConnectionStatusListener;
@@ -39,6 +45,8 @@ import net.sharkfw.protocols.tcp.TCPStreamStub;
 // Make sure that you call stop() at the end of your application!
 
 public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStub, PeerListListener, ConnectionInfoListener, ConnectionStatusListener {
+	/** Used for initial Authentifkation */
+	public final static String WIFI_DIRECT_CONNECTION_TOPIC = "WIFI_DIRECT_INITIAL_IDENTIFIKATION";
 	/** TCP port */
 	private final static int PORT = 8955;
 
@@ -104,7 +112,7 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 				}
 				if (getStub().getState() == WifiDirectStreamStubState.CONNECTING) {
 					if (getStub().getStateTimestamp() + 30000 < now) {
-						// no answer for connection attempt
+						/** no anwser for 30 seconds*/
 						Log.d("WifiDirect", "selected peer did not answer the connection attempt for 30000ms - restarting");
 						getStub().start();
 					}
@@ -135,7 +143,8 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 	private TCPStreamStub _tcpStreamStub;
 	/** Server-side tcp connection. */
 	private TCPConnection _tcpConnection;
-
+	/** Service name used for only finding shark peers */
+	private String servicename = "shark_peer";
 	private String _connectionStr = "";
 
 	public String getConnectionStr() {
@@ -171,12 +180,22 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 			WifiDirectStreamStub.this._connectionStr = "tcp://" + con.getReceiverAddressString() + ":"+PORT;
 			WifiDirectStreamStub.this._handler.handleStream(con);
 		}
+		@Override
+		public void handleNewConnectionStream(StreamConnection con) {
+			WifiDirectStreamStub.this._connectionStr = "tcp://" + con.getReceiverAddressString() + ":"+PORT;
+			WifiDirectStreamStub.this._handler.handleNewConnectionStream(con);
+		}
 	};
 
-    /** Creates the wifi direct stream stub. */
-	public WifiDirectStreamStub(Context context, SharkEngine sharkEngine, RequestHandler requestHandler) {
+    /** Creates the wifi direct stream stub. 
+     * @throws SharkProtocolNotSupportedException */
+	public WifiDirectStreamStub(Context context, SharkEngine sharkEngine, RequestHandler requestHandler) throws SharkProtocolNotSupportedException {
 		_context = context;
-		_manager = (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE); // TODO null abfangen!
+		_manager = (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE);
+		if (_manager == null) {
+			/** Wifi direct is not supported*/
+			throw new SharkProtocolNotSupportedException("wifi direct is not supported");
+		}
         _sharkEngine = sharkEngine;
         _handler = requestHandler;
     }
@@ -210,7 +229,7 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 	}
 
 	/** Registers on the android system for the following events: Wifi is turned on/off, a new device list is available,
-	 *	the wifi connection state changed. These events can now be handled by the wifi stub. */
+	 *	the wifi connection state changed. These evWents can now be handled by the wifi stub. */
 	private void registerBroadcastReceiver() {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -227,7 +246,49 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 			_receiverRegistered = false;
 		}
 	}
+	/** 
+	 * The purpose of using Service discovery 
+	 * is that only shark peers will try to connect to each other.
+	 */
+	private void registerService() {
+		WifiP2pServiceInfo serviceInfo;
+		Map<String,String> record = new HashMap<String,String>();
+		record.put("listenport", String.valueOf(PORT));
+		record.put("available", "visible");
+		WifiP2pDnsSdServiceInfo serviceInfoDns = WifiP2pDnsSdServiceInfo.newInstance(servicename, "shark_tcp", record);
+		_manager.addLocalService(_channel, serviceInfoDns, new ActionListener(){
 
+			@Override
+			public void onSuccess() {
+				Log.d("wifi direct","service started");
+				
+				
+			}
+
+			@Override
+			public void onFailure(int reason) {
+				Log.e("wifi diect", "could not start service");
+				
+			}
+			
+		});
+		
+		
+	
+	}
+	private void discoverService() {
+		DnsSdTxtRecordListener txtListener = new DnsSdTxtRecordListener  () {
+
+			@Override
+			public void onDnsSdTxtRecordAvailable(String fullDomainName,
+					Map<String, String> txtRecordMap, WifiP2pDevice srcDevice) {
+					
+				
+			}
+			
+			
+		};
+	}
 	/** Initiates the wifi framework and the wifi stream stub. Creates a wifi channel, registers for wifi events, starts the wifi control
 	 *	thread and starts a tcp server. */
 	private void init() {
@@ -292,7 +353,7 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 	public void disconnect() {
 		log("disconnect :: State: " + getState());
 		if (_state == WifiDirectStreamStubState.DISCOVERING) {
-			//_manager.stopPeerDiscovery(_channel, null); // requires API 16
+			_manager.stopPeerDiscovery(_channel, null); 
 		} else if (_state == WifiDirectStreamStubState.CONNECTING) {
 			_manager.cancelConnect(_channel, null);
 			setState(WifiDirectStreamStubState.READY);
@@ -415,16 +476,18 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 		log("...info.groupFormed=" + info.groupFormed + ", info.isGroupOwner=" + info.isGroupOwner);
 		if (_state == WifiDirectStreamStubState.READY || _state == WifiDirectStreamStubState.CONNECTING || _state == WifiDirectStreamStubState.DISCOVERING) {
 			this._info = info;
-			if (info.groupFormed && info.isGroupOwner) { // Wird ausgefuehrt, wenn das Geraet der Server ist
+			/** server code*/
+			if (info.groupFormed && info.isGroupOwner) { 
 				setState(WifiDirectStreamStubState.CONNECTED);
 				_peerSelectionManager.peerConnected(_device);
 
 				Toast.makeText(_context, "Connection established. This is the server.", Toast.LENGTH_LONG).show();
 				log("Connection established. This is the server.");
-			} else if (info.groupFormed) { // Wird ausgeführt, wenn das Gerät der Client ist
+			/** client code*/
+			} else if (info.groupFormed) { 
 				setState(WifiDirectStreamStubState.CONNECTED);
 				final InetAddress adr = info.groupOwnerAddress;
-				new Thread(new Runnable() { // All networking must not run in the main thread.
+				new Thread(new Runnable() { 
 
 					@Override
 					public void run() {
@@ -432,7 +495,8 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 							_tcpConnection = new TCPConnection(adr.getHostAddress(), PORT);
 							_tcpConnection.addConnectionListener(WifiDirectStreamStub.this);
 							_connectionStr = _tcpConnection.getReceiverAddressString();
-							_sharkEngine.handleConnection(_tcpConnection); // The shark engine is called here!
+							/* calling the shark engine here*/
+							_internHandler.handleNewConnectionStream(_tcpConnection);
 						} catch (UnknownHostException e) {
 							log("Host not found. Got some problems here... restarting!");
 							Log.e("WifiDirect", "msg >> " + e);
