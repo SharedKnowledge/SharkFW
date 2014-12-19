@@ -12,7 +12,13 @@ import java.util.List;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkCS;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
 
@@ -41,7 +47,7 @@ class SyncBucketList {
      * Adds a context coordinate to all peers that do not already have this cc in their sync list.
      * @param cc 
      */
-    public void addToBuckets(ContextCoordinates cc)throws SharkKBException {
+    public void addCoordinatesToBuckets(ContextCoordinates cc)throws SharkKBException {
         for (SyncBucket s : _syncList) {
             s.addCoordinate(cc);
         }
@@ -51,11 +57,40 @@ class SyncBucketList {
      * Adds a context coordinate to a specific peer.
      * @param cc 
      */
-    public void addToBuckets(ContextCoordinates cc, PeerSemanticTag peer)throws SharkKBException {
+    public void addCoordinatesToBuckets(ContextCoordinates cc, PeerSemanticTag peer)throws SharkKBException {
         for (SyncBucket s : _syncList) {
             if(s._peer.equals(peer)) {
                 s.addCoordinate(cc);
             }
+        }
+    }
+    
+    /**
+     * Adds a SemanticTag to a bucket.
+     * @param t
+     * @throws SharkKBException 
+     */
+    public void addSemanticTagToBucket(TimeSemanticTag t) throws SharkKBException{
+        for(SyncBucket s : _syncList){
+            s.addSemanticTag(t);
+        }
+    }
+
+    public void addSemanticTagToBucket(PeerSemanticTag t) throws SharkKBException{
+        for(SyncBucket s : _syncList){
+            s.addSemanticTag(t);
+        }
+    }
+
+    public void addSemanticTagToBucket(SpatialSemanticTag t) throws SharkKBException{
+        for(SyncBucket s : _syncList){
+            s.addSemanticTag(t);
+        }
+    }
+
+    public void addSemanticTagToBucket(SemanticTag t) throws SharkKBException{
+        for(SyncBucket s : _syncList){
+            s.addSemanticTag(t);
         }
     }
     
@@ -98,7 +133,7 @@ class SyncBucketList {
      * @param peer
      * @return 
      */
-    public List<ContextCoordinates> popFromBucket(PeerSemanticTag peer) {
+    public List<ContextCoordinates> popCoordinatesFromBucket(PeerSemanticTag peer) {
         // Find the peer in our list
         Iterator<SyncBucket> i = _syncList.iterator();
         SyncBucket waldo;
@@ -112,13 +147,34 @@ class SyncBucketList {
         return new ArrayList<>();
     }
     
+    /** 
+     * Get and remove all context coordinates that should be synced with a peer.
+     * @param peer
+     * @return 
+     */
+    public SharkCS popContextSpaceFromBucket(PeerSemanticTag peer) {
+        // Find the peer in our list
+        Iterator<SyncBucket> i = _syncList.iterator();
+        SyncBucket waldo;
+        // Lets look for waldo
+        while(i.hasNext()) {
+            waldo = i.next();
+            if(waldo.getPeer().equals(peer))
+                return waldo.popSemanticTags();
+        }
+        
+        return null;
+    }
+    
     class SyncBucket {
         private final ArrayList<ContextCoordinates> _ccList;
         private final PeerSemanticTag _peer;
+        private SharkCS _cs;
         
         public SyncBucket(PeerSemanticTag peer) {
             _peer = InMemoSharkKB.createInMemoCopy(peer);
             _ccList = new ArrayList<>();
+//            _cs = new SharkCS();
         }
         
         public void addCoordinate(ContextCoordinates cc) throws SharkKBException {
@@ -133,6 +189,28 @@ class SyncBucketList {
             // Clear the old one
             _ccList.clear();
             return tmpList;
+        }
+        
+        public void addSemanticTag(TimeSemanticTag t) throws SharkKBException{
+            SharkCSAlgebra.merge(_cs.getTimes(), t);
+        }
+        
+        public void addSemanticTag(PeerSemanticTag t) throws SharkKBException{
+            SharkCSAlgebra.merge(_cs.getPeers(), t);
+        }
+        
+        public void addSemanticTag(SpatialSemanticTag t) throws SharkKBException{
+            SharkCSAlgebra.merge(_cs.getLocations(), t);
+        }
+        
+        public void addSemanticTag(SemanticTag t) throws SharkKBException{
+            SharkCSAlgebra.merge(_cs.getTopics(), t);
+        }
+        
+        public SharkCS popSemanticTags() {
+            SharkCS c = _cs;
+//            _cs = new SharkCS();
+            return c;
         }
         
         public PeerSemanticTag getPeer() {

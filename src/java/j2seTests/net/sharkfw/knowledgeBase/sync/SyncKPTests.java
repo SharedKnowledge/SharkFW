@@ -308,7 +308,7 @@ public class SyncKPTests {
         ContextCoordinates expected = _aliceKB.createContextCoordinates(_teapotST, _alice, _bob, _bob, null, null, SharkCS.DIRECTION_IN);
         _aliceKB.createContextPoint(expected);
         
-        assertEquals(expected, mySyncQueue.popFromBucket(_alice).get(0));
+        assertEquals(expected, mySyncQueue.popCoordinatesFromBucket(_alice).get(0));
     }
     
     @Test
@@ -331,7 +331,7 @@ public class SyncKPTests {
         ContextPoint teapotCP = _aliceKB.createContextPoint(teapotCC);
         
         // Remove it from the sync bucket list
-        _aliceSyncKP.getSyncBucketList().popFromBucket(_bob);
+        _aliceSyncKP.getSyncBucketList().popCoordinatesFromBucket(_bob);
         
         // Now change it's information
         teapotCP.addInformation("I like teapots.");
@@ -362,7 +362,7 @@ public class SyncKPTests {
         _aliceSyncKP.resetSyncQueue();
         
         // The sync bucket for bob should be empty now
-        assertEquals(0, _aliceSyncKP.getSyncBucketList().popFromBucket(_bob).size());
+        assertEquals(0, _aliceSyncKP.getSyncBucketList().popCoordinatesFromBucket(_bob).size());
         
         // Push the button!
         _aliceSyncKP.syncAllKnowledge();
@@ -403,7 +403,7 @@ public class SyncKPTests {
         _aliceSyncKP.resetSyncQueue();
         
         // The sync bucket for bob should be empty now
-        assertEquals(0, _aliceSyncKP.getSyncBucketList().popFromBucket(_bob).size());
+        assertEquals(0, _aliceSyncKP.getSyncBucketList().popCoordinatesFromBucket(_bob).size());
         
         // Push the button!
         _aliceSyncKP.syncAllKnowledge(_bob);

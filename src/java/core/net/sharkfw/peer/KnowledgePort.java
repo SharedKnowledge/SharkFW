@@ -269,30 +269,7 @@ abstract public class KnowledgePort {
      * @see net.sharkfw.kep.KEPResponse
      * @see net.sharkfw.peer.KEPRequest
      */
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) throws SharkException{
-        if (kb.getOwner() == null) {
-            L.e("KnowledgePort requires an owner to be set in the KB. Can't handle incoming wifi direct requests.");
-            return;
-        }
-        if (SharkCSAlgebra.isAny(interest)) {
-            L.d("Empty interest received. Sending interest back.");
-            // Create a topic ST set for wifi direct identification
-            STSet identificationTopic = InMemoSharkKB.createInMemoSTSet();
-            identificationTopic.merge(InMemoSharkKB.createInMemoSemanticTag("Wifi direct identification", WifiDirectStreamStub.WIFI_DIRECT_CONNECTION_TOPIC));
-            // Create a Peer Semantic tag set for the peer which contains the owner
-            PeerSTSet identificationPeer = InMemoSharkKB.createInMemoPeerSTSet();
-            identificationPeer.merge(kb.getOwner());
-            
-            Interest i = InMemoSharkKB.createInMemoInterest(identificationTopic, null, identificationPeer, null, null, null, SharkCS.DIRECTION_INOUT);
-            // Send it
-            kepConnection.expose(i);
-        }
-        else if (interest.getTopics().getSemanticTag(WifiDirectStreamStub.WIFI_DIRECT_CONNECTION_TOPIC) != null && interest.getPeers() != null) {
-            L.d("Received wifi direct identification interest. Sending my real interest back.");
-            kb.getPeerSTSet().merge(interest.getPeers());
-            kepConnection.expose(this.getInterest());
-        }
-    }
+    protected abstract void doExpose(SharkCS interest, KEPConnection kepConnection);
     
     /**
      * Has this AbstractKP been started to handle requests?

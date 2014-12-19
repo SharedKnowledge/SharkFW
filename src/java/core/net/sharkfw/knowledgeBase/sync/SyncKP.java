@@ -134,7 +134,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     public void syncAllKnowledge() throws SharkKBException {
         Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
         while(cps.hasMoreElements()){
-            _syncBuckets.addToBuckets(cps.nextElement().getContextCoordinates());
+            _syncBuckets.addCoordinatesToBuckets(cps.nextElement().getContextCoordinates());
         }
     }
     
@@ -147,7 +147,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     public void syncAllKnowledge(PeerSemanticTag peer) throws SharkKBException {
         Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
         while(cps.hasMoreElements()){
-            _syncBuckets.addToBuckets(cps.nextElement().getContextCoordinates(), peer);
+            _syncBuckets.addCoordinatesToBuckets(cps.nextElement().getContextCoordinates(), peer);
         }
     }
     
@@ -161,7 +161,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 // Create a knowledge of all ContextPoints which need to be synced with that other peer
                 Knowledge k = InMemoSharkKB.createInMemoKnowledge();
                 PeerSemanticTag sender = kepConnection.getSender();
-                for (ContextCoordinates cc : _syncBuckets.popFromBucket(sender)) {
+                for (ContextCoordinates cc : _syncBuckets.popCoordinatesFromBucket(sender)) {
                     k.addContextPoint(_kb.getContextPoint(cc));
                 }
                 // tell the engine to allow sending empty cps
@@ -212,7 +212,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     || !_lastInsertedCC.equals(cp.getContextCoordinates())
                     || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
                 ) {
-                    _syncBuckets.addToBuckets(cp.getContextCoordinates());
+                    _syncBuckets.addCoordinatesToBuckets(cp.getContextCoordinates());
             }
         } catch (SharkKBException e) {
             L.e(e.getMessage());
@@ -231,7 +231,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                         || !_lastInsertedCC.equals(cp.getContextCoordinates())
                         || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
                     ) {
-                        _syncBuckets.addToBuckets(cp.getContextCoordinates());
+                        _syncBuckets.addCoordinatesToBuckets(cp.getContextCoordinates());
                 }
             } catch (SharkKBException ex) {
                 L.d("SyncKPListener received empty CP: " + ex.getMessage());
