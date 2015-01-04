@@ -32,7 +32,7 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
 				info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
 		}
                 if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null){
-                    _localCP.setProperty(VERSION_PROPERTY_NAME, new Date().toString());
+                    _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()));
                 }
 	}
         
@@ -223,7 +223,7 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
     }
     
     public void setTimestamp(Date d) {
-        _localCP.setProperty(VERSION_PROPERTY_NAME, d.toString());
+        _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(d.getTime()));
     }
     
     public void getTimestamp() {

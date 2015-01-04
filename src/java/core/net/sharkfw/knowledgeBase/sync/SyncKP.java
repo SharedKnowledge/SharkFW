@@ -1,6 +1,9 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
@@ -271,10 +274,34 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     protected void setSyncQueue(TimestampList s) {
         _timestamps = s;
     }
+    
     protected TimestampList getSyncBucketList() {
         return _timestamps;
     }
+    
     protected void resetSyncQueue() throws SharkKBException {
         _timestamps = new TimestampList(_kb.getPeerSTSet());
+    }
+    
+    protected List<ContextPoint> retrieve(Date d) throws SharkKBException {
+        List<ContextPoint> toSync = new ArrayList<>();
+        Enumeration<ContextPoint> all = _kb.getAllContextPoints();
+        
+        while(all.hasMoreElements()){
+            ContextPoint element = all.nextElement();
+            String date = element.getProperty(SyncContextPoint.TIMESTAMP_PROPERTY_NAME);
+            
+            if(date == null){ 
+                continue;
+            }
+            
+            Date compare = new Date(Integer.parseInt(date));
+            
+            if(compare.before(d)){
+                toSync.add(element);
+            }
+        }
+        
+        return toSync;
     }
 }
