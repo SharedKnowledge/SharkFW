@@ -13,7 +13,7 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
  * @author hellerve
  */
 
-public class SyncKB implements SharkKB, SyncContextPointListener {
+public class SyncKB implements SharkKB {
     
     protected static String VERSION_PROPERTY_NAME = "SyncKB_version";
     protected static String VERSION_DEFAULT_VALUE = "1";
@@ -380,28 +380,5 @@ public class SyncKB implements SharkKB, SyncContextPointListener {
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
         _localKB.semanticTagRemoved(tag, stset);
     }
-
-    @Override
-    public void versionChanged(SyncContextPoint p) {
-        notifyCPChanged(p);
-    }
-    
-    /* Listeners */
-    Collection<SyncKnowledgeBaseListener> listeners = new ArrayList<>();
-    
-    public void addListener(SyncKnowledgeBaseListener l){
-        listeners.add(l);
-    }
-    
-    public void removeListener(SyncKnowledgeBaseListener l){
-        listeners.remove(l);
-    }
-    
-    private void notifyCPChanged(SyncContextPoint p){
-        for (SyncKnowledgeBaseListener l : listeners) {
-            l.syncCPChanged(p);
-        }
-    }
-    
-    
+       
 }

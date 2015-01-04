@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Vector;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -130,7 +129,7 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
 	@Override
 	public Enumeration<Information> enumInformation() {
 		Enumeration<Information> infos = _localCP.enumInformation();
-		Vector<Information> temp = new Vector<Information>();
+		Vector<Information> temp = new Vector<>();
 		while(infos.hasMoreElements()){
 			temp.addElement(new SyncInformation(infos.nextElement()));
 		}
@@ -196,7 +195,6 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
 	private void versionUp() {
             int oldVersion = Integer.parseInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
             _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
-            notifyChanged();
 	}	
 	
     public int getVersion() {
@@ -216,22 +214,5 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
     @Override
     public void contentTypeChanged() {
         versionUp();
-    }
-        
-    /* Listeners */
-    Collection<SyncContextPointListener> listeners = new ArrayList<>();
-    
-    public void addListener(SyncContextPointListener l){
-        listeners.add(l);
-    }
-    
-    public void removeListener(SyncContextPointListener l){
-        listeners.remove(l);
-    }
-    
-    private void notifyChanged(){
-        for (SyncContextPointListener l : listeners) {
-            l.versionChanged(this);
-        }
     }
 }

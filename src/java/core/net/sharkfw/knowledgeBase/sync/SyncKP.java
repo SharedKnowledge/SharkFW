@@ -77,7 +77,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _kb = kb;
         _engine = engine;
         _kb.addListener(this);
-        _kb.addListener(new InternalSyncListener());
         
         _snowballing = snowballing;
                 
@@ -221,22 +220,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
    
     @Override
     public void cpChanged(ContextPoint cp) {}
-
-    private class InternalSyncListener implements SyncKnowledgeBaseListener{
-        @Override
-        public void syncCPChanged(SyncContextPoint cp) {
-            try {
-                if ( _lastInsertedCC == null
-                        || !_lastInsertedCC.equals(cp.getContextCoordinates())
-                        || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
-                    ) {
-                        _syncBuckets.addCoordinatesToBuckets(cp.getContextCoordinates());
-                }
-            } catch (SharkKBException ex) {
-                L.d("SyncKPListener received empty CP: " + ex.getMessage());
-            }
-        }
-    }
 
     @Override
     public void contextPointRemoved(ContextPoint cp) {
