@@ -301,7 +301,7 @@ public class SyncKPTests {
         
         PeerSTSet myPSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         myPSTSet.merge(_alice);
-        SyncBucketList mySyncQueue = new SyncBucketList(myPSTSet);
+        TimestampList mySyncQueue = new TimestampList(myPSTSet);
         
         _aliceSyncKP.setSyncQueue(mySyncQueue);
         

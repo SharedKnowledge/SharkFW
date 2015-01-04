@@ -17,10 +17,12 @@ KnowledgeBaseListener & STSetListener:
 
 Features:
     - Vorhaben(Syncs) => Protokoll implementieren
-        1. Interests festmachen
-        2. Contextcoordiantes vergleichen
+        1. Interests festmachen (Was hat Peer A in den Syncbuckets für Peer B)
+        2. Contextcoordiantes vergleichen (Was braucht Peer B davon tatsächlich)
         3. Daten senden
         -> ausser für WifiDirect(zweiter Check auf leeres all interesse; siehe unten)
     - Contextspaces syncen
     - Bucketlist persistent
     - eigeninformation auf allinteresse
+
+SharkCSAlgebra isIn(SemanticTag, STSet): In einer leeren Liste ist angeblich jedes Peer enthalten

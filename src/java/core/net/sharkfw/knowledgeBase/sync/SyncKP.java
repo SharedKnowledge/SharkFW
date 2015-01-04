@@ -49,7 +49,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     protected SharkEngine _engine;
     
     private Interest _syncInterest;
-    private SyncBucketList _syncBuckets;
+    private TimestampList _syncBuckets;
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
@@ -89,7 +89,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         // Create a sync queue for all known peers
         PeerSTSet bucketSet = _kb.getPeerSTSet();
         bucketSet.removeSemanticTag(_kb.getOwner());
-        _syncBuckets = new SyncBucketList(bucketSet);
+        _syncBuckets = new TimestampList(bucketSet);
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -276,13 +276,13 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         // Ignored because we only track peers and context points
     }
     
-    protected void setSyncQueue(SyncBucketList s) {
+    protected void setSyncQueue(TimestampList s) {
         _syncBuckets = s;
     }
-    protected SyncBucketList getSyncBucketList() {
+    protected TimestampList getSyncBucketList() {
         return _syncBuckets;
     }
     protected void resetSyncQueue() throws SharkKBException {
-        _syncBuckets = new SyncBucketList(_kb.getPeerSTSet());
+        _syncBuckets = new TimestampList(_kb.getPeerSTSet());
     }
 }

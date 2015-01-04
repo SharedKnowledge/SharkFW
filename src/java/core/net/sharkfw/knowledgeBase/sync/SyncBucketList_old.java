@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.ArrayList;
@@ -26,15 +21,22 @@ import net.sharkfw.system.L;
  *
  * @author s0539710
  */
-class SyncBucketList {
+/**
+ * A class that holds the timestamp of the last meeting between this and any other peer.
+ * 
+ * With this timestamp the knowledge that needs to be synced with another peer can be retrieved 
+ * from the knowledge base.
+ * @author simon
+ */
+class SyncBucketList_old {
     
     protected List<SyncBucket> _syncList;
         
-    public SyncBucketList() {
+    public SyncBucketList_old() {
         _syncList = new ArrayList<>();
     }
     
-    public SyncBucketList(PeerSTSet peersToSyncWith) {
+    public SyncBucketList_old(PeerSTSet peersToSyncWith) {
         _syncList = new ArrayList<>();
         // Add all possible peers to queue
         Enumeration<PeerSemanticTag> peerEnum = peersToSyncWith.peerTags();
