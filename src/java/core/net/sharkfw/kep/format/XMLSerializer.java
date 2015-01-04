@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sharkfw.system.TimeLong;
 import net.sharkfw.kep.KnowledgeSerializer;
@@ -134,6 +135,20 @@ public class XMLSerializer implements KnowledgeSerializer {
         
         buf.append(this.endTag(SHARKCS_TAG));
 
+        return buf.toString();
+    }
+    
+    public String serializeContextCoordinatesList(List<ContextCoordinates> l) throws SharkKBException {
+         if(l == null) {
+            return null;
+        }
+        
+        StringBuilder buf = new StringBuilder();
+        
+        for (ContextCoordinates cc : l) {
+            buf.append(this.serializeSharkCS(cc));
+        }
+        
         return buf.toString();
     }
     
@@ -420,6 +435,16 @@ public class XMLSerializer implements KnowledgeSerializer {
         
         return buf.toString();
         
+    }
+    
+    public List<ContextCoordinates> deserializeContextCoordinatesList(String serialized) throws SharkKBException {
+        String cs;
+        List<ContextCoordinates> deserialized = new ArrayList<>();
+        while((cs = this.stringBetween(SHARKCS_TAG, serialized, 0)) != null){
+            deserialized.add(internalDeserializeContextCoordinates(cs));
+        }
+        
+        return deserialized;
     }
     
     /**
@@ -1053,7 +1078,7 @@ public class XMLSerializer implements KnowledgeSerializer {
         return k;
     }
 
-    public ContextCoordinates deserializeContextCoordinates(SharkKB target, String serialCo) throws SharkKBException {
+    private ContextCoordinates internalDeserializeContextCoordinates(String serialCo) throws SharkKBException{
         SharkCS cs = this.deserializeSharkCS(serialCo);
         
         if(cs == null) {
@@ -1072,8 +1097,13 @@ public class XMLSerializer implements KnowledgeSerializer {
         location = (SpatialSemanticTag) this.getFirstTag(cs.getLocations());
         time = (TimeSemanticTag) this.getFirstTag(cs.getTimes());
         
-        return target.createContextCoordinates(topic, originator, peer, 
-                remotePeer, time, location, cs.getDirection());
+        return InMemoSharkKB.createInMemoContextCoordinates(topic, originator, peer, remotePeer, time, location, cs.getDirection());
+    }
+    
+    public ContextCoordinates deserializeContextCoordinates(SharkKB target, String serialCo) throws SharkKBException {
+        ContextCoordinates deserializedCC = this.internalDeserializeContextCoordinates(serialCo);
+        return target.createContextCoordinates(deserializedCC.getTopic(), deserializedCC.getOriginator(), deserializedCC.getPeer(),
+                deserializedCC.getRemotePeer(), deserializedCC.getTime(), deserializedCC.getLocation(), deserializedCC.getDirection());
     }
     
     private SemanticTag getFirstTag(STSet stSet) throws SharkKBException {

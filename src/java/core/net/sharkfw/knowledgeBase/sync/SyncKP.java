@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.Enumeration;
+import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
@@ -12,6 +13,7 @@ import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
@@ -51,6 +53,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     private Interest _syncInterest;
     private TimestampList _timestamps;
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
+    private final String SYNCHRONIZATION_SERIALIZEDCCPROPERTY = "SyncKP_serialized_ccs";
     
     // Flags for syncing
     private boolean _snowballing;
@@ -143,30 +146,53 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-//        super.doExpose(interest, kepConnection);
         try {
-            // Perform a check if the other KP is a Sync KP too
-            SemanticTag tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
-            if (tag != null) {
-                // Create a knowledge of all ContextPoints which need to be synced with that other peer
-                Knowledge k = InMemoSharkKB.createInMemoKnowledge();
-                PeerSemanticTag sender = kepConnection.getSender();
-                for (ContextCoordinates cc : _timestamps.popCoordinatesFromBucket(sender)) {
-                    k.addContextPoint(_kb.getContextPoint(cc));
+            // Retrieve the general sync KP synchronization identification tag
+            SemanticTag synchronizationTag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
+            
+            // Check if the other peer is a sync KP
+            if (synchronizationTag != null) {
+                // Is there a serialized list of context coordinates on this tag?
+                String serializedCCList = synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY);
+                if (serializedCCList != null) {
+                    
                 }
-                // tell the engine to allow sending empty cps
-                boolean defaultBehaviour = _engine.getAllowSendingEmptyContextPoints();
-                _engine.setAllowSendingEmptyContextPoints(true);
-                // And send it as a response
-                kepConnection.insert(k, (String) null);
-                // now back to default behaviour
-                _engine.setAllowSendingEmptyContextPoints(defaultBehaviour);
-                this.notifyInsertSent(this, k);
+                // Else we send back a serialized list of CCs
+                else {
+                    XMLSerializer x = new XMLSerializer();
+                    x.deserializeSharkCS(serializedCCList)
+                }
             }
-        } catch (SharkException e) {
+        }
+        catch (SharkException e) {
             L.e(e.getMessage());
         }
     }
+    
+//    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+//        try {
+//            // Perform a check if the other KP is a Sync KP too
+//            SemanticTag tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
+//            if (tag != null) {
+//                // Create a knowledge of all ContextPoints which need to be synced with that other peer
+//                Knowledge k = InMemoSharkKB.createInMemoKnowledge();
+//                PeerSemanticTag sender = kepConnection.getSender();
+//                for (ContextCoordinates cc : _timestamps.popCoordinatesFromBucket(sender)) {
+//                    k.addContextPoint(_kb.getContextPoint(cc));
+//                }
+//                // tell the engine to allow sending empty cps
+//                boolean defaultBehaviour = _engine.getAllowSendingEmptyContextPoints();
+//                _engine.setAllowSendingEmptyContextPoints(true);
+//                // And send it as a response
+//                kepConnection.insert(k, (String) null);
+//                // now back to default behaviour
+//                _engine.setAllowSendingEmptyContextPoints(defaultBehaviour);
+//                this.notifyInsertSent(this, k);
+//            }
+//        } catch (SharkException e) {
+//            L.e(e.getMessage());
+//        }
+//    }
     
     @Override
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
@@ -195,77 +221,15 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         }
     }
     
-    @Override
-    public void contextPointAdded(ContextPoint cp) {
-        try {
-            if ( _lastInsertedCC == null
-                    || !_lastInsertedCC.equals(cp.getContextCoordinates())
-                    || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
-                ) {
-                    _timestamps.addCoordinatesToBuckets(cp.getContextCoordinates());
-            }
-        } catch (SharkKBException e) {
-            L.e(e.getMessage());
-        }
-    }
-    
    
     @Override
-    public void cpChanged(ContextPoint cp) {}
-
-    @Override
-    public void contextPointRemoved(ContextPoint cp) {
-        // ?
-    }
-    
-    @Override
-    public void topicAdded(SemanticTag tag) {
-        // Ignored because we only track peers and context points
-    }
-
-    @Override
     public void peerAdded(PeerSemanticTag tag) {
-        _timestamps.appendPeer(tag);
-    }
-
-    @Override
-    public void locationAdded(SpatialSemanticTag location) {
-        // Ignored because we only track peers and context points
-    }
-
-    @Override
-    public void timespanAdded(TimeSemanticTag time) {
-        // Ignored because we only track peers and context points
-    }
-
-    @Override
-    public void topicRemoved(SemanticTag tag) {
-        // Ignored because we only track peers and context points
+        _timestamps.newPeer(tag);
     }
 
     @Override
     public void peerRemoved(PeerSemanticTag tag) {
         _timestamps.removePeer(tag);
-    }
-
-    @Override
-    public void locationRemoved(SpatialSemanticTag tag) {
-        // Ignored because we only track peers and context points
-    }
-
-    @Override
-    public void timespanRemoved(TimeSemanticTag tag) {
-        // Ignored because we only track peers and context points
-    }
-
-    @Override
-    public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
-        // Ignored because we only track peers and context points
-    }
-
-    @Override
-    public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
-        // Ignored because we only track peers and context points
     }
     
     protected void setSyncQueue(TimestampList s) {

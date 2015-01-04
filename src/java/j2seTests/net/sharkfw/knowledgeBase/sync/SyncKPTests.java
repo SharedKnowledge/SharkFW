@@ -552,4 +552,5 @@ public class SyncKPTests {
     public void test_createSyncKP_ownerNotInSyncBuckets() throws SharkKBException{
         assertFalse(SharkCSAlgebra.isIn(_aliceSyncKP.getSyncBucketList().getPeers(), _alice));
     }
+    
 }
