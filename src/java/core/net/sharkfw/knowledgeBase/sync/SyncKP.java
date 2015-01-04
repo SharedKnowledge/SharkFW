@@ -151,9 +151,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         }
     }
     
-    @Override
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) throws SharkException{
-        super.doExpose(interest, kepConnection);
+    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+//        super.doExpose(interest, kepConnection);
         try {
             // Perform a check if the other KP is a Sync KP too
             SemanticTag tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
