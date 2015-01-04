@@ -1,7 +1,10 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import net.sharkfw.kep.format.XMLSerializer;
+import java.util.List;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
@@ -160,7 +163,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 // Else we send back a serialized list of CCs
                 else {
                     XMLSerializer x = new XMLSerializer();
-                    x.deserializeSharkCS(serializedCCList)
+//                    x.deserializeSharkCS(serializedCCList)
                 }
             }
         }
@@ -235,10 +238,80 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     protected void setSyncQueue(TimestampList s) {
         _timestamps = s;
     }
+    
     protected TimestampList getSyncBucketList() {
         return _timestamps;
     }
+    
     protected void resetSyncQueue() throws SharkKBException {
         _timestamps = new TimestampList(_kb.getPeerSTSet());
     }
+    
+    protected List<ContextPoint> retrieve(Date d) throws SharkKBException {
+        List<ContextPoint> toSync = new ArrayList<>();
+        Enumeration<ContextPoint> all = _kb.getAllContextPoints();
+        
+        while(all.hasMoreElements()){
+            ContextPoint element = all.nextElement();
+            String date = element.getProperty(SyncContextPoint.TIMESTAMP_PROPERTY_NAME);
+            
+            if(date == null){ 
+                continue;
+            }
+            
+            Date compare = new Date(Integer.parseInt(date));
+            
+            if(compare.before(d)){
+                toSync.add(element);
+            }
+        }
+        
+        return toSync;
+    }
+
+    @Override
+    public void topicAdded(SemanticTag tag) {
+    }
+
+    @Override
+    public void locationAdded(SpatialSemanticTag location) {
+    }
+
+    @Override
+    public void timespanAdded(TimeSemanticTag time) {
+    }
+
+    @Override
+    public void topicRemoved(SemanticTag tag) {
+    }
+
+    @Override
+    public void locationRemoved(SpatialSemanticTag tag) {
+    }
+
+    @Override
+    public void timespanRemoved(TimeSemanticTag tag) {
+    }
+
+    @Override
+    public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
+    }
+
+    @Override
+    public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
+    }
+
+    @Override
+    public void contextPointAdded(ContextPoint cp) {
+    }
+
+    @Override
+    public void cpChanged(ContextPoint cp) {
+    }
+
+    @Override
+    public void contextPointRemoved(ContextPoint cp) {
+    }
+    
+    
 }
