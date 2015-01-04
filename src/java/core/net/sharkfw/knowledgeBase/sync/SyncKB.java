@@ -15,7 +15,7 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 public class SyncKB implements SharkKB {
     
-    protected static String VERSION_PROPERTY_NAME = "SyncKB_version";
+    protected static String VERSION_PROPERTY_NAME = "SyncKB_internalVersion";
     protected static String VERSION_DEFAULT_VALUE = "1";
     
     SharkKB _localKB = null;
