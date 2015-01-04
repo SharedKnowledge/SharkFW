@@ -49,7 +49,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     protected SharkEngine _engine;
     
     private Interest _syncInterest;
-    private TimestampList _syncBuckets;
+    private TimestampList _timestamps;
     private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
     
     // Flags for syncing
@@ -89,7 +89,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         // Create a sync queue for all known peers
         PeerSTSet bucketSet = _kb.getPeerSTSet();
         bucketSet.removeSemanticTag(_kb.getOwner());
-        _syncBuckets = new TimestampList(bucketSet);
+        _timestamps = new TimestampList(bucketSet);
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -128,26 +128,18 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     /**
      * Explicitly sync the entire knowledge base again with all peers.
      * Will cause a huge traffic with big knowledge bases.
-     * @throws SharkKBException 
      */
-    public void syncAllKnowledge() throws SharkKBException {
-        Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
-        while(cps.hasMoreElements()){
-            _syncBuckets.addCoordinatesToBuckets(cps.nextElement().getContextCoordinates());
-        }
+    public void syncAllKnowledge() {
+        _timestamps.setAllTimestampsNull();
     }
     
     /**
      * Explicitly sync the entire knowledge base again with a peer.
      * This can be used when a new peer is added to the knowledge base to get her or him "up to date".
      * @param peer The peer the knowledge base will be completely synced with
-     * @throws SharkKBException 
      */
-    public void syncAllKnowledge(PeerSemanticTag peer) throws SharkKBException {
-        Enumeration<ContextPoint> cps = _kb.getAllContextPoints();
-        while(cps.hasMoreElements()){
-            _syncBuckets.addCoordinatesToBuckets(cps.nextElement().getContextCoordinates(), peer);
-        }
+    public void syncAllKnowledge(PeerSemanticTag peer) {
+        _timestamps.setTimestampNull(peer);
     }
     
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
@@ -159,7 +151,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 // Create a knowledge of all ContextPoints which need to be synced with that other peer
                 Knowledge k = InMemoSharkKB.createInMemoKnowledge();
                 PeerSemanticTag sender = kepConnection.getSender();
-                for (ContextCoordinates cc : _syncBuckets.popCoordinatesFromBucket(sender)) {
+                for (ContextCoordinates cc : _timestamps.popCoordinatesFromBucket(sender)) {
                     k.addContextPoint(_kb.getContextPoint(cc));
                 }
                 // tell the engine to allow sending empty cps
@@ -210,7 +202,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     || !_lastInsertedCC.equals(cp.getContextCoordinates())
                     || (_lastInsertedCC.equals(cp.getContextCoordinates()) && _snowballing)
                 ) {
-                    _syncBuckets.addCoordinatesToBuckets(cp.getContextCoordinates());
+                    _timestamps.addCoordinatesToBuckets(cp.getContextCoordinates());
             }
         } catch (SharkKBException e) {
             L.e(e.getMessage());
@@ -233,7 +225,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
 
     @Override
     public void peerAdded(PeerSemanticTag tag) {
-        _syncBuckets.appendPeer(tag);
+        _timestamps.appendPeer(tag);
     }
 
     @Override
@@ -253,7 +245,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
 
     @Override
     public void peerRemoved(PeerSemanticTag tag) {
-        _syncBuckets.removePeer(tag);
+        _timestamps.removePeer(tag);
     }
 
     @Override
@@ -277,12 +269,12 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     protected void setSyncQueue(TimestampList s) {
-        _syncBuckets = s;
+        _timestamps = s;
     }
     protected TimestampList getSyncBucketList() {
-        return _syncBuckets;
+        return _timestamps;
     }
     protected void resetSyncQueue() throws SharkKBException {
-        _syncBuckets = new TimestampList(_kb.getPeerSTSet());
+        _timestamps = new TimestampList(_kb.getPeerSTSet());
     }
 }

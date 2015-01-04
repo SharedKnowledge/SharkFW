@@ -99,6 +99,29 @@ class TimestampList {
         }
     }
     
+    /**
+     * Sets the time of last meeting with this peer to 01,01,1970!
+     * This will probably sync ALL knowledge with this peer again, so use with caution.
+     * @param peer 
+     */
+    public void setTimestampNull(PeerSemanticTag peer) {
+        PeerTimestamp p = findPeerTimestamp(peer);
+        if (p != null) {
+            p.setTimestampNull();
+        }
+    }
+    
+    /**
+     * Sets the time of last meeting with ALL peers to 01,01,1970!
+     * This will probably sync ALL knowledge with ALL peers again, so use with caution.
+     * @param peer 
+     */
+    public void setAllTimestampsNull() {
+        for (PeerTimestamp p : _timestamps) {
+            p.setTimestampNull();
+        }
+    }
+    
     private PeerTimestamp findPeerTimestamp(PeerSemanticTag p) {
         // Find the peer in our list
         Iterator<PeerTimestamp> i = _timestamps.iterator();
@@ -136,6 +159,10 @@ class TimestampList {
          */
         public void resetDate() {
             _date = new Date();
+        }
+        
+        public void setTimestampNull() {
+            _date = new Date(0);
         }
         
         public PeerSemanticTag getPeer() {
