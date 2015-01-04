@@ -5,9 +5,7 @@
  */
 package net.sharkfw.knowledgeBase.sync;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;

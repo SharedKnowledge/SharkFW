@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.sync;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -18,7 +19,8 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
 	private ContextPoint _localCP = null;
 	protected static String VERSION_PROPERTY_NAME = "SyncCP_version";
 	protected static String VERSION_DEFAULT_VALUE = "1";
-	
+	protected static String TIMESTAMP_PROPERTY_NAME = "SyncCP_timestamp";
+        
 	public SyncContextPoint(ContextPoint c){
 		_localCP = c;
 		if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null)
@@ -29,6 +31,9 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
 			if(info.getProperty(SyncInformation.VERSION_PROPERTY_NAME) == null)
 				info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
 		}
+                if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null){
+                    _localCP.setProperty(VERSION_PROPERTY_NAME, new Date().toString());
+                }
 	}
         
         @Override
@@ -195,6 +200,7 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
 	private void versionUp() {
             int oldVersion = Integer.parseInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
             _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
+            setTimestamp(new Date());
 	}	
 	
     public int getVersion() {
@@ -214,5 +220,13 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
     @Override
     public void contentTypeChanged() {
         versionUp();
+    }
+    
+    public void setTimestamp(Date d) {
+        _localCP.setProperty(VERSION_PROPERTY_NAME, d.toString());
+    }
+    
+    public void getTimestamp() {
+        _localCP.getProperty(VERSION_PROPERTY_NAME);
     }
 }
