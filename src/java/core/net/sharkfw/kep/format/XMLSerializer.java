@@ -440,8 +440,13 @@ public class XMLSerializer implements KnowledgeSerializer {
     public List<ContextCoordinates> deserializeContextCoordinatesList(String serialized) throws SharkKBException {
         String cs;
         List<ContextCoordinates> deserialized = new ArrayList<>();
-        while((cs = this.stringBetween(SHARKCS_TAG, serialized, 0)) != null){
+        int index = 0;
+        
+        while((cs = this.stringBetween(SHARKCS_TAG, serialized, index)) != null){
+            // Appended because it's stripped because of stringBetween but we still need it.
+            cs = startTag(SHARKCS_TAG) + cs + endTag(SHARKCS_TAG);
             deserialized.add(internalDeserializeContextCoordinates(cs));
+            index += cs.length();
         }
         
         return deserialized;

@@ -1,8 +1,10 @@
 package ApiRev1;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -272,5 +274,53 @@ public class SerializationTest {
             
             String content = new String(i.getContentAsByte());
             Assert.assertTrue(content.equalsIgnoreCase(TestData.INFO_1_CONTENT));
+        }
+        
+        @Test
+        public void testCoordinateListSerialization() throws SharkKBException {
+            J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
+            SharkKB kb = new InMemoSharkKB();
+
+            // Build vocabulary
+            SemanticTag t1 = kb.createSemanticTag("Topic1", "http://topci1.de");
+            SemanticTag t2 = kb.createSemanticTag("Topic2", "http://topci2.de");
+
+            PeerSemanticTag p1 = kb.createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
+            PeerSemanticTag p2 = kb.createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
+            PeerSemanticTag p3 = kb.createPeerSemanticTag("Peer3", "http://peer3.de", "tcp://peer3.de:1234");
+            PeerSemanticTag p4 = kb.createPeerSemanticTag("Peer4", "http://peer4.de", "tcp://peer4.de:1234");
+
+            TimeSemanticTag ti1 = kb.createTimeSemanticTag(100, 200);
+            TimeSemanticTag ti2 = kb.createTimeSemanticTag(200, 300);
+
+            SpatialSemanticTag g1 = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{10.0, 20.0}, 1.0);
+            SpatialSemanticTag g2 = kb.createSpatialSemanticTag("test2", new String[]{"http://test2.de"}, new Double[]{20.0, 30.0}, 1.0);
+            
+            List<ContextCoordinates> cps = new ArrayList<>();
+            
+            // First CP
+            ContextCoordinates co1 = InMemoSharkKB.createInMemoContextCoordinates(t1, p1, p2, p1, ti1, g1, SharkCS.DIRECTION_OUT);
+            ContextPoint cp1 = kb.createContextPoint(co1);
+            cp1.addInformation("ContextPoint1");
+            cps.add(cp1.getContextCoordinates());
+            
+            // Second CP
+            ContextCoordinates co2 = InMemoSharkKB.createInMemoContextCoordinates(t2, p3, p4, p2, ti2, g2, SharkCS.DIRECTION_OUT);
+            ContextPoint cp2 = kb.createContextPoint(co2);
+            cp2.addInformation("ContextPoint2");
+            cps.add(cp2.getContextCoordinates());
+            
+            XMLSerializer xml = new XMLSerializer();
+            String serialized = xml.serializeContextCoordinatesList(cps);
+
+            System.out.println("Serialized ContextCoordinates List:");
+            System.out.println(serialized);
+
+            System.out.println("\n\nDeserialization .....");
+            List<ContextCoordinates> newCps = xml.deserializeContextCoordinatesList(serialized);
+            System.out.println(".. completed\n\n");
+
+            boolean same = cps.equals(newCps);
+            Assert.assertTrue(same);
         }
 }
