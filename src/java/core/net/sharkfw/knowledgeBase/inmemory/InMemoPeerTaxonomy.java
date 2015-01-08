@@ -217,4 +217,6 @@ public class InMemoPeerTaxonomy extends InMemoTaxonomy implements PeerTaxonomy, 
     public Enumeration<PeerSemanticTag> peerTags() throws SharkKBException {
         return this.getStorage().peerTags();
     }
+    
+    
 }

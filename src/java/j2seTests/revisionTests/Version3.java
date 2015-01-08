@@ -1,10 +1,11 @@
-package ApiRev1;
+package revisionTests;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
+import ApiRev1.FSSharkKBTest;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

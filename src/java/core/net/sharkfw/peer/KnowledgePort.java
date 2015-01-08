@@ -8,10 +8,7 @@ import net.sharkfw.kep.KEPStub;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
-import net.sharkfw.protocols.Protocols;
-import net.sharkfw.protocols.wifidirect.WifiDirectStreamStub;
 import net.sharkfw.system.L;
-import net.sharkfw.system.SharkException;
 import net.sharkfw.system.SharkSecurityException;
 
 /**

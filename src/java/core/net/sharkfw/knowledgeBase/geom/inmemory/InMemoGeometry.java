@@ -2,7 +2,9 @@ package net.sharkfw.knowledgeBase.geom.inmemory;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
-import static net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra.checkWKTwithJTS;
+//import static net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra.checkWKTwithJTS;
+// Dieser Import funktioniert nicht in allen Kombinationen der Software
+// müssen wir mal drüber reden...
 
 /**
  * *
@@ -34,7 +36,7 @@ public class InMemoGeometry implements SharkGeometry {
      */
     public static SharkGeometry createGeomByWKT(String wkt) throws SharkKBException {
         wkt = wkt.replace(";", "").trim();
-        checkWKTwithJTS(wkt);
+//        checkWKTwithJTS(wkt);
         return new InMemoGeometry(wkt, 4326);
     }
 
@@ -62,7 +64,7 @@ public class InMemoGeometry implements SharkGeometry {
             throw new SharkKBException("SRID parsing problem, check syntax restriction ");
         }
 
-        checkWKTwithJTS(wkt);
+//        checkWKTwithJTS(wkt);
         return new InMemoGeometry(wkt, srs);
     }
 

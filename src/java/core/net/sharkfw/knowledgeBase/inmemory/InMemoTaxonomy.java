@@ -354,7 +354,7 @@ public class InMemoTaxonomy implements Taxonomy, STSet {
     }
 
     @Override
-    public int number() {
-        return this.storage.number();
+    public int size() {
+        return this.storage.size();
     }
 }

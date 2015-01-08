@@ -3,7 +3,6 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoGeometry;
-import net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import org.junit.Assert;
 import org.junit.Test;

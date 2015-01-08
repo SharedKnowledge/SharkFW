@@ -40,11 +40,15 @@ public class InMemoSTSet implements STSet {
     InMemoSTSet() {
         this.storage = new InMemoGenericTagStorage<SemanticTag>();
     }
-    
-    public int number() {
+
+    /**
+     * 
+     * @return number of tags in this set
+     */
+    @Override
+    public int size() {
         return this.storage.number();
     }
-    
 
     
     @SuppressWarnings("rawtypes")

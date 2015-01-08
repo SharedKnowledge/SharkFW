@@ -193,5 +193,5 @@ public interface STSet {
      * 
      * @return number of tags in this set
      */
-    public int number();
+    public int size();
 }
