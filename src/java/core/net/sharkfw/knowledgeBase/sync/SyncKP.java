@@ -57,7 +57,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     private TimestampList _timestamps;
     private final String SYNCHRONIZATION_NAME = "SyncKP_synchronization_token";
     private final String SYNCHRONIZATION_SERIALIZED_CC_PROPERTY = "SyncKP_serialized_ccs";
-    private final String SYNCHRONIZATION_SERIALIZED_CC_STATE = "SyncKP_serialized_state";
+    private final String SYNCHRONIZATION_PROTOCOL_STATE = "SyncKP_serialized_state";
     private final String SYNCHRONIZATION_OFFER = "SyncKP_synchronization_offer";
     private final String SYNCHRONIZATION_REQUEST = "SyncKP_synchronization_request";
     
@@ -155,27 +155,28 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             
             // Check if the other peer is a sync KP
             if (synchronizationTag != null) {
-                String serializedCCProperty = synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY);
+                String state = synchronizationTag.getProperty(SYNCHRONIZATION_PROTOCOL_STATE);
                 
                 // Is the serialized CC property set? If not, Send back a list of CCs we have to offer to this peer
-                if (serializedCCProperty == null) {
+                if (state == null) {
                     XMLSerializer x = new XMLSerializer();
                     String serializedCCs = 
                             x.serializeContextCoordinatesList(retrieve(_timestamps.getTimestamp(kepConnection.getSender())));
+                    this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
+                            .setProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY, serializedCCs);
                     this.setStepOffer();
                 }
                 // Is that a request? Then send knowledge
-                else if (serializedCCProperty.equals(SYNCHRONIZATION_REQUEST)) {
+                else if (state.equals(SYNCHRONIZATION_REQUEST)) {
                     
                 }
                 // Is that an offer? Than analyze which CPs I need and send a modified CC list back
-                else if (serializedCCProperty.equals(SYNCHRONIZATION_OFFER)) {
+                else if (state.equals(SYNCHRONIZATION_OFFER)) {
                     
                 }
                 // Or something unexpected?
                 else {
-                    L.d("Error in SyncKP Synchronization Protocol: Received unknown property value on serialized CC "
-                            + " property: " + serializedCCProperty);
+                    L.d("Error in SyncKP Synchronization Protocol: Received unknown property value for protocol state: " + state);
                 }
             }
         }
@@ -211,34 +212,29 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     
     @Override
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
-
+        try {
+            Enumeration<ContextPoint> cps = knowledge.contextPoints();
+            while (cps.hasMoreElements()) {
+                // Get own and received context point
+                ContextPoint remoteCP = cps.nextElement();
+                ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
+                // Set version of our own CP to it's version or null if we don't have that context point
+                int ownCPVersion = (ownCP == null) ? 0 : Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+                // Get version of the received context point
+                int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+                
+                // Now compare. If our context point's version is 0 or lower than the version of
+                // the received context poin, assimilate it into our knowledge base
+                if (remoteCPVersion > ownCPVersion) {
+                    _kb.createContextPoint(remoteCP.getContextCoordinates());
+                    _kb.replaceContextPoint(remoteCP);
+                }
+            }
+            this.notifyKnowledgeReceived(knowledge);
+        } catch (SharkKBException ex) {
+            L.e(ex.getMessage());
+        }
     }
-//    @Override
-//    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
-//        try {
-//            Enumeration<ContextPoint> cps = knowledge.contextPoints();
-//            while (cps.hasMoreElements()) {
-//                // Get own and received context point
-//                ContextPoint remoteCP = cps.nextElement();
-//                ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
-//                // Set version of our own CP to it's version or null if we don't have that context point
-//                int ownCPVersion = (ownCP == null) ? 0 : Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
-//                // Get version of the received context point
-//                int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
-//                
-//                // Now compare. If our context point's version is 0 or lower than the version of
-//                // the received context poin, assimilate it into our knowledge base
-//                if (remoteCPVersion > ownCPVersion) {
-//                    _lastInsertedCC = remoteCP.getContextCoordinates();
-//                    _kb.createContextPoint(remoteCP.getContextCoordinates());
-//                    _kb.replaceContextPoint(remoteCP);
-//                }
-//            }
-//            this.notifyKnowledgeReceived(knowledge);
-//        } catch (SharkKBException ex) {
-//            L.e(ex.getMessage());
-//        }
-//    }
     
    
     @Override
@@ -287,19 +283,19 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     
     protected void setStepDefault() throws SharkKBException{
         this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).removeProperty(
-                SYNCHRONIZATION_SERIALIZED_CC_STATE
+                SYNCHRONIZATION_PROTOCOL_STATE
         );
     }
     
     protected void setStepRequest() throws SharkKBException{
         this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
-                SYNCHRONIZATION_SERIALIZED_CC_STATE, SYNCHRONIZATION_REQUEST
+                SYNCHRONIZATION_PROTOCOL_STATE, SYNCHRONIZATION_REQUEST
         );
     }
     
     protected void setStepOffer() throws SharkKBException{
         this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
-                SYNCHRONIZATION_SERIALIZED_CC_STATE, SYNCHRONIZATION_OFFER
+                SYNCHRONIZATION_PROTOCOL_STATE, SYNCHRONIZATION_OFFER
         );
     }
 
