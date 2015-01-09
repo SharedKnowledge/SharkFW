@@ -519,4 +519,19 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     protected Knowledge getKnowledge() {
         return super.getKnowledge();
     }
+    
+    /**
+     * @return the same kb object acting as knowledge object
+     * @throws net.sharkfw.knowledgeBase.SharkKBException if InMemoSharkKB cannot be handled like knowledge
+     */
+    public Knowledge asKnowledge() throws SharkKBException {
+        Knowledge k = this.getKnowledge();
+        
+        if(k instanceof InMemoKnowledge) {
+            InMemoKnowledge imk = (InMemoKnowledge)k;
+            return new InMemoKnowledge(this, imk);
+        } 
+        
+        throw new SharkKBException("InMemoSharkKB cannot be handled like knowledge - knowledge isn't stored as InMemoKnowledge - developers need a workaroung if this exception is thrown");
+    }
 }
