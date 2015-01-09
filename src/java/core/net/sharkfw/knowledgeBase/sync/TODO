@@ -25,4 +25,10 @@ Features:
     - Bucketlist persistent
     - eigeninformation auf allinteresse
 
-SharkCSAlgebra isIn(SemanticTag, STSet): In einer leeren Liste ist angeblich jedes Peer enthalten
+-> SyncKP mit Fragmentierungsparameter-Schalter(Topic Peer Location) in Schritt 2
+
+IMSKB voc = IMSKB();
+for CP in CPs:
+    STSet t = kb.getTopics().fragment(T, FP-Topics);
+    voc.getTopics().merge(t);
+(die IMSKB kann dann auch als Knowledge interpretiert werden)
