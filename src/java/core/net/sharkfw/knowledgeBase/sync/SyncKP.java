@@ -56,7 +56,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     private Interest _syncInterest;
     private TimestampList _timestamps;
     private final String SYNCHRONIZATION_NAME = "SyncKP_synchronization_token";
-    private final String SYNCHRONIZATION_SERIALIZEDCCPROPERTY = "SyncKP_serialized_ccs";
+    private final String SYNCHRONIZATION_SERIALIZED_CC_PROPERTY = "SyncKP_serialized_ccs";
+    private final String SYNCHRONIZATION_SERIALIZED_CC_STATE = "SyncKP_serialized_state";
     private final String SYNCHRONIZATION_OFFER = "SyncKP_synchronization_offer";
     private final String SYNCHRONIZATION_REQUEST = "SyncKP_synchronization_request";
     
@@ -158,7 +159,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             // Check if the other peer is a sync KP
             if (synchronizationTag != null) {
                 // Is there a serialized list of context coordinates on this tag?
-                String serializedCCList = synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY);
+                String serializedCCList = synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY);
                 if (serializedCCList != null) {
                     
                 }
@@ -272,16 +273,22 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     protected void setStepDefault() throws SharkKBException{
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).removeProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY);
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).removeProperty(
+                SYNCHRONIZATION_SERIALIZED_CC_STATE
+        );
     }
     
     protected void setStepRequest() throws SharkKBException{
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY, SYNCHRONIZATION_REQUEST);
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
+                SYNCHRONIZATION_SERIALIZED_CC_STATE, SYNCHRONIZATION_REQUEST
+        );
         
     }
     
     protected void setStepOffer() throws SharkKBException{
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY, SYNCHRONIZATION_OFFER);
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
+                SYNCHRONIZATION_SERIALIZED_CC_STATE, SYNCHRONIZATION_OFFER
+        );
         
     }
 
