@@ -55,8 +55,10 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     
     private Interest _syncInterest;
     private TimestampList _timestamps;
-    private final String SYNCHRONIZATION_NAME = "SharkKP_synchronization";
+    private final String SYNCHRONIZATION_NAME = "SyncKP_synchronization_token";
     private final String SYNCHRONIZATION_SERIALIZEDCCPROPERTY = "SyncKP_serialized_ccs";
+    private final String SYNCHRONIZATION_OFFER = "SyncKP_synchronization_offer";
+    private final String SYNCHRONIZATION_REQUEST = "SyncKP_synchronization_request";
     
     // Flags for syncing
     private boolean _snowballing;
@@ -235,11 +237,11 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _timestamps.removePeer(tag);
     }
     
-    protected void setSyncQueue(TimestampList s) {
+    protected void setTimestamps(TimestampList s) {
         _timestamps = s;
     }
     
-    protected TimestampList getSyncBucketList() {
+    protected TimestampList getTimestamps() {
         return _timestamps;
     }
     
@@ -267,6 +269,20 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         }
         
         return toSync;
+    }
+    
+    protected void setStepDefault() throws SharkKBException{
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).removeProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY);
+    }
+    
+    protected void setStepRequest() throws SharkKBException{
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY, SYNCHRONIZATION_REQUEST);
+        
+    }
+    
+    protected void setStepOffer() throws SharkKBException{
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(SYNCHRONIZATION_SERIALIZEDCCPROPERTY, SYNCHRONIZATION_OFFER);
+        
     }
 
     @Override
