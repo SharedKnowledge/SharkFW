@@ -64,9 +64,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     // Flags for syncing
     private boolean _snowballing;
     
-    // Keep the context coordinates of the last context point we inserted (for syncOnInsertByNotSyncKP)
-    private ContextCoordinates _lastInsertedCC;
-    
     /**
      * This SyncKP will keep the assigned Knowledge Base synchronized with all peers.
      * When activating the syncOnInsertByNotSyncKP flag, the Sync KP will just tell every peer it knows about
@@ -158,15 +155,27 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             
             // Check if the other peer is a sync KP
             if (synchronizationTag != null) {
-                // Is there a serialized list of context coordinates on this tag?
-                String serializedCCList = synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY);
-                if (serializedCCList != null) {
+                String serializedCCProperty = synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY);
+                
+                // Is the serialized CC property set? If not, Send back a list of CCs we have to offer to this peer
+                if (serializedCCProperty == null) {
+                    XMLSerializer x = new XMLSerializer();
+                    String serializedCCs = 
+                            x.serializeContextCoordinatesList(retrieve(_timestamps.getTimestamp(kepConnection.getSender())));
+                    this.setStepOffer();
+                }
+                // Is that a request? Then send knowledge
+                else if (serializedCCProperty.equals(SYNCHRONIZATION_REQUEST)) {
                     
                 }
-                // Else we send back a serialized list of CCs
+                // Is that an offer? Than analyze which CPs I need and send a modified CC list back
+                else if (serializedCCProperty.equals(SYNCHRONIZATION_OFFER)) {
+                    
+                }
+                // Or something unexpected?
                 else {
-                    XMLSerializer x = new XMLSerializer();
-//                    x.deserializeSharkCS(serializedCCList)
+                    L.d("Error in SyncKP Synchronization Protocol: Received unknown property value on serialized CC "
+                            + " property: " + serializedCCProperty);
                 }
             }
         }
@@ -202,30 +211,34 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     
     @Override
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
-        try {
-            Enumeration<ContextPoint> cps = knowledge.contextPoints();
-            while (cps.hasMoreElements()) {
-                // Get own and received context point
-                ContextPoint remoteCP = cps.nextElement();
-                ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
-                // Set version of our own CP to it's version or null if we don't have that context point
-                int ownCPVersion = (ownCP == null) ? 0 : Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
-                // Get version of the received context point
-                int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
-                
-                // Now compare. If our context point's version is 0 or lower than the version of
-                // the received context poin, assimilate it into our knowledge base
-                if (remoteCPVersion > ownCPVersion) {
-                    _lastInsertedCC = remoteCP.getContextCoordinates();
-                    _kb.createContextPoint(remoteCP.getContextCoordinates());
-                    _kb.replaceContextPoint(remoteCP);
-                }
-            }
-            this.notifyKnowledgeReceived(knowledge);
-        } catch (SharkKBException ex) {
-            L.e(ex.getMessage());
-        }
+
     }
+//    @Override
+//    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
+//        try {
+//            Enumeration<ContextPoint> cps = knowledge.contextPoints();
+//            while (cps.hasMoreElements()) {
+//                // Get own and received context point
+//                ContextPoint remoteCP = cps.nextElement();
+//                ContextPoint ownCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
+//                // Set version of our own CP to it's version or null if we don't have that context point
+//                int ownCPVersion = (ownCP == null) ? 0 : Integer.parseInt(ownCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+//                // Get version of the received context point
+//                int remoteCPVersion = Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+//                
+//                // Now compare. If our context point's version is 0 or lower than the version of
+//                // the received context poin, assimilate it into our knowledge base
+//                if (remoteCPVersion > ownCPVersion) {
+//                    _lastInsertedCC = remoteCP.getContextCoordinates();
+//                    _kb.createContextPoint(remoteCP.getContextCoordinates());
+//                    _kb.replaceContextPoint(remoteCP);
+//                }
+//            }
+//            this.notifyKnowledgeReceived(knowledge);
+//        } catch (SharkKBException ex) {
+//            L.e(ex.getMessage());
+//        }
+//    }
     
    
     @Override
@@ -282,14 +295,12 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
                 SYNCHRONIZATION_SERIALIZED_CC_STATE, SYNCHRONIZATION_REQUEST
         );
-        
     }
     
     protected void setStepOffer() throws SharkKBException{
         this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
                 SYNCHRONIZATION_SERIALIZED_CC_STATE, SYNCHRONIZATION_OFFER
         );
-        
     }
 
     @Override
