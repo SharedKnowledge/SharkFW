@@ -247,8 +247,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _timestamps = new TimestampList(_kb.getPeerSTSet());
     }
     
-    protected List<ContextPoint> retrieve(Date d) throws SharkKBException {
-        List<ContextPoint> toSync = new ArrayList<>();
+    protected List<ContextCoordinates> retrieve(Date d) throws SharkKBException {
+        List<ContextCoordinates> toSync = new ArrayList<>();
         Enumeration<ContextPoint> all = _kb.getAllContextPoints();
         
         while(all.hasMoreElements()){
@@ -262,7 +262,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             Date compare = new Date(Integer.parseInt(date));
             
             if(compare.before(d)){
-                toSync.add(element);
+                toSync.add(element.getContextCoordinates());
             }
         }
         

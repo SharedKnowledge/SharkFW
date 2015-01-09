@@ -31,4 +31,4 @@ IMSKB voc = IMSKB();
 for CP in CPs:
     STSet t = kb.getTopics().fragment(T, FP-Topics);
     voc.getTopics().merge(t);
-(die IMSKB kann dann auch als Knowledge interpretiert werden)
+(die IMSKB kann dann auch als Knowledge interpretiert werden -> asKnowledge)
