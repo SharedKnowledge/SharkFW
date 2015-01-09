@@ -15,18 +15,32 @@ import net.sharkfw.system.Iterator2Enumeration;
  * @author thsc
  */
 public class InMemoKnowledge implements Knowledge {
-    private ArrayList<ContextPoint> cps = new ArrayList<ContextPoint>();
+    private ArrayList<ContextPoint> cps;
     private SharkVocabulary cm;
 
     /** 
      * Create knowledge without background 
      */ 
-    public InMemoKnowledge() {}
-
-    public InMemoKnowledge(SharkVocabulary background) {
-        this.cm = background;
+    public InMemoKnowledge() {
+        // create empty context point list
+        cps = new ArrayList<>();
     }
 
+    public InMemoKnowledge(SharkVocabulary background) {
+        this();
+        
+        // use external background
+        this.cm = background;
+    }
+    
+    InMemoKnowledge(SharkVocabulary cm, InMemoKnowledge k) {
+        this.cm = cm;
+        this.cps = k.getCPS();
+    }
+    
+    private ArrayList<ContextPoint> getCPS() {
+        return this.cps;
+    }
 
     /**
      * Returns the number of elements in the local <code>Vector</code> which stores the <code>ContextPoint</code>s.
