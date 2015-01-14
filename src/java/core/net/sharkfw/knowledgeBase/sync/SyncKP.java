@@ -8,6 +8,7 @@ import net.sharkfw.kep.format.XMLSerializer;
 import java.util.List;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
@@ -62,8 +63,10 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     private final String SYNCHRONIZATION_OFFER = "SyncKP_synchronization_offer";
     private final String SYNCHRONIZATION_REQUEST = "SyncKP_synchronization_request";
     
-    // Flags for syncing
-    private boolean _snowballing;
+    // Fragmentation parameter for sending knowledge
+    FragmentationParameter topicsFP = null, peersFP = null;
+    
+    long retryTimeout;
     
     /**
      * This SyncKP will keep the assigned Knowledge Base synchronized with all peers.
@@ -75,18 +78,17 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
      *  might sync it again and again.. which might cause a traffic spike but quickly distributes information to everyone
      * @param engine
      * @param kb
-     * @param snowballing Always sync when new information is added to the Knowledge Base even if it was
-     *  added by this sync KP - which may cause traffic spikes 
-     * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     * @param retryTimeout Retry timeout in seconds
+    * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
-    public SyncKP(SharkEngine engine, SyncKB kb, boolean snowballing) throws SharkKBException {
+    public SyncKP(SharkEngine engine, SyncKB kb, int retryTimeout) throws SharkKBException {
         super(engine, kb);
         _kb = kb;
         _engine = engine;
         _kb.addListener(this);
         
-        _snowballing = snowballing;
-                
+        this.retryTimeout = retryTimeout * 1000;
+        
         // We need to have an owner of the kb
         if (_kb.getOwner() == null) {
             L.e("SharkKB for SyncKP needs to have an owner set! Can't create SyncKP.");
@@ -113,23 +115,29 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, ownerPeerSTSet, null, null, null, SharkCS.DIRECTION_OUT);
         this.setInterest(_syncInterest);
     }
-    /**
-     * This SyncKP will sync with all peers when new information is inserted into the Knowledge Base
-     * @param engine
-     * @param kb 
-     * @throws net.sharkfw.knowledgeBase.SharkKBException 
-     */
-    public SyncKP(SharkEngine engine, SyncKB kb) throws SharkKBException {
-        this(engine, kb, false);
-   }
+
+    public long getRetryTimeout() {
+        return retryTimeout / 1000;
+    }
+
+    public void setRetryTimeout(long retryTimeout) {
+        this.retryTimeout = retryTimeout * 1000;
+    }
     
-    /**
-     * Activate snowballing, that forwards all changes inserted by other SyncKPs again to all known peers.
-     * @param flag If set to true, all ContextPoints that are added to the Knowledge Base, even if it was
-     *  added by this sync KP, will be synchronized with others - which may cause traffic spikes 
-     */
-    public void setSnowballing(boolean flag) {
-        _snowballing = flag;
+    public void setTopicsFP(FragmentationParameter topicsFP) {
+        this.topicsFP = topicsFP;
+    }
+
+    public void setPeersFP(FragmentationParameter peersFP) {
+        this.peersFP = peersFP;
+    }
+
+    public FragmentationParameter getTopicsFP() {
+        return topicsFP;
+    }
+
+    public FragmentationParameter getPeersFP() {
+        return peersFP;
     }
     
     /**
@@ -158,6 +166,15 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             
             // Check if the other peer is a sync KP
             if (synchronizationTag != null) {
+                
+                // Abort if still within retry timeout for this peer
+                if (System.currentTimeMillis() > 
+                        (_timestamps.getTimestamp(kepConnection.getSender()).getTime() + retryTimeout)
+                    ) {
+                    return;
+                }
+                
+                // Find out in which state of the protocol we are
                 String state = synchronizationTag.getProperty(SYNCHRONIZATION_PROTOCOL_STATE);
                 
                 // Is the serialized CC property set? If not, Send back a list of CCs we have to offer to this peer
@@ -172,10 +189,18 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     
                     InMemoSharkKB tempKB = new InMemoSharkKB();
                     Knowledge k = tempKB.asKnowledge();
-                    
+                    // Form a knowledge of each of the requested context points to send back
                     for(ContextCoordinates element : ccs){
+                        // Retrieve the context point we want to add to knowledge
                         ContextPoint cp = _kb.getContextPoint(element);
-                        
+                        // Send topic and peer tags that belong to this context point 
+                        // according to the set fragmentation parameters
+                        STSet topics = _kb.getTopicSTSet().fragment(cp.getContextCoordinates().getTopic(), topicsFP);
+                        STSet peers = _kb.getPeerSTSet().fragment(cp.getContextCoordinates().getPeer(), peersFP);
+
+                        // Merge it all into the knowledge that will be send
+                        k.getVocabulary().getTopicSTSet().merge(topics);
+                        k.getVocabulary().getPeerSTSet().merge(peers);
                         k.addContextPoint(cp);
                     }
                     

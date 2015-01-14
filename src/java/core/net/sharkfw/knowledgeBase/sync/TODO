@@ -27,10 +27,10 @@ Features:
 
 -> SyncKP mit Fragmentierungsparameter-Schalter(Topic Peer Location) in Schritt 2
 
-IMSKB voc = IMSKB();
-for CP in CPs:
-    STSet t = kb.getTopics().fragment(T, FP-Topics);
-    voc.getTopics().merge(t);
-(die IMSKB kann dann auch als Knowledge interpretiert werden -> asKnowledge)
+//IMSKB voc = IMSKB();
+//for CP in CPs:
+//    STSet t = kb.getTopics().fragment(T, FP-Topics);
+//    voc.getTopics().merge(t);
+//(die IMSKB kann dann auch als Knowledge interpretiert werden -> asKnowledge)
 
 werden bei createContextPoint Properties mitkopiert?
