@@ -23,17 +23,18 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
         
 	public SyncContextPoint(ContextPoint c){
 		_localCP = c;
-		if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null)
+		if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null){
 			_localCP.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+                }
+                if(_localCP.getProperty(TIMESTAMP_PROPERTY_NAME) == null){
+                    _localCP.setProperty(TIMESTAMP_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()));
+                }
 		Iterator<Information> cpInfos = _localCP.getInformation();
 		while(cpInfos.hasNext()){
 			Information info = cpInfos.next();
 			if(info.getProperty(SyncInformation.VERSION_PROPERTY_NAME) == null)
 				info.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE);
 		}
-                if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null){
-                    _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()));
-                }
 	}
         
         @Override
