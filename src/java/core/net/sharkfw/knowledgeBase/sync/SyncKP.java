@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.sync;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import net.sharkfw.kep.format.XMLSerializer;
 import java.util.List;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
@@ -152,6 +153,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         try {
             // Retrieve the general sync KP synchronization identification tag
             SemanticTag synchronizationTag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
+                    XMLSerializer x = new XMLSerializer();
             
             // Check if the other peer is a sync KP
             if (synchronizationTag != null) {
@@ -159,20 +161,46 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 
                 // Is the serialized CC property set? If not, Send back a list of CCs we have to offer to this peer
                 if (state == null) {
-                    XMLSerializer x = new XMLSerializer();
-                    String serializedCCs = 
-                            x.serializeContextCoordinatesList(retrieve(_timestamps.getTimestamp(kepConnection.getSender())));
-                    this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
-                            .setProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY, serializedCCs);
-                    this.setStepOffer();
+                    List<ContextCoordinates> possibleCCsForPeer = retrieve(_timestamps.getTimestamp(kepConnection.getSender()));
+                    this.setStepOffer(possibleCCsForPeer);
                 }
                 // Is that a request? Then send knowledge
                 else if (state.equals(SYNCHRONIZATION_REQUEST)) {
+                    List<ContextCoordinates> ccs = x.deserializeContextCoordinatesList(
+                                        synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY));
                     
+                    InMemoSharkKB tempKB = new InMemoSharkKB();
+                    Knowledge k = tempKB.asKnowledge();
+                    
+                    for(ContextCoordinates element : ccs){
+                        ContextPoint cp = _kb.getContextPoint(element);
+                        
+                        k.addContextPoint(cp);
+                    }
+                    
+                    this.setStepDefault();
+                    
+                    _timestamps.resetTimestamp(kepConnection.getSender());
+                    kepConnection.insert(k, kepConnection.getSender().getAddresses());
+                    this.notifyInsertSent(this, k);
                 }
                 // Is that an offer? Than analyze which CPs I need and send a modified CC list back
                 else if (state.equals(SYNCHRONIZATION_OFFER)) {
+                    List<ContextCoordinates> ccs = x.deserializeContextCoordinatesList(
+                                        synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY));
                     
+                    Iterator<ContextCoordinates> i = ccs.iterator();
+                    
+                    while(i.hasNext()){
+                        ContextCoordinates cc = i.next();
+                        ContextPoint cp = _kb.getContextPoint(cc);
+                        // TODO: ADD AGAIN
+                        /*if(cp != null && cp.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME) >= cc.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)){
+                            i.remove();
+                        }*/
+                    }
+                    
+                    this.setStepRequest(ccs);     
                 }
                 // Or something unexpected?
                 else {
@@ -274,7 +302,11 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             Date compare = new Date(Integer.parseInt(date));
             
             if(compare.before(d)){
-                toSync.add(element.getContextCoordinates());
+                ContextCoordinates t = element.getContextCoordinates();
+                // TODO: ADD AGAIN
+                //t.setProperty(SyncContextPoint.VERSION_PROPERTY_NAME, 
+                //                element.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+                toSync.add(t);
             }
         }
         
@@ -287,16 +319,24 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         );
     }
     
-    protected void setStepRequest() throws SharkKBException{
+    protected void setStepRequest(List<ContextCoordinates> requestCCs) throws SharkKBException{
+        XMLSerializer x = new XMLSerializer();
         this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
                 SYNCHRONIZATION_PROTOCOL_STATE, SYNCHRONIZATION_REQUEST
         );
+        String serializedRequestCCs = x.serializeContextCoordinatesList(requestCCs);
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
+                          .setProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY, serializedRequestCCs);
     }
     
-    protected void setStepOffer() throws SharkKBException{
+    protected void setStepOffer(List<ContextCoordinates> offerCCs) throws SharkKBException{
+         XMLSerializer x = new XMLSerializer();
         this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
                 SYNCHRONIZATION_PROTOCOL_STATE, SYNCHRONIZATION_OFFER
         );
+        String serializedOfferCCs = x.serializeContextCoordinatesList(offerCCs);
+        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
+                          .setProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY, serializedOfferCCs);
     }
 
     @Override
