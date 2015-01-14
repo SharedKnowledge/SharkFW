@@ -149,6 +149,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _timestamps.setTimestampNull(peer);
     }
     
+    @Override
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
         try {
             // Retrieve the general sync KP synchronization identification tag
@@ -212,31 +213,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             L.e(e.getMessage());
         }
     }
-    
-//    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-//        try {
-//            // Perform a check if the other KP is a Sync KP too
-//            SemanticTag tag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
-//            if (tag != null) {
-//                // Create a knowledge of all ContextPoints which need to be synced with that other peer
-//                Knowledge k = InMemoSharkKB.createInMemoKnowledge();
-//                PeerSemanticTag sender = kepConnection.getSender();
-//                for (ContextCoordinates cc : _timestamps.popCoordinatesFromBucket(sender)) {
-//                    k.addContextPoint(_kb.getContextPoint(cc));
-//                }
-//                // tell the engine to allow sending empty cps
-//                boolean defaultBehaviour = _engine.getAllowSendingEmptyContextPoints();
-//                _engine.setAllowSendingEmptyContextPoints(true);
-//                // And send it as a response
-//                kepConnection.insert(k, (String) null);
-//                // now back to default behaviour
-//                _engine.setAllowSendingEmptyContextPoints(defaultBehaviour);
-//                this.notifyInsertSent(this, k);
-//            }
-//        } catch (SharkException e) {
-//            L.e(e.getMessage());
-//        }
-//    }
     
     @Override
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {

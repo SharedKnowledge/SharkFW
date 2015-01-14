@@ -32,3 +32,5 @@ for CP in CPs:
     STSet t = kb.getTopics().fragment(T, FP-Topics);
     voc.getTopics().merge(t);
 (die IMSKB kann dann auch als Knowledge interpretiert werden -> asKnowledge)
+
+werden bei createContextPoint Properties mitkopiert?
