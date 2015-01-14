@@ -204,6 +204,11 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
             setTimestamp(new Date());
 	}	
 	
+    	
+    public void setVersion(String version) {
+        setProperty(VERSION_PROPERTY_NAME, version);
+    }    
+        
     public int getVersion() {
         return Integer.parseInt(getProperty(VERSION_PROPERTY_NAME));
     }

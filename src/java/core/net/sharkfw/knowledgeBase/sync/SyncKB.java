@@ -91,7 +91,8 @@ public class SyncKB implements SharkKB {
         while(cpInfo.hasNext()){
             newCP.addInformation(cpInfo.next());
         }
-        newCP.setProperty(VERSION_PROPERTY_NAME, cp.getProperty(VERSION_PROPERTY_NAME));
+        newCP.setProperty(SyncContextPoint.VERSION_PROPERTY_NAME, cp.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+        newCP.setProperty(SyncContextPoint.TIMESTAMP_PROPERTY_NAME, cp.getProperty(SyncContextPoint.TIMESTAMP_PROPERTY_NAME));
     }
     
     @Override
