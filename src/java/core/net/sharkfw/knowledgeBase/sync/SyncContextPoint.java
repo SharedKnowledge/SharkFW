@@ -253,10 +253,10 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
     }
     
     public void setTimestamp(Date d) {
-        _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(d.getTime()));
+        _localCP.setProperty(TIMESTAMP_PROPERTY_NAME, String.valueOf(d.getTime()));
     }
     
     public void getTimestamp() {
-        _localCP.getProperty(VERSION_PROPERTY_NAME);
+        _localCP.getProperty(TIMESTAMP_PROPERTY_NAME);
     }
 }

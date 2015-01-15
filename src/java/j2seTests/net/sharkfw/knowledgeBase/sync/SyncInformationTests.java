@@ -82,7 +82,7 @@ public class SyncInformationTests {
         
         assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "2");
-    }
+    } 
     
     @Test
     public void syncInformation_setContent_versionIncreased() {
