@@ -13,9 +13,6 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 public class SyncKB implements SharkKB {
     
-    protected static String VERSION_PROPERTY_NAME = "SyncKB_internalVersion";
-    protected static String VERSION_DEFAULT_VALUE = "1";
-    
     SharkKB _localKB = null;
 
       ////////////////////////////////////////////////////////////////////////
@@ -39,12 +36,12 @@ public class SyncKB implements SharkKB {
             Enumeration<Information> cpInformations = cp.enumInformation();
             while (cpInformations.hasMoreElements()) {
                 Information information = cpInformations.nextElement();
-                if (information.getProperty(VERSION_PROPERTY_NAME) == null) {
-                    information.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE, true); // True for transferable
+                if (information.getProperty(SyncInformation.VERSION_PROPERTY_NAME) == null) {
+                    information.setProperty(SyncInformation.VERSION_PROPERTY_NAME, SyncInformation.VERSION_DEFAULT_VALUE, true); // True for transferable
                 }
             }
-            if(cp.getProperty(VERSION_PROPERTY_NAME) == null){
-                cp.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE, true); // True for transferable
+            if(cp.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME) == null){
+                cp.setProperty(SyncContextPoint.VERSION_PROPERTY_NAME, SyncContextPoint.VERSION_DEFAULT_VALUE, true); // True for transferable
             }
         }
     }
