@@ -5,6 +5,7 @@
  */
 package net.sharkfw.knowledgeBase.sync;
 
+import java.io.File;
 import java.util.Date;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.PeerSTSet;
@@ -15,6 +16,7 @@ import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +36,7 @@ public class TimestampListTest {
     @Before
     public void setUp() throws SharkKBException {
         _kb = new InMemoSharkKB();
-        
+        L.setLogLevel(L.LOGLEVEL_ALL);
         _teapotST = _kb.createSemanticTag("teapot", "www.teapot.net");
         _alicePST = _kb.createPeerSemanticTag("Alice", "www.alice.net", "mail@alice.net");
         _bobPST = _kb.createPeerSemanticTag("Bob", "www.bob.net", "mail@bob.net");
@@ -44,6 +46,9 @@ public class TimestampListTest {
     
     @After
     public void tearDown() {
+        // Remove the created file
+        File f = new File(TimestampList.FILENAME);
+        f.delete();
     }
 
     @Test
@@ -94,5 +99,22 @@ public class TimestampListTest {
         t.resetTimestamp(_alicePST);
 
         assertTrue(expected.before(t.getTimestamp(_alicePST)));
+    }
+    
+    @Test
+    public void test_persistAndRetrieve_allPeersRetrieved() throws SharkKBException {
+        TimestampList t = new TimestampList();
+        assertEquals(0, t.getPeers().size());
+        
+        // Add some peers 
+        t.newPeer(_alicePST);
+//        t.newPeer(_bobPST);
+//        
+//        assertEquals(2, t.getPeers().size());
+//        
+//        // Now create a new list, that should also have 2 peers
+//        t = new TimestampList();
+//        
+//        assertEquals(0, t.getPeers().size());
     }
 }

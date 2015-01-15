@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.beans.Transient;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -32,7 +34,7 @@ import net.sharkfw.system.L;
  * from the knowledge base.
  * @author simon
  */
-class TimestampList {
+class TimestampList implements Serializable {
     protected static String FILENAME = "./.shark_timestamps";
     protected List<PeerTimestamp> _timestamps;
         
@@ -180,15 +182,15 @@ class TimestampList {
         try(FileInputStream fos = new FileInputStream(FILENAME); ObjectInputStream oos = new ObjectInputStream(fos)) {               
             _timestamps = (List<PeerTimestamp>) oos.readObject();               
         }catch(FileNotFoundException e){
-            L.e("Writing timestamps to disk caused File not Found exception: " + e.getMessage());
+            L.e("Reading timestamps from disk caused File not Found exception: " + e.getMessage());
         } catch (IOException e) {
-            L.e("Writing timestamps to disk caused IO exception: " + e.getMessage());
+            L.e("Reading timestamps from disk caused IO exception: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            L.e("Writing timestamps to disk caused Class not Found exception: " + e.getMessage());
+            L.e("Reading timestamps from disk caused Class not Found exception: " + e.getMessage());
         } 
     }
     
-    class PeerTimestamp {
+    class PeerTimestamp implements Serializable {
         private Date _date;
         private PeerSemanticTag _peer;
         private SharkCS _cs;
@@ -220,5 +222,9 @@ class TimestampList {
         public PeerSemanticTag getPeer() {
             return _peer;
         }
+        
+        
     }
 }
+
+
