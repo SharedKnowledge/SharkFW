@@ -145,10 +145,18 @@ class TimestampList {
     }
     
     protected void persist() {
+        File f = new File(FILENAME);
+        
         if(_timestamps == null || _timestamps.isEmpty()){
-            File f = new File(FILENAME);
             f.delete();
             return;
+        }
+        else if(!f.exists()){
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                L.e("Creating timestamp file caused IO exception: " + e.getMessage());
+            }
         }
             
         // New style: Implicit closing of streams and files with try-with-resources. Cool, huh?
