@@ -1,10 +1,19 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
@@ -24,15 +33,15 @@ import net.sharkfw.system.L;
  * @author simon
  */
 class TimestampList {
-    
+    protected static String FILENAME = "./.shark_timestamps";
     protected List<PeerTimestamp> _timestamps;
         
     public TimestampList() {
-        _timestamps = new ArrayList<>();
+        retrieve();
     }
     
     public TimestampList(PeerSTSet peersToSyncWith) {
-        _timestamps = new ArrayList<>();
+        retrieve();
         // Add all possible peers to queue
         Enumeration<PeerSemanticTag> peerEnum = peersToSyncWith.peerTags();
         while (peerEnum.hasMoreElements()) {
@@ -46,6 +55,7 @@ class TimestampList {
      */
     public void newPeer(PeerSemanticTag peer) {
         _timestamps.add(new PeerTimestamp(peer));
+        persist();
     }
     
     public void removePeer(PeerSemanticTag peer) {
@@ -55,6 +65,7 @@ class TimestampList {
         }
         else {
             _timestamps.remove(waldo);
+            persist();
         }
     }
     
@@ -90,6 +101,7 @@ class TimestampList {
         PeerTimestamp p = findPeerTimestamp(peer);
         if (p != null) {
             p.resetDate();
+            persist();
         }
     }
     
@@ -102,6 +114,7 @@ class TimestampList {
         PeerTimestamp p = findPeerTimestamp(peer);
         if (p != null) {
             p.setTimestampNull();
+            persist();
         }
     }
     
@@ -114,6 +127,7 @@ class TimestampList {
         for (PeerTimestamp p : _timestamps) {
             p.setTimestampNull();
         }
+        persist();
     }
     
     private PeerTimestamp findPeerTimestamp(PeerSemanticTag p) {
@@ -128,6 +142,42 @@ class TimestampList {
         }
         
         return null;
+    }
+    
+    protected void persist() {
+        if(_timestamps == null || _timestamps.isEmpty()){
+            File f = new File(FILENAME);
+            f.delete();
+            return;
+        }
+            
+        // New style: Implicit closing of streams and files with try-with-resources. Cool, huh?
+        try (FileOutputStream fos = new FileOutputStream(FILENAME); ObjectOutputStream oos = new ObjectOutputStream(fos)) {               
+            oos.writeObject(_timestamps);               
+        }catch(FileNotFoundException e){
+            L.e("Writing timestamps to disk caused File not Found exception: " + e.getMessage());
+        } catch (IOException e) {
+            L.e("Writing timestamps to disk caused IO exception: " + e.getMessage());
+        } 
+    }
+    
+    protected void retrieve() {
+        File f = new File(FILENAME);
+        if (!f.exists()) {
+            _timestamps = new ArrayList<>();
+            L.d("No file for timestamps found. Creating empty list of timestamps.");
+            return;
+        }
+                
+        try(FileInputStream fos = new FileInputStream(FILENAME); ObjectInputStream oos = new ObjectInputStream(fos)) {               
+            _timestamps = (List<PeerTimestamp>) oos.readObject();               
+        }catch(FileNotFoundException e){
+            L.e("Writing timestamps to disk caused File not Found exception: " + e.getMessage());
+        } catch (IOException e) {
+            L.e("Writing timestamps to disk caused IO exception: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            L.e("Writing timestamps to disk caused Class not Found exception: " + e.getMessage());
+        } 
     }
     
     class PeerTimestamp {
