@@ -12,11 +12,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
@@ -190,8 +187,7 @@ class TimestampList {
     
     class PeerTimestamp {
         private Date _date;
-        private PeerSemanticTag _peer;
-        private SharkCS _cs;
+        private final PeerSemanticTag _peer;
         
         public PeerTimestamp(PeerSemanticTag peer) {
             _peer = InMemoSharkKB.createInMemoCopy(peer);
