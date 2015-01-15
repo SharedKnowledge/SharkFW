@@ -75,14 +75,6 @@ public class SyncInformationTests {
         assertEquals(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME), SyncInformation.VERSION_DEFAULT_VALUE);
     }
 
-    // TODO cant get this to work
-//    @Test
-//    public void syncInformation_updateWithInputStream_versionIncreased() throws SharkKBException {
-//        Information programmingInformation = programmingCP.addInformation();
-//        InputStream i = programmingInformation.getInputStream();
-//        i.
-//    }
-    
     @Test
     public void syncInformation_removeContent_versionIncreased() {
         Information teapotInformation = new SyncInformation(teapotCP.addInformation("Teapots teapots"));
@@ -103,12 +95,6 @@ public class SyncInformationTests {
         teapotInformation.setContent("But other tea is good, too.".getBytes());
         assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "3");
-        
-//        byte[] textBytes = "Black tea is better with milk.".getBytes();
-//        InputStream is = new ByteInputStream(textBytes, textBytes.length + 1);
-//        teapotInformation.setContent(is, textBytes.length);
-//        assertNotNull(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
-//        assertEquals(teapotInformation.getProperty(SyncInformation.VERSION_PROPERTY_NAME), "4");
         
     }
     
