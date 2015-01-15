@@ -169,12 +169,7 @@ class TimestampList implements Serializable {
     }
     
     protected void retrieve() {
-        File f = new File(FILENAME);
-        if (!f.exists()) {
-            _timestamps = new ArrayList<>();
-            L.d("No file for timestamps found. Creating empty list of timestamps.");
-            return;
-        }
+        _timestamps = new ArrayList<>();
                 
         try(FileInputStream fos = new FileInputStream(FILENAME); ObjectInputStream oos = new ObjectInputStream(fos)) {               
             _timestamps = (List<PeerTimestamp>) oos.readObject();               
