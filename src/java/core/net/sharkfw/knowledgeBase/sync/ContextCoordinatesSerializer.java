@@ -20,13 +20,13 @@ import net.sharkfw.system.SharkException;
  */
 class ContextCoordinatesSerializer {
     
-    private static final String LIST_TAG = "cc_list";
-    private static final String ITEM_TAG = "cc_item";  
-    private static final String CC_TAG = "cc_coordinates";
-    private static final String VERSION_TAG = "cc_version";
+    protected static final String LIST_TAG = "cc_list";
+    protected static final String ITEM_TAG = "cc_item";  
+    protected static final String CC_TAG = "cc_coordinates";
+    protected static final String VERSION_TAG = "cc_version";
     
-    private static String startTag(String tag) { return "<" + tag + ">"; }
-    private static String endTag(String tag) { return "</" + tag + ">"; }
+    protected static String startTag(String tag) { return "<" + tag + ">"; }
+    protected static String endTag(String tag) { return "</" + tag + ">"; }
     
     /**
      * Serializes sync context points to a list of context coordinates with their version included.
@@ -53,7 +53,7 @@ class ContextCoordinatesSerializer {
                     buf.append(s.serializeSharkCS(cp.getContextCoordinates()));
                 buf.append(endTag(CC_TAG));
                 buf.append(startTag(VERSION_TAG));
-                    cp.getVersion();
+                    buf.append(cp.getVersion());
                 buf.append(endTag(VERSION_TAG));
             buf.append(endTag(ITEM_TAG));
         }
@@ -70,7 +70,7 @@ class ContextCoordinatesSerializer {
         // Extract and iterate over all serialized context coordinates
         while ( (index = serialized.indexOf(startTag(ITEM_TAG), index)) != -1 ) {
             // Extract the exact substring of one <item></item>
-            String substr = serialized.substring(index, serialized.indexOf(endTag(ITEM_TAG), index));
+            String substr = serialized.substring(index, serialized.indexOf(endTag(ITEM_TAG) + ITEM_TAG.length(), index));
             // Create a new sync context poin from that information
             try {
                 SyncContextPoint cp = new SyncContextPoint(new InMemoContextPoint(extractCC(substr)));
