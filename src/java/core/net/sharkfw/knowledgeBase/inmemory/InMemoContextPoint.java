@@ -69,7 +69,7 @@ public class InMemoContextPoint extends PropertyHolderDelegate implements Contex
     }
 
   /**
-   * 
+   * Shouldn't be used by application developers :|
    * @param info
    */
     @Override

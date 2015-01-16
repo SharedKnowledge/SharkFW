@@ -138,19 +138,7 @@ public class XMLSerializer implements KnowledgeSerializer {
         return buf.toString();
     }
     
-    public String serializeContextCoordinatesList(List<ContextCoordinates> l) throws SharkKBException {
-         if(l == null) {
-            return null;
-        }
-        
-        StringBuilder buf = new StringBuilder();
-        
-        for (ContextCoordinates cc : l) {
-            buf.append(this.serializeSharkCS(cc));
-        }
-        
-        return buf.toString();
-    }
+    
     
     /**
      * Serializes an st set. Checks type of st set and adds relations of 
@@ -437,20 +425,7 @@ public class XMLSerializer implements KnowledgeSerializer {
         
     }
     
-    public List<ContextCoordinates> deserializeContextCoordinatesList(String serialized) throws SharkKBException {
-        String cs;
-        List<ContextCoordinates> deserialized = new ArrayList<>();
-        int index = 0;
-        
-        while((cs = this.stringBetween(SHARKCS_TAG, serialized, index)) != null){
-            // Appended because it's stripped because of stringBetween but we still need it.
-            cs = startTag(SHARKCS_TAG) + cs + endTag(SHARKCS_TAG);
-            deserialized.add(internalDeserializeContextCoordinates(cs));
-            index += cs.length();
-        }
-        
-        return deserialized;
-    }
+    
     
     /**
      * Deserializes semantic tag from string
@@ -1083,7 +1058,7 @@ public class XMLSerializer implements KnowledgeSerializer {
         return k;
     }
 
-    private ContextCoordinates internalDeserializeContextCoordinates(String serialCo) throws SharkKBException{
+    public ContextCoordinates deserializeContextCoordinates(String serialCo) throws SharkKBException{
         SharkCS cs = this.deserializeSharkCS(serialCo);
         
         if(cs == null) {
@@ -1106,10 +1081,11 @@ public class XMLSerializer implements KnowledgeSerializer {
     }
     
     public ContextCoordinates deserializeContextCoordinates(SharkKB target, String serialCo) throws SharkKBException {
-        ContextCoordinates deserializedCC = this.internalDeserializeContextCoordinates(serialCo);
+        ContextCoordinates deserializedCC = this.deserializeContextCoordinates(serialCo);
         return target.createContextCoordinates(deserializedCC.getTopic(), deserializedCC.getOriginator(), deserializedCC.getPeer(),
                 deserializedCC.getRemotePeer(), deserializedCC.getTime(), deserializedCC.getLocation(), deserializedCC.getDirection());
     }
+    
     
     private SemanticTag getFirstTag(STSet stSet) throws SharkKBException {
         if(stSet == null) return null;
