@@ -33,13 +33,17 @@ import net.sharkfw.system.L;
  */
 class TimestampList implements Serializable {
     protected static String FILENAME = "./.shark_timestamps";
+    protected static String LIST_PROPERTY = "internal_timestamp_list";
     protected List<PeerTimestamp> _timestamps;
+    protected SyncKB _kb;
         
-    public TimestampList() {
+    public TimestampList(SyncKB kb) {
+        _kb = kb;
         retrieve();
     }
     
-    public TimestampList(PeerSTSet peersToSyncWith) {
+    public TimestampList(PeerSTSet peersToSyncWith, SyncKB kb) {
+        _kb = kb;
         retrieve();
         // Add all possible peers to queue
         Enumeration<PeerSemanticTag> peerEnum = peersToSyncWith.peerTags();
@@ -144,42 +148,25 @@ class TimestampList implements Serializable {
     }
     
     protected void persist() {
-        File f = new File(FILENAME);
-        
-        if(_timestamps == null || _timestamps.isEmpty()){
-            f.delete();
-            return;
-        }
-        else if(!f.exists()){
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                L.e("Creating timestamp file caused IO exception: " + e.getMessage());
-            }
-        }
-            
-        // New style: Implicit closing of streams and files with try-with-resources. Cool, huh?
-        try (FileOutputStream fos = new FileOutputStream(FILENAME); ObjectOutputStream oos = new ObjectOutputStream(fos)) {               
-            oos.writeObject(_timestamps);               
-        }catch(FileNotFoundException e){
-            L.e("Writing timestamps to disk caused File not Found exception: " + e.getMessage());
-        } catch (IOException e) {
-            L.e("Writing timestamps to disk caused IO exception: " + e.getMessage());
-        } 
+        _kb.setProperty(LIST_PROPERTY, serializeTimestamps());
     }
     
     protected void retrieve() {
         _timestamps = new ArrayList<>();
-                
-        try(FileInputStream fos = new FileInputStream(FILENAME); ObjectInputStream oos = new ObjectInputStream(fos)) {               
-            _timestamps = (List<PeerTimestamp>) oos.readObject();               
-        }catch(FileNotFoundException e){
-            L.e("Reading timestamps from disk caused File not Found exception: " + e.getMessage());
-        } catch (IOException e) {
-            L.e("Reading timestamps from disk caused IO exception: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            L.e("Reading timestamps from disk caused Class not Found exception: " + e.getMessage());
-        } 
+        
+        String x = _kb.getProperty(LIST_PROPERTY);
+        
+        if(x != null){ 
+            deserializeTimestamps(x);
+        }
+    }
+    
+    private String serializeTimestamps() {
+        return null;
+    }
+    
+    private void deserializeTimestamps(String x){
+        
     }
     
     class PeerTimestamp implements Serializable {

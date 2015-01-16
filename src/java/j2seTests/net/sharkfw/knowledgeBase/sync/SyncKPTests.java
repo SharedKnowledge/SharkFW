@@ -301,7 +301,7 @@ public class SyncKPTests {
         
         PeerSTSet myPSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         myPSTSet.merge(_alice);
-        TimestampList mySyncQueue = new TimestampList(myPSTSet);
+        TimestampList mySyncQueue = new TimestampList(myPSTSet, _aliceKB);
         
         ContextCoordinates expected = _aliceKB.createContextCoordinates(_teapotST, _alice, _bob, _bob, null, null, SharkCS.DIRECTION_IN);
         _aliceKB.createContextPoint(expected);

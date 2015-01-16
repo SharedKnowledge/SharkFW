@@ -28,14 +28,14 @@ import static org.junit.Assert.*;
  */
 public class TimestampListTest {
     
-    protected SharkKB _kb;
+    protected SyncKB _kb;
     protected ContextCoordinates _cc;
     protected SemanticTag _teapotST;
     protected PeerSemanticTag _alicePST, _bobPST, _claraPST;
     
     @Before
     public void setUp() throws SharkKBException {
-        _kb = new InMemoSharkKB();
+        _kb = new SyncKB(new InMemoSharkKB());
         L.setLogLevel(L.LOGLEVEL_ALL);
         _teapotST = _kb.createSemanticTag("teapot", "www.teapot.net");
         _alicePST = _kb.createPeerSemanticTag("Alice", "www.alice.net", "mail@alice.net");
@@ -54,14 +54,14 @@ public class TimestampListTest {
     @Test
     public void test_createSyncQueue_allPeersSaved() throws SharkKBException {
         PeerSTSet peers = _kb.getPeerSTSet();
-        TimestampList mySyncQueue = new TimestampList(peers);
+        TimestampList mySyncQueue = new TimestampList(peers, _kb);
         
         assertTrue(SharkCSAlgebra.identical(peers, mySyncQueue.getPeers()));
     }
     
     @Test
     public void test_addPeer_timestampZero() throws SharkKBException {
-        TimestampList t = new TimestampList();
+        TimestampList t = new TimestampList(_kb);
         t.newPeer(_alicePST);
         
         assertEquals(t.getTimestamp(_alicePST), new Date(0));
@@ -70,7 +70,7 @@ public class TimestampListTest {
     
     @Test
     public void test_removePeer_returnsNull() throws SharkKBException {
-        TimestampList t = new TimestampList();
+        TimestampList t = new TimestampList(_kb);
         t.newPeer(_alicePST);
         t.removePeer(_alicePST);
         assertNull(t.getTimestamp(_alicePST));
@@ -79,7 +79,7 @@ public class TimestampListTest {
     
     @Test
     public void test_getPeers_allPeersRetrieved() throws SharkKBException {
-        TimestampList t = new TimestampList();
+        TimestampList t = new TimestampList(_kb);
         t.newPeer(_alicePST);
         t.newPeer(_bobPST);
         PeerSTSet expected = InMemoSharkKB.createInMemoPeerSTSet();
@@ -90,7 +90,7 @@ public class TimestampListTest {
     
     @Test
     public void test_resetDateGetDate_currentDateRetrieved() throws SharkKBException, InterruptedException {
-        TimestampList t = new TimestampList();
+        TimestampList t = new TimestampList(_kb);
         t.newPeer(_alicePST);
         
         Date expected = new Date();
@@ -103,7 +103,7 @@ public class TimestampListTest {
     
     @Test
     public void test_persistAndRetrieve_allPeersRetrieved() throws SharkKBException {
-        TimestampList t = new TimestampList();
+        TimestampList t = new TimestampList(_kb);
         assertEquals(0, t.getPeers().size());
         
         // Add some peers 

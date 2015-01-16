@@ -100,6 +100,7 @@ class ContextCoordinatesSerializer {
             throw e;
         }
     }
+    
     protected static String extractVersion(String s) throws IllegalArgumentException {
         if (!s.startsWith(startTag(ITEM_TAG)) || !s.endsWith(endTag(ITEM_TAG))) {
             L.d("extractVersion in ContextCoordinatesSerializer: parameter does not begin and end with item tag: \n" + s);
