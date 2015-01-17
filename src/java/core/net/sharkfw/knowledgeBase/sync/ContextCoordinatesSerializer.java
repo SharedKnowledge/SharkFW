@@ -70,7 +70,8 @@ class ContextCoordinatesSerializer {
         // Extract and iterate over all serialized context coordinates
         while ( (index = serialized.indexOf(startTag(ITEM_TAG), index)) != -1 ) {
             // Extract the exact substring of one <item></item>
-            String substr = serialized.substring(index, serialized.indexOf(endTag(ITEM_TAG) + ITEM_TAG.length(), index));
+            int end = serialized.indexOf(endTag(ITEM_TAG), index) + endTag(ITEM_TAG).length();
+            String substr = serialized.substring(index, end);
             // Create a new sync context poin from that information
             try {
                 SyncContextPoint cp = new SyncContextPoint(new InMemoContextPoint(extractCC(substr)));
@@ -79,6 +80,8 @@ class ContextCoordinatesSerializer {
             } catch (IllegalArgumentException e) {
                 throw new SharkException("Context coordinates deserialization error: " + e);
             }
+            // Add one to index so we don't find that exact same tag again
+            index += 1;
         }
         
         return deserialized;
