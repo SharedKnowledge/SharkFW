@@ -25,7 +25,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
-import net.sharkfw.protocols.wifidirect.WifiDirectStreamStub;
+import net.sharkfw.protocols.Protocols;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
@@ -274,7 +274,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 L.d("Empty interest received. Sending interest back.");
                 // Create a topic ST set for wifi direct identification
                 STSet identificationTopic = InMemoSharkKB.createInMemoSTSet();
-                identificationTopic.merge(InMemoSharkKB.createInMemoSemanticTag("Wifi direct identification", WifiDirectStreamStub.WIFI_DIRECT_CONNECTION_TOPIC));
+                identificationTopic.merge(InMemoSharkKB.createInMemoSemanticTag("Wifi direct identification", Protocols.WIFI_DIRECT_CONNECTION_TOPIC));
                 // Create a Peer Semantic tag set for the peer which contains the owner
                 PeerSTSet identificationPeer = InMemoSharkKB.createInMemoPeerSTSet();
                 identificationPeer.merge(kb.getOwner());
@@ -283,7 +283,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 // Send it
                 kepConnection.expose(i);
             }
-            else if (interest.getTopics().getSemanticTag(WifiDirectStreamStub.WIFI_DIRECT_CONNECTION_TOPIC) != null && interest.getPeers() != null) {
+            else if (interest.getTopics().getSemanticTag(Protocols.WIFI_DIRECT_CONNECTION_TOPIC) != null && interest.getPeers() != null) {
                 L.d("Received wifi direct identification interest. Sending my real interest back.");
                 kb.getPeerSTSet().merge(interest.getPeers());
                 kepConnection.expose(this.getInterest());

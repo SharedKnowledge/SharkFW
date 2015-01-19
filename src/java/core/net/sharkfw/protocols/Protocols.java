@@ -32,6 +32,8 @@ public abstract class Protocols {
    * Constant value number of supported protocols
    */
   public static final int NUMBERPROTOCOLS = 3;
+  
+  public static final String WIFI_DIRECT_CONNECTION_TOPIC = "http://Idon't know";
 
 //  public static final int UDP = 1;
 //  public static final int BT_L2CAP = 2;
