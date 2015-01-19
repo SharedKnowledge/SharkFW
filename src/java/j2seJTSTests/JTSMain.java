@@ -160,6 +160,30 @@ public class JTSMain {
     }
 
     @Test
+    public void createSharkGeometryByGeographicalWKT_GEOMETRYCOLLECTION() throws SharkKBException {
+        String testWKT = "MULTIPOLYGON ("
+                + "((52.49363039643433 13.522881120443344, 52.49429668066099 13.525370210409164,"
+                + "52.49203649908915 13.526872247457504, 52.49220634335951 13.522559255361557, 52.49363039643433 13.522881120443344)),"
+                + "((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
+                + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241)))";
+        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        Assert.assertEquals(testWKT, geom1.getWKT());
+    }
+
+    @Test
+    public void createSharkGeometryByGeographicalEWKT_GEOMETRYCOLLECTION() throws SharkKBException {
+        String testWKT = "MULTIPOLYGON ("
+                + "((52.49363039643433 13.522881120443344, 52.49429668066099 13.525370210409164,"
+                + "52.49203649908915 13.526872247457504, 52.49220634335951 13.522559255361557, 52.49363039643433 13.522881120443344)),"
+                + "((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
+                + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241)))";
+        int testSRS = 4326;
+        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        Assert.assertEquals(testWKT, geom1.getWKT());
+        Assert.assertEquals(testSRS, geom1.getSRS());
+    }
+
+    @Test
     public void checkSpatialAlgebraIdenticalSemanticTags_POINTS() throws SharkKBException {
         String testWKT = "POINT (52.45606650054853 13.523988202214241)";
         SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
@@ -167,8 +191,8 @@ public class JTSMain {
         // TODO geom1.is
         Assert.assertEquals(true, tag1.identical(tag1));
     }
-    
-        @Test
+
+    @Test
     public void checkSpatialAlgebraIdenticalSemanticTags_MULTIPOLYGON() throws SharkKBException {
         String testWKT = "MULTIPOLYGON ("
                 + "((52.49363039643433 13.522881120443344, 52.49429668066099 13.525370210409164,"
@@ -180,10 +204,30 @@ public class JTSMain {
         // TODO geom1.is
         Assert.assertEquals(true, tag1.identical(tag1));
     }
+
+    @Test
+    public void checkSpatialAlgebraIdenticalSemanticTags_GEOMETRYCOLLECTION() throws SharkKBException {
+        String testWKT = "GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))";
+        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom1);
+        // TODO geom1.is
+        Assert.assertEquals(true, tag1.identical(tag1));
+    }
     
+        @Test
+    public void checkSpatialAlgebraIdenticalSemanticTags_GEOMETRYCOLLECTION_TAG_False() throws SharkKBException {
+        String testWKT1 = "GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))";
+        String testWKT2 = "POINT (52.45606650054853 13.523988202214241)";
+        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT1);
+        SharkGeometry geom2 = InMemoGeometry.createGeomByWKT(testWKT2);
+        SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom1);
+        SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom2);
+        // TODO geom1.is
+        Assert.assertEquals(false, tag1.identical(tag2));
+    }
     
 
-    // TODO add test methods here.
+// TODO add test methods here.
 //    @BeforeClass
 //    public static void setUpClass() {
 //    }
