@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * <p>A plain STSet simply holds a number of SemanticTags. </p>
@@ -92,6 +93,17 @@ public interface STSet {
      * @throws net.sharkfw.knowledgeBase.SharkKBException
    */
   public SemanticTag getSemanticTag(String si) throws SharkKBException;
+  
+  /**
+   * Produces set of semantic tags which names fit to the given pattern. 
+   * An interator of that set is returned. Tags are not copied! The iterator
+   * returns references to the objects in the actual ST set.
+   * 
+   * @param pattern A pattern to which the tag names are compared
+   * @return Itertor of fitting tags
+   * @throws SharkKBException 
+   */
+  public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException;
 
   /**
    * The most simple fragmentation. Check if the given tag exists and return

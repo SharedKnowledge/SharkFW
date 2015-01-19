@@ -20,11 +20,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
         {
-            ApiRev1.SimpleKBTest.class, 
-            ApiRev1.SerializationTest.class, 
-            ApiRev1.Assimilate_ExtractionTests.class, 
-            FSSharkKBTest.class,
-            ApiRev1.ExchangeTests.class
+            revisionTests.Version2.class
         })
 public class Version3 {
 

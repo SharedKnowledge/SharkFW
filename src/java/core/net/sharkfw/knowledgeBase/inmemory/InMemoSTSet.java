@@ -2,6 +2,8 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import net.sharkfw.system.Util;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.sharkfw.knowledgeBase.*;
 
 /**
@@ -357,4 +359,34 @@ public class InMemoSTSet implements STSet {
         
         return false;
     }
+
+    @Override
+    public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException {
+        return InMemoSTSet.getSemanticTagByName(this, pattern);
+    }
+    
+    static Iterator<SemanticTag> getSemanticTagByName(STSet source, String pattern) throws SharkKBException {
+        ArrayList<SemanticTag> result = new ArrayList<>();
+        
+        Enumeration<SemanticTag> tags = source.tags();
+        if(tags != null) {
+            Pattern p = Pattern.compile(pattern);
+            
+            while(tags.hasMoreElements()) {
+                SemanticTag st = tags.nextElement();
+
+                String name = st.getName();
+
+                if(name != null) {
+                    Matcher matcher = p.matcher(name);
+                    if(matcher.matches()) {
+                        result.add(st);
+                    }
+                }
+            }
+        }
+        
+        return result.iterator();
+    }
 }
+

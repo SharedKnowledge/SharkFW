@@ -9,6 +9,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    knowledgeBaseTests.STTests.class,
     ApiRev1.SimpleKBTest.class, 
     ApiRev1.SerializationTest.class, 
     ApiRev1.Assimilate_ExtractionTests.class, 

@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
 
@@ -356,5 +357,10 @@ public class InMemoTaxonomy implements Taxonomy, STSet {
     @Override
     public int size() {
         return this.storage.size();
+    }
+    
+    @Override
+    public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException {
+        return InMemoSTSet.getSemanticTagByName(this, pattern);
     }
 }
