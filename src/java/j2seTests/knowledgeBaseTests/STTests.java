@@ -65,7 +65,7 @@ public class STTests {
         // should be three matching tags
         for(int i = 0; i < 3; i++) {
             SemanticTag next = tagIter.next();
-            System.out.println(next.getName());
+    //        System.out.println(next.getName());
         }
 
         // shouldn't be more

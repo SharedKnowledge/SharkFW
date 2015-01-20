@@ -370,22 +370,27 @@ public class InMemoSTSet implements STSet {
         
         Enumeration<SemanticTag> tags = source.tags();
         if(tags != null) {
-            Pattern p = Pattern.compile(pattern);
-            
-            while(tags.hasMoreElements()) {
-                SemanticTag st = tags.nextElement();
+            try {
+                Pattern p = Pattern.compile(pattern);
 
-                String name = st.getName();
+                while(tags.hasMoreElements()) {
+                    SemanticTag st = tags.nextElement();
 
-                if(name != null) {
-                    Matcher matcher = p.matcher(name);
-                    if(matcher.matches()) {
-                        result.add(st);
+                    String name = st.getName();
+
+                    if(name != null) {
+                        Matcher matcher = p.matcher(name);
+                        if(matcher.matches()) {
+                            result.add(st);
+                        }
                     }
                 }
             }
+            catch(IllegalArgumentException e) {
+                // thrown if patter is in wrong shape
+                throw new SharkKBException(e.getClass().getName() +  " catched: " + e.getMessage());
+            }
         }
-        
         return result.iterator();
     }
 }
