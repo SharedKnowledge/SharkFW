@@ -74,10 +74,8 @@ public class SyncKPTests {
         _aliceKB.setOwner(_alice);
         _bobKB.setOwner(_bob);
         // Kps
-        _aliceSyncKP = new SyncKP(_aliceEngine, _aliceKB, 1);
-        _bobSyncKP = new SyncKP(_bobEngine, _bobKB, 1);
-        _aliceSyncKP.setRetryTimeout(0);
-        _bobSyncKP.setRetryTimeout(0);
+        _aliceSyncKP = new SyncKP(_aliceEngine, _aliceKB, 0);
+        _bobSyncKP = new SyncKP(_bobEngine, _bobKB, 0);
     }
 
     @After
@@ -90,6 +88,8 @@ public class SyncKPTests {
 
     @Test
     public void syncKP_meetsNonSyncKP_noCommunication() throws InterruptedException, SharkSecurityException, IOException, SharkKBException, SharkProtocolNotSupportedException {
+        // TODO there is no communication at all which is not what the test is about
+        
         // Bob will have a standard KP for this and is interested in anything.
         Interest bobAnyInterest = _bobKB.createInterest(_bobKB.createContextCoordinates(null, null, _bob, null, null, null, SharkCS.DIRECTION_INOUT));
         _bobEngine = new J2SEAndroidSharkEngine();
@@ -112,7 +112,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP();
 
         // wait until communication happened
-        Thread.sleep(600);
+        Thread.sleep(Integer.MAX_VALUE);
 
         // Neither KB should now know anything about the other contextPoint
         assertNull(_aliceKB.getContextPoint(noodlesBobCC));
@@ -135,10 +135,10 @@ public class SyncKPTests {
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.publishAllKP(_alice);
-        _aliceEngine.publishAllKP(_bob);
+//        _aliceEngine.publishAllKP(_bob);
 
         // wait until communication happened
-        Thread.sleep(600);
+        Thread.sleep(Integer.MAX_VALUE);
 
         // Bob should now know about alice's CP and the other way round
         ContextPoint retrievedCPAlice = _aliceKB.getContextPoint(noodlesBobCC);

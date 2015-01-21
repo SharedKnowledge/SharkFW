@@ -43,3 +43,4 @@ Identifizieren der Wissensbasis, damit, wenn ein Peer 2 Sync KPs besitzt, nicht 
 addInformation(Information source) setzt nur Referenz, keine copy  
 
 peerRemoved/peerAdded triggert nicht
+

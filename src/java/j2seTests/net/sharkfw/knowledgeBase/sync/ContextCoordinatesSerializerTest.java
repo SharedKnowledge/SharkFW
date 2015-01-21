@@ -54,7 +54,7 @@ public class ContextCoordinatesSerializerTest {
     }
     
     @Test
-    public void deserializeCC_correctlySerialized() throws SharkException {
+    public void deserializeCC_correctlyDeserialized() throws SharkException {
         List<SyncContextPoint> result = ContextCoordinatesSerializer.deserializeContextCoordinatesList("<cc_list><cc_item><cc_coordinates><cs><topics><stset><tags><tag><name>Noodles</name><si>www.noodles.org</si><props/></tag></tags></stset></topics><originator><tag><name>Alice</name><si>www.alice.org</si><addr>mail@alice.org</addr><props/></tag></originator><peer><stset><tags><tag><name>Alice</name><si>www.alice.org</si><addr>mail@alice.org</addr><props/></tag></tags></stset></peer><remotePeer><stset><tags><tag><name>Alice</name><si>www.alice.org</si><addr>mail@alice.org</addr><props/></tag></tags></stset></remotePeer><direction>2</direction></cs></cc_coordinates><cc_version>1</cc_version></cc_item><cc_item><cc_coordinates><cs><originator><tag><name>Alice</name><si>www.alice.org</si><addr>mail@alice.org</addr><props/></tag></originator><peer><stset><tags><tag><name>Alice</name><si>www.alice.org</si><addr>mail@alice.org</addr><props/></tag></tags></stset></peer><remotePeer><stset><tags><tag><name>Alice</name><si>www.alice.org</si><addr>mail@alice.org</addr><props/></tag></tags></stset></remotePeer><direction>2</direction></cs></cc_coordinates><cc_version>1</cc_version></cc_item></cc_list>");
         Assert.assertEquals(cps, result);
     }

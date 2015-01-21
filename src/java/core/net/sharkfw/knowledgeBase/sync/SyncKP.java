@@ -96,9 +96,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         }
         
         // Create a sync queue for all known peers
-        PeerSTSet bucketSet = _kb.getPeerSTSet();
-        bucketSet.removeSemanticTag(_kb.getOwner());
-        _timestamps = new TimestampList(bucketSet, _kb);
+        PeerSTSet peersToSyncWith = _kb.getPeerSTSet();
+        peersToSyncWith.removeSemanticTag(_kb.getOwner());
+        _timestamps = new TimestampList(peersToSyncWith, _kb);
         
         // Create the semantic Tag which is used to identify a SyncKP
         STSet syncTag;
@@ -179,11 +179,36 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 String state = synchronizationTag.getProperty(SYNCHRONIZATION_PROTOCOL_STATE);
                 
                 // Is the serialized CC property set? If not, Send back a list of CCs we have to offer to this peer
+                // ------------------ DEFAULT ------------------
                 if (state == null) {
                     List<SyncContextPoint> possibleCCsForPeer = retrieve(_timestamps.getTimestamp(kepConnection.getSender()));
                     this.setStepOffer(possibleCCsForPeer);
+                    SharkCS myInterest = this.getInterest();
+                    kepConnection.expose(myInterest, kepConnection.getSender().getAddresses());
+                }
+                // Is that an offer? Than analyze which CPs I need and send a modified CC list back
+                // ------------------ OFFER ------------------
+                else if (state.equals(SYNCHRONIZATION_OFFER)) {
+                    List<SyncContextPoint> ccs = ContextCoordinatesSerializer.deserializeContextCoordinatesList(
+                                        synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY));
+                    
+                    Iterator<SyncContextPoint> i = ccs.iterator();
+                    
+                    while(i.hasNext()){
+                        SyncContextPoint cc = i.next();
+                        ContextPoint cp = _kb.getContextPoint(cc.getContextCoordinates());
+                        // TODO: ADD AGAIN
+                        if(cp != null && 
+                            Integer.parseInt(cp.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) >= 
+                                Integer.parseInt(cc.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME))){
+                            i.remove();
+                        }
+                    }
+                    this.setStepRequest(ccs);     
+                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
                 }
                 // Is that a request? Then send knowledge
+                // ------------------ REQUEST ------------------
                 else if (state.equals(SYNCHRONIZATION_REQUEST)) {
                     List<SyncContextPoint> ccs = ContextCoordinatesSerializer.deserializeContextCoordinatesList(
                                         synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY));
@@ -210,26 +235,6 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     _timestamps.resetTimestamp(kepConnection.getSender());
                     kepConnection.insert(k, kepConnection.getSender().getAddresses());
                     this.notifyInsertSent(this, k);
-                }
-                // Is that an offer? Than analyze which CPs I need and send a modified CC list back
-                else if (state.equals(SYNCHRONIZATION_OFFER)) {
-                    List<SyncContextPoint> ccs = ContextCoordinatesSerializer.deserializeContextCoordinatesList(
-                                        synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY));
-                    
-                    Iterator<SyncContextPoint> i = ccs.iterator();
-                    
-                    while(i.hasNext()){
-                        SyncContextPoint cc = i.next();
-                        ContextPoint cp = _kb.getContextPoint(cc.getContextCoordinates());
-                        // TODO: ADD AGAIN
-                        if(cp != null && 
-                            Integer.parseInt(cp.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) >= 
-                                Integer.parseInt(cc.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME))){
-                            i.remove();
-                        }
-                    }
-                    
-                    this.setStepRequest(ccs);     
                 }
                 // Or something unexpected?
                 else {
