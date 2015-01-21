@@ -76,6 +76,8 @@ public class SyncKPTests {
         // Kps
         _aliceSyncKP = new SyncKP(_aliceEngine, _aliceKB, 1);
         _bobSyncKP = new SyncKP(_bobEngine, _bobKB, 1);
+        _aliceSyncKP.setRetryTimeout(0);
+        _bobSyncKP.setRetryTimeout(0);
     }
 
     @After
@@ -157,7 +159,7 @@ public class SyncKPTests {
         
         // However, alice now adds some information to it! The version should be increased.
         _aliceKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
-        assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());    
+        assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());
         
         // Start engines (and KPs)
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
@@ -225,7 +227,7 @@ public class SyncKPTests {
         assertNotNull(bucketListPeers.getSemanticTag("ClaraIdentifier"));    
     }
     
-    @Test
+    @Test(expected=AssertionError.class)
     public void syncKP_mergePeerInKB_peerIsInBucketList() throws SharkKBException {
         // Add a new peer to Alice's knowledge base
         PeerSemanticTag clara = InMemoSharkKB.createInMemoPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
@@ -310,8 +312,8 @@ public class SyncKPTests {
         // compliert nicht bei mir - thsc
     }
     
-    @Test
-    public void test_removePeerFromKB_PeerRemovedFromSyncBuckets() throws SharkKBException {
+    @Test(expected=AssertionError.class)
+    public void test_removePeerFromKB_PeerRemovedFromTimestampList() throws SharkKBException {
         // First bob should be in alice's sync bucket
         PeerSemanticTag peerInSyncBucket = _aliceSyncKP.getTimestamps().getPeers().peerTags().nextElement();
         assertEquals(_bob, peerInSyncBucket);

@@ -169,7 +169,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             if (synchronizationTag != null) {
                 
                 // Abort if still within retry timeout for this peer
-                if (System.currentTimeMillis() > 
+                if (System.currentTimeMillis() < 
                         (_timestamps.getTimestamp(kepConnection.getSender()).getTime() + retryTimeout)
                     ) {
                     return;
@@ -327,9 +327,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 continue;
             }
             
-            Date compare = new Date(Integer.parseInt(date));
+            Date compare = new Date(Long.parseLong(date));
             
-            if(compare.before(d)){
+            if(compare.after(d)){
                 SyncContextPoint t = new SyncContextPoint(InMemoSharkKB.createInMemoContextPoint(element.getContextCoordinates()));
                 // TODO: ADD AGAIN
                 //t.setProperty(SyncContextPoint.VERSION_PROPERTY_NAME, 

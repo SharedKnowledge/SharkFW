@@ -41,3 +41,5 @@ Properties für CCs?
 Identifizieren der Wissensbasis, damit, wenn ein Peer 2 Sync KPs besitzt, nicht der eine Step zur einen, der andere Step zur anderen geschickt wird.
 
 addInformation(Information source) setzt nur Referenz, keine copy  
+
+peerRemoved/peerAdded triggert nicht
