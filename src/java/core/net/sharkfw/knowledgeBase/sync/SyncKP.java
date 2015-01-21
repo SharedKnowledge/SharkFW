@@ -235,7 +235,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     this.setStepDefault();
                     
                     _timestamps.resetTimestamp(kepConnection.getSender());
-                    kepConnection.insert(k, kepConnection.getSender().getAddresses());
+//                    kepConnection.insert(k, kepConnection.getSender().getAddresses());
+                    kepConnection.insert(k, (String)null);
                     this.notifyInsertSent(this, k);
                 }
                 // Or something unexpected?

@@ -138,7 +138,7 @@ public class SyncKPTests {
 //        _aliceEngine.publishAllKP(_bob);
 
         // wait until communication happened
-        Thread.sleep(Integer.MAX_VALUE);
+        Thread.sleep(10000);
 
         // Bob should now know about alice's CP and the other way round
         ContextPoint retrievedCPAlice = _aliceKB.getContextPoint(noodlesBobCC);
