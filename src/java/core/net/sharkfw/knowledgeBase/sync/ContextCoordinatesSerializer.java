@@ -95,7 +95,7 @@ class ContextCoordinatesSerializer {
         }
                 
         XMLSerializer x = new XMLSerializer();
-        int start = s.indexOf(startTag(CC_TAG)) + CC_TAG.length();
+        int start = s.indexOf(startTag(CC_TAG)) + startTag(CC_TAG).length();
         int end =  s.indexOf(endTag(CC_TAG));
         try {
             return x.deserializeContextCoordinates(s.substring(start,end));
@@ -110,7 +110,7 @@ class ContextCoordinatesSerializer {
             L.d("extractVersion in ContextCoordinatesSerializer: parameter does not begin and end with item tag: \n" + s);
             throw new IllegalArgumentException("extractVersion in ContextCoordinatesSerializer: parameter does not begin and end with item tag: \n" + s);
         }
-        int start = s.indexOf(startTag(VERSION_TAG)) + VERSION_TAG.length();
+        int start = s.indexOf(startTag(VERSION_TAG)) + startTag(VERSION_TAG).length();
         int end =  s.indexOf(endTag(VERSION_TAG));
         return s.substring(start,end);
     }

@@ -64,9 +64,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     private final String SYNCHRONIZATION_REQUEST = "SyncKP_synchronization_request";
     
     // Fragmentation parameter for sending knowledge
-    FragmentationParameter topicsFP = null, peersFP = null;
+    FragmentationParameter _topicsFP = null, _peersFP = null;
     
-    long retryTimeout;
+    long _retryTimeout;
     
     /**
      * This SyncKP will keep the assigned Knowledge Base synchronized with all peers.
@@ -87,7 +87,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _engine = engine;
         _kb.addListener(this);
         
-        this.retryTimeout = retryTimeout * 1000;
+        this._retryTimeout = retryTimeout * 1000;
+        this._topicsFP = new FragmentationParameter();
+        this._peersFP = new FragmentationParameter();
         
         // We need to have an owner of the kb
         if (_kb.getOwner() == null) {
@@ -117,27 +119,27 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
 
     public long getRetryTimeout() {
-        return retryTimeout / 1000;
+        return _retryTimeout / 1000;
     }
 
     public void setRetryTimeout(long retryTimeout) {
-        this.retryTimeout = retryTimeout * 1000;
+        this._retryTimeout = retryTimeout * 1000;
     }
     
     public void setTopicsFP(FragmentationParameter topicsFP) {
-        this.topicsFP = topicsFP;
+        this._topicsFP = topicsFP;
     }
 
     public void setPeersFP(FragmentationParameter peersFP) {
-        this.peersFP = peersFP;
+        this._peersFP = peersFP;
     }
 
     public FragmentationParameter getTopicsFP() {
-        return topicsFP;
+        return _topicsFP;
     }
 
     public FragmentationParameter getPeersFP() {
-        return peersFP;
+        return _peersFP;
     }
     
     /**
@@ -170,7 +172,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 
                 // Abort if still within retry timeout for this peer
                 if (System.currentTimeMillis() < 
-                        (_timestamps.getTimestamp(kepConnection.getSender()).getTime() + retryTimeout)
+                        (_timestamps.getTimestamp(kepConnection.getSender()).getTime() + _retryTimeout)
                     ) {
                     return;
                 }
@@ -221,8 +223,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                         ContextPoint cp = _kb.getContextPoint(element.getContextCoordinates());
                         // Send topic and peer tags that belong to this context point 
                         // according to the set fragmentation parameters
-                        STSet topics = _kb.getTopicSTSet().fragment(cp.getContextCoordinates().getTopic(), topicsFP);
-                        STSet peers = _kb.getPeerSTSet().fragment(cp.getContextCoordinates().getPeer(), peersFP);
+                        STSet topics = _kb.getTopicSTSet().fragment(cp.getContextCoordinates().getTopic(), _topicsFP);
+                        STSet peers = _kb.getPeerSTSet().fragment(cp.getContextCoordinates().getPeer(), _peersFP);
 
                         // Merge it all into the knowledge that will be send
                         k.getVocabulary().getTopicSTSet().merge(topics);

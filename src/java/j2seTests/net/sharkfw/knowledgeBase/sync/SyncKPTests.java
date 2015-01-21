@@ -112,7 +112,7 @@ public class SyncKPTests {
         _bobEngine.publishAllKP();
 
         // wait until communication happened
-        Thread.sleep(Integer.MAX_VALUE);
+        Thread.sleep(600);
 
         // Neither KB should now know anything about the other contextPoint
         assertNull(_aliceKB.getContextPoint(noodlesBobCC));
