@@ -60,10 +60,11 @@ class ContextCoordinatesSerializer {
         
         // End list with tag
         buf.append(endTag(LIST_TAG));
-        return buf.toString();
+        return enableXMLWorkaround(buf.toString());
     }
     
     protected static List<SyncContextPoint> deserializeContextCoordinatesList(String serialized) throws SharkKBException, SharkException {
+        serialized = disableXMLWorkaround(serialized);
         String cs;
         List<SyncContextPoint> deserialized = new ArrayList<>();
         int index = 0;
@@ -112,5 +113,22 @@ class ContextCoordinatesSerializer {
         int start = s.indexOf(startTag(VERSION_TAG)) + VERSION_TAG.length();
         int end =  s.indexOf(endTag(VERSION_TAG));
         return s.substring(start,end);
+    }
+    
+    private static final String XML_INTRO = "XML_INTRO_TAG_SUBSTITUTE";
+    private static final String XML_OUTRO = "XML_OUTRO_TAG_SUBSTITUTE";
+    
+    /* This is the dirtiest hack Ive ever done. Sorry.
+     * It enables us to put XML within a property without breaking the XMLSerializer.
+     */
+    private static String enableXMLWorkaround(String s) {
+        return s.replaceAll("<", XML_INTRO).replaceAll(">", XML_OUTRO);
+    }
+    
+    /* This is the dirtiest hack Ive ever done. Sorry.
+     * It enables us to put XML within a property without breaking the XMLSerializer.
+     */
+    private static String disableXMLWorkaround(String s) {
+        return s.replaceAll(XML_INTRO, "<").replaceAll(XML_OUTRO, ">");
     }
 }
