@@ -74,7 +74,11 @@ public class STTests {
         // shouldn't be more
         Assert.assertFalse(tagIter.hasNext());
     }
-    
+    /**
+     * Property can contain XML code. XMLSerializer must quote those
+     * strings. 
+     * @throws SharkKBException 
+     */
     @Test
     public void cdataEncodingTest() throws SharkKBException {
         
