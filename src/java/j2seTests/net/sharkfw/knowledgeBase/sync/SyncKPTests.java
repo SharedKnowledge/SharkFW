@@ -2,6 +2,8 @@ package net.sharkfw.knowledgeBase.sync;
 
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
@@ -30,7 +32,7 @@ import org.junit.Test;
 
 public class SyncKPTests {
 
-    private final long connectionTimeOut = 2000;
+    private final long connectionTimeOut = Integer.MAX_VALUE;
     private SyncKB _aliceKB, _bobKB;
     private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;
@@ -134,20 +136,45 @@ public class SyncKPTests {
         _bobEngine.startTCP(_bobPort);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.publishAllKP(_alice);
+//        _bobEngine.publishAllKP(_alice);
 //        _aliceEngine.publishAllKP(_bob);
+        new Thread(new Publish(_bobEngine, _alice)).start();
+        new Thread(new Publish(_aliceEngine, _bob)).start();
 
         // wait until communication happened
-        Thread.sleep(10000);
+        Thread.sleep(Integer.MAX_VALUE);
 
         // Bob should now know about alice's CP and the other way round
         ContextPoint retrievedCPAlice = _aliceKB.getContextPoint(noodlesBobCC);
         assertNotNull(retrievedCPAlice);
         assertEquals(1, retrievedCPAlice.getNumberInformation());
-        
+//        
         ContextPoint retrievedCPBob = _bobKB.getContextPoint(teapotAliceCC);
         assertNotNull(retrievedCPBob);
         assertEquals(1, retrievedCPBob.getNumberInformation());
+    }
+    
+    class Publish implements Runnable{
+        
+        SharkEngine engine;
+        PeerSemanticTag tag;
+        public Publish(SharkEngine engine, PeerSemanticTag publishTo) {
+            this.engine = engine;
+            this.tag = publishTo;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                engine.publishAllKP(tag);
+            } catch (SharkSecurityException ex) {
+                Logger.getLogger(SyncKPTests.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SharkKBException ex) {
+                Logger.getLogger(SyncKPTests.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(SyncKPTests.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     @Test

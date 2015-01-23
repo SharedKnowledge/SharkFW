@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
@@ -161,8 +163,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     
     @Override
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-        handleWifiDirect(interest, kepConnection);
-        
+//        handleWifiDirect(interest, kepConnection);
+        L.d(" --------------------- SYNC doExpose started");
         try {
             // Retrieve the general sync KP synchronization identification tag
             SemanticTag synchronizationTag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
@@ -185,8 +187,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 if (state == null) {
                     List<SyncContextPoint> possibleCCsForPeer = retrieve(_timestamps.getTimestamp(kepConnection.getSender()));
                     this.setStepOffer(possibleCCsForPeer);
-                    SharkCS myInterest = this.getInterest();
-                    kepConnection.expose(myInterest, kepConnection.getSender().getAddresses());
+                    L.d(_kb.getOwner().getName() + " sent default expose.");
+                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
+                    this.notifyExposeSent(this, this.getInterest());
                 }
                 // Is that an offer? Than analyze which CPs I need and send a modified CC list back
                 // ------------------ OFFER ------------------
@@ -207,7 +210,10 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                         }
                     }
                     this.setStepRequest(ccs);     
-                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
+                    L.d(_kb.getOwner().getName() + " sent offer expose.");
+//                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
+                    kepConnection.expose(this.getInterest(), (String) null);
+                    this.notifyExposeSent(this, this.getInterest());
                 }
                 // Is that a request? Then send knowledge
                 // ------------------ REQUEST ------------------
@@ -235,8 +241,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     this.setStepDefault();
                     
                     _timestamps.resetTimestamp(kepConnection.getSender());
-//                    kepConnection.insert(k, kepConnection.getSender().getAddresses());
-                    kepConnection.insert(k, (String)null);
+                    L.d(_kb.getOwner().getName() + " sent insert.");
+                    kepConnection.insert(k, kepConnection.getSender().getAddresses());
+//                    kepConnection.insert(k, (String) null);
                     this.notifyInsertSent(this, k);
                 }
                 // Or something unexpected?
@@ -248,6 +255,11 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         catch (SharkException e) {
             L.e(e.getMessage());
         }
+//        try {
+//            Thread.sleep(1500);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(SyncKP.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
     
     @Override
