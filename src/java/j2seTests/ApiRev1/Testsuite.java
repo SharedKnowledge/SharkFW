@@ -27,8 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
     SerializationTest.class,
     InMemoAssociatedSTSetTest.class,
     FSSharkKBTest.class,
-    StreamTests.class,
-    PropertyTransferTests.class
+    StreamTests.class
 })
 
 public class Testsuite {

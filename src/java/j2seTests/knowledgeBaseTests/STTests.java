@@ -1,8 +1,11 @@
 package knowledgeBaseTests;
 
 import java.util.Iterator;
+import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -72,7 +75,26 @@ public class STTests {
         Assert.assertFalse(tagIter.hasNext());
     }
     
-    
-    
-    
+    @Test
+    public void cdataEncodingTest() throws SharkKBException {
+        
+        String propertyName = "XMLProperty";
+        String propertyValue = "<tag>blabla</tag>";
+        
+        XMLSerializer x = new XMLSerializer();
+        
+        SemanticTag tag = InMemoSharkKB.createInMemoSemanticTag("test", "http://test.de");
+        tag.setProperty(propertyName, propertyValue);
+        
+        // define property with xml tags inside
+        ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(tag, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
+        
+        String s = x.serializeSharkCS(cc);
+        
+        ContextCoordinates ccBack = x.deserializeContextCoordinates(s);
+        
+        String valueBack = ccBack.getTopic().getProperty(propertyName);
+        
+        Assert.assertTrue(valueBack.equals(propertyValue));
+    }
 }
