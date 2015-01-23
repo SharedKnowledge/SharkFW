@@ -543,7 +543,12 @@ public class XMLSerializer implements KnowledgeSerializer {
             buf.append(this.endTag(NAME_TAG));
             
             buf.append(this.startTag(VALUE_TAG));
+            
+            // for safety reasons: put any value tag inside a CDATA section
+            buf.append(XMLSerializer.CDATA_START_TAG);
             buf.append(value);
+            buf.append(XMLSerializer.CDATA_END_TAG);
+            
             buf.append(this.endTag(VALUE_TAG));
 
             buf.append(this.endTag(PROPERTY_TAG));
@@ -579,6 +584,9 @@ public class XMLSerializer implements KnowledgeSerializer {
                 
                 String name = this.stringBetween(NAME_TAG, propString, 0);
                 String value = this.stringBetween(VALUE_TAG, propString, 0);
+                
+                // cut off cdata section
+                value = value.substring(this.cdata_start_tag_length, value.length()-this.cdata_end_tag_length);
                 
                 if(name != null) {
                     target.setProperty(name, value);
@@ -740,8 +748,56 @@ public class XMLSerializer implements KnowledgeSerializer {
         } while(found);
     }
     
+    private static final String CDATA_START_TAG = "<!CDATA[";
+    private static final String CDATA_END_TAG = "]]>";
+    
+    private final int cdata_start_tag_length = XMLSerializer.CDATA_START_TAG.length();
+    private final int cdata_end_tag_length = XMLSerializer.CDATA_END_TAG.length();
+    
     /**
-     * Return string between a give tag or null of tag not found
+     * Checks in source string if index is inside a cdata section. If so the first
+     * index that is behind that cdata section is returned. -1 is returned otherwise.
+     */
+    private int endOfCDataSection(String source, int startIndex, int position) {
+        int cdataStart = source.indexOf(XMLSerializer.CDATA_START_TAG, startIndex);
+        
+        // there is no cdata section 
+        if(cdataStart == -1) {
+            return -1;
+        }
+        
+        // there is one - where does is end?
+        int cdataEnd = source.indexOf(XMLSerializer.CDATA_END_TAG, cdataStart);
+        
+        if(cdataEnd == -1) {
+            // malformed structure!!
+            return -1;
+        }
+        
+        /* ok there is a cdata section
+         * is position inside?
+        */
+        
+        // is position in before cdata section? - ok
+        if(position < cdataStart) {
+            return -1;
+        }
+        
+        // not before cdatasection
+        
+        // inside?
+        if(position > cdataStart && position < cdataEnd) {
+            // inside - return end of section
+            return cdataEnd + this.cdata_end_tag_length+1;
+        }
+        
+        // it's behind that cdata section - maybe there is another one
+        return this.endOfCDataSection(source, cdataEnd, position);
+    }
+    
+    /**
+     * Return string between a given tag. Null is returned if no tag can be found
+     * which is also happens with malformed formats.
      * @param tag tag to look for
      * @param index begin search at this index in source
      * @param source tag should be found in this string
@@ -756,17 +812,51 @@ public class XMLSerializer implements KnowledgeSerializer {
             return null;
         }
         
-        int startIndex = source.indexOf(this.startTag(tag), index);
+        /* <![CDATA[ An in-depth look at creating applications with XML, using <, >,]]>
+        *
+        */
         
-        if(startIndex == -1) {
-            return null;
-        }
+        int startIndex = 0; 
+        int cdataEnd;
+
+        do {
+            cdataEnd = -1;
+            startIndex = source.indexOf(this.startTag(tag), index);
+
+            if(startIndex == -1) {
+                return null;
+            }
+            
+            // inside cdata section?
+            cdataEnd = this.endOfCDataSection(source, index, startIndex);
+            
+            if(cdataEnd > -1) {
+                index = cdataEnd;
+            }
+
+            // do again until tag outside cdata section was found
+        } while(cdataEnd > -1);
         
-        int endIndex = source.indexOf(this.endTag(tag), startIndex);
+        int endIndex;
         
-        if(endIndex == -1) {
-            return null;
-        }
+        index = startIndex;
+        
+        do {
+            endIndex = source.indexOf(this.endTag(tag), index);
+            
+            if(endIndex == -1) {
+                return null;
+            }
+            
+            // inside cdata section?
+            cdataEnd = this.endOfCDataSection(source, index, endIndex);
+            
+            if(cdataEnd > -1) {
+                index = cdataEnd;
+            }
+
+            // do again until tag outside cdata section was found
+        } while(cdataEnd > -1);
         
         // cut start-Tag
         startIndex += this.startTag(tag).length();
