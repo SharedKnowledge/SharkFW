@@ -401,14 +401,14 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
 
     protected InMemoSharkKB(SemanticNet topics, PeerTaxonomy peers,
-                 SpatialSTSet locations, TimeSTSet times) {
+                 SpatialSTSet locations, TimeSTSet times) throws SharkKBException {
         
         super(topics, peers, locations, times);
     }
     
     InMemoSharkKB(SemanticNet topics, PeerTaxonomy peers,
                  SpatialSTSet locations, TimeSTSet times,
-                 Knowledge k) {
+                 Knowledge k) throws SharkKBException {
         
         super(topics, peers, locations, times, k);
     }

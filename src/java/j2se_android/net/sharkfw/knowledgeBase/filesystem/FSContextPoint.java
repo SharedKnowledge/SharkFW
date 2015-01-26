@@ -171,7 +171,8 @@ public class FSContextPoint extends InMemoContextPoint {
         // refresh coordinates from system
         String cooString = this.getSystemProperty(CP_COORDINATE);
         
-        InMemoSharkKB imkb = new InMemoSharkKB();
+        InMemoSharkKB imkb = null;
+        imkb = new InMemoSharkKB();
         
         XMLSerializer xs = new XMLSerializer();
         try {

@@ -185,7 +185,7 @@ public interface STSet {
      * @param listen The listener to be notified of changes.
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public void addListener(STSetListener listen) throws SharkKBException;
+    public void addListener(STSetListener listen);
 
     /**
      * Remove a listener.

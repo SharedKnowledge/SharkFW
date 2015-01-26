@@ -43,11 +43,17 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.peers = peers;
         this.locations = locations;
         this.times = times;
+        
+        topics.addListener(this);
+        peers.addListener(this);
+        locations.addListener(this);
+        times.addListener(this);
+        
     }
     
     protected AbstractSharkKB(SemanticNet topics, PeerTaxonomy peers,
                  SpatialSTSet locations, TimeSTSet times,
-                 Knowledge k) {
+                 Knowledge k) throws SharkKBException {
         
         this(topics, peers, locations, times);
         this.knowledge = k;
@@ -627,12 +633,28 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException {
         return this.getPeerSTSet().getSemanticTag(si);
     }
-    
+
+    /**
+     * That KB listens to its sets which make up the vocabulary. That methode
+     * is called whenever e.g. a tag in the topic dimension is created.
+     * That message triggers KB listener.
+     * 
+     * @param tag
+     * @param stset 
+     */
     @Override
     public void semanticTagCreated(SemanticTag tag, STSet stset) {
         this.notifySemanticTagCreated(tag);
     }
 
+    /**
+     * That KB listens to its sets which make up the vocabulary. That methode
+     * is called whenever e.g. a tag in the topic dimension is removed.
+     * That message triggers KB listener.
+     * 
+     * @param tag
+     * @param stset 
+     */
     @Override
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
         this.notifySemanticTagRemoved(tag);
@@ -689,6 +711,8 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     private void removeSemanticTag(STSet set, String[] sis) throws SharkKBException {
         SemanticTag tag = set.getSemanticTag(sis);
         if(tag != null) set.removeSemanticTag(tag);
+        
+        this.notifySemanticTagRemoved(tag);
     }
     
     /**

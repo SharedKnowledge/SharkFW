@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.kep.SimpleKEPStub;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -302,7 +304,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
     }
     
     private SharkKBMessageStorage kbStorage = null;
-    public MessageStorage getMessageStorage() {
+    public MessageStorage getMessageStorage() throws SharkKBException {
         if(this.kbStorage == null) {
             this.kbStorage = new SharkKBMessageStorage(new InMemoSharkKB());
         }
@@ -315,8 +317,14 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
             throws SharkProtocolNotSupportedException {
       
       MessageStub mailMessageStub = createMailStub(handler);
-      StreamStub mailStreamStub = new M2SStub(
-              this.getMessageStorage(), mailMessageStub, handler);
+      StreamStub mailStreamStub;
+        try {
+            mailStreamStub = new M2SStub(
+                    this.getMessageStorage(), mailMessageStub, handler);
+        } catch (SharkKBException ex) {
+            // TODO - that not actually a protocol not supported problem.
+            throw new SharkProtocolNotSupportedException(ex.getMessage());
+        }
       
       return mailStreamStub;
     }
