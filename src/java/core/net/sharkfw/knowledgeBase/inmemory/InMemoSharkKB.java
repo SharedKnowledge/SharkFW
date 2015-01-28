@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.system.Util;
 
 /**
@@ -89,9 +90,37 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return st;
     }
 
-    public static SpatialSemanticTag createInMemoCopy(SpatialSemanticTag sst) {
+    private static String[] cloneSIs(String[] sis) {
+      if(sis == null) {
+        return null;
+      }
+      
+      String[] newSIS = new String[sis.length];
+      
+      for(int i = 0; i < sis.length; i++) {
+        newSIS[i] = new String(sis[i]);
+      }
+      
+      return newSIS;
+    }
+    
+    public static SharkGeometry createInMemoCopy(SharkGeometry geom) throws SharkKBException {
+      if(geom == null) {
+        return null;
+      }
+      
+      return InMemoSharkGeometry.createGeomByEWKT(geom.getEWKT());
+    }
+
+    public static SpatialSemanticTag createInMemoCopy(SpatialSemanticTag sst) throws SharkKBException {
         if(sst == null) { return null; }
-        InMemoSpatialSemanticTag st = new InMemoSpatialSemanticTag(sst.getName(), sst.getSI());
+        // copy each part of original tag
+        String name = new String(sst.getName());
+        String[] sis = InMemoSharkKB.cloneSIs(sst.getSI());
+        SharkGeometry geom;
+        geom = InMemoSharkKB.createInMemoCopy(sst.getGeometry());
+        
+        InMemoSpatialSemanticTag st = new InMemoSpatialSemanticTag(name, sis, geom);
         Util.copyPropertiesFromPropertyHolderToPropertyHolder(sst, st);
         st.refreshStatus(); // important to refresh status right here - it extracts it geometry from properties
         return st;

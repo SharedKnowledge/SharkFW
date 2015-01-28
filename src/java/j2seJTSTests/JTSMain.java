@@ -2,7 +2,7 @@
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
-import net.sharkfw.knowledgeBase.geom.inmemory.InMemoGeometry;
+import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class JTSMain {
     @Test
     public void createSharkGeometryByGeographicalWKT_Point() throws SharkKBException {
         String testWKT = "POINT (52.45606650054853 13.523988202214241)";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -29,7 +29,7 @@ public class JTSMain {
     public void createSharkGeometryByGeographicalEWKT_Point() throws SharkKBException {
         String testWKT = "POINT (52.45606650054853 13.523988202214241)";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -37,7 +37,7 @@ public class JTSMain {
     @Test
     public void createSharkGeometryByGeographicalWKT_LINESTRING() throws SharkKBException {
         String testWKT = "LINESTRING (52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865)";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -45,7 +45,7 @@ public class JTSMain {
     public void createSharkGeometryByGeographicalEWKT_LINESTRING() throws SharkKBException {
         String testWKT = "LINESTRING (52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865)";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -54,7 +54,7 @@ public class JTSMain {
     public void createSharkGeometryByGeographicalEWKT_LINESTRING_SRS_atEnd() throws SharkKBException {
         String testWKT = "LINESTRING (52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865)";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT(testWKT + "; SRID=" + testSRS);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT(testWKT + "; SRID=" + testSRS);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -63,7 +63,7 @@ public class JTSMain {
     public void createSharkGeometryByGeographicalWKT_POLYGON() throws SharkKBException {
         String testWKT = "POLYGON((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -72,7 +72,7 @@ public class JTSMain {
         String testWKT = "POLYGON((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241))";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -83,7 +83,7 @@ public class JTSMain {
                 + "52.45441290345384 13.526121228933334, 52.45586433148305 13.523031324148178, 52.45860862010212 13.526121228933334),"
                 + "(52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -94,7 +94,7 @@ public class JTSMain {
                 + "(52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241))";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -103,7 +103,7 @@ public class JTSMain {
     public void createSharkGeometryByGeographicalWKT_MULTIPOINT() throws SharkKBException {
         String testWKT = "MULTIPOINT ((52.45606650054853 13.523988202214241), (52.45549525426796 13.525406420230865),"
                 + "(52.45515160397337 13.525016158819199), (52.45582827785886 13.523717299103737), (52.45606650054853 13.523988202214241))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -112,7 +112,7 @@ public class JTSMain {
         String testWKT = "MULTIPOINT ((52.45606650054853 13.523988202214241), (52.45549525426796 13.525406420230865),"
                 + "(52.45515160397337 13.525016158819199), (52.45582827785886 13.523717299103737), (52.45606650054853 13.523988202214241))";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -121,7 +121,7 @@ public class JTSMain {
     public void createSharkGeometryByGeographicalWKT_MULTILINESTRING() throws SharkKBException {
         String testWKT = "MULTILINESTRING ((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865),"
                 + "(52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -130,7 +130,7 @@ public class JTSMain {
         String testWKT = "MULTILINESTRING ((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865),"
                 + "(52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241))";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -142,7 +142,7 @@ public class JTSMain {
                 + "52.49203649908915 13.526872247457504, 52.49220634335951 13.522559255361557, 52.49363039643433 13.522881120443344)),"
                 + "((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241)))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -154,7 +154,7 @@ public class JTSMain {
                 + "((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241)))";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -166,7 +166,7 @@ public class JTSMain {
                 + "52.49203649908915 13.526872247457504, 52.49220634335951 13.522559255361557, 52.49363039643433 13.522881120443344)),"
                 + "((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241)))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
     }
 
@@ -178,7 +178,7 @@ public class JTSMain {
                 + "((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241)))";
         int testSRS = 4326;
-        SharkGeometry geom1 = InMemoGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByEWKT("SRID=" + testSRS + "; " + testWKT);
         Assert.assertEquals(testWKT, geom1.getWKT());
         Assert.assertEquals(testSRS, geom1.getSRS());
     }
@@ -186,7 +186,7 @@ public class JTSMain {
     @Test
     public void checkSpatialAlgebraIdenticalSemanticTags_POINTS() throws SharkKBException {
         String testWKT = "POINT (52.45606650054853 13.523988202214241)";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom1);
         // TODO geom1.is
         Assert.assertEquals(true, tag1.identical(tag1));
@@ -199,7 +199,7 @@ public class JTSMain {
                 + "52.49203649908915 13.526872247457504, 52.49220634335951 13.522559255361557, 52.49363039643433 13.522881120443344)),"
                 + "((52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865,"
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241)))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom1);
         // TODO geom1.is
         Assert.assertEquals(true, tag1.identical(tag1));
@@ -208,7 +208,7 @@ public class JTSMain {
     @Test
     public void checkSpatialAlgebraIdenticalSemanticTags_GEOMETRYCOLLECTION() throws SharkKBException {
         String testWKT = "GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT);
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom1);
         // TODO geom1.is
         Assert.assertEquals(true, tag1.identical(tag1));
@@ -218,8 +218,8 @@ public class JTSMain {
     public void checkSpatialAlgebraIdenticalSemanticTags_GEOMETRYCOLLECTION_TAG_False() throws SharkKBException {
         String testWKT1 = "GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))";
         String testWKT2 = "POINT (52.45606650054853 13.523988202214241)";
-        SharkGeometry geom1 = InMemoGeometry.createGeomByWKT(testWKT1);
-        SharkGeometry geom2 = InMemoGeometry.createGeomByWKT(testWKT2);
+        SharkGeometry geom1 = InMemoSharkGeometry.createGeomByWKT(testWKT1);
+        SharkGeometry geom2 = InMemoSharkGeometry.createGeomByWKT(testWKT2);
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom1);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(geom2);
         // TODO geom1.is

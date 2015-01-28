@@ -45,6 +45,14 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
         super(name, sis);
     }
     
+    /**
+     * 
+     * @param name
+     * @param si
+     * @param point
+     * @param radius
+     * @deprecated sowas von alt - bitte raus damit - asap!!
+     */
     public InMemoSpatialSemanticTag(String name, String[] si, Double[] point, double radius) {
         this(name, si);
         
@@ -79,6 +87,14 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
 //        this.setSystem("WGS84", 6378.137);
 //        this.setRadius(radius);
     }
+    /**
+     * 
+     * @param name
+     * @param si
+     * @param points
+     * @throws SharkKBException 
+     * @deprecated remove that
+     */
 
     public InMemoSpatialSemanticTag(String name, String[] si, Double[][] points) throws SharkKBException {
         this(name, si);
@@ -109,6 +125,15 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
 //        this.setSystem("WGS84", 6378.137);
 //        this.setRadius(0);
     }
+    
+    /**
+     * 
+     * @param name
+     * @param si
+     * @param points
+     * @throws SharkKBException 
+     * @deprecated remove that stuff asap
+     */
 
     @SuppressWarnings("rawtypes")
     public InMemoSpatialSemanticTag(String name, String[] si, Vector/*<Double[]>*/ points) throws SharkKBException {
