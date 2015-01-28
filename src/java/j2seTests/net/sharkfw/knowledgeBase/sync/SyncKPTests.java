@@ -32,7 +32,7 @@ import org.junit.Test;
 
 public class SyncKPTests {
 
-    private final long connectionTimeOut = Integer.MAX_VALUE;
+    private final long connectionTimeOut = 5000;
     private SyncKB _aliceKB, _bobKB;
     private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;
@@ -53,7 +53,7 @@ public class SyncKPTests {
     
     @BeforeClass
     public static void setUpClass(){
-            L.setLogLevel(L.LOGLEVEL_ALL);
+            L.setLogLevel(L.LOGLEVEL_ERROR);
     }
 
     @Before
@@ -136,13 +136,11 @@ public class SyncKPTests {
         _bobEngine.startTCP(_bobPort);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-//        _bobEngine.publishAllKP(_alice);
-//        _aliceEngine.publishAllKP(_bob);
         new Thread(new Publish(_bobEngine, _alice)).start();
         new Thread(new Publish(_aliceEngine, _bob)).start();
 
         // wait until communication happened
-        Thread.sleep(Integer.MAX_VALUE);
+        Thread.sleep(5000);
 
         // Bob should now know about alice's CP and the other way round
         ContextPoint retrievedCPAlice = _aliceKB.getContextPoint(noodlesBobCC);
@@ -189,14 +187,15 @@ public class SyncKPTests {
         assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());
         
         // Start engines (and KPs)
+        _aliceEngine.startTCP(_alicePort);
+        _bobEngine.startTCP(_bobPort);
         _aliceEngine.setConnectionTimeOut(connectionTimeOut);
         _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.publishAllKP(_alice);
-
+        new Thread(new Publish(_bobEngine, _alice)).start();
+        new Thread(new Publish(_aliceEngine, _bob)).start();
+        
         // wait until communication happened
-        Thread.sleep(600);
+        Thread.sleep(5000);
 
         // Bob should now have an information attached to his teapot CP!
         assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());

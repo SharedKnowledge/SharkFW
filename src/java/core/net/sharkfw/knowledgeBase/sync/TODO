@@ -44,3 +44,5 @@ addInformation(Information source) setzt nur Referenz, keine copy
 
 peerRemoved/peerAdded triggert nicht
 
+
+SyncKP bug tests
