@@ -20,7 +20,7 @@ public class SpatialAlgebra {
      * @param ewkt
      * @return
      */
-    public boolean isValidEWKT(String ewkt) {
+    public static boolean isValidEWKT(String ewkt) {
 
         //see InMemoGeometry createGeomByEWKT();
         return true;
@@ -32,7 +32,7 @@ public class SpatialAlgebra {
      * @param wkt
      * @return
      */
-    public boolean isValidWKT(String wkt) {
+    public static boolean isValidWKT(String wkt) {
         //see InMemoGeometry checkWKTwithJTS();
         return true;
     }

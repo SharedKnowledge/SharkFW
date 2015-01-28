@@ -8,7 +8,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkURI;
 import net.sharkfw.knowledgeBase.SpatialSNSemanticTag;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
-import net.sharkfw.knowledgeBase.geom.inmemory.InMemoGeometry;
+import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.system.L;
 
 /**
@@ -32,7 +32,7 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
     
     public InMemoSpatialSemanticTag(SharkGeometry geom) {
         this(STD_SST_NAME, 
-                new String[] { InMemoGeometry.createSpatialSI(geom) }, 
+                new String[] { InMemoSharkGeometry.createSpatialSI(geom) }, 
                 geom);
     }
     
@@ -165,7 +165,7 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
         
         if(wkt != null) {
             try {
-                this.geom = InMemoGeometry.createGeomByWKT(wkt);
+                this.geom = InMemoSharkGeometry.createGeomByWKT(wkt);
             } catch (SharkKBException ex) {
                 L.d("couldn't refresh geometry: " + ex.getMessage());
             }
