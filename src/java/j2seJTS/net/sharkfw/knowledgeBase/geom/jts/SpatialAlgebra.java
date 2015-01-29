@@ -48,7 +48,7 @@ public class SpatialAlgebra {
      * @return
      */
     public boolean isValidEWKT(String ewkt) {
-        
+
         return true;
     }
 
@@ -181,6 +181,9 @@ public class SpatialAlgebra {
      * @throws SharkKBException
      */
     private static boolean isListDifferent(List<Geometry> a, List<Geometry> b) throws SharkKBException {
+        if (a.isEmpty() || b.isEmpty()) {
+            return false;
+        }
         boolean isdifferent = false;
         for (int i = 0; i < a.size(); i++) {
             Geometry geomA = a.get(i);
@@ -266,7 +269,7 @@ public class SpatialAlgebra {
     private static List<Geometry> divideExistingGeometryCollectionsInList(List<Geometry> geometries) throws SharkKBException {
         List<Geometry> geomsWithoutGeometryCollection = new ArrayList();
         for (Geometry geom : geometries) {
-            if (geom instanceof GeometryCollection) {
+            if (geom.getClass().getName().compareTo("GeometryCollection") == 0) {
                 List<Geometry> dividedGeometries = divideGeometryCollection((GeometryCollection) geom);
                 geomsWithoutGeometryCollection.addAll(dividedGeometries);
             } else {
