@@ -46,3 +46,6 @@ peerRemoved/peerAdded triggert nicht
 
 
 SyncKP bug tests
+
+Fragmentation wirft Exception, wenn der Anchor null ist
+Race Condition(broken fucking pipe)

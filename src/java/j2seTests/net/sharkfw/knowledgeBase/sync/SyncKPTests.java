@@ -32,7 +32,8 @@ import org.junit.Test;
 
 public class SyncKPTests {
 
-    private final long connectionTimeOut = 5000;
+    private final long connectionTimeOut = 2000;
+    private final long SLEEP_TIMEOUT = 10000;
     private SyncKB _aliceKB, _bobKB;
     private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;
@@ -86,10 +87,11 @@ public class SyncKPTests {
         _bobEngine.stopTCP();
         _aliceKB = null;
         _bobKB = null;
+        Thread.sleep(2000);
     }
 
     @Test
-    public void syncKP_meetsNonSyncKP_noCommunication() throws InterruptedException, SharkSecurityException, IOException, SharkKBException, SharkProtocolNotSupportedException {
+    public void syncKP_meetsNonSyncKP_noCommunication() throws Exception {
         // TODO there is no communication at all which is not what the test is about
         
         // Bob will have a standard KP for this and is interested in anything.
@@ -107,14 +109,7 @@ public class SyncKPTests {
         ContextPoint noodlesBobCP = _bobKB.createContextPoint(noodlesBobCC);
         noodlesBobCP.addInformation("I like noodles");
         
-        // Start engines (and KPs)
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.publishAllKP(_bob);
-        _bobEngine.publishAllKP();
-
-        // wait until communication happened
-        Thread.sleep(600);
+        doCommunicationStuff();
 
         // Neither KB should now know anything about the other contextPoint
         assertNull(_aliceKB.getContextPoint(noodlesBobCC));
@@ -131,16 +126,7 @@ public class SyncKPTests {
         ContextPoint noodlesBobCP = _bobKB.createContextPoint(noodlesBobCC);
         noodlesBobCP.addInformation("I like noodles.");
         
-        // Start engines (and KPs)
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        new Thread(new Publish(_bobEngine, _alice)).start();
-        new Thread(new Publish(_aliceEngine, _bob)).start();
-
-        // wait until communication happened
-        Thread.sleep(5000);
+        doCommunicationStuff();
 
         // Bob should now know about alice's CP and the other way round
         ContextPoint retrievedCPAlice = _aliceKB.getContextPoint(noodlesBobCC);
@@ -175,6 +161,22 @@ public class SyncKPTests {
         }
     }
 
+    private void doCommunicationStuff() throws Exception {
+        _aliceEngine.startTCP(_alicePort);
+        _bobEngine.startTCP(_bobPort);
+        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        _bobEngine.setConnectionTimeOut(connectionTimeOut);
+        Thread aliceThread = new Thread(new Publish(_bobEngine, _alice));
+        aliceThread.start();
+        Thread bobThread = new Thread(new Publish(_aliceEngine, _bob));
+        bobThread.start();
+        
+        Thread.sleep(SLEEP_TIMEOUT);
+        
+        aliceThread.interrupt();
+        bobThread.interrupt();
+    }
+    
     @Test
     public void syncKP_CPIsWithLowerVersionInKB_CPInformationAssimilated() throws Exception {
         // Create some information in both knowledge bases with the SAME coordinates
@@ -186,16 +188,7 @@ public class SyncKPTests {
         _aliceKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
         assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());
         
-        // Start engines (and KPs)
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        new Thread(new Publish(_bobEngine, _alice)).start();
-        new Thread(new Publish(_aliceEngine, _bob)).start();
-        
-        // wait until communication happened
-        Thread.sleep(5000);
+        doCommunicationStuff();
 
         // Bob should now have an information attached to his teapot CP!
         assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -219,15 +212,7 @@ public class SyncKPTests {
         _bobKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
         _bobKB.getContextPoint(teapotCC).addInformation("And I also know more about them than Alice.");
         
-        // Start engines (and KPs)
-        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.publishAllKP(_alice);
-
-        // wait until communication happened
-        Thread.sleep(600);
+        doCommunicationStuff();
 
         // Bob should NOT get the information from alice so the count stays at 2
         assertEquals(2, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -300,19 +285,21 @@ public class SyncKPTests {
         ContextPoint bobCP2 = bobKB.createContextPoint(bobCC2);
         bobCP2.addInformation("Sauces make noodles even better.");
         
-        // Alright lets get started.
-        aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        bobEngine.setConnectionTimeOut(connectionTimeOut);
-        
-        // First alice listens and bob publishes
         aliceEngine.startTCP(_alicePort);
         bobEngine.startTCP(_bobPort);
-        aliceEngine.publishAllKP(_bob);
-        bobEngine.publishAllKP(_alice);
+        aliceEngine.setConnectionTimeOut(connectionTimeOut);
+        bobEngine.setConnectionTimeOut(connectionTimeOut);
+        Thread aliceThread = new Thread(new Publish(bobEngine, _alice));
+        aliceThread.start();
+        Thread bobThread = new Thread(new Publish(aliceEngine, _bob));
+        bobThread.start();
         
-        Thread.sleep(600);
+        Thread.sleep(SLEEP_TIMEOUT);
         
-        // Make sure really all information is transferred
+        aliceThread.interrupt();
+        bobThread.interrupt();     
+        
+            // Make sure really all information is transferred
         assertNotNull(bobKB.getContextPoint(aliceCC));
         assertEquals(1, bobKB.getContextPoint(aliceCC).getNumberInformation());
         
@@ -357,22 +344,10 @@ public class SyncKPTests {
         ContextCoordinates teapotCC = InMemoSharkKB.createInMemoContextCoordinates(_teapotST, _alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
         ContextPoint teapotCP = _aliceKB.createContextPoint(teapotCC);
         
-        // Remove it from the sync bucket list
-//        _aliceSyncKP.getSyncBucketList().popCoordinatesFromBucket(_bob);
-        // compliert nicht bei mir - thsc
-        
         // Now change it's information
         teapotCP.addInformation("I like teapots.");
         
-        // Start engines (and KPs)
-        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.publishAllKP(_alice);
-        
-        // Let them talk
-        Thread.sleep(600);
+        doCommunicationStuff();
         
         // Now Bob should have alice's cp
         assertEquals(teapotCP, _bobKB.getContextPoint(teapotCC));
@@ -396,15 +371,7 @@ public class SyncKPTests {
         // Push the button!
         _aliceSyncKP.syncAllKnowledge();
         
-        // Start engines (and KPs)
-        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.publishAllKP(_alice);
-        
-        // Let them talk
-        Thread.sleep(600);
+        doCommunicationStuff();
         
         assertNotNull(_bobKB.getContextPoint(teapotCC));
         assertNotNull(_bobKB.getContextPoint(noodlesCC));
@@ -439,18 +406,7 @@ public class SyncKPTests {
         // Push the button!
         _aliceSyncKP.syncAllKnowledge(_bob);
         
-        // Start engines (and KPs)
-        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        claraEngine.setConnectionTimeOut(connectionTimeOut);
-        claraEngine.startTCP(claraPort);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.startTCP(_alicePort);
-        claraEngine.publishAllKP(_alice);
-        _bobEngine.publishAllKP(_alice);
-        
-        // Let them talk
-        Thread.sleep(600);
+        doCommunicationStuff();
         
         // Only bob should know about the CCs now, not clara! We don't like clara.
         assertNotNull(_bobKB.getContextPoint(teapotCC));
@@ -478,14 +434,7 @@ public class SyncKPTests {
 //        ContextPoint teapotAliceCP = _aliceKB.createContextPoint(teapotAliceCC);
 //        teapotAliceCP.addInformation("Teapots yay");
 //        
-//        // Start engines (and KPs)
-//        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-//        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-//        claraEngine.setConnectionTimeOut(connectionTimeOut);
-//        claraEngine.startTCP(claraPort);
-//        _bobEngine.startTCP(_bobPort);
-//        _aliceEngine.startTCP(_alicePort);
-//        claraEngine.publishAllKP(_bob);
+//        doCommunicationStuff();
 //        _bobEngine.publishAllKP(_alice);
 //        
 //        Thread.sleep(600);
@@ -517,14 +466,7 @@ public class SyncKPTests {
 ////        _bobSyncKP.getSyncBucketList().appendPeer(clara);
 //                // compliert nicht bei mir - thsc
 //
-//        // Start engines (and KPs)
-//        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-//        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-//        claraEngine.setConnectionTimeOut(connectionTimeOut);
-//        claraEngine.startTCP(claraPort);
-//        _bobEngine.startTCP(_bobPort);
-//        _aliceEngine.startTCP(_alicePort);       
-//        _bobEngine.publishAllKP(_alice);
+//        doCommunicationStuff();
 //        claraEngine.publishAllKP(_bob);
 //        
 //        Thread.sleep(600);
@@ -545,15 +487,7 @@ public class SyncKPTests {
         Information aliceInfo = _aliceKB.getContextPoint(teapotCC).addInformation("Teapots freakin rock!");
         assertEquals(2, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());    
         
-        // Start engines (and KPs)
-        _aliceEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.setConnectionTimeOut(connectionTimeOut);
-        _bobEngine.startTCP(_bobPort);
-        _aliceEngine.startTCP(_alicePort);
-        _bobEngine.publishAllKP(_alice);
-
-        // wait until communication happened
-        Thread.sleep(600);
+        doCommunicationStuff();
 
         // Bob should now have an information attached to his teapot CP!
         assertEquals(1, _bobKB.getContextPoint(teapotCC).getNumberInformation());
@@ -566,11 +500,7 @@ public class SyncKPTests {
         _aliceKB.getContextPoint(teapotCC).removeInformation(aliceInfo);
         assertEquals(3, ((SyncContextPoint)_aliceKB.getContextPoint(teapotCC)).getVersion());    
         
-        // publish again
-        _bobEngine.publishAllKP(_alice);
-
-        // wait until communication happened
-        Thread.sleep(600);
+        doCommunicationStuff();
 
         // Bob should now have no information attached to his teapot CP!
         assertEquals(0, _bobKB.getContextPoint(teapotCC).getNumberInformation());

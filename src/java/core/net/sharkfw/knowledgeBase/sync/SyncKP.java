@@ -194,22 +194,22 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 // Is that an offer? Than analyze which CPs I need and send a modified CC list back
                 // ------------------ OFFER ------------------
                 else if (state.equals(SYNCHRONIZATION_OFFER)) {
-                    List<SyncContextPoint> ccs = ContextCoordinatesSerializer.deserializeContextCoordinatesList(
+                    List<SyncContextPoint> remoteCCs = ContextCoordinatesSerializer.deserializeContextCoordinatesList(
                                         synchronizationTag.getProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY));
                     
-                    Iterator<SyncContextPoint> i = ccs.iterator();
+                    Iterator<SyncContextPoint> remoteCCIterator = remoteCCs.iterator();
                     
-                    while(i.hasNext()){
-                        SyncContextPoint cc = i.next();
-                        ContextPoint cp = _kb.getContextPoint(cc.getContextCoordinates());
+                    while(remoteCCIterator.hasNext()){
+                        SyncContextPoint remoteCP = remoteCCIterator.next();
+                        ContextPoint localCP = _kb.getContextPoint(remoteCP.getContextCoordinates());
                         // TODO: ADD AGAIN
-                        if(cp != null && 
-                            Integer.parseInt(cp.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) >= 
-                                Integer.parseInt(cc.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME))){
-                            i.remove();
+                        if(localCP != null && 
+                            Integer.parseInt(localCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME)) >= 
+                                Integer.parseInt(remoteCP.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME))){
+                            remoteCCIterator.remove();
                         }
                     }
-                    this.setStepRequest(ccs);     
+                    this.setStepRequest(remoteCCs);     
                     L.e(_kb.getOwner().getName() + " sent request expose.");
 //                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
                     kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
@@ -229,12 +229,14 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                         ContextPoint cp = _kb.getContextPoint(element.getContextCoordinates());
                         // Send topic and peer tags that belong to this context point 
                         // according to the set fragmentation parameters
-                        STSet topics = _kb.getTopicSTSet().fragment(cp.getContextCoordinates().getTopic(), _topicsFP);
-                        STSet peers = _kb.getPeerSTSet().fragment(cp.getContextCoordinates().getPeer(), _peersFP);
-
-                        // Merge it all into the knowledge that will be send
-                        k.getVocabulary().getTopicSTSet().merge(topics);
-                        k.getVocabulary().getPeerSTSet().merge(peers);
+                        if(cp.getContextCoordinates().getTopic() != null){
+                            STSet topics = _kb.getTopicSTSet().fragment(cp.getContextCoordinates().getTopic(), _topicsFP);
+                            k.getVocabulary().getTopicSTSet().merge(topics);
+                        }
+                        if(cp.getContextCoordinates().getPeer() != null){
+                            STSet peers = _kb.getPeerSTSet().fragment(cp.getContextCoordinates().getPeer(), _peersFP);
+                            k.getVocabulary().getPeerSTSet().merge(peers);
+                        }
                         k.addContextPoint(cp);
                     }
                     
@@ -352,8 +354,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             if(compare.after(d)){
                 SyncContextPoint t = new SyncContextPoint(InMemoSharkKB.createInMemoContextPoint(element.getContextCoordinates()));
                 // TODO: ADD AGAIN
-                //t.setProperty(SyncContextPoint.VERSION_PROPERTY_NAME, 
-                //                element.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
+                t.setProperty(SyncContextPoint.VERSION_PROPERTY_NAME, 
+                                element.getProperty(SyncContextPoint.VERSION_PROPERTY_NAME));
                 toSync.add(t);
             }
         }
