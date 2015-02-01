@@ -6,11 +6,11 @@ import java.util.Enumeration;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryCollectionIterator;
-import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
-import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
@@ -24,10 +24,10 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 public class SpatialAlgebra {
 
     /**
-     * Checks with JTS-Library if Well-known text is valid.
+     * Checks with Java Topology Suite (JTS) if Well-known text is valid.
      *
      * @param wkt
-     * @return
+     * @return true if valid
      * @throws SharkKBException
      */
     public static boolean isValidWKT(String wkt) throws SharkKBException {
@@ -43,12 +43,12 @@ public class SpatialAlgebra {
     }
 
     /**
+     * EWKT is not supported by Java Topology Suite (JTS)
      *
      * @param ewkt
-     * @return
+     * @return true
      */
-    public boolean isValidEWKT(String ewkt) {
-
+    public static boolean isValidEWKT(String ewkt) {
         return true;
     }
 
@@ -269,7 +269,7 @@ public class SpatialAlgebra {
     private static List<Geometry> divideExistingGeometryCollectionsInList(List<Geometry> geometries) throws SharkKBException {
         List<Geometry> geomsWithoutGeometryCollection = new ArrayList();
         for (Geometry geom : geometries) {
-            if (geom.getClass().getName().compareTo("GeometryCollection") == 0) {
+            if (geom.getClass().getName().compareTo("com.vividsolutions.jts.geom.GeometryCollection") == 0) {
                 List<Geometry> dividedGeometries = divideGeometryCollection((GeometryCollection) geom);
                 geomsWithoutGeometryCollection.addAll(dividedGeometries);
             } else {

@@ -3,7 +3,7 @@ package net.sharkfw.knowledgeBase.geom.inmemory;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
-//import static net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra.isValidWKT;
+//import net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra; //use this for JTS!
 
 /**
  * *
@@ -16,7 +16,6 @@ import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
  * default value = 4326 == WGS84; SRS bis 8 stellen
  * http://spatialreference.org/ref/epsg/?page=88
  *
- * import static net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra.isValidWKT;
  */
 public class InMemoSharkGeometry implements SharkGeometry {
 
@@ -65,7 +64,6 @@ public class InMemoSharkGeometry implements SharkGeometry {
             if (!SpatialAlgebra.isValidWKT(wkt)) {
                 throw new SharkKBException("WKT not valid!");
             }
-
         } catch (Exception e) {
             throw new SharkKBException("SRID parsing problem, check syntax restriction ");
         }
@@ -102,7 +100,7 @@ public class InMemoSharkGeometry implements SharkGeometry {
 
     /**
      *
-     * @return
+     * @return SRS
      */
     @Override
     public int getSRS() {

@@ -15,25 +15,24 @@ import net.sharkfw.system.L;
 public class SpatialAlgebra {
 
     /**
-     * Extended Well-Known Text (EWKT)
-     *
-     * @param ewkt
-     * @return
-     */
-    public static boolean isValidEWKT(String ewkt) {
-
-        //see InMemoGeometry createGeomByEWKT();
-        return true;
-    }
-
-    /**
      * Well-known text (WKT)
      *
      * @param wkt
      * @return
      */
     public static boolean isValidWKT(String wkt) {
-        //see InMemoGeometry checkWKTwithJTS();
+        //see InMemoSharkGeometry createGeomByWKT();
+        return true;
+    }
+
+    /**
+     * Extended Well-Known Text (EWKT)
+     *
+     * @param ewkt
+     * @return
+     */
+    public static boolean isValidEWKT(String ewkt) {
+        //see InMemoSharkGeometry createGeomByEWKT();
         return true;
     }
 
