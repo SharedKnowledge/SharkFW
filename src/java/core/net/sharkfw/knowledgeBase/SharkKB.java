@@ -46,10 +46,11 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
  * 
  * @author mfi, thsc
  */
-public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetListener {
+public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetListener, InterestStorage {
     
     public void setOwner(PeerSemanticTag owner);
     
+    @Override
     public PeerSemanticTag getOwner();
   /**
    * Return the ContextPoint at the given coordinates. Exact match.
