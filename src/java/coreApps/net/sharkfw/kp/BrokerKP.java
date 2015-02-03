@@ -10,12 +10,12 @@ import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
 /**
- * A Hub - This KP simple collects all inserts and exposes it gets hold of,
+ * A Broker - This KP simple collects all inserts and exposes it gets hold of,
  * and contextualizes them to all already known ones.
  * 
  * @author mfi
  */
-public class HubKP extends KnowledgePort {
+public class BrokerKP extends KnowledgePort {
 
     private InterestStore inInterests;
     private InterestStore outInterests;
@@ -30,11 +30,11 @@ public class HubKP extends KnowledgePort {
      * @param se
      * @param validSeconds interests are kept defined amount of seconds
      */
-    public HubKP(SharkEngine se, int validSeconds) {
+    public BrokerKP(SharkEngine se, int validSeconds) {
         this(se, null, validSeconds);
     }
     
-    public HubKP(SharkEngine se, PropertyHolder ph, int validSeconds) {
+    public BrokerKP(SharkEngine se, PropertyHolder ph, int validSeconds) {
         super(se); 
         
         this.inInterests = new InterestStore(validSeconds*1000);
