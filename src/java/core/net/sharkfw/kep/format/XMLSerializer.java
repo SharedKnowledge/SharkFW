@@ -871,13 +871,13 @@ public class XMLSerializer implements KnowledgeSerializer {
     }
 
     @Override
-    public SharkCS deserializeSharkCS(String source) throws SharkKBException {
-        if(source == null) {
+    public SharkCS deserializeSharkCS(String contextSpaceString) throws SharkKBException {
+        if(contextSpaceString == null) {
             return null;
         }
         
         // find serialized cs first
-        String csString = this.stringBetween(SHARKCS_TAG, source, 0);
+        String csString = this.stringBetween(SHARKCS_TAG, contextSpaceString, 0);
         if(csString == null) {
             return null;
         }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.StringTokenizer;
+import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.EnumerationChain;
@@ -22,7 +24,8 @@ import net.sharkfw.system.Util;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractSharkKB extends PropertyHolderDelegate 
-                                implements SharkKB, KnowledgeListener
+                                implements SharkKB, KnowledgeListener, 
+                                            InterestStorage
 {
     public static String SHARKFW_SENDER_PROPERTY = "sharkfw_sender";
     public static String SHARKFW_TIME_RECEIVED_PROPERTY = "sharkfw_timeReceived";
@@ -1007,5 +1010,118 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         
         // save data again
         this.persist();
+    }
+    
+    
+    /******************************************************************
+     *                  Interest storage interface                    * 
+     ******************************************************************/
+    
+    public static final String INTEREST_PROPERTY_NAME = "SharkKB_InterestsString";
+    private ArrayList<SharkCS> interestsList = null;
+    private static final String INTEREST_DELIMITER = "||";
+            
+    private void saveInterestsToProperties() throws SharkKBException {
+        this.restoreInterestsFromProperties();
+        
+        XMLSerializer s = new XMLSerializer();
+        
+        Iterator<SharkCS> interestIter = this.interests();
+        if(interestIter == null) return;
+        
+        StringBuilder interestString = new StringBuilder();
+        
+        while(interestIter.hasNext()) {
+            SharkCS interest = interestIter.next();
+            String serializedInterest = s.serializeSharkCS(interest);
+            
+            interestString.append(serializedInterest);
+            interestString.append(INTEREST_DELIMITER);
+        }
+        
+        this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString());
+    }
+    
+    private void restoreInterestsFromProperties() throws SharkKBException {
+        if(this.interestsList == null) {
+            this.interestsList = new ArrayList();
+            
+            String interestsString = this.getProperty(INTEREST_PROPERTY_NAME);
+            if(interestsString == null) {
+                return;
+            }
+            
+            StringTokenizer st = new StringTokenizer(interestsString, INTEREST_DELIMITER);
+            
+            XMLSerializer s = new XMLSerializer();
+            
+            while(st.hasMoreTokens()) {
+                String interestString = st.nextToken();
+                SharkCS interest = s.deserializeSharkCS(interestString);
+                this.interestsList.add(interest);
+            }
+        }
+    }
+    
+    /**
+     * 
+     * @param interests
+     * @return -1 of no such interest in in the list
+     */
+    private int findInterestIndex(SharkCS interest) throws SharkKBException {
+        for(int index = 0; index < this.interestsList.size(); index++) {
+            SharkCS next = this.interestsList.get(index);
+            if(SharkCSAlgebra.identical(next, interest)) {
+                return index;
+            }
+        }
+        
+        // no matching interest found
+        return -1;
+    }
+    
+    /**
+     * Saves this interest into a list of interests
+     * @param interest 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     */
+    @Override
+    public void addInterest(SharkCS interest) throws SharkKBException {
+        this.restoreInterestsFromProperties();
+        // if not already in there - add
+        if(this.findInterestIndex(interest) == -1) {
+            this.interestsList.add(interest);
+            this.saveInterestsToProperties();
+        }
+    }
+    
+    /**
+     * Removes this interest from the storage
+     * @param interest 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     */
+    @Override
+    public void removeInterest(SharkCS interest) throws SharkKBException {
+        this.restoreInterestsFromProperties();
+        
+        int index = this.findInterestIndex(interest);
+        
+        if(index != -1) {
+            this.interestsList.remove(index);
+            this.saveInterestsToProperties();
+        }
+    }
+    
+    /**
+     * Return iteration of interests stored in the 
+     * interest storage
+     * 
+     * @return 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     */
+    @Override
+    public Iterator<SharkCS> interests() throws SharkKBException {
+        this.restoreInterestsFromProperties();
+        return this.interestsList.iterator();
     }
 }
