@@ -376,5 +376,19 @@ public class SyncKB implements SharkKB {
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
         _localKB.semanticTagRemoved(tag, stset);
     }
-       
+
+    @Override
+    public void addInterest(SharkCS interest) throws SharkKBException {
+        _localKB.addInterest(interest);
+    }
+
+    @Override
+    public void removeInterest(SharkCS interest) throws SharkKBException {
+        _localKB.removeInterest(interest);
+    }
+
+    @Override
+    public Iterator<SharkCS> interests() throws SharkKBException {
+        return _localKB.interests();
+    }
 }
