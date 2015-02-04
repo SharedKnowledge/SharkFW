@@ -21,7 +21,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
  *
  *
  */
-public class SpatialAlgebra {
+public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebra {
 
     /**
      * Checks with Java Topology Suite (JTS) if Well-known text is valid.
@@ -30,7 +30,8 @@ public class SpatialAlgebra {
      * @return true if valid
      * @throws SharkKBException
      */
-    public static boolean isValidWKT(String wkt) throws SharkKBException {
+    @Override
+    public boolean isValidWKT(String wkt) throws SharkKBException {
         Geometry jtsGeometry = null;
         WKTReader reader = new WKTReader();
         try {
@@ -47,8 +48,9 @@ public class SpatialAlgebra {
      *
      * @param ewkt
      * @return true
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean isValidEWKT(String ewkt) {
+    public boolean isValidEWKT(String ewkt) throws SharkKBException {
         return true;
     }
 
@@ -60,7 +62,8 @@ public class SpatialAlgebra {
      * @return true if both SpatialSemanticTags identical
      * @throws SharkKBException
      */
-    public static boolean identical(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
+    @Override
+    public boolean identical(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
         SpatialSTSet tempA = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSTSet tempB = InMemoSharkKB.createInMemoSpatialSTSet();
         tempA.merge(a);

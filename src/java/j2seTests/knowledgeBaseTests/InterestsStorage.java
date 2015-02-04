@@ -2,13 +2,13 @@ package knowledgeBaseTests;
 
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
-import net.sharkfw.knowledgeBase.InterestStorage;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,6 +43,7 @@ public class InterestsStorage {
 
      @Test
      public void storeAndRestore() throws SharkKBException {
+         L.setLogLevel(L.LOGLEVEL_ALL);
          STSet topics = InMemoSharkKB.createInMemoSTSet();
          topics.createSemanticTag("test", "http://test.de");
 

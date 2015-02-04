@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
-import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
 
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -20,7 +19,7 @@ import net.sharkfw.system.Util;
  * @author thsc
  */
 public abstract class SharkCSAlgebra {
-    private static SpatialAlgebra spatialAlgebra;
+    private static net.sharkfw.knowledgeBase.geom.SpatialAlgebra spatialAlgebra;
     private static final String JTS_SPATIAL_ALGEBRA_CLASS = 
             "net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra";
     
@@ -30,7 +29,9 @@ public abstract class SharkCSAlgebra {
             Class spatialAlgebraClass = Class.forName(JTS_SPATIAL_ALGEBRA_CLASS);
             Object newInstance = spatialAlgebraClass.newInstance();
             
-            SharkCSAlgebra.spatialAlgebra = (SpatialAlgebra) newInstance;
+            SharkCSAlgebra.spatialAlgebra = (net.sharkfw.knowledgeBase.geom.SpatialAlgebra) newInstance;
+            
+            L.d("JTS Algebra instanciated");
                     
         } catch (ClassNotFoundException ex) {
             L.d("no JTS Spatial Algebra found - take default: " + ex.getMessage());
@@ -40,7 +41,8 @@ public abstract class SharkCSAlgebra {
             L.d("weired: JTS Spatial Algebra found and instanziated but object isn't of type SpatialAlgebra - take default: " + ex.getMessage());
         }
         
-        SharkCSAlgebra.spatialAlgebra = new SpatialAlgebra();
+        SharkCSAlgebra.spatialAlgebra = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra();
+        L.d("Default Spatial Algebra instanciated");
     }
     
     /**
@@ -68,7 +70,16 @@ public abstract class SharkCSAlgebra {
             SpatialSemanticTag sTagA = (SpatialSemanticTag)tagA;
             SpatialSemanticTag sTagB = (SpatialSemanticTag)tagB;
             
-            return SharkCSAlgebra.spatialAlgebra.identical(sTagA, sTagB);
+            try {
+                boolean identical = SharkCSAlgebra.spatialAlgebra.identical(sTagA, sTagB);
+                return identical;
+            }
+            catch(SharkKBException e) {
+                // weired
+                L.w("exception while calculating whether two spatial tags are identical: " + e.getMessage());
+                return false;
+            }
+            
         }
         
         return sisIdentical;
@@ -2204,4 +2215,8 @@ public abstract class SharkCSAlgebra {
 		}
 		return valid;
 	}
+
+    public static net.sharkfw.knowledgeBase.geom.SpatialAlgebra getSpatialAlgebra() {
+        return SharkCSAlgebra.spatialAlgebra;
+    }
 }

@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.geom.inmemory;
 
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
@@ -35,7 +36,9 @@ public class InMemoSharkGeometry implements SharkGeometry {
      */
     public static SharkGeometry createGeomByWKT(String wkt) throws SharkKBException {
         wkt = wkt.replace(";", "").trim();
-        if (!SpatialAlgebra.isValidWKT(wkt)) {
+        SpatialAlgebra spatialAlgebra = SharkCSAlgebra.getSpatialAlgebra();
+        
+        if (!spatialAlgebra.isValidWKT(wkt)) {
             throw new SharkKBException("WKT not valid!");
         }
         return new InMemoSharkGeometry(wkt, 4326);
@@ -61,13 +64,13 @@ public class InMemoSharkGeometry implements SharkGeometry {
             srs = Integer.parseInt(ewkt.substring(postionSRSstart + 5, positionSRSend));
             wkt = (ewkt.substring(0, postionSRSstart)) + (ewkt.substring(positionSRSend, ewkt.length()));
             wkt = wkt.replace(";", "").trim();
-            if (!SpatialAlgebra.isValidWKT(wkt)) {
+            if (!SharkCSAlgebra.getSpatialAlgebra().isValidWKT(wkt)) {
                 throw new SharkKBException("WKT not valid!");
             }
         } catch (Exception e) {
             throw new SharkKBException("SRID parsing problem, check syntax restriction ");
         }
-        SpatialAlgebra.isValidEWKT(ewkt);
+        SharkCSAlgebra.getSpatialAlgebra().isValidEWKT(ewkt);
         return new InMemoSharkGeometry(wkt, srs);
     }
 
