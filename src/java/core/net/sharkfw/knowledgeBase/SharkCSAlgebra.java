@@ -25,6 +25,8 @@ public abstract class SharkCSAlgebra {
     
     static {
         
+        boolean done = false;
+        
         try {
             Class spatialAlgebraClass = Class.forName(JTS_SPATIAL_ALGEBRA_CLASS);
             Object newInstance = spatialAlgebraClass.newInstance();
@@ -32,6 +34,7 @@ public abstract class SharkCSAlgebra {
             SharkCSAlgebra.spatialAlgebra = (net.sharkfw.knowledgeBase.geom.SpatialAlgebra) newInstance;
             
             L.d("JTS Algebra instanciated");
+            done = true;
                     
         } catch (ClassNotFoundException ex) {
             L.d("no JTS Spatial Algebra found - take default: " + ex.getMessage());
@@ -41,9 +44,16 @@ public abstract class SharkCSAlgebra {
             L.d("weired: JTS Spatial Algebra found and instanziated but object isn't of type SpatialAlgebra - take default: " + ex.getMessage());
         }
         
-        SharkCSAlgebra.spatialAlgebra = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra();
-        L.d("Default Spatial Algebra instanciated");
+        if(!done) {
+            SharkCSAlgebra.spatialAlgebra = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra();
+            L.d("Default Spatial Algebra instanciated");
+        }
     }
+
+    public static net.sharkfw.knowledgeBase.geom.SpatialAlgebra getSpatialAlgebra() {
+        return SharkCSAlgebra.spatialAlgebra;
+    }
+    
     
     /**
      * Determine whether or not <code>tagA</code> and <code>tagB</code> are
@@ -2215,8 +2225,4 @@ public abstract class SharkCSAlgebra {
 		}
 		return valid;
 	}
-
-    public static net.sharkfw.knowledgeBase.geom.SpatialAlgebra getSpatialAlgebra() {
-        return SharkCSAlgebra.spatialAlgebra;
-    }
 }
