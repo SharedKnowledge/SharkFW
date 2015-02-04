@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package knowledgeBaseTests;
 
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.InterestStorage;
 import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
@@ -20,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -54,7 +48,7 @@ public class InterestsStorage {
 
          SharkCS interest = InMemoSharkKB.createInMemoInterest(topics, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
          
-         InterestStorage is = new InMemoSharkKB();
+         SharkKB is = new InMemoSharkKB();
          
          is.addInterest(interest);
          // add twice - only one should be added
@@ -66,6 +60,18 @@ public class InterestsStorage {
          Assert.assertTrue(SharkCSAlgebra.identical(interest, iBack));
          
          // there must not be another interest in the list due to duplicate supression
+         Assert.assertFalse(interests.hasNext());
+         
+         // for developers eyes only:
+         System.out.println(AbstractSharkKB.INTEREST_PROPERTY_NAME + ":" + is.getProperty(AbstractSharkKB.INTEREST_PROPERTY_NAME));
+         
+         // remove the only interest and try again
+         is.removeInterest(interest);
+         
+         // for developers eyes only:
+         System.out.println(AbstractSharkKB.INTEREST_PROPERTY_NAME + ":" + is.getProperty(AbstractSharkKB.INTEREST_PROPERTY_NAME));
+         
+         interests = is.interests();
          Assert.assertFalse(interests.hasNext());
      }
 }

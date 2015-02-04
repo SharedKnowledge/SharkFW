@@ -45,10 +45,11 @@ public class Streamer {
         }
 
         while (numBytesToRead > 0) {
+            // following lines seem to be an artifact from "good old times" - should be removed
 //            L.d("Bytes wrote:" + numBytesToRead + ", buffer: " + buffer.length + "Len: " + len, new Streamer());
-            if (len > 700000000) {
-                L.e("cannot handle incomming request - far too big", in);
-            }
+//            if (len > 700000000) {
+//                L.e("cannot handle incomming request - far too big", in);
+//            }
             int numBytesReallyRead = in.read(buffer, 0, numBytesToRead);
 //            L.d("Bytes really wrote: " + numBytesReallyRead, Streamer.class);
             out.write(buffer, 0, numBytesReallyRead);

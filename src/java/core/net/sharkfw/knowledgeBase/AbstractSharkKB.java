@@ -1027,7 +1027,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         XMLSerializer s = new XMLSerializer();
         
         Iterator<SharkCS> interestIter = this.interests();
-        if(interestIter == null) return;
+        if(interestIter == null) {
+            // remove property at all
+            this.setProperty(INTEREST_PROPERTY_NAME, null);
+            return;
+        }
         
         StringBuilder interestString = new StringBuilder();
         
@@ -1039,7 +1043,8 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             interestString.append(INTEREST_DELIMITER);
         }
         
-        this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString());
+//        this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString());
+        this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString(), false);
     }
     
     private void restoreInterestsFromProperties() throws SharkKBException {
