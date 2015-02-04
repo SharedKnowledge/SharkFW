@@ -36,30 +36,6 @@ public class SpatialAlgebra {
         return true;
     }
 
-    private static SpatialAlgebra spatialAlgebra = null;
-
-    public static SpatialAlgebra getSpatialAlgebra() {
-        if (SpatialAlgebra.spatialAlgebra != null) {
-            return SpatialAlgebra.spatialAlgebra;
-        }
-
-        try {
-            Class spatialAlgebraClass = Class.forName("net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra");
-            SpatialAlgebra.spatialAlgebra = (SpatialAlgebra) spatialAlgebraClass.newInstance();
-
-        } catch (Exception ex) {
-            // class cannot be found or instantiated
-            L.d("cannot instanciate JTS spatial algebra - that platform probably does not support JTS. That's ok.", ex.getMessage());
-        }
-
-        if (SpatialAlgebra.spatialAlgebra == null) {
-            // set up default dummy implementation
-            SpatialAlgebra.spatialAlgebra = new SpatialAlgebra();
-        }
-
-        return SpatialAlgebra.spatialAlgebra;
-    }
-
     ////////////////////////////////////////////////////////////////////////
     //           very optimistic dummy implementation start here.         //
     ////////////////////////////////////////////////////////////////////////

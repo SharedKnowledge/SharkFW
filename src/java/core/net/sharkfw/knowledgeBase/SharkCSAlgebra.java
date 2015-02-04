@@ -20,6 +20,29 @@ import net.sharkfw.system.Util;
  * @author thsc
  */
 public abstract class SharkCSAlgebra {
+    private static SpatialAlgebra spatialAlgebra;
+    private static final String JTS_SPATIAL_ALGEBRA_CLASS = 
+            "net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra";
+    
+    static {
+        
+        try {
+            Class spatialAlgebraClass = Class.forName(JTS_SPATIAL_ALGEBRA_CLASS);
+            Object newInstance = spatialAlgebraClass.newInstance();
+            
+            SharkCSAlgebra.spatialAlgebra = (SpatialAlgebra) newInstance;
+                    
+        } catch (ClassNotFoundException ex) {
+            L.d("no JTS Spatial Algebra found - take default: " + ex.getMessage());
+        } catch (InstantiationException | IllegalAccessException ex) {
+            L.d("couldn't instantiate JTS Spatial Algebra - take default: " + ex.getMessage());
+        } catch (ClassCastException ex) {
+            L.d("weired: JTS Spatial Algebra found and instanziated but object isn't of type SpatialAlgebra - take default: " + ex.getMessage());
+        }
+        
+        SharkCSAlgebra.spatialAlgebra = new SpatialAlgebra();
+    }
+    
     /**
      * Determine whether or not <code>tagA</code> and <code>tagB</code> are
      * semantically identical. Is is checked by their subject identifier. At least 
@@ -45,7 +68,7 @@ public abstract class SharkCSAlgebra {
             SpatialSemanticTag sTagA = (SpatialSemanticTag)tagA;
             SpatialSemanticTag sTagB = (SpatialSemanticTag)tagB;
             
-            return SpatialAlgebra.getSpatialAlgebra().identical(sTagA, sTagB);
+            return SharkCSAlgebra.spatialAlgebra.identical(sTagA, sTagB);
         }
         
         return sisIdentical;
@@ -548,6 +571,7 @@ public abstract class SharkCSAlgebra {
      * as well as their predicates. Merging is performed if required.
      * @param target
      * @param source 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public static void merge(SemanticNet target, SemanticNet source) 
             throws SharkKBException {
@@ -670,7 +694,9 @@ public abstract class SharkCSAlgebra {
      * @param mutualInterest Contains result if there is any
      * @param source 
      * @param context
+     * @param fp
      * @return true if mutualInterest is not empty, false otherwise
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
     public static boolean contextualize(Interest mutualInterest, 
             SharkCS source, SharkCS context, FragmentationParameter[] fp) 
@@ -935,6 +961,7 @@ public abstract class SharkCSAlgebra {
 
     /**
      * Check whether a dimension of a SharkCS is any.
+     * @param source
      * @param dim
      * @return 
      */
@@ -969,7 +996,7 @@ public abstract class SharkCSAlgebra {
     }
     /**
      * Check whether a SharkCS is any (all dimensions any).
-     * @param dim
+     * @param source
      * @return 
      */
     public static boolean isAny(SharkCS source) {
@@ -1071,6 +1098,7 @@ public abstract class SharkCSAlgebra {
      * @param set1
      * @param set2
      * @return 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
     public static boolean identical(STSet set1, STSet set2) throws SharkKBException {
         if( (set1 == null && set2 == null)
