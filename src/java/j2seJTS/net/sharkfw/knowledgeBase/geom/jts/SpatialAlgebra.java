@@ -30,8 +30,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return true if valid
      * @throws SharkKBException
      */
-    @Override
-    public boolean isValidWKT(String wkt) throws SharkKBException {
+    public static boolean isValidWKT(String wkt) throws SharkKBException {
         Geometry jtsGeometry = null;
         WKTReader reader = new WKTReader();
         try {
@@ -50,7 +49,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return true
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public boolean isValidEWKT(String ewkt) throws SharkKBException {
+    public static boolean isValidEWKT(String ewkt) throws SharkKBException {
         return true;
     }
 
@@ -62,8 +61,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return true if both SpatialSemanticTags identical
      * @throws SharkKBException
      */
-    @Override
-    public boolean identical(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
+    public static boolean identical(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
         SpatialSTSet tempA = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSTSet tempB = InMemoSharkKB.createInMemoSpatialSTSet();
         tempA.merge(a);
@@ -290,9 +288,9 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      */
     private static List<Geometry> divideGeometryCollection(GeometryCollection geomCollection) throws SharkKBException {
         List<Geometry> tempGeomList = new ArrayList();
-        GeometryCollectionIterator iterator = new GeometryCollectionIterator(geomCollection);
-        while (iterator.hasNext()) {
-            tempGeomList.add((Geometry) iterator.next());
+        int numberOfGeoms = geomCollection.getNumGeometries();
+        for (int i = 0; i < numberOfGeoms; i++) {
+          tempGeomList.add(geomCollection.getGeometryN(i));
         }
         return tempGeomList;
     }

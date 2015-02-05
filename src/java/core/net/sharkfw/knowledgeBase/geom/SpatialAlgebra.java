@@ -2,7 +2,6 @@ package net.sharkfw.knowledgeBase.geom;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.system.L;
 
 /**
  * That class is just a placeholder. It allows defining a spatial algebra in
@@ -22,7 +21,7 @@ public class SpatialAlgebra {
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public boolean isValidWKT(String wkt) throws SharkKBException {
+    public static boolean isValidWKT(String wkt) throws SharkKBException {
         //see InMemoSharkGeometry createGeomByWKT();
         return true;
     }
@@ -34,7 +33,7 @@ public class SpatialAlgebra {
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public boolean isValidEWKT(String ewkt) throws SharkKBException {
+    public static boolean isValidEWKT(String ewkt) throws SharkKBException {
         //see InMemoSharkGeometry createGeomByEWKT();
         return true;
     }
@@ -42,7 +41,7 @@ public class SpatialAlgebra {
     ////////////////////////////////////////////////////////////////////////
     //           very optimistic dummy implementation start here.         //
     ////////////////////////////////////////////////////////////////////////
-    public boolean identical(SpatialSemanticTag sTagA, SpatialSemanticTag sTagB) throws SharkKBException {
+    public static boolean identical(SpatialSemanticTag sTagA, SpatialSemanticTag sTagB) throws SharkKBException {
         return true;
     }
 }
