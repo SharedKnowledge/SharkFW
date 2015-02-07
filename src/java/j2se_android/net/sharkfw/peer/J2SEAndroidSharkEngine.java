@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.kep.SimpleKEPStub;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -95,6 +93,8 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
     }
     
 	/**
+         * TODO: what's that ????
+         * 
 	 * @param hostnameArg  	can be part of hostname, domainname, or textual ip address 
 	 * 				        segment to narrow down in case more interfaces exists in 
 	 * 						the system, if this argument is null and the resolver works properly
@@ -169,6 +169,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
      * Start the TCP stub at the given portnumber.
      *
      * @param port The portnumber to use for TCP traffic.
+     * @throws java.io.IOException
      */
     @Override
     public void startTCP(int port) throws IOException {
@@ -182,6 +183,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
     /**
      * Stop the TCP communication stub.
      */
+    @Override
     public void stopTCP() {
         try {
             this.stopProtocol(Protocols.TCP);
@@ -497,58 +499,64 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
         this.ph = ph;
     }
     
+    @Override
+    protected SystemPropertyHolder getSystemPropertyHolder() {
+        return this.ph;
+    }
+    
+    @Override
     public void persist() throws SharkKBException {
-        if(this.ph != null) {
-            // black / white list manager - move to SharkEngine
-            String serializedList = Util.PSTArrayList2String(whiteList);
-            this.ph.setSystemProperty(WHITE_LIST, serializedList);
-
-            serializedList = Util.PSTArrayList2String(blackList);
-            this.ph.setSystemProperty(BLACK_LIST, serializedList);
-
-            this.ph.setSystemProperty(USE_WHITE_LIST, Boolean.toString(this.useWhiteList));
+//        if(this.ph != null) {
+//            // black / white list manager - move to SharkEngine
+//            String serializedList = Util.PSTArrayList2String(whiteList);
+//            this.ph.setSystemProperty(WHITE_LIST, serializedList);
+//
+//            serializedList = Util.PSTArrayList2String(blackList);
+//            this.ph.setSystemProperty(BLACK_LIST, serializedList);
+//
+//            this.ph.setSystemProperty(USE_WHITE_LIST, Boolean.toString(this.useWhiteList));
             
             // others - move to J2SEAndroidSharkEngine
             
             
-        }
+//        }
     }
     
     public final void refreshStatus() throws SharkKBException {
-        if(this.ph != null) {
-            // restore white and black list and set guardKP
-            // white list
-            String serializedList = this.ph.getSystemProperty(WHITE_LIST);
-            if(serializedList != null) {
-                try {
-                    this.whiteList = Util.String2PSTArrayList(serializedList);
-                } catch (SharkKBException ex) {
-                    // TODO
-                }
-            }
-
-            // black list
-            serializedList = this.ph.getSystemProperty(BLACK_LIST);
-            if(serializedList != null) {
-                try {
-                    this.blackList = Util.String2PSTArrayList(serializedList);
-                } catch (SharkKBException ex) {
-                    // TODO
-                }
-            }
-
-            if(this. whiteList == null) {
-                this.whiteList = new ArrayList<PeerSemanticTag>();
-            }
-
-            if(this.blackList == null) {
-                this.blackList = new ArrayList<PeerSemanticTag>();
-            }
-
-            this.useWhiteList = Boolean.parseBoolean(this.ph.getSystemProperty(USE_WHITE_LIST));
+//        if(this.ph != null) {
+//            // restore white and black list and set guardKP
+//            // white list
+//            String serializedList = this.ph.getSystemProperty(WHITE_LIST);
+//            if(serializedList != null) {
+//                try {
+//                    this.whiteList = Util.String2PSTArrayList(serializedList);
+//                } catch (SharkKBException ex) {
+//                    // TODO
+//                }
+//            }
+//
+//            // black list
+//            serializedList = this.ph.getSystemProperty(BLACK_LIST);
+//            if(serializedList != null) {
+//                try {
+//                    this.blackList = Util.String2PSTArrayList(serializedList);
+//                } catch (SharkKBException ex) {
+//                    // TODO
+//                }
+//            }
+//
+//            if(this. whiteList == null) {
+//                this.whiteList = new ArrayList<PeerSemanticTag>();
+//            }
+//
+//            if(this.blackList == null) {
+//                this.blackList = new ArrayList<PeerSemanticTag>();
+//            }
+//
+//            this.useWhiteList = Boolean.parseBoolean(this.ph.getSystemProperty(USE_WHITE_LIST));
             
             this.refreshMailSettings();
-        }
+//        }
     }
 
     private static final String SMTP_HOST = "se_smtpHost";
@@ -592,13 +600,8 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
      * @param smtpHost
      * @param userName
      * @param pwd
-     * @param sslSMTP
      * @param pop3Host
-     * @param pop3user
-     * @param replyAddress
-     * @param pop3pwd
-     * @param mailCheckInterval
-     * @param sslPOP3 
+     * @param replyAddress 
      */
     public void setBasicMailConfiguration(
             String smtpHost, String userName, String pwd, 
@@ -639,129 +642,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine implements
                     pop3Host, pop3user, replyAddress, pop3pwd, mailCheckInterval, sslPOP3);
         }
     }
-    
-    /////////////////////////////////////////////////////////////////////////
-    //                        list manager methods                         //
-    /////////////////////////////////////////////////////////////////////////
-    
-    private ArrayList<PeerSemanticTag> blackList = new ArrayList<PeerSemanticTag>();
-    private ArrayList<PeerSemanticTag> whiteList = new ArrayList<PeerSemanticTag>();
-    
-    public static final String WHITE_LIST = "subSpaceGuard_whiteList";
-    public static final String BLACK_LIST = "subSpaceGuard_blackList";
-    public static final String USE_WHITE_LIST = "subSpaceGuard_useWhiteList";
-    
-    /**
-     * Add or remove peer to/from blacklist (filter.
-     * @param peer 
-     * @param accept true: peer invitations are accepted and result in a 
-     * invitation notification: false: Invitations are dropped without further
-     * comments
-     */
-    @Override
-    public void acceptPeer(PeerSemanticTag peer, boolean accept) {
-        if(accept) {
-            // add to white list
-            this.whiteList.add(InMemoSharkKB.createInMemoCopy(peer));
-            
-            // try to remove from backlist
-            Iterator<PeerSemanticTag> peerIter = this.blackList.iterator();
-            while(peerIter.hasNext()) {
-                PeerSemanticTag blackPeer = peerIter.next();
-                
-                if(SharkCSAlgebra.identical(blackPeer, peer)) {
-                    this.blackList.remove(blackPeer);
-                    return;
-                }
-            }
-        } else {
-            // make a copy and add to black list
-            this.blackList.add(InMemoSharkKB.createInMemoCopy(peer));
-            
-            // try to remove from whitelist
-            Iterator<PeerSemanticTag> peerIter = this.whiteList.iterator();
-            while(peerIter.hasNext()) {
-                PeerSemanticTag blackPeer = peerIter.next();
-                
-                if(SharkCSAlgebra.identical(blackPeer, peer)) {
-                    this.whiteList.remove(blackPeer);
-                    return;
-                }
-            }
-        }
-
-        // remember those settings
-        try {
-            this.persist();
-        }
-        catch(SharkKBException skbe) {
-            L.e("cannot save shark net engine status", this);
-        }
-    }
-
-    private boolean useWhiteList = false;
-    
-    /**
-     * Trigger what policy is used. This guard manages a white and
-     * a black list.
-     * 
-     * Using a white list is more restrictive that using a black list:
-     * 
-     * <ul>
-     * <li>Using a whitelist means: Only invitation are excepted which
-     * are send from peer who a explicitely allowed to invite this peer.
-     * <li>Using a black list means that peer can be set on a black list. Those
-     * peers are not allowed to invite.
-     * </ul>
-     * 
-     * The difference is for unknown peers: Invitation of unknown peers are
-     * accepted with a black list but not with a whitelist
-     */
-    @Override
-    public void useWhiteList(boolean whiteYes) {
-        this.useWhiteList = whiteYes;
-    }
-    
-    private boolean isIn(Iterator<PeerSemanticTag> peerIter, PeerSemanticTag peer) {
-        if(peerIter == null) {
-            return false;
-        }
         
-        while(peerIter.hasNext()) {
-            PeerSemanticTag pst = peerIter.next();
-            if(SharkCSAlgebra.identical(pst, peer)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-
-    /**
-     * Move to core.SharkEngine soon.
-     * @param sender
-     * @return 
-     */
-    @Override
-    public boolean isAccepted(PeerSemanticTag sender) {
-        if(this.useWhiteList) {
-            if(sender == null) {
-                return false;
-            }
-            
-            return this.isIn(this.whiteList.iterator(), sender);
-        } else {
-            if(sender == null) {
-                return true;
-            }
-            return !this.isIn(this.blackList.iterator(), sender);
-        }
-    }    
-    
-    public Iterator<PeerSemanticTag> getWhiteList() {
-        return this.whiteList.iterator();
-    }
-    
     /////////////////////////////////////////////////////////////////
     //                 remember unsent messages                    //
     /////////////////////////////////////////////////////////////////

@@ -1721,129 +1721,25 @@ abstract public class SharkEngine {
     //                        list manager methods                         //
     /////////////////////////////////////////////////////////////////////////
     
-    // both should be private - review white-/black list management
-    protected ArrayList<PeerSemanticTag> blackList = new ArrayList<PeerSemanticTag>();
-    protected ArrayList<PeerSemanticTag> whiteList = new ArrayList<PeerSemanticTag>();
+    abstract protected SystemPropertyHolder getSystemPropertyHolder();
     
-    public static final String WHITE_LIST = "subSpaceGuard_whiteList";
-    public static final String BLACK_LIST = "subSpaceGuard_blackList";
-    public static final String USE_WHITE_LIST = "subSpaceGuard_useWhiteList";
+    // reimplemented with with delegate
+    private AccessListManager accessList = new AccessListManager("Shark_SharkEngine", this.getSystemPropertyHolder());
     
-    /**
-     * Add or remove peer to/from blacklist (filter.
-     * @param peer 
-     * @param accept true: peer invitations are accepted and result in a 
-     * invitation notification: false: Invitations are dropped without further
-     * comments
-     */
     public void acceptPeer(PeerSemanticTag peer, boolean accept) {
-        if(accept) {
-            // add to white list
-            this.whiteList.add(InMemoSharkKB.createInMemoCopy(peer));
-            
-            // try to remove from backlist
-            Iterator<PeerSemanticTag> peerIter = this.blackList.iterator();
-            while(peerIter.hasNext()) {
-                PeerSemanticTag blackPeer = peerIter.next();
-                
-                if(SharkCSAlgebra.identical(blackPeer, peer)) {
-                    this.blackList.remove(blackPeer);
-                    return;
-                }
-            }
-        } else {
-            // make a copy and add to black list
-            this.blackList.add(InMemoSharkKB.createInMemoCopy(peer));
-            
-            // try to remove from whitelist
-            Iterator<PeerSemanticTag> peerIter = this.whiteList.iterator();
-            while(peerIter.hasNext()) {
-                PeerSemanticTag blackPeer = peerIter.next();
-                
-                if(SharkCSAlgebra.identical(blackPeer, peer)) {
-                    this.whiteList.remove(blackPeer);
-                    return;
-                }
-            }
-        }
-
-        // remember those settings
-        try {
-            this.persist();
-        }
-        catch(SharkKBException skbe) {
-            L.e("cannot save shark net engine status", this);
-        }
+        this.accessList.acceptPeer(peer, accept);
     }
 
-    protected boolean useWhiteList = false;
-    
-    /**
-     * Trigger what policy is used. This guard manages a white and
-     * a black list.
-     * 
-     * Using a white list is more restrictive that using a black list:
-     * 
-     * <ul>
-     * <li>Using a whitelist means: Only invitation are excepted which
-     * are send from peer who a explicitely allowed to invite this peer.
-     * <li>Using a black list means that peer can be set on a black list. Those
-     * peers are not allowed to invite.
-     * </ul>
-     * 
-     * The difference is for unknown peers: Invitation of unknown peers are
-     * accepted with a black list but not with a whitelist
-     */
-    public void useWhiteList(boolean whiteYes) {
-        this.useWhiteList = whiteYes;
+    public void useWhiteList(boolean whiteList) {
+        this.accessList.useWhiteList(whiteList);
     }
     
-    private boolean useBlackWhiteList = true;
     public void useBlackWhiteList(boolean on) {
-        this.useBlackWhiteList = on;
+        this.accessList.useBlackWhiteList(on);
     }
     
-    private boolean isIn(Iterator<PeerSemanticTag> peerIter, PeerSemanticTag peer) {
-        if(peerIter == null) {
-            return false;
-        }
-        
-        while(peerIter.hasNext()) {
-            PeerSemanticTag pst = peerIter.next();
-            if(SharkCSAlgebra.identical(pst, peer)) {
-                return true;
-            }
-        }
-        
-        return false;
+    public boolean isAccepted(PeerSemanticTag peer) {
+        return this.accessList.isAccepted(peer);
     }
-
-    /**
-     * Move to core.SharkEngine soon.
-     * @param sender
-     * @return 
-     */
-    public boolean isAccepted(PeerSemanticTag sender) {
-        if(!this.useBlackWhiteList) {
-            return true;
-        }
-        
-        if(this.useWhiteList) {
-            if(sender == null) {
-                return false;
-            }
-            
-            return this.isIn(this.whiteList.iterator(), sender);
-        } else {
-            if(sender == null) {
-                return true;
-            }
-            return !this.isIn(this.blackList.iterator(), sender);
-        }
-    }    
-    
-//    public Iterator<PeerSemanticTag> getWhiteList() {
-//        return this.whiteList.iterator();
-//    }
 }
 
