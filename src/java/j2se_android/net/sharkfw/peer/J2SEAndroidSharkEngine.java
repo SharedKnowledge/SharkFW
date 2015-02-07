@@ -46,8 +46,7 @@ import net.sharkfw.system.Util;
  * @author thsc
  * @author mfi
  */
-public class J2SEAndroidSharkEngine extends SharkEngine implements 
-        WhiteAndBlackListManager {
+public class J2SEAndroidSharkEngine extends SharkEngine {
     
     // Mail parameter
     private String smtpHost;

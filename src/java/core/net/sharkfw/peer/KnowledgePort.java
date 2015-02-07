@@ -35,7 +35,6 @@ import net.sharkfw.system.SharkSecurityException;
  * @author thsc
  * @author mfi
  */
-@SuppressWarnings("rawtypes")
 abstract public class KnowledgePort {
 
     protected SharkCS interest;
@@ -49,6 +48,7 @@ abstract public class KnowledgePort {
     protected SharkEngine se;
     @SuppressWarnings("unused")
     private PrivateKey privateKey;
+    private AccessListManager accessList;
 
     /**
      * Section 5.1 requires this constructor
@@ -80,6 +80,19 @@ abstract public class KnowledgePort {
     
     public SharkKB getKB() {
         return this.kb;
+    }
+    
+    /**
+     * Create individual access list manager for this knowledge port.
+     * @param uniqueName to make black annd white list persistent
+     * @param kb storage for list entries - data are stored as properties
+     */
+    public void attachAccessListManager(String uniqueName, SharkKB kb) {
+        this.accessList = new AccessListManager(uniqueName, kb);
+    }
+    
+    public AccessListManager getAccessListManager() {
+        return this.accessList;
     }
 
     /**
@@ -199,8 +212,20 @@ abstract public class KnowledgePort {
             //
         }
         
-        if(!this.se.isAccepted(sender)) {
-            String senderSI = "sender no transmitted";
+        // check access list management
+        
+        // has got this k its own access manager
+        WhiteAndBlackListManager accessManager = this.getAccessListManager();
+        if(accessManager == null) {
+            // no - take engine
+            accessManager = this.se;
+        }
+        
+        if(!accessManager.isAccepted(sender)) {
+            // not allowed to access this kp or engine in general
+            
+            // create log message
+            String senderSI = "sender not transmitted";
             if(sender != null) {
                 senderSI = sender.getSI()[0];
             }
@@ -208,6 +233,7 @@ abstract public class KnowledgePort {
             L.l("stop handling request because sender is not welcome due to black/white list: " + senderSI, this);
             return false;
         }
+        // end access list management
 
         // Let the request know which handler is holding it
         msg.setKEPHandler(this);

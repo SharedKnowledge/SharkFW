@@ -42,7 +42,7 @@ import net.sharkfw.system.Util;
  * @author thsc
  * @author mfi
  */
-abstract public class SharkEngine {
+abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     // security settings
     private PrivateKey privateKey = null;
