@@ -1,4 +1,5 @@
 
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -10,8 +11,6 @@ import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
-import static net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra.identical;
-import static net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra.isIn;
 
 /**
  *
@@ -160,7 +159,7 @@ public class JTSMain {
     public void create_test_AnyTag() throws SharkKBException {
         SpatialSemanticTag any = InMemoSharkKB.createInMemoSpatialSemanticTag(null);
         Assert.assertEquals(null, any);
-        Assert.assertEquals(true, identical(any, any));
+        Assert.assertEquals(true, SharkCSAlgebra.identical(any, any));
         Assert.assertEquals(true, isIn(any, any));
     }
 
