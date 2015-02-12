@@ -1,6 +1,5 @@
 package net.sharkfw.knowledgeBase.sync;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -23,17 +22,27 @@ import net.sharkfw.system.L;
  * from the knowledge base.
  * @author simon
  */
-class TimestampList implements Serializable {
-    protected static String FILENAME = "./.shark_timestamps";
+class TimestampList {
     protected static String LIST_PROPERTY = "internal_timestamp_list";
     protected List<PeerTimestamp> _timestamps;
     protected SyncKB _kb;
         
+    /**
+     * The standard constructor. 
+     *
+     * It needs a KB for persistance. All info will be saved there.
+     */
     public TimestampList(SyncKB kb) {
         _kb = kb;
         retrieve();
     }
     
+    /**
+     * Constructor with optional initial peer list.
+     *
+     * A list needs to be supplied that will add already-known peers
+     * to the list
+     */
     public TimestampList(PeerSTSet peersToSyncWith, SyncKB kb) {
         _kb = kb;
         retrieve();
@@ -125,6 +134,7 @@ class TimestampList implements Serializable {
         persist();
     }
     
+    //Internal finder method.
     private PeerTimestamp findPeerTimestamp(PeerSemanticTag p) {
         // Find the peer in our list
         Iterator<PeerTimestamp> i = _timestamps.iterator();
@@ -139,10 +149,12 @@ class TimestampList implements Serializable {
         return null;
     }
     
+    //Persistance function. Is called whenever the list changes.
     protected void persist() {
         _kb.setProperty(LIST_PROPERTY, serializeTimestamps());
     }
     
+    //retrieval function. Is called from within the constructor.
     protected void retrieve() {
         _timestamps = new ArrayList<>();
         
@@ -153,6 +165,7 @@ class TimestampList implements Serializable {
         }
     }
     
+    //internal serialization function.
     private String serializeTimestamps() {
         StringBuilder buf = new StringBuilder();
         
@@ -162,6 +175,7 @@ class TimestampList implements Serializable {
         return buf.toString();
     }
     
+    //internal deserialization function.
     private void deserializeTimestamps(String x) {
         for(String s : x.split(PeerTimestamp.PEER_TIMESTAMP_CLOSING_TAG)){
             try {
@@ -172,6 +186,9 @@ class TimestampList implements Serializable {
         }
     }
     
+    /**
+     * Internal class that represents one timestamp(when the peer was last encountered)
+     */
     class PeerTimestamp {
         private Date _date;
         private final PeerSemanticTag _peer;
@@ -182,11 +199,19 @@ class TimestampList implements Serializable {
         static private final String DATE_TAG = "<date>";
         static private final String DATE_CLOSING_TAG = "</date>";
         
+        /**
+         * Default constructor.
+         *
+         * Needs a PeerSemanticTag representing the peer.
+         */
         public PeerTimestamp(PeerSemanticTag peer) {
             _peer = InMemoSharkKB.createInMemoCopy(peer);
             _date = new Date(0);
         }
         
+        /**
+         * Creates a new peer timestamp from a serialized entry.
+         */
         public PeerTimestamp(String serialized) throws SharkKBException {
             serialized = serialized.replaceFirst(PEER_TIMESTAMP_TAG, "");
             //<si>.*</si>
@@ -224,15 +249,24 @@ class TimestampList implements Serializable {
         public void resetDate() {
             _date = new Date();
         }
-        
+       
+        /**
+         * Resets the time of last meeting with this peer to 01,01,1970.
+         */
         public void setTimestampNull() {
             _date = new Date(0);
         }
         
+        /**
+         * Get the timestamps' peer.
+         */
         public PeerSemanticTag getPeer() {
             return _peer;
         }
         
+        /**
+         * Serialize the timestamp.
+         */
         public String serialize(){
             StringBuilder serializedSelf = new StringBuilder();
             // <peer_semantic_tag>
