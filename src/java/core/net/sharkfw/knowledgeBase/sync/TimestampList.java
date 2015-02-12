@@ -154,20 +154,60 @@ class TimestampList implements Serializable {
     }
     
     private String serializeTimestamps() {
-        return null;
-    }
-    
-    private void deserializeTimestamps(String x){
+        StringBuilder buf = new StringBuilder();
         
+        for(PeerTimestamp t : _timestamps)
+            buf.append(t.serialize());
+        
+        return buf.toString();
     }
     
-    class PeerTimestamp implements Serializable {
+    private void deserializeTimestamps(String x) {
+        for(String s : x.split(PeerTimestamp.PEER_TIMESTAMP_CLOSING_TAG)){
+            try {
+                _timestamps.add(new PeerTimestamp(s));
+            } catch (SharkKBException ex) {
+                L.d("Could not load timestamp for a peer: " + s + " message: " + ex.getMessage());
+            }
+        }
+    }
+    
+    class PeerTimestamp {
         private Date _date;
         private final PeerSemanticTag _peer;
+        static private final String PEER_TIMESTAMP_CLOSING_TAG = "</peer_timestamp>";
+        static private final String PEER_TIMESTAMP_TAG = "<peer_timestamp>";
+        static private final String SI_TAG = "<subject_identifiers>";
+        static private final String SI_CLOSING_TAG = "</subject_identifiers>";
+        static private final String DATE_TAG = "<date>";
+        static private final String DATE_CLOSING_TAG = "</date>";
         
         public PeerTimestamp(PeerSemanticTag peer) {
             _peer = InMemoSharkKB.createInMemoCopy(peer);
             _date = new Date(0);
+        }
+        
+        public PeerTimestamp(String serialized) throws SharkKBException {
+            serialized = serialized.replaceFirst(PEER_TIMESTAMP_TAG, "");
+            //<si>.*</si>
+            int index;
+            //Get number of occurences of tag
+            int si_count = (serialized.length() - serialized.replace(SI_TAG, "").length()) / SI_TAG.length();
+            String[] sis = new String[si_count];
+            int n = 0;
+            while((index = serialized.indexOf(SI_TAG)) != -1) {
+                int endIndex = serialized.indexOf(SI_CLOSING_TAG);
+                String substring = serialized.substring(index, endIndex);
+                
+                sis[n++] = (substring.substring(SI_TAG.length(), substring.length()));
+                
+                serialized = serialized.replaceFirst(substring, "");
+            }
+            _peer = TimestampList.this._kb.getPeerSemanticTag(sis);
+            _date = new Date(Long.parseLong(
+                    serialized.substring(
+                            serialized.indexOf(DATE_TAG) + DATE_TAG.length(),
+                            serialized.indexOf(DATE_CLOSING_TAG))));
         }
         
         /**
@@ -193,7 +233,27 @@ class TimestampList implements Serializable {
             return _peer;
         }
         
-        
+        public String serialize(){
+            StringBuilder serializedSelf = new StringBuilder();
+            // <peer_semantic_tag>
+            serializedSelf.append(PEER_TIMESTAMP_TAG);
+            // <si>
+            for (String s : _peer.getSI()) {
+                serializedSelf.append(SI_TAG);
+                serializedSelf.append(s);
+                serializedSelf.append(SI_CLOSING_TAG);
+            }
+            // </si>
+            // <date>
+            serializedSelf.append(DATE_TAG);
+            serializedSelf.append(_date.getTime());
+            serializedSelf.append(DATE_CLOSING_TAG);
+            // </date>
+            // </peer_semantic_tag>
+            serializedSelf.append(PEER_TIMESTAMP_CLOSING_TAG);
+            
+            return serializedSelf.toString();
+        }
     }
 }
 

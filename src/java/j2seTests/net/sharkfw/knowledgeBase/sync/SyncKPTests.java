@@ -32,8 +32,8 @@ import org.junit.Test;
 
 public class SyncKPTests {
 
-    private final long connectionTimeOut = 2000;
-    private final long SLEEP_TIMEOUT = 10000;
+    private final long connectionTimeOut = 3000;
+    private final long SLEEP_TIMEOUT = 5000;
     private SyncKB _aliceKB, _bobKB;
     private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;

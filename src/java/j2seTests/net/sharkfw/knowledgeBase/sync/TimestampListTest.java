@@ -13,7 +13,6 @@ import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
-import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
@@ -108,13 +107,13 @@ public class TimestampListTest {
         
         // Add some peers 
         t.newPeer(_alicePST);
-//        t.newPeer(_bobPST);
-//        
-//        assertEquals(2, t.getPeers().size());
-//        
-//        // Now create a new list, that should also have 2 peers
-//        t = new TimestampList();
-//        
-//        assertEquals(0, t.getPeers().size());
+        t.newPeer(_bobPST);
+        
+        assertEquals(2, t.getPeers().size());
+        
+        // Now create a new list, that should also have 2 peers
+        t = new TimestampList(_kb);
+        
+        assertEquals(2, t.getPeers().size());
     }
 }

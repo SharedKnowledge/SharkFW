@@ -60,11 +60,12 @@ class ContextCoordinatesSerializer {
         
         // End list with tag
         buf.append(endTag(LIST_TAG));
-        return enableXMLWorkaround(buf.toString());
+        //return enableXMLWorkaround(buf.toString());
+        return buf.toString();
     }
     
     protected static List<SyncContextPoint> deserializeContextCoordinatesList(String serialized) throws SharkKBException, SharkException {
-        serialized = disableXMLWorkaround(serialized);
+        //serialized = disableXMLWorkaround(serialized);
         String cs;
         List<SyncContextPoint> deserialized = new ArrayList<>();
         int index = 0;

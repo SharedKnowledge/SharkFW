@@ -344,7 +344,7 @@ public class SyncKB implements SharkKB {
 
     @Override
     public String getProperty(String name) {
-        return _localKB.getSystemProperty(name);
+        return _localKB.getProperty(name);
     }
 
     @Override

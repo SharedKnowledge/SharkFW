@@ -1,20 +1,3 @@
-[?] public void response.insert(Knowledge k, String receiveraddress) throws SharkException; in KEPConnection 2. Argument
-entfernen, antwort soll immer an den sender zurrückgeschickt werden
-
-Soll ein Peer die Möglichkeit haben, ein anderes Peer darum zu bitten, die Information zu löschen?
-Sollten leere ContextPoints nicht gesynct werden?
-    => Entweder ein leerer CP wird so übernommen, also werden alle Informationen auf der Empfängerseite gelöscht
-    => Oder der CP wird bei Empfangen eines leeren CPs explizit gedroppt - was kein weitergeben der Information ermöglicht
-
-Wie wird Löschaufforderung eines ganzen ContextPoints sonst vermittelt?
-
-KnowledgeBaseListener & STSetListener:
-    - contextPointChanged wird nicht getriggert (weder ändern noch hinzufügen noch löschen einer Information triggert das)
-    - getPeerSTSet().merge triggert nicht peerAdded
-    - getPeerSTSet().remove triggert nicht peerRemoved
-    - removeSemanticTag triggtert nicht
-        => im Prinzip muss die AbstractSharkKb auf ihre peerSTSet, SpatialSTSet etc listener setzen
-
 Features:
     - Vorhaben(Syncs) => Protokoll implementieren
         1. Interests festmachen (Was hat Peer A in den Syncbuckets für Peer B)
@@ -25,27 +8,10 @@ Features:
     - Bucketlist persistent
     - eigeninformation auf allinteresse
 
--> SyncKP mit Fragmentierungsparameter-Schalter(Topic Peer Location) in Schritt 2
-
-//IMSKB voc = IMSKB();
-//for CP in CPs:
-//    STSet t = kb.getTopics().fragment(T, FP-Topics);
-//    voc.getTopics().merge(t);
-//(die IMSKB kann dann auch als Knowledge interpretiert werden -> asKnowledge)
-
-werden bei createContextPoint Properties mitkopiert?
-
-Wohin Timestamps speichern?
-Properties für CCs?
-
 Identifizieren der Wissensbasis, damit, wenn ein Peer 2 Sync KPs besitzt, nicht der eine Step zur einen, der andere Step zur anderen geschickt wird.
 
 addInformation(Information source) setzt nur Referenz, keine copy  
 
-peerRemoved/peerAdded triggert nicht
-
-
 SyncKP bug tests
 
-Fragmentation wirft Exception, wenn der Anchor null ist
 Race Condition(broken fucking pipe)
