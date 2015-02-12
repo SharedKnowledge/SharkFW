@@ -3,11 +3,10 @@ package net.sharkfw.knowledgeBase.geom.jts;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryCollectionIterator;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -30,7 +29,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return true if valid
      * @throws SharkKBException
      */
-    public static boolean isValidWKT(String wkt) throws SharkKBException {
+    @Override
+    public boolean isValidWKT(String wkt) throws SharkKBException {
         Geometry jtsGeometry = null;
         WKTReader reader = new WKTReader();
         try {
@@ -49,7 +49,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return true
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean isValidEWKT(String ewkt) throws SharkKBException {
+    @Override
+    public boolean isValidEWKT(String ewkt) throws SharkKBException {
         return true;
     }
 
@@ -61,7 +62,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return true if both SpatialSemanticTags identical
      * @throws SharkKBException
      */
-    public static boolean identical(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
+    @Override
+    public boolean identical(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
         SpatialSTSet tempA = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSTSet tempB = InMemoSharkKB.createInMemoSpatialSTSet();
         tempA.merge(a);
@@ -78,7 +80,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return true if both SpatialSemanticTags identical
      * @throws SharkKBException
      */
-    public static boolean identical(SpatialSTSet a, SpatialSemanticTag b) throws SharkKBException {
+    @Override
+    public boolean identical(SpatialSTSet a, SpatialSemanticTag b) throws SharkKBException {
         SpatialSTSet tempB = InMemoSharkKB.createInMemoSpatialSTSet();
         tempB.merge(b);
         return identical(a, tempB);
@@ -92,7 +95,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean identical(SpatialSTSet a, SpatialSTSet b) throws SharkKBException {
+    @Override
+    public boolean identical(SpatialSTSet a, SpatialSTSet b) throws SharkKBException {
         List<Geometry> jtsGeomsA = getListWithJTSGeometries(a);
         List<Geometry> jtsGeomsB = getListWithJTSGeometries(b);
         // Geometry with/as GeometryCollection does not work
@@ -110,7 +114,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean isIn(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
+    @Override
+    public boolean isIn(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
         SpatialSTSet tempA = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSTSet tempB = InMemoSharkKB.createInMemoSpatialSTSet();
         tempA.merge(a);
@@ -126,7 +131,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean isIn(SpatialSTSet a, SpatialSemanticTag b) throws SharkKBException {
+    @Override
+    public boolean isIn(SpatialSTSet a, SpatialSemanticTag b) throws SharkKBException {
         SpatialSTSet tempB = InMemoSharkKB.createInMemoSpatialSTSet();
         tempB.merge(b);
         return isIn(a, tempB);
@@ -140,7 +146,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean isIn(SpatialSTSet a, SpatialSTSet b) throws SharkKBException {
+    @Override
+    public boolean isIn(SpatialSTSet a, SpatialSTSet b) throws SharkKBException {
         List<Geometry> jtsGeomsA = getListWithJTSGeometries(a);
         List<Geometry> jtsGeomsB = getListWithJTSGeometries(b);
         // Geometry with/as GeometryCollection does not work
@@ -159,7 +166,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return fragment
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static SpatialSTSet fragment(SpatialSTSet fragment, SpatialSTSet source, SpatialSemanticTag anchor) throws SharkKBException {
+    @Override
+    public SpatialSTSet fragment(SpatialSTSet fragment, SpatialSTSet source, SpatialSemanticTag anchor) throws SharkKBException {
         if (fragment == null) {
             throw new SharkKBException("fragment is null");
         } else {
@@ -181,7 +189,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static boolean isListDifferent(List<Geometry> a, List<Geometry> b) throws SharkKBException {
+    private boolean isListDifferent(List<Geometry> a, List<Geometry> b) throws SharkKBException {
         if (a.isEmpty() || b.isEmpty()) {
             return false;
         }
@@ -215,7 +223,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static boolean isListWithGeometriesCovered(List<Geometry> a, List<Geometry> b) throws SharkKBException {
+    private boolean isListWithGeometriesCovered(List<Geometry> a, List<Geometry> b) throws SharkKBException {
         boolean isCovered = false;
         for (Geometry geomA : a) {
             for (Geometry geomB : b) {
@@ -244,7 +252,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static List<Geometry> getIntersectsFromListsWithJTSGeommetries(List<Geometry> a, List<Geometry> b) throws SharkKBException {
+    private List<Geometry> getIntersectsFromListsWithJTSGeommetries(List<Geometry> a, List<Geometry> b) throws SharkKBException {
         List<Geometry> tempIntersects = new ArrayList();
         for (Geometry geomA : a) {
             for (Geometry geomB : b) {
@@ -267,7 +275,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static List<Geometry> divideExistingGeometryCollectionsInList(List<Geometry> geometries) throws SharkKBException {
+    private List<Geometry> divideExistingGeometryCollectionsInList(List<Geometry> geometries) throws SharkKBException {
         List<Geometry> geomsWithoutGeometryCollection = new ArrayList();
         for (Geometry geom : geometries) {
             if (geom.getClass().getName().compareTo("com.vividsolutions.jts.geom.GeometryCollection") == 0) {
@@ -286,11 +294,11 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static List<Geometry> divideGeometryCollection(GeometryCollection geomCollection) throws SharkKBException {
+    private List<Geometry> divideGeometryCollection(GeometryCollection geomCollection) throws SharkKBException {
         List<Geometry> tempGeomList = new ArrayList();
         int numberOfGeoms = geomCollection.getNumGeometries();
         for (int i = 0; i < numberOfGeoms; i++) {
-          tempGeomList.add(geomCollection.getGeometryN(i));
+            tempGeomList.add(geomCollection.getGeometryN(i));
         }
         return tempGeomList;
     }
@@ -301,7 +309,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static List getListWithJTSGeometries(SpatialSTSet spatialSTSet) throws SharkKBException {
+    private List getListWithJTSGeometries(SpatialSTSet spatialSTSet) throws SharkKBException {
         List<String> wktGeometries = extractWKTGeometries(spatialSTSet);
         return convertToJTSGeometries(wktGeometries);
     }
@@ -312,7 +320,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static List<String> extractWKTGeometries(SpatialSTSet spatialSTSet) throws SharkKBException {
+    private List<String> extractWKTGeometries(SpatialSTSet spatialSTSet) throws SharkKBException {
         List<String> wktGeometries = new ArrayList();
         Enumeration<SpatialSemanticTag> spatialSTEnum = spatialSTSet.spatialTags();
         while (spatialSTEnum.hasMoreElements()) {
@@ -327,7 +335,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private static List<Geometry> convertToJTSGeometries(List<String> wktGeometries) throws SharkKBException {
+    private List<Geometry> convertToJTSGeometries(List<String> wktGeometries) throws SharkKBException {
         List<Geometry> jtsGeometries = new ArrayList();
         WKTReader reader = new WKTReader();
         for (String wktGeom : wktGeometries) {

@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.geom;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 
 /**
@@ -21,7 +22,7 @@ public class SpatialAlgebra {
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean isValidWKT(String wkt) throws SharkKBException {
+    public boolean isValidWKT(String wkt) throws SharkKBException {
         //see InMemoSharkGeometry createGeomByWKT();
         return true;
     }
@@ -33,7 +34,7 @@ public class SpatialAlgebra {
      * @return
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public static boolean isValidEWKT(String ewkt) throws SharkKBException {
+    public boolean isValidEWKT(String ewkt) throws SharkKBException {
         //see InMemoSharkGeometry createGeomByEWKT();
         return true;
     }
@@ -41,7 +42,32 @@ public class SpatialAlgebra {
     ////////////////////////////////////////////////////////////////////////
     //           very optimistic dummy implementation start here.         //
     ////////////////////////////////////////////////////////////////////////
-    public static boolean identical(SpatialSemanticTag sTagA, SpatialSemanticTag sTagB) throws SharkKBException {
+    public boolean identical(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
         return true;
     }
+
+    public boolean identical(SpatialSTSet a, SpatialSemanticTag b) throws SharkKBException {
+        return true;
+    }
+
+    public boolean identical(SpatialSTSet a, SpatialSTSet b) throws SharkKBException {
+        return true;
+    }
+
+    public boolean isIn(SpatialSemanticTag a, SpatialSemanticTag b) throws SharkKBException {
+        return true;
+    }
+
+    public boolean isIn(SpatialSTSet a, SpatialSemanticTag b) throws SharkKBException {
+        return true;
+    }
+
+    public boolean isIn(SpatialSTSet a, SpatialSTSet b) throws SharkKBException {
+        return true;
+    }
+
+    public SpatialSTSet fragment(SpatialSTSet fragment, SpatialSTSet source, SpatialSemanticTag anchor) throws SharkKBException {
+        return null;
+    }
+
 }
