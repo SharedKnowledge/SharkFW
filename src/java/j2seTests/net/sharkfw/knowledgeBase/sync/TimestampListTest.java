@@ -5,7 +5,6 @@
  */
 package net.sharkfw.knowledgeBase.sync;
 
-import java.io.File;
 import java.util.Date;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.PeerSTSet;
@@ -16,7 +15,6 @@ import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,13 +39,6 @@ public class TimestampListTest {
         _bobPST = _kb.createPeerSemanticTag("Bob", "www.bob.net", "mail@bob.net");
         _claraPST = _kb.createPeerSemanticTag("Clara", "www.clara.net", "mail@clara.net");
         _cc = _kb.createContextCoordinates(_teapotST, _alicePST, _alicePST, _bobPST, null, null, SharkCS.DIRECTION_INOUT);
-    }
-    
-    @After
-    public void tearDown() {
-        // Remove the created file
-        File f = new File(TimestampList.FILENAME);
-        f.delete();
     }
 
     @Test
