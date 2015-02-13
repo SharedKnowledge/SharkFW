@@ -32,8 +32,8 @@ import org.junit.Test;
 
 public class SyncKPTests {
 
-    private final long connectionTimeOut = 3000;
-    private final long SLEEP_TIMEOUT = 5000;
+    private final long connectionTimeOut = 2000;
+    private final long SLEEP_TIMEOUT = 6000;
     private SyncKB _aliceKB, _bobKB;
     private SyncKP _aliceSyncKP, _bobSyncKP;
     private SharkEngine _aliceEngine, _bobEngine;
@@ -54,7 +54,7 @@ public class SyncKPTests {
     
     @BeforeClass
     public static void setUpClass(){
-            L.setLogLevel(L.LOGLEVEL_ERROR);
+            L.setLogLevel(L.LOGLEVEL_DEBUG);
     }
 
     @Before
@@ -85,6 +85,8 @@ public class SyncKPTests {
     public void tearDown() throws SharkProtocolNotSupportedException, InterruptedException {
         _aliceEngine.stopTCP();
         _bobEngine.stopTCP();
+        _aliceEngine = null;
+        _bobEngine = null;
         _aliceKB = null;
         _bobKB = null;
         Thread.sleep(2000);

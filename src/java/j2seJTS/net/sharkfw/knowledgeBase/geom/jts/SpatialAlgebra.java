@@ -100,10 +100,12 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         List<Geometry> jtsGeomsA = getListWithJTSGeometries(a);
         List<Geometry> jtsGeomsB = getListWithJTSGeometries(b);
         // Geometry with/as GeometryCollection does not work
-        List<Geometry> jtsGeomsOnlyA = divideExistingGeometryCollectionsInList(jtsGeomsA);
-        List<Geometry> jtsGeomsOnlyB = divideExistingGeometryCollectionsInList(jtsGeomsB);
+        List<Geometry> jtsGeomsOnlyA = divideAllExistingGeometryCollections(jtsGeomsA);
+        List<Geometry> jtsGeomsOnlyB = divideAllExistingGeometryCollections(jtsGeomsB);
         List<Geometry> jtsIntersectedGeoms = getIntersectsFromListsWithJTSGeommetries(jtsGeomsOnlyA, jtsGeomsOnlyB);
-        return isListDifferent(jtsIntersectedGeoms, jtsGeomsOnlyB);
+        List<Geometry> jtsIntersectedGeomsUnioned = unionTouchedJTSGeometries(jtsIntersectedGeoms);
+        List<Geometry> jtsGeomsOnlyBUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyB);
+        return isListDifferent(jtsIntersectedGeomsUnioned, jtsGeomsOnlyBUnioned);
     }
 
     /**
@@ -151,10 +153,12 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         List<Geometry> jtsGeomsA = getListWithJTSGeometries(a);
         List<Geometry> jtsGeomsB = getListWithJTSGeometries(b);
         // Geometry with/as GeometryCollection does not work
-        List<Geometry> jtsGeomsOnlyA = divideExistingGeometryCollectionsInList(jtsGeomsA);
-        List<Geometry> jtsGeomsOnlyB = divideExistingGeometryCollectionsInList(jtsGeomsB);
+        List<Geometry> jtsGeomsOnlyA = divideAllExistingGeometryCollections(jtsGeomsA);
+        List<Geometry> jtsGeomsOnlyB = divideAllExistingGeometryCollections(jtsGeomsB);
         List<Geometry> jtsIntersectedGeoms = getIntersectsFromListsWithJTSGeommetries(jtsGeomsOnlyA, jtsGeomsOnlyB);
-        return isListWithGeometriesCovered(jtsIntersectedGeoms, jtsGeomsOnlyB);
+        List<Geometry> jtsIntersectedGeomsUnioned = unionTouchedJTSGeometries(jtsIntersectedGeoms);
+        List<Geometry> jtsGeomsOnlyBUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyB);
+        return isListWithGeometriesCovered(jtsIntersectedGeomsUnioned, jtsGeomsOnlyBUnioned);
     }
 
     /**
@@ -244,6 +248,34 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         }
         return isCovered;
     }
+    
+    private List<Geometry> unionTouchedJTSGeometries(List<Geometry> geometries) throws SharkKBException
+    {
+      List<Geometry> resultGeometries = new ArrayList();
+      boolean wasTouched = false;
+      if (geometries.size() > 0)
+      {
+        Geometry firstGeom = geometries.get(0);
+        for (Geometry geom : geometries) {
+          try {
+            boolean isTouch = (firstGeom.touches(geom) && !firstGeom.equals((Object)geom));
+            if (isTouch) {
+              resultGeometries.add(firstGeom.union(geom));
+              wasTouched = true;
+            }
+            else {
+              resultGeometries.add(firstGeom);
+            }
+          } catch (IllegalArgumentException ex) {
+              throw new SharkKBException("Touch with GeometryCollection is not allowed.");
+          }              
+        }
+        if (wasTouched) {
+          resultGeometries = unionTouchedJTSGeometries(resultGeometries);
+        }
+      }
+      return resultGeometries;
+    }
 
     /**
      *
@@ -275,15 +307,23 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @return
      * @throws SharkKBException
      */
-    private List<Geometry> divideExistingGeometryCollectionsInList(List<Geometry> geometries) throws SharkKBException {
+    private List<Geometry> divideAllExistingGeometryCollections(List<Geometry> geometries) throws SharkKBException {
         List<Geometry> geomsWithoutGeometryCollection = new ArrayList();
+        boolean wasDivided = false;
         for (Geometry geom : geometries) {
-            if (geom.getClass().getName().compareTo("com.vividsolutions.jts.geom.GeometryCollection") == 0) {
+            String geomCollClassName = "com.vividsolutions.jts.geom.GeometryCollection";
+            boolean isCollection = ((geom.getClass().getName().compareTo(geomCollClassName) == 0) ||
+                                    (geom.getClass().getSuperclass().getName().compareTo(geomCollClassName) == 0));
+            if (isCollection) {
                 List<Geometry> dividedGeometries = divideGeometryCollection((GeometryCollection) geom);
                 geomsWithoutGeometryCollection.addAll(dividedGeometries);
+                wasDivided = true;
             } else {
                 geomsWithoutGeometryCollection.add(geom);
             }
+        }
+        if (wasDivided) {
+          geomsWithoutGeometryCollection = divideAllExistingGeometryCollections(geomsWithoutGeometryCollection);
         }
         return geomsWithoutGeometryCollection;
     }
