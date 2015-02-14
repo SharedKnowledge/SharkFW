@@ -475,7 +475,7 @@ public class JTSMain {
 
     @Test
     public void checkSpatialAlgebraIdenticalSemanticTags_MULTIPOINT_POINT() throws SharkKBException {
-        SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipoint_Berlin_HTW_WH_G);
+        SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipoint_Berlin_HTW_WH_Complete);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Point_Berlin_HTW_WH_G);
         Assert.assertEquals(false, usedFunctionClass.identical(tag1, tag2));
     }

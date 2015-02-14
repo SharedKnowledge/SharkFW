@@ -38,6 +38,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         } catch (ParseException ex) {
             throw new SharkKBException("WKT parsing problem");
         }
+        jtsGeometry = jtsGeometry.union(); //because of self-intersection
         IsValidOp validOp = new IsValidOp(jtsGeometry);
         return validOp.isValid();
     }
@@ -51,7 +52,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      */
     @Override
     public boolean isValidEWKT(String ewkt) throws SharkKBException {
-        return true;
+        return super.isValidEWKT(ewkt);
     }
 
     /**
