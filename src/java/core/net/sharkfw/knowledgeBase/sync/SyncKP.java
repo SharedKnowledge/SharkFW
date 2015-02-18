@@ -117,33 +117,59 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         this.setInterest(_syncInterest);
     }
 
+    /**
+     * Getter for the current retry timeout.
+     * @return the retry timeout in seconds
+     */
     public long getRetryTimeout() {
         return _retryTimeout / 1000;
     }
 
+    /**
+     * Setter for the current retry timeout.
+     * @param retryTimeout 
+     */
     public void setRetryTimeout(long retryTimeout) {
         this._retryTimeout = retryTimeout * 1000;
     }
     
+    /**
+     * Setter for the topics fragmentation parameter that will allow
+     * the user of the SyncKB to synchronize non-contextualized data.
+     * @param topicsFP 
+     */
     public void setTopicsFP(FragmentationParameter topicsFP) {
         this._topicsFP = topicsFP;
     }
 
+    /**
+     * Setter for the peer fragmentation parameter that will allow
+     * the user of the SyncKB to synchronize non-contextualized data.
+     * @param peersFP 
+     */
     public void setPeersFP(FragmentationParameter peersFP) {
         this._peersFP = peersFP;
     }
 
+    /**
+     * Getter for the topics fragmentation parameter
+     * @return the topics fragmentation parameter
+     */
     public FragmentationParameter getTopicsFP() {
         return _topicsFP;
     }
 
+    /**
+     * Getter for the peer fragmentation parameter
+     * @return the peer fragmentation parameter
+     */
     public FragmentationParameter getPeersFP() {
         return _peersFP;
     }
     
     /**
      * Explicitly sync the entire knowledge base again with all peers.
-     * Will cause a huge traffic with big knowledge bases.
+     * Will cause huge traffic with big knowledge bases.
      */
     public void syncAllKnowledge() {
         _timestamps.setAllTimestampsNull();
