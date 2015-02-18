@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sharkfw.knowledgeBase.sync;
 
 import java.util.ArrayList;
@@ -15,7 +10,7 @@ import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
 /**
- *
+ * Internal class that serializes Context Coordinates for the SyncKB.
  * @author s0539710
  */
 class ContextCoordinatesSerializer {
@@ -64,6 +59,13 @@ class ContextCoordinatesSerializer {
         return buf.toString();
     }
     
+    /**
+     * Deserializes sync context points from a string.
+     * @param serialized - the input string
+     * @return a list of context coordinates
+     * @throws SharkKBException
+     * @throws SharkException 
+     */
     protected static List<SyncContextPoint> deserializeContextCoordinatesList(String serialized) throws SharkKBException, SharkException {
         //serialized = disableXMLWorkaround(serialized);
         String cs;
@@ -89,6 +91,13 @@ class ContextCoordinatesSerializer {
         return deserialized;
     }
     
+    /**
+     * Extracts context coordinates from a string.
+     * @param s - the input string
+     * @return context coordinates
+     * @throws SharkKBException
+     * @throws IllegalArgumentException 
+     */
     protected static ContextCoordinates extractCC(String s) throws SharkKBException, IllegalArgumentException {
         if (!s.startsWith(startTag(ITEM_TAG)) || !s.endsWith(endTag(ITEM_TAG))) {
             L.d("extractCC in ContextCoordinatesSerializer: parameter does not begin and end with item tag: \n" + s);
@@ -106,6 +115,12 @@ class ContextCoordinatesSerializer {
         }
     }
     
+    /**
+     * extracts the version from a string.
+     * @param s - the input string
+     * @return the version string
+     * @throws IllegalArgumentException 
+     */
     protected static String extractVersion(String s) throws IllegalArgumentException {
         if (!s.startsWith(startTag(ITEM_TAG)) || !s.endsWith(endTag(ITEM_TAG))) {
             L.d("extractVersion in ContextCoordinatesSerializer: parameter does not begin and end with item tag: \n" + s);
@@ -121,6 +136,7 @@ class ContextCoordinatesSerializer {
     
     /* This is the dirtiest hack Ive ever done. Sorry.
      * It enables us to put XML within a property without breaking the XMLSerializer.
+     * Deprecated.
      */
     private static String enableXMLWorkaround(String s) {
         return s.replaceAll("<", XML_INTRO).replaceAll(">", XML_OUTRO);
@@ -128,6 +144,7 @@ class ContextCoordinatesSerializer {
     
     /* This is the dirtiest hack Ive ever done. Sorry.
      * It enables us to put XML within a property without breaking the XMLSerializer.
+     * Deprecated
      */
     private static String disableXMLWorkaround(String s) {
         return s.replaceAll(XML_INTRO, "<").replaceAll(XML_OUTRO, ">");

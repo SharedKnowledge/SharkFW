@@ -10,8 +10,12 @@ import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationListener;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
+/**
+ * Implements a synchronized information. Delegates most of its
+ * functionality to the internal information.
+ * @author hellerve
+ */
 public class SyncInformation implements Information{
-	
 	private final Information _localInformation;
 	protected static String VERSION_PROPERTY_NAME = "SyncInformation_internalVersion";
 	protected static String VERSION_DEFAULT_VALUE = "1";

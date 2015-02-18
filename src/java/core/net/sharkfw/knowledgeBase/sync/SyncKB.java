@@ -7,10 +7,11 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
+ * Implements a synchronized KB. Delegates most of its
+ * functionality to the internal KB.
  * @author simonArnold
  * @author hellerve
  */
-
 public class SyncKB implements SharkKB {
     
     SharkKB _localKB = null;

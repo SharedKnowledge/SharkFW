@@ -15,13 +15,21 @@ import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationListener;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
+/**
+ * Implements a synchronized context point. Delegates 
+ * most of its functionality to the internal context point.
+ * @author hellerve
+ */
 public class SyncContextPoint implements ContextPoint, InformationListener {
-	
     private ContextPoint _localCP = null;
     protected static String VERSION_PROPERTY_NAME = "SyncCP_internalVersion";
     protected static String VERSION_DEFAULT_VALUE = "1";
     protected static String TIMESTAMP_PROPERTY_NAME = "SyncCP_internalTimestamp";
 
+    /**
+     * The constructor. Needs a context point to wrap.
+     * @param c - the internal context point 
+     */
     public SyncContextPoint(ContextPoint c){
             _localCP = c;
             if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null){
