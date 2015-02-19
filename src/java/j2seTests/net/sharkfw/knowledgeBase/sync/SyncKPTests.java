@@ -57,6 +57,9 @@ public class SyncKPTests {
             L.setLogLevel(L.LOGLEVEL_DEBUG);
     }
 
+    private static final String ALICE_IDENTIFIER = "aliceIdentifier";
+    private static final String BOB_IDENTIFIER = "bobIdentifier";
+    
     @Before
     public void setUp() throws SharkKBException{
         // Set up KBs
@@ -64,12 +67,41 @@ public class SyncKPTests {
         _bobKB = new SyncKB(new InMemoSharkKB());
         // Set up peers with new ports
         _alicePort = getPort();
-        _alice = _aliceKB.createPeerSemanticTag("Alice", "aliceIdentifier", "tcp://localhost:"+_alicePort);
+        _alice = _aliceKB.getPeerSemanticTag(ALICE_IDENTIFIER);
+        if(_alice == null) {
+            _alice = _aliceKB.createPeerSemanticTag("Alice", ALICE_IDENTIFIER, "tcp://localhost:"+_alicePort);
+        } else {
+            // alice already defined - change address
+            _alice.setAddresses(new String[] {"tcp://localhost:"+_alicePort});
+        }
+        
         _bobPort = getPort();
-        _bob = _bobKB.createPeerSemanticTag("Bob", "bobIdentifier", "tcp://localhost:"+_bobPort);
+        _bob = _bobKB.getPeerSemanticTag(BOB_IDENTIFIER);
+        if(_bob == null) {
+            _bob = _bobKB.createPeerSemanticTag("Alice", BOB_IDENTIFIER, "tcp://localhost:"+_bobPort);
+        } else {
+            // alice already defined - change address
+            _bob.setAddresses(new String[] {"tcp://localhost:"+_bobPort});
+        }
+        
         // Let each know about each other
+        
+        // remove previously defined pst
+        PeerSemanticTag tmpPeer = _aliceKB.getPeerSTSet().getSemanticTag(BOB_IDENTIFIER);
+        if(tmpPeer != null) {
+            _aliceKB.getPeerSTSet().removeSemanticTag(tmpPeer);
+        }
+        
+        // add new peer description
         _aliceKB.getPeerSTSet().merge(_bob);
+        
+        // remove previously defined pst
+        tmpPeer = _bobKB.getPeerSTSet().getSemanticTag(ALICE_IDENTIFIER);
+        if(tmpPeer != null) {
+            _bobKB.getPeerSTSet().removeSemanticTag(tmpPeer);
+        }
         _bobKB.getPeerSTSet().merge(_alice);
+        
         // Set up engines
         _aliceEngine = new J2SEAndroidSharkEngine();
         _bobEngine = new J2SEAndroidSharkEngine();
