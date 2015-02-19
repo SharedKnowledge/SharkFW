@@ -424,7 +424,7 @@ public abstract class SharkCSAlgebra {
         
         if(depth < 1) return fragment;
         
-        if(!merge) { // must already be there
+        if(!merge && sourceTag != null) { // must already be there
             fragmentTag = fragment.getSemanticTag(sourceTag.getSI());
         }
         
@@ -1938,28 +1938,54 @@ public abstract class SharkCSAlgebra {
                     target.getTopicsAsSemanticNet().merge(topicBG);
                 }
 
+        PeerSTSet tmpPeerST = InMemoSharkKB.createInMemoPeerSTSet();
+        tmpPeerST.merge(context.getOriginator());
+        
+        PeerSemanticTag originatorBG = null;
+        PeerSTSet peerBG = null;
+        PeerSTSet remotePeerBG = null;
+        
         PeerTaxonomy peerTX = 
-                source.getPeersAsTaxonomy().contextualize(context.getPeers(), backgroundFP[SharkCS.DIM_PEER]);
+                source.getPeersAsTaxonomy().contextualize(tmpPeerST, backgroundFP[SharkCS.DIM_ORIGINATOR]);
         if(peerTX != null) {
-                    target.getPeersAsTaxonomy().merge(peerTX);
-                }
+               originatorBG = context.getOriginator();
+               target.getPeerSTSet().merge(context.getOriginator());
+        }
         
-        TimeSTSet times = 
+        peerTX = source.getPeersAsTaxonomy().contextualize(context.getPeers(), backgroundFP[SharkCS.DIM_PEER]);
+        if(peerTX != null) {
+            target.getPeersAsTaxonomy().merge(peerTX);
+            peerBG = peerTX.asPeerSTSet();
+        }
+        
+        PeerTaxonomy remotePeers = 
+                source.getPeersAsTaxonomy().contextualize(context.getRemotePeers(), backgroundFP[SharkCS.DIM_REMOTEPEER]);
+        if(peerTX != null) {
+            target.getPeersAsTaxonomy().merge(remotePeers);
+            remotePeerBG = remotePeers.asPeerSTSet();
+        }
+        
+        TimeSTSet timesBG = 
                 source.getTimeSTSet().contextualize(context.getTimes(), backgroundFP[SharkCS.DIM_TIME]);
-        if(times != null) {
-                    target.getTimeSTSet().merge(times);
+        if(timesBG != null) {
+                    target.getTimeSTSet().merge(timesBG);
                 }
         
-        SpatialSTSet locations =
+        SpatialSTSet locationsBG =
                 source.getSpatialSTSet().contextualize(context.getLocations(), backgroundFP[SharkCS.DIM_LOCATION]);
-        if(locations != null) {
-                    target.getSpatialSTSet().merge(locations);
+        if(locationsBG != null) {
+                    target.getSpatialSTSet().merge(locationsBG);
                 }
 
         // create knowledge with target with background
         Knowledge resultKnowledge = target.createKnowledge();
         
-        Enumeration<ContextPoint> cpEnum = source.getContextPoints(target.asSharkCS(), true);
+        SharkCS effectiveCC = InMemoSharkKB.createInMemoInterest(
+                topicBG, originatorBG, peerBG, remotePeerBG, 
+                timesBG, locationsBG, context.getDirection());
+        
+//        Enumeration<ContextPoint> cpEnum = source.getContextPoints(target.asSharkCS(), true);
+        Enumeration<ContextPoint> cpEnum = source.getContextPoints(effectiveCC, true);
         if(cpEnum == null) {
             return null;
         }

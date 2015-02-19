@@ -105,6 +105,7 @@ public class SyncKPTests {
         // Set up engines
         _aliceEngine = new J2SEAndroidSharkEngine();
         _bobEngine = new J2SEAndroidSharkEngine();
+        
         // Set owner
         _aliceKB.setOwner(_alice);
         _bobKB.setOwner(_bob);

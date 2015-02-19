@@ -252,4 +252,29 @@ public class Assimilate_ExtractionTests {
       String bobShovelString = new String(bobShovelContent);
       Assert.assertEquals(bobShovelString, "A shovel is a cool tool!");
     }
+    
+    @Test
+    public void phnxTest() throws SharkKBException, InterruptedException {
+        SharkKB kb = new InMemoSharkKB();
+        SemanticTag topic = kb.getTopicSTSet().createSemanticTag("asdad", "http://phnx.berlin/shark/equipment.html/asdsad");
+        PeerSemanticTag mustermann = kb.getPeerSTSet().createPeerSemanticTag("PHNX_BC_SI", "mustermann@htw-berlin.de", (String) null);
+        PeerSemanticTag phnx = kb.getPeerSTSet().createPeerSemanticTag("PHNX_Organization_SI", "www.phnx.de", (String) null);
+        
+        ContextCoordinates cpcc = kb.createContextCoordinates(topic, phnx, mustermann, null, null, null, SharkCS.DIRECTION_NOTHING);
+        
+        ContextPoint cp = kb.createContextPoint(cpcc);
+        cp.addInformation("huhu phnx");
+        
+        ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(null, phnx, null, null, null, null, SharkCS.DIRECTION_NOTHING);
+        
+        FragmentationParameter[] fps = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
+        FragmentationParameter fp = new FragmentationParameter(false, true, 1);
+        fps[SharkCS.DIM_TOPIC] = fp;
+        
+        Knowledge k = SharkCSAlgebra.extract(kb, cc, fps);
+        
+        Assert.assertNotNull(k);
+        
+//        System.out.println(L.knowledge2String(k));
+    }
 }
