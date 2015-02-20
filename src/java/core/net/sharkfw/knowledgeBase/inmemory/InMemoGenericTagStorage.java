@@ -10,6 +10,7 @@ import net.sharkfw.system.Iterator2Enumeration;
 /**
  *
  * @author thsc
+ * @param <ST>
  */
 public class InMemoGenericTagStorage<ST extends SemanticTag> {
         // A Hashtable containing all tags in this stset
@@ -29,36 +30,6 @@ public class InMemoGenericTagStorage<ST extends SemanticTag> {
     public int number() {
         return this.tags.size();
     }
-    
-    /**
-    * create and the si2id table for easy retrieval of tags from this stset.
-    * A previous version is discarded without any mercy.
-    */
-//    protected void initSi() {
-//
-//        this.si2tag = new Hashtable<String, ST>();
-//        Enumeration<ST> tagEnum = this.tags.elements();
-//
-//        while (tagEnum.hasMoreElements()) {
-//            ST tag = tagEnum.nextElement();
-//
-//            String[] sis = tag.getSI();
-//            if(sis == null || sis.length == 0) {
-//                continue;
-//            }
-//
-//            for (int i = 0; i < sis.length; i++) {
-//                // check whether that sis is already used - ignore it in this case
-//                // shouldn't happen btw.
-//
-//                String si = sis[i];
-//                if(si != null && this.si2tag.get(si) == null) {
-//                    // si not yet used - remember
-//                    this.si2tag.put(sis[i], tag);
-//                }
-//            }
-//         } // end for-loop
-//    }
     
     protected ST getSemanticTag(String si) throws SharkKBException {
         if(si == null) return null;
