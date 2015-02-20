@@ -30,6 +30,10 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
  * @author thsc
  */
 public class SQLSharkKB implements SharkKB {
+    
+    public SQLSharkKB() {
+        
+    }
 
     @Override
     public void setOwner(PeerSemanticTag owner) {
