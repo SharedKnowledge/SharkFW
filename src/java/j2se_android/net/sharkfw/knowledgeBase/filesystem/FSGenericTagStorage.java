@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.AbstractSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolderDelegate;
 import net.sharkfw.knowledgeBase.SemanticTag;
