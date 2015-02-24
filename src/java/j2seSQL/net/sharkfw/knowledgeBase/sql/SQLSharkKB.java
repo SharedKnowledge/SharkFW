@@ -1,5 +1,11 @@
 package net.sharkfw.knowledgeBase.sql;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
@@ -30,13 +36,37 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
  * @author thsc
  */
 public class SQLSharkKB implements SharkKB {
+    private Connection connection;
     
-    public SQLSharkKB() {
+    public SQLSharkKB(String connectionString, String user, String pwd) throws SharkKBException {
+	try {
+            connection = DriverManager.getConnection(connectionString, user, pwd);
+ 	} catch (SQLException e) {
+            throw new SharkKBException("cannot connect to database: " + e.getLocalizedMessage());
+ 	}
         
+ 	if (connection == null) {
+            throw new SharkKBException("cannot connect to database: reason unknown");
+	}
     }
 
     @Override
     public void setOwner(PeerSemanticTag owner) {
+        
+        Statement statement;
+        try {
+            statement = connection.createStatement();
+            statement.execute("INSERT INTO test(name) VALUES ('t');");
+            
+            ResultSet results = statement.executeQuery("SELECT * FROM test;");
+            // do someting with those results
+        } catch (SQLException e) {
+            System.err.println("Excuting SQL statment failed");
+            System.err.println(e.getMessage());
+        }
+        
+        int i = 42;
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

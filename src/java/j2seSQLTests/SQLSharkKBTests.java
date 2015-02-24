@@ -1,4 +1,5 @@
 import net.sharkfw.knowledgeBase.SharkKB;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.sql.SQLSharkKB;
 import org.junit.After;
 import org.junit.Before;
@@ -23,7 +24,7 @@ public class SQLSharkKBTests {
     }
 
      @Test
-     public void hello() {
-         SharkKB kb = new SQLSharkKB();
+     public void hello() throws SharkKBException {
+         SharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
      }
 }
