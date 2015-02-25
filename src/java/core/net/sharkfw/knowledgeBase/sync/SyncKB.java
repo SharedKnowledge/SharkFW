@@ -204,11 +204,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Double[] spatialCoo, double radius) throws SharkKBException {
-        return _localKB.createSpatialSemanticTag(name, sis, spatialCoo, radius);
-    }
-
-    @Override
     public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException {
         return _localKB.createTimeSemanticTag(name, sis);
     }

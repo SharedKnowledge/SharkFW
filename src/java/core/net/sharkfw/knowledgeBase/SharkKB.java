@@ -186,12 +186,62 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
      */
     public Interest createInterest(ContextCoordinates cc) throws SharkKBException;
     
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param name
+     * @param sis
+     * @return
+     * @throws SharkKBException 
+     */
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException;
+    
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param name
+     * @param si
+     * @return
+     * @throws SharkKBException 
+     */
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException;
 
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param name
+     * @param sis
+     * @param addresses
+     * @return
+     * @throws SharkKBException 
+     */
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException;
+    
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param name
+     * @param si
+     * @param address
+     * @return
+     * @throws SharkKBException 
+     */
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException;    
-    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException;    
+    
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param name
+     * @param sis
+     * @param address
+     * @return
+     * @throws SharkKBException 
+     */
+    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException;  
+    
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param name
+     * @param si
+     * @param addresses
+     * @return
+     * @throws SharkKBException 
+     */
     public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException;
 
     /**
@@ -203,23 +253,36 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
      */
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException;
     
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException;
-    
     /**
-     * @deprecated forget that stuff, please
+     * @deprecated use method semantic tag set instead
      * @param name
      * @param sis
-     * @param spatialCoo
-     * @param radius
+     * @param geom
      * @return
      * @throws SharkKBException 
      */
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Double[] spatialCoo, double radius) throws SharkKBException;
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException;
     
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param name
+     * @param sis
+     * @return
+     * @throws SharkKBException 
+     */
     public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException;
+    
+    /**
+     * @deprecated use method semantic tag set instead
+     * @param from
+     * @param duration
+     * @return
+     * @throws SharkKBException 
+     */
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException;
     
     /**
+     * @deprecated use method semantic tag set instead
      * Delete tag in any dimension - if it can be found
      * @param sis
      * @throws SharkKBException 
@@ -227,11 +290,15 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
     public void removeSemanticTag(String[] sis) throws SharkKBException;
     
     /**
+     * @deprecated use method semantic tag set instead
      * Delete tag in any dimension - if it can be found
      * @param st
      * @throws SharkKBException 
      */
     public void removeSemanticTag(SemanticTag st) throws SharkKBException;
     
+    /**
+     * TODO: shouldn't be a public method in interface
+     */
     public void persist();
 }

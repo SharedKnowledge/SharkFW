@@ -5,8 +5,6 @@ import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.peer.KnowledgePort;
-import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 import net.sharkfw.system.SharkNotSupportedException;
 import net.sharkfw.system.Util;
@@ -46,7 +44,7 @@ public class SimpleKBTest {
       PeerSemanticTag peer = kb.createPeerSemanticTag("Testpeer", "http://testpeer.de", "tcp://localhost:1234");
       TimeSemanticTag time = kb.createTimeSemanticTag(1000, 2000);
       
-      SpatialSemanticTag geo = kb.createSpatialSemanticTag("geo", new String[]{"http://geo.de"}, new Double[]{12.12, 34.21}, 0.0);
+//      SpatialSemanticTag geo = kb.createSpatialSemanticTag("geo", new String[]{"http://geo.de"}, new Double[]{12.12, 34.21}, 0.0);
 
       Enumeration<SemanticTag> tags = kb.tags();
       Assert.assertNotNull(tags);
@@ -57,60 +55,8 @@ public class SimpleKBTest {
         counter++;
       }
 
-      Assert.assertEquals(counter, 4);
+      Assert.assertEquals(counter, 3);
     }
-
-
-
-    /**
-     * Test the proper creation of interests using the new KB's methods.
-     *
-     * A Kb is created containing some tags.
-     * Then an anchorset is created using some of these tags as anchors, while
-     * leaving other dimensions unset.
-     * This AnchorSet is used to create the interest using the standard zero-FP.
-     * The result is checked for the proper contents of its dimensions.
-     *
-     * @throws SharkKBException
-     * @throws SharkNotSupportedException
-     */
-    @Test
-    public void testInterestCreation() throws SharkKBException {
-      InMemoSharkKB kb = new InMemoSharkKB();
-
-      // create some tags
-      SemanticTag topic = kb.createSemanticTag("Test", "http://test.de");
-      PeerSemanticTag peer = kb.createPeerSemanticTag("Testpeer", "http://testpeer.de", "tcp://localhost:1234");
-      TimeSemanticTag time = kb.createTimeSemanticTag(1000, 2000);
-      SpatialSemanticTag geo = kb.createSpatialSemanticTag("geo", new String[]{"http://geo.de"}, new Double[]{12.12, 34.21}, 0.0);
-
-      // Configure AnchorSet
-      ContextCoordinates as = InMemoSharkKB.createInMemoContextCoordinates(topic, peer, null, null, time, null, SharkCS.DIRECTION_INOUT);
-
-      // Trigger interest creation
-      Interest interest = kb.contextualize(as, KnowledgePort.getZeroFP());
-      System.out.println("contextualized interest: \n" + L.contextSpace2String(interest));
-
-      // Check if interest was created correctly
-      Assert.assertNotNull(interest);
-
-      // check if the proper tags are found
-      STSet interestTopics = interest.getSTSet(SharkCS.DIM_TOPIC);
-      Assert.assertTrue(interestTopics.tags().hasMoreElements());
-      printAllSiFromDim((STSet) interestTopics, "topic");
-
-      // location is unset and hence should have ANY set on this dimension
-      STSet interestLocations = interest.getSTSet(SharkCS.DIM_LOCATION);
-      Assert.assertFalse(SharkCSAlgebra.isAny(interestLocations));
-
-      STSet interestRemotepeers = interest.getSTSet(SharkCS.DIM_REMOTEPEER);
-      Assert.assertFalse(SharkCSAlgebra.isAny(interestRemotepeers));
-
-      STSet interestOriginators = interest.getSTSet(SharkCS.DIM_ORIGINATOR);
-      Assert.assertFalse(SharkCSAlgebra.isAny(interestOriginators));
-
-    }
-
 
     /**
      * Print all SI to the console, which can be retrieved using getAllSI().
@@ -143,17 +89,17 @@ public class SimpleKBTest {
       PeerSemanticTag peer = kb.createPeerSemanticTag("Peer", new String[]{"http://peer.de"}, new String[]{"tcp://peer.de:1234"});
       SemanticTag topic = kb.createSemanticTag("Topic", new String[]{"http://Topic.de"});
       TimeSemanticTag time = kb.createTimeSemanticTag(1000, 2000);
-      SpatialSemanticTag geo = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{12.34, 45.67}, 5000);
+//      SpatialSemanticTag geo = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{12.34, 45.67}, 5000);
 
       PeerSemanticTag peerResult = kb.getPeerSemanticTag(peer.getSI());
       SemanticTag topicResult = kb.getSemanticTag(topic.getSI());
       TimeSemanticTag timeResult = kb.getTimeSTSet().getTimeSemanticTag(time.getSI());
-      SpatialSemanticTag geoResult = kb.getSpatialSTSet().getSpatialSemanticTag(geo.getSI());
+//      SpatialSemanticTag geoResult = kb.getSpatialSTSet().getSpatialSemanticTag(geo.getSI());
 
       Assert.assertEquals(peer, peerResult);
       Assert.assertEquals(topic, topicResult);
       Assert.assertEquals(time, timeResult);
-      Assert.assertEquals(geo, geoResult);
+//      Assert.assertEquals(geo, geoResult);
 
     }
 
@@ -246,36 +192,6 @@ public class SimpleKBTest {
     }
 
     /**
-     * Create a tag.
-     *
-     * Create a new STSet using the KB
-     *
-     * Check if the newly created STSet is intially empty
-     *
-     * Add the created tag to the stset
-     *
-     * Check if the stset is no longer empty
-     */
-    @Test
-    public void testCreateGeoSTSet() throws SharkKBException {
-      SharkKB kb = new InMemoSharkKB();
-
-
-      // Create a tag
-      SpatialSemanticTag geo = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{12.34, 45.67}, 0.0);
-
-      SpatialSTSet stset = InMemoSharkKB.createInMemoSpatialSTSet();
-      Enumeration tagEnum = stset.tags();
-      Assert.assertTrue(!tagEnum.hasMoreElements()); // No tags must be present
-
-      // Add a tag to the stset
-      stset.merge(geo);
-
-      Enumeration tagEnumNew = stset.tags();
-      Assert.assertTrue(tagEnumNew.hasMoreElements()); // Must have at least one element
-    }
-
-    /**
      * <ul>
      * <li>Create two topic tags inside the kb</li>
      * <li>Associated them with each other</li>
@@ -330,18 +246,15 @@ public class SimpleKBTest {
       PeerSemanticTag peerA = kb.createPeerSemanticTag("PeerA", "http://peerA.de", "tcp://peerA.de:1234");
       PeerSemanticTag peerB = kb.createPeerSemanticTag("PeerB", "http://peerB.de", "tcp://peerB.de:1234");
 
-      SpatialSemanticTag location1 = kb.createSpatialSemanticTag("location1", new String[]{"http://location1.de"}, new Double[]{1234.0, 456.0}, 100.0);
-      SpatialSemanticTag location2 = kb.createSpatialSemanticTag("location2", new String[]{"http://location2.de"}, new Double[]{5555.0, 4444.0}, 100.0);
-
       TimeSemanticTag ttag1 = kb.createTimeSemanticTag(1, 4);
       TimeSemanticTag ttag2 = kb.createTimeSemanticTag(100, 400);
 
       // create ContextPoints
-      ContextCoordinates co1 = kb.createContextCoordinates(java, null, peerA, null, ttag1, location1, SharkCS.DIRECTION_IN);
+      ContextCoordinates co1 = kb.createContextCoordinates(java, null, peerA, null, ttag1, null, SharkCS.DIRECTION_IN);
       ContextPoint cp1 = kb.createContextPoint(co1);
       // Leaving away information, as they are not needed for testing the method
 
-      ContextCoordinates co2 = kb.createContextCoordinates(coffee, null, peerB, null, ttag2, location2, SharkCS.DIRECTION_OUT);
+      ContextCoordinates co2 = kb.createContextCoordinates(coffee, null, peerB, null, ttag2, null, SharkCS.DIRECTION_OUT);
       ContextPoint cp2 = kb.createContextPoint(co2);
       // Leaving away information, as they are not needed for testing the method
 
@@ -357,7 +270,7 @@ public class SimpleKBTest {
       topics.merge(java);
       peers.merge(peerA);
       times.merge(ttag1);
-      geo.merge(location1);
+//      geo.merge(location1);
 
       interest.setDirection(SharkCS.DIRECTION_INOUT);
       interest.setTopics(topics);
@@ -387,7 +300,7 @@ public class SimpleKBTest {
       topics.merge(coffee);
       peers.merge(peerB);
       times.merge(ttag2);
-      geo.merge(location2);
+//      geo.merge(location2);
       
 
       // same code as above

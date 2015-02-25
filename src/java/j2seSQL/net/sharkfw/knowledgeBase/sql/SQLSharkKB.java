@@ -32,7 +32,14 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
- * This shall become a SQL implementation of the SharkKB
+ * This shall become a SQL implementation of the SharkKB.
+ * 
+ * Scatch:
+ * properties:
+ * <ul>
+ * <li>Properties</li>
+ * <li>Owner</li>
+ * </ul>
  * @author thsc
  */
 public class SQLSharkKB implements SharkKB {
@@ -48,6 +55,13 @@ public class SQLSharkKB implements SharkKB {
  	if (connection == null) {
             throw new SharkKBException("cannot connect to database: reason unknown");
 	}
+        
+        // check if tables already created - if not - do it
+        this.setupKB();
+    }
+    
+    private void setupKB() {
+        
     }
 
     @Override
@@ -182,11 +196,6 @@ public class SQLSharkKB implements SharkKB {
 
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, Double[] spatialCoo, double radius) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
