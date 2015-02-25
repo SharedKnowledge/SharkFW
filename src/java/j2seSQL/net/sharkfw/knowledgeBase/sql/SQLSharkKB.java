@@ -39,6 +39,8 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
  * <ul>
  * <li>Properties</li>
  * <li>Owner</li>
+ * <li>Knowledge</li>
+ * <li>Vocabulary: STSet, PeerSTSet, SpatialSTSet, TimeSTSet</li>
  * </ul>
  * @author thsc
  */
@@ -376,6 +378,16 @@ public class SQLSharkKB implements SharkKB {
 
     @Override
     public Iterator<SharkCS> interests() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

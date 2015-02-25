@@ -387,4 +387,14 @@ public class SyncKB implements SharkKB {
     public Iterator<SharkCS> interests() throws SharkKBException {
         return _localKB.interests();
     }
+
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
+        return _localKB.contextPoints(cs);
+    }
+
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
+        return _localKB.contextPoints(cs, matchAny);
+    }
 }

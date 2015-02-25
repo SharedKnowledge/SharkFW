@@ -308,6 +308,12 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException {
         return this.getContextPoints(cs, true);
     }
+    
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
+        return this.contextPoints(cs, true);
+    }
+    
     /**
      * Return all context points that are in the context space.
      * 
@@ -332,6 +338,15 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      */
     @Override
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
+        Iterator<ContextPoint> iterCPs = this.contextPoints(cs, matchAny);
+        if(iterCPs == null) return null;
+        
+        // else
+        return new Iterator2Enumeration(iterCPs);
+    }
+    
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
         if(cs == null) return null;
         
         HashSet<ContextPoint> result = new HashSet<ContextPoint>();
@@ -366,9 +381,10 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         }
 
         if(result.isEmpty()) return null;
-        // else
-        return new Iterator2Enumeration(result.iterator());
+        
+        return result.iterator();
     }
+    
     
     public static ContextCoordinates getAnyCoordinates() {
         return InMemoSharkKB.createInMemoContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);

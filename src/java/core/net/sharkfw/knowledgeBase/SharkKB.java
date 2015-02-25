@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
@@ -132,7 +133,20 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException;
 
+  /**
+   * Return (copies) of all ContextPoints, which are covered by the 
+   * ContextSpace <code>cs</code>. Note: Just the context points are copied, information
+   * not.
+   * 
+   * @param cs
+   * @return
+   * @throws SharkKBException 
+   */
+  public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException;
+
   public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException;
+  
+  public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException;
   
   /**
    * Returns enumeration of all context points. This actually is the same as
