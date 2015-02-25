@@ -287,7 +287,7 @@ public class FSGenericTagStorage<ST extends SemanticTag> extends
         while(siIter.hasNext()) {
             String si = siIter.next();
             try {
-                // just touch it - it comes no into memory;
+                // just touch it - it comes now into memory;
                 this.getSemanticTag(si);
             } catch (SharkKBException ex) {
                 L.w("cannot read tag from file system", this);

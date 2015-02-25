@@ -23,14 +23,9 @@ public class SQLGenericTagStorage<ST extends SemanticTag> extends
         this.sqlSharkKB = sqlSharkKB;
     }
     
-    protected void persist() {
-        // nothing todo - that's a database!
-    }
-    
     /**
      *
      * @param t
-     * @param tag
      * @throws SharkKBException
      */
     @Override
@@ -60,6 +55,19 @@ public class SQLGenericTagStorage<ST extends SemanticTag> extends
             throw new SharkKBException(e.getLocalizedMessage());
         }
     }   
+    
+    // TODO
+    @Override
+    public void siAdded(String addSI, ST tag) {
+        super.siAdded(addSI, tag);
+    }
+
+    // TODO
+    @Override
+    public void siRemoved(String deleteSI, ST tag) {
+        super.siRemoved(deleteSI, tag);
+    }
+    
     
     /**
      * TODO must be overwritten
