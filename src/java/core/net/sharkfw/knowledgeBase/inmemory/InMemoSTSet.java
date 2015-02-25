@@ -63,7 +63,7 @@ public class InMemoSTSet implements STSet {
      * @param storage 
      */
     @SuppressWarnings("rawtypes")
-    InMemoSTSet(InMemoGenericTagStorage storage) {
+    public InMemoSTSet(InMemoGenericTagStorage storage) {
         this.storage = storage;
     }
 
@@ -89,6 +89,7 @@ public class InMemoSTSet implements STSet {
         return this.storage.tags();
     }
 
+    @Override
     public void setEnumerateHiddenTags(boolean hide) {
         this.storage.setEnumerateHiddenTags(hide);
     }

@@ -32,6 +32,7 @@ import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
 import net.sharkfw.system.L;
 
 /**
@@ -70,6 +71,10 @@ public class SQLSharkKB implements SharkKB {
         
         // check if tables already created - if not - do it
         this.setupKB();
+    }
+    
+    Connection getConnection() {
+        return this.connection;
     }
 
     public static final String SHARKKB_TABLE = "knowledgebase";
@@ -217,11 +222,6 @@ public class SQLSharkKB implements SharkKB {
                         + "direction smallint"
                         + ");");
             }
-            
-//            statement.execute("INSERT INTO test(name) VALUES ('t');");
-//            
-//            ResultSet results = statement.executeQuery("SELECT * FROM test;");
-            // do someting with those results
         } catch (SQLException e) {
             L.w("error while setting up tables: " + e.getLocalizedMessage(), this);
             throw new SharkKBException("error while setting up tables: " + e.getLocalizedMessage());
@@ -406,7 +406,8 @@ public class SQLSharkKB implements SharkKB {
     
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLGenericTagStorage tagStorage = new SQLGenericTagStorage(this);
+        return new InMemoSTSet(tagStorage);
     }
 
     @Override
@@ -599,5 +600,5 @@ public class SQLSharkKB implements SharkKB {
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
