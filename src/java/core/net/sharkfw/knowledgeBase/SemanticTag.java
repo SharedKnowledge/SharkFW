@@ -39,8 +39,6 @@ package net.sharkfw.knowledgeBase;
  * <code>si1.equals(si2);</code> <br />
  * </p>
  * 
- * @see net.sharkfw.knowledgeBase.ROSemanticTag
- * 
  * @author thsc
  * @author mfi
  */

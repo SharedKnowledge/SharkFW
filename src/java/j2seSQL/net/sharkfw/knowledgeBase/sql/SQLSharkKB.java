@@ -78,8 +78,13 @@ public class SQLSharkKB implements SharkKB {
     public static final String SI_TABLE = "subjectidentifier";
     public static final String ADDRESS_TABLE = "addresses";
     public static final String CP_TABLE = "contextpoints";
-    public static final String MAX_SI_SIZE = "200";
     
+    public static final String MAX_SI_SIZE = "200";
+    public static final String MAX_ST_NAME_SIZE = "200";
+    public static final String MAX_EWKT_NAME_SIZE = "200";
+    public static final String MAX_PROPERTY_NAME_SIZE = "200";
+    public static final String MAX_PROPERTY_VALUE_SIZE = "200";
+    public static final String MAX_ADDR_SIZE = "200";
     
     /**
      * Tables: 
@@ -92,48 +97,134 @@ public class SQLSharkKB implements SharkKB {
      * <li>contextpoints</li>
      * <Iul>
      */
-    private void setupKB() {
-        Statement statement;
-        
+    private void setupKB() throws SharkKBException {
         try {
-        
-        // CREATE TABLE distributors (
-  //   did    integer PRIMARY KEY DEFAULT nextval('serial'),
-  //   name   varchar(40) NOT NULL CHECK (name <> '')
-        
-        // create knowledge base table
-        
-        // already exists?
-            statement = connection.createStatement();
+            Statement statement  = connection.createStatement();
             
+            /************** Knowledge base table *****************************/
             try {
                 statement.execute("SELECT * from " + SQLSharkKB.SHARKKB_TABLE);
-                
                 L.d(SQLSharkKB.SHARKKB_TABLE + " already exists", this);
             }
             catch(SQLException e) {
                 // does not exist: create
-//                statement.execute("CREATE TABLE " + SQLSharkKB.SHARKKB_TABLE + 
-//                        " id ,"
-//                        + "owner varchar(" + SQLSharkKB.MAX_SI_SIZE + ")");
                 L.d(SQLSharkKB.SHARKKB_TABLE + "does not exists - create", this);
-                try {
-                    statement.execute("drop sequence kbid;");
-                }
-                catch(SQLException ee) {
-                    // ignore
-                }
-                
+                try { statement.execute("drop sequence kbid;"); }
+                catch(SQLException ee) { /* ignore */ }
                 statement.execute("create sequence kbid;");
-                statement.execute("CREATE TABLE knowledgebase (id integer PRIMARY KEY default nextval('kbid'), owner character varying(200));");
+                statement.execute("CREATE TABLE " + SQLSharkKB.SHARKKB_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('kbid'), "
+                        + "ownerID integer" // foreign key in st table
+                        + ");");
             }
+
+            /************** semantic tag table *****************************/
+            try {
+                statement.execute("SELECT * from " + SQLSharkKB.ST_TABLE);
+                L.d(SQLSharkKB.ST_TABLE + " already exists", this);
+            }
+            catch(SQLException e) {
+                // does not exist: create
+                L.d(SQLSharkKB.ST_TABLE + " does not exists - create", this);
+                try { statement.execute("drop sequence stid;"); }
+                catch(SQLException ee) { /* ignore */ }
+                statement.execute("create sequence stid;");
+                statement.execute("CREATE TABLE " + SQLSharkKB.ST_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('stid'), "
+                        + "name character varying("+ SQLSharkKB.MAX_ST_NAME_SIZE + "), "
+                        + "ewkt character varying("+ SQLSharkKB.MAX_EWKT_NAME_SIZE + "), "
+                        + "startTime bigint, "
+                        + "durationTime bigint, "
+                        + "st_type smallint"
+                        + ");");
+            }
+
+            /************** properties table *****************************/
+            try {
+                statement.execute("SELECT * from " + SQLSharkKB.PROERTIES_TABLE);
+                L.d(SQLSharkKB.PROERTIES_TABLE + " already exists", this);
+            }
+            catch(SQLException e) {
+                // does not exist: create
+                L.d(SQLSharkKB.PROERTIES_TABLE + " does not exists - create", this);
+                try { statement.execute("drop sequence propertyid;"); }
+                catch(SQLException ee) { /* ignore */ }
+                statement.execute("create sequence propertyid;");
+                statement.execute("CREATE TABLE " + SQLSharkKB.PROERTIES_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('propertyid'), "
+                        + "name character varying("+ SQLSharkKB.MAX_PROPERTY_NAME_SIZE + "), "
+                        + "value character varying("+ SQLSharkKB.MAX_PROPERTY_VALUE_SIZE + "), "
+                        + "stID integer, "
+                        + "entity_type smallint"
+                        + ");");
+            }
+            
+            /************** si table *****************************/
+            try {
+                statement.execute("SELECT * from " + SQLSharkKB.SI_TABLE);
+                L.d(SQLSharkKB.SI_TABLE + " already exists", this);
+            }
+            catch(SQLException e) {
+                // does not exist: create
+                L.d(SQLSharkKB.SI_TABLE + " does not exists - create", this);
+                try { statement.execute("drop sequence siid;"); }
+                catch(SQLException ee) { /* ignore */ }
+                statement.execute("create sequence siid;");
+                statement.execute("CREATE TABLE " + SQLSharkKB.SI_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('siid'), "
+                        + "si character varying("+ SQLSharkKB.MAX_SI_SIZE + "), "
+                        + "stID integer"
+                        + ");");
+            }
+            
+            /************** addresses table *****************************/
+            try {
+                statement.execute("SELECT * from " + SQLSharkKB.ADDRESS_TABLE);
+                L.d(SQLSharkKB.ADDRESS_TABLE + " already exists", this);
+            }
+            catch(SQLException e) {
+                // does not exist: create
+                L.d(SQLSharkKB.ADDRESS_TABLE + " does not exists - create", this);
+                try { statement.execute("drop sequence addrid;"); }
+                catch(SQLException ee) { /* ignore */ }
+                statement.execute("create sequence addrid;");
+                statement.execute("CREATE TABLE " + SQLSharkKB.ADDRESS_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('addrid'), "
+                        + "addr character varying("+ SQLSharkKB.MAX_ADDR_SIZE + "), "
+                        + "stID integer"
+                        + ");");
+            }
+            
+            /************** contextpoints table *****************************/
+            try {
+                statement.execute("SELECT * from " + SQLSharkKB.CP_TABLE);
+                L.d(SQLSharkKB.CP_TABLE + " already exists", this);
+            }
+            catch(SQLException e) {
+                // does not exist: create
+                L.d(SQLSharkKB.CP_TABLE + " does not exists - create", this);
+                try { statement.execute("drop sequence cpid;"); }
+                catch(SQLException ee) { /* ignore */ }
+                statement.execute("create sequence cpid;");
+                statement.execute("CREATE TABLE " + SQLSharkKB.CP_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('cpid'), "
+                        + "topicID integer, "
+                        + "originatorID integer, "
+                        + "peerID integer, "
+                        + "remotePeerID integer, "
+                        + "locationID integer, "
+                        + "timeID integer, "
+                        + "direction smallint"
+                        + ");");
+            }
+            
 //            statement.execute("INSERT INTO test(name) VALUES ('t');");
 //            
 //            ResultSet results = statement.executeQuery("SELECT * FROM test;");
             // do someting with those results
         } catch (SQLException e) {
-            System.err.println("Excuting SQL statment failed");
-            System.err.println(e.getMessage());
+            L.w("error while setting up tables: " + e.getLocalizedMessage(), this);
+            throw new SharkKBException("error while setting up tables: " + e.getLocalizedMessage());
         }
     }
     

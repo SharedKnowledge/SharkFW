@@ -25,7 +25,22 @@ public class SQLSharkKBTests {
     }
 
      @Test
-     public void hello() throws SharkKBException {
+     public void createDB() throws SharkKBException {
+         L.setLogLevel(L.LOGLEVEL_ALL);
+         SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+         
+         // I can close 
+         kb.close();
+         
+         // and reconnect
+         kb.reconnect();
+         
+         // and close again
+         kb.close();
+     }
+     
+     @Test
+     public void getVocabulary() throws SharkKBException {
          L.setLogLevel(L.LOGLEVEL_ALL);
          SharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
      }
