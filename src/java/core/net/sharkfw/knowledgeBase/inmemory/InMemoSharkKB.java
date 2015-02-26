@@ -476,7 +476,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
     
     @Override
-    public Interest createInterest() {
+    public Interest createInterest() throws SharkKBException{
         return new InMemoInterest();
     }
 

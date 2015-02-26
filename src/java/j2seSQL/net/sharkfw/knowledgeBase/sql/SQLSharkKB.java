@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
@@ -33,6 +34,7 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
 
 /**
@@ -49,11 +51,16 @@ import net.sharkfw.system.L;
  * 
  * @author thsc
  */
-public class SQLSharkKB implements SharkKB {
+public class SQLSharkKB extends InMemoSharkKB implements SharkKB {
     private Connection connection;
     private String connectionString;
     private String user;
     private String pwd;
+    
+    public static final int SEMANTIC_TAG_TYPE = 0;
+    public static final int PEER_SEMANTIC_TAG_TYPE = 1;
+    public static final int SPATIAL_SEMANTIC_TAG_TYPE = 2;
+    public static final int TIME_SEMANTIC_TAG_TYPE = 3;
     
     public SQLSharkKB(String connectionString, String user, String pwd) throws SharkKBException {
 	try {
@@ -103,8 +110,9 @@ public class SQLSharkKB implements SharkKB {
      * <Iul>
      */
     private void setupKB() throws SharkKBException {
+        Statement statement = null;
         try {
-            Statement statement  = connection.createStatement();
+            statement  = connection.createStatement();
             
             /************** Knowledge base table *****************************/
             try {
@@ -177,10 +185,12 @@ public class SQLSharkKB implements SharkKB {
                 statement.execute("create sequence siid;");
                 statement.execute("CREATE TABLE " + SQLSharkKB.SI_TABLE + 
                         " (id integer PRIMARY KEY default nextval('siid'), "
-                        + "si character varying("+ SQLSharkKB.MAX_SI_SIZE + "), "
+                        + "si character varying("+ SQLSharkKB.MAX_SI_SIZE + ") UNIQUE, "
                         + "stID integer"
                         + ");");
             }
+            
+            // TODO: si must be unique!
             
             /************** addresses table *****************************/
             try {
@@ -225,6 +235,81 @@ public class SQLSharkKB implements SharkKB {
         } catch (SQLException e) {
             L.w("error while setting up tables: " + e.getLocalizedMessage(), this);
             throw new SharkKBException("error while setting up tables: " + e.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+    
+    /**
+     * Removes all tables in SQL database which store Shark data
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
+     */
+    public void drop() throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement  = connection.createStatement();
+            
+            /************** Knowledge base table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.SHARKKB_TABLE);
+            }
+            catch(SQLException e) {
+                // go ahead
+            }
+
+            /************** semantic tag table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.ST_TABLE);
+            }
+            catch(SQLException e) {
+            }
+
+            /************** properties table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.PROERTIES_TABLE);
+            }
+            catch(SQLException e) {
+            }
+            
+            /************** si table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.SI_TABLE);
+            }
+            catch(SQLException e) {
+            }
+            
+            /************** addresses table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.ADDRESS_TABLE);
+            }
+            catch(SQLException e) {
+            }
+            
+            /************** contextpoints table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.CP_TABLE);
+            }
+            catch(SQLException e) {
+            }
+        } catch (SQLException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+            throw new SharkKBException("error while creating SQL-statement: " + e.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
         }
     }
     
@@ -375,26 +460,6 @@ public class SQLSharkKB implements SharkKB {
     /////////////////////////////////////////////////////////////////////////
     
     @Override
-    public SemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -404,46 +469,46 @@ public class SQLSharkKB implements SharkKB {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    @Override
-    public STSet getTopicSTSet() throws SharkKBException {
-        SQLGenericTagStorage tagStorage = new SQLGenericTagStorage(this);
-        return new InMemoSTSet(tagStorage);
-    }
-
-    @Override
-    public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public PeerSTSet getPeerSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TimeSTSet getTimeSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    @Override
+//    public STSet getTopicSTSet() throws SharkKBException {
+//        SQLGenericTagStorage tagStorage = new SQLGenericTagStorage(this);
+//        return new InMemoSTSet(tagStorage);
+//    }
+//
+//    @Override
+//    public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public PeerSTSet getPeerSTSet() throws SharkKBException {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public TimeSTSet getTimeSTSet() throws SharkKBException {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    @Override
+//    public SpatialSTSet getSpatialSTSet() throws SharkKBException {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
     @Override
     public Interest contextualize(SharkCS as) throws SharkKBException {
@@ -601,4 +666,25 @@ public class SQLSharkKB implements SharkKB {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public SemanticTag getSemanticTag(String[] sis) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public SemanticTag getSemanticTag(String si) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
 }

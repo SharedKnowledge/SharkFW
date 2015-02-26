@@ -5,6 +5,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -154,9 +156,15 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         topicsSet.setEnumerateHiddenTags(true);
         peersSet.setEnumerateHiddenTags(true);
         
-        return this.createInterest(topicsSet, this.owner,
-            peersSet, peersSet, this.times, 
-            this.locations, SharkCS.DIRECTION_INOUT);
+        try {
+            return this.createInterest(topicsSet, this.owner,
+                    peersSet, peersSet, this.times,
+                    this.locations, SharkCS.DIRECTION_INOUT);
+        } catch (SharkKBException ex) {
+            // never happens.
+        }
+        
+        return null;
     }
     
     /**
@@ -174,7 +182,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      */
     abstract public Interest createInterest(STSet topics, 
             PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, 
-            TimeSTSet times, SpatialSTSet locations, int direction);
+            TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException;
 
     /**
      * Iterats context points. If a perfect match is made - this cp ist returned.
@@ -288,7 +296,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @return 
      */
     @Override
-    abstract public Interest createInterest();
+    abstract public Interest createInterest() throws SharkKBException;
     
     @Override
     public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException {

@@ -1,3 +1,4 @@
+import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
@@ -27,7 +28,7 @@ public class SQLSharkKBTests {
     public void tearDown() {
     }
 
-     @Test
+//     @Test
      public void createDB() throws SharkKBException {
          L.setLogLevel(L.LOGLEVEL_ALL);
          SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
@@ -44,12 +45,18 @@ public class SQLSharkKBTests {
      
      @Test
      public void getVocabulary() throws SharkKBException {
-         L.setLogLevel(L.LOGLEVEL_ALL);
-         SharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
-         
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        kb.drop();
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        
         STSet topics = kb.getTopicSTSet();
         
         topics.createSemanticTag("Shark", "http://sharksystem.net");
+
+        PeerSTSet peers = kb.getPeerSTSet();
+        peers.createPeerSemanticTag("Alice", "http://www.sharksysteem.net/alice.html", "alice@sharksystem.net");
         
         SemanticTag semanticTag = topics.getSemanticTag("http://sharksystem.net");
         
