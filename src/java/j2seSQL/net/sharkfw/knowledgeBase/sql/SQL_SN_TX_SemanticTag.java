@@ -18,6 +18,6 @@ public class SQL_SN_TX_SemanticTag extends InMemo_SN_TX_SemanticTag {
     
     @Override
     public void persist() {
-        // TODO - save to database
+        // save name and/or sis to db
     }
 }

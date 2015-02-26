@@ -16,4 +16,9 @@ public class SQL_SN_TX_PeerSemanticTag extends InMemo_SN_TX_PeerSemanticTag {
         this.stID = stID;
         this.sqlPropertyHolder = sqlPropertyHolder;
     }
+    
+    @Override
+    public void persist() {
+        // save address and/or sis to db
+    }
 }

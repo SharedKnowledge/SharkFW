@@ -2,8 +2,11 @@ package net.sharkfw.knowledgeBase.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.PeerTaxonomy;
 import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SharkKB;
@@ -354,12 +357,37 @@ public class SQLSharkKB extends InMemoSharkKB implements SharkKB {
         return this.connection != null;
     }
     
-    String[] getSIs(int id, int entityType) {
+    String[] getSIs(int id) {
         String[] sis = null;
         
-        // TODO
-        
-        if(sis.length == 0) return null;
+        Statement statement = null;
+        try {
+            statement  = connection.createStatement();
+            
+            ArrayList<String> sisList = new ArrayList(); 
+            ResultSet result = statement.executeQuery("SELECT si from " + SQLSharkKB.SI_TABLE + " where stid = " + id + ";");
+            while(result.next()) {
+                sisList.add(result.getString(1));
+            }
+
+            if(!sisList.isEmpty()) {
+                sis = new String[sisList.size()];
+                Iterator<String> sisIter = sisList.iterator();
+                for(int i = 0; i < sis.length; i++) {
+                    sis[i] = sisIter.next();
+                }
+            }
+        } catch (SQLException e) {
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
         
         return sis;
     }

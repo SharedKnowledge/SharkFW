@@ -64,7 +64,13 @@ public class SQLSharkKBTests {
         kb.getSpatialSTSet().createSpatialSemanticTag("spatial tag", new String[] {"http://spatialSI"}, (SharkGeometry) null);
         
         SemanticTag semanticTag = topics.getSemanticTag("http://sharksystem.net");
-        
         Assert.assertNotNull(semanticTag);
+
+        String[] sis = new String[] {"http://a.de", "http://b.de"};
+        topics.createSemanticTag("A", sis);
+        semanticTag = topics.getSemanticTag("http://a.de");
+        Assert.assertNotNull(semanticTag);
+        
+        
      }
 }

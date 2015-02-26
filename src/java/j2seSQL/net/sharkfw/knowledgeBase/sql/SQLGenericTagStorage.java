@@ -147,10 +147,11 @@ public class SQLGenericTagStorage<ST extends SemanticTag> extends
         try {
             statement  = this.sqlSharkKB.getConnection().createStatement();
             
-            ResultSet result = statement.executeQuery(
-            "select * from " + SQLSharkKB.ST_TABLE + 
-                    "where id = (select stid from " + 
-                    SQLSharkKB.SI_TABLE + " where si = '" + si + "');");
+            String sqlString = "select * from " + SQLSharkKB.ST_TABLE + 
+                    " where id = (select stid from " + 
+                    SQLSharkKB.SI_TABLE + " where si = '" + si + "');";
+            
+            ResultSet result = statement.executeQuery(sqlString);
             
             if(!result.next()) {
                 // nothing found - leave
@@ -161,7 +162,7 @@ public class SQLGenericTagStorage<ST extends SemanticTag> extends
             String name = result.getString("name");
             int stID = result.getInt("id");
             int stType = result.getInt("st_type");
-            String[] sis = this.sqlSharkKB.getSIs(stID, SQLSharkKB.SEMANTIC_TAG);
+            String[] sis = this.sqlSharkKB.getSIs(stID);
             
             SQLPropertyHolder sqlPropertyHolder = new SQLPropertyHolder(stID, SQLSharkKB.SEMANTIC_TAG);
 
