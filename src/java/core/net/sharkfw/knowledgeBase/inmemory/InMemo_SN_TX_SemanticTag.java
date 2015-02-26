@@ -25,7 +25,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
     
     private boolean refreshed = false;
     
-    InMemo_SN_TX_SemanticTag(String name, String[] si) {
+    public InMemo_SN_TX_SemanticTag(String name, String[] si) {
         super(name, si);
     }
     

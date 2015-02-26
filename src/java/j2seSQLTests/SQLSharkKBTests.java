@@ -3,6 +3,8 @@ import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.sql.SQLSharkKB;
 import net.sharkfw.system.L;
 import org.junit.After;
@@ -56,7 +58,10 @@ public class SQLSharkKBTests {
         topics.createSemanticTag("Shark", "http://sharksystem.net");
 
         PeerSTSet peers = kb.getPeerSTSet();
-        peers.createPeerSemanticTag("Alice", "http://www.sharksysteem.net/alice.html", "alice@sharksystem.net");
+        peers.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@sharksystem.net");
+        
+        kb.getTimeSTSet().createTimeSemanticTag(System.currentTimeMillis(), TimeSemanticTag.FOREVER);
+        kb.getSpatialSTSet().createSpatialSemanticTag("spatial tag", new String[] {"http://spatialSI"}, (SharkGeometry) null);
         
         SemanticTag semanticTag = topics.getSemanticTag("http://sharksystem.net");
         

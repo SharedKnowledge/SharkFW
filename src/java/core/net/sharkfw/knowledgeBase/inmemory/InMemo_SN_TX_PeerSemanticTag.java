@@ -56,7 +56,7 @@ public class InMemo_SN_TX_PeerSemanticTag extends InMemo_SN_TX_SemanticTag
     }
     
     @SuppressWarnings("rawtypes")
-	public InMemo_SN_TX_PeerSemanticTag(SystemPropertyHolder persistentHolder, InMemoGenericTagStorage storage) {
+    public InMemo_SN_TX_PeerSemanticTag(SystemPropertyHolder persistentHolder, InMemoGenericTagStorage storage) {
         super(persistentHolder, storage);
     }
 

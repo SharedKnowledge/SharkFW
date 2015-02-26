@@ -5,12 +5,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sharkfw.knowledgeBase.AbstractSemanticTag;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_PeerSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_SemanticTag;
 
 /**
  *
@@ -130,8 +138,76 @@ public class SQLGenericTagStorage<ST extends SemanticTag> extends
      */
     @Override
     public ST getSemanticTag(String si) throws SharkKBException {    
-        // TODO
-        return null;
+        Statement statement = null;
+        
+        ST st = null;
+        InMemoSemanticTag semanticTag = null;
+        
+        // HIER WEITERMACHEN
+        try {
+            statement  = this.sqlSharkKB.getConnection().createStatement();
+            
+            ResultSet result = statement.executeQuery(
+            "select * from " + SQLSharkKB.ST_TABLE + 
+                    "where id = (select stid from " + 
+                    SQLSharkKB.SI_TABLE + " where si = '" + si + "');");
+            
+            if(!result.next()) {
+                // nothing found - leave
+                return null;
+            }
+            
+            // each st has at least a name - and here an stid
+            String name = result.getString("name");
+            int stID = result.getInt("id");
+            int stType = result.getInt("st_type");
+            String[] sis = this.sqlSharkKB.getSIs(stID, SQLSharkKB.SEMANTIC_TAG);
+            
+            SQLPropertyHolder sqlPropertyHolder = new SQLPropertyHolder(stID, SQLSharkKB.SEMANTIC_TAG);
+
+            switch(stType) {
+                case SQLSharkKB.SEMANTIC_TAG_TYPE: 
+                    semanticTag = new SQL_SN_TX_SemanticTag(name, sis, stID, sqlPropertyHolder);
+                    break;
+                    
+                case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE: 
+                    String[] addresses = this.getPeerAddresses(stID);
+                    semanticTag = new SQL_SN_TX_PeerSemanticTag(name, sis, addresses, stID, sqlPropertyHolder);
+                    break;
+                    
+                case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE: 
+                    String ewkt = result.getString("ewkt");
+                    
+                    // TODO: cast is never good
+                    semanticTag = (InMemoSemanticTag) InMemoSharkGeometry.createGeomByEWKT(ewkt);
+                    semanticTag.setPropertyHolder(sqlPropertyHolder);
+                    break;
+                    
+                case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE: 
+                    long start = result.getLong("starttime");
+                    long duration = result.getLong("duration");
+                    
+                    // TODO: cast is never good
+                    semanticTag = (InMemoSemanticTag) InMemoSharkKB.createInMemoTimeSemanticTag(start, duration);
+                    semanticTag.setPropertyHolder(sqlPropertyHolder);
+                    break;
+            }
+        }
+        catch(SQLException e) {
+            throw new SharkKBException(e.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+        
+        st = (ST) semanticTag;
+        return st;
     }
     
     /**
@@ -143,6 +219,10 @@ public class SQLGenericTagStorage<ST extends SemanticTag> extends
         super.removeSemanticTag(tag);
         
         // TODO: remove in db
+    }
+
+    private String[] getPeerAddresses(int stID) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     /**
