@@ -397,7 +397,7 @@ public class SyncKPTests {
         ContextCoordinates noodlesCC = _aliceKB.createContextCoordinates(_noodlesST, _alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
         _aliceKB.createContextPoint(noodlesCC);
         // Reset the sync bucket so it's like we just freshly created the syncKP
-        _aliceSyncKP.resetSyncQueue();
+        _aliceSyncKP.resetPeerTimestamps();
         
         // The sync bucket for bob should be empty now
 //        assertEquals(0, _aliceSyncKP.getSyncBucketList().popCoordinatesFromBucket(_bob).size());
@@ -431,7 +431,7 @@ public class SyncKPTests {
         ContextCoordinates noodlesCC = _aliceKB.createContextCoordinates(_noodlesST, _alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
         _aliceKB.createContextPoint(noodlesCC);
         // Reset the sync bucket so it's like we just freshly created the syncKP
-        _aliceSyncKP.resetSyncQueue();
+        _aliceSyncKP.resetPeerTimestamps();
         
         // The sync bucket for bob should be empty now
 //        assertEquals(0, _aliceSyncKP.getSyncBucketList().popCoordinatesFromBucket(_bob).size());

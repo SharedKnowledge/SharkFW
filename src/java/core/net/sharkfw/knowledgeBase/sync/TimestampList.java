@@ -78,10 +78,15 @@ class TimestampList {
      * @return all peers
      * @throws SharkKBException 
      */
-    public PeerSTSet getPeers() throws SharkKBException {
+    public PeerSTSet getPeers() {
         PeerSTSet myPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         for (PeerTimestamp s : _timestamps) {
-            myPeerSTSet.merge(s.getPeer());
+            try {
+                myPeerSTSet.merge(s.getPeer());
+            } catch (SharkKBException e) {
+                L.e("Could not merge peer " + s.getPeer() + " into a peerSTSet "
+                + "while trying to return all peers in current TimestampList.");
+            }
         }
         return myPeerSTSet;
     }

@@ -29,24 +29,20 @@ import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
 /**
- * The SyncKP realizes a KnowledgePort that constantly tracks changes in the assigned knowledge
- * base and tries to propagate them to all known peers (peers that are in the knowledge base).
+ * The SyncKP realizes a KnowledgePort that tries to propagate all changes in the underlying
+ * knowledge base to all known peers (peers that are in the knowledge base).
  * That way a synchronization between this and every other Sync KP happens. 
  * 
- * The identification of a Sync KP happens with a semantic tag with the subject identifier "SarkKP_synchronization",
+ * The identification of a Sync KP happens with a semantic tag with the subject identifier "SharkKP_synchronization",
  * so this subject identifier may not be used in a knowledge base that is assigned to a Sync KP.
  * 
- * Peers in the knowledge base will only be propagated the future changes in the knowledge base!
- * Means, when a knowledge base already contains knowledge and a peer is added AFTER that, the peer 
- * will NOT receive the entire knowledge, only the changes that happened after she or he was added.
- * If you want to get this peer "up to date", use the syncAllKnowledge method
+ * The identification of context points that need to be sent to other peers uses the time when a peer was
+ * last met and retrieves all context points from the knowledge base that were updated since.
+ * That means when knowledge was sent to a peer once he will never receive that knowledge again
+ * unless the context point was updated in the meantine. 
+ * To explicitly send all knowledge again to a single peer or even send all knowledge
+ * again to all peers, there is the syncAllKnowledge method.
  * 
- * The Sync KP offers a flag for snowballing, which enables the forwarding of knowledge. Peers who
- * receive a new or updated Context Point from someone using a SyncKP will send this again to all known 
- * peers, when this feature is activated. And they will continue to send it to everyone and so on.
- * Because a Context Point is not assimilated when it already exists in the knowledge base
- * (with the current or a higher version), this feature will not create an endless loop of
- * sending between peers. It might cause a traffic spike though.
  * @author simon
  */
 public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
@@ -64,19 +60,13 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     
     // Fragmentation parameter for sending knowledge
     FragmentationParameter _topicsFP = null, _peersFP = null;
-    
     long _retryTimeout;
     
     /**
      * This SyncKP will keep the assigned Knowledge Base synchronized with all peers.
-     * When activating the syncOnInsertByNotSyncKP flag, the Sync KP will just tell every peer it knows about
-     *  every new ContextPoints that were added for example by the application - but not about new ContextPoints it
-     *  learned from another Sync KP
-     * When activating the syncOnInsertBySyncKP flag, sync KPs will act like a snowball system - 
-     *  upon receiving a context point from another sync KP we also sync it again with everyone we know, and they
-     *  might sync it again and again.. which might cause a traffic spike but quickly distributes information to everyone
+     * Fragmentation parameter can be set via the setTopicsFP or setPeersFP method.
      * @param engine
-     * @param kb
+     * @param kb The underlying kb that will synchronize changes made to it with others
      * @param retryTimeout Retry timeout in seconds
     * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
@@ -98,7 +88,12 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         
         // Create a sync queue for all known peers
         PeerSTSet peersToSyncWith = _kb.getPeerSTSet();
-        peersToSyncWith.removeSemanticTag(_kb.getOwner());
+        try {
+            peersToSyncWith.removeSemanticTag(_kb.getOwner());
+        } catch (SharkKBException e) {
+            L.e("Created a Sync knowledge port with no owner set for the database. Please set an owner.");
+            throw e;
+        }
         _timestamps = new TimestampList(peersToSyncWith, _kb);
         
         // Create the semantic Tag which is used to identify a SyncKP
@@ -108,7 +103,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             syncTag.createSemanticTag(SYNCHRONIZATION_NAME, SYNCHRONIZATION_NAME);
         } catch (SharkKBException e) {
             L.d("Tag SharkKP_synchronization which is used by SyncKP already exists!");
-            return;
+            throw e;
         } 
         // And an interest with me as the peer dimension set
         PeerSTSet ownerPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
@@ -356,13 +351,28 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         return _timestamps;
     }
     
-    protected void resetSyncQueue() throws SharkKBException {
-        _timestamps = new TimestampList(_kb.getPeerSTSet(), _kb);
+    protected void resetPeerTimestamps() {
+        PeerSTSet p;
+        try {
+            p = _kb.getPeerSTSet();
+        } catch (SharkKBException e) {
+            L.e("Could not getPeerSTSet from knowledge base while resetting timestamp list in syncKP."
+                    + " Using an empty PeerSTSet for new peer timestamp list.");
+            p = InMemoSharkKB.createInMemoPeerSTSet();
+        }
+        _timestamps = new TimestampList(p, _kb);
     }
     
     protected List<SyncContextPoint> retrieve(Date d) throws SharkKBException {
         List<SyncContextPoint> toSync = new ArrayList<>();
-        Enumeration<ContextPoint> all = _kb.getAllContextPoints();
+        
+        Enumeration<ContextPoint> all;
+        try {
+             all = _kb.getAllContextPoints();
+        } catch (SharkKBException e) {
+            L.e("Could not get context points from knowledge base used by sync KP!");
+            throw e;
+        }
         
         while(all.hasMoreElements()){
             ContextPoint element = all.nextElement();

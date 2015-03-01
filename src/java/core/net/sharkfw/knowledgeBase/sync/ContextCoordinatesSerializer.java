@@ -30,7 +30,7 @@ class ContextCoordinatesSerializer {
      * @return
      * @throws SharkKBException 
      */
-    protected static String serializeContextCoordinatesList(List<SyncContextPoint> l) throws SharkKBException {
+    protected static String serializeContextCoordinatesList(List<SyncContextPoint> l) {
          if(l == null) {
             L.d("serializeContextCoordinatesList in ContextCoordinateSerializer: parameter was null.");
             return null;
@@ -45,7 +45,12 @@ class ContextCoordinatesSerializer {
         for (SyncContextPoint cp : l) {
             buf.append(startTag(ITEM_TAG));
                 buf.append(startTag(CC_TAG));
+                try {
                     buf.append(s.serializeSharkCS(cp.getContextCoordinates()));
+                } catch (SharkKBException e) {
+                    L.d("Tried to serialize context point but context coordinates could not be retrieved."
+                            + " Context point was: " + cp.toString());
+                }
                 buf.append(endTag(CC_TAG));
                 buf.append(startTag(VERSION_TAG));
                     buf.append(cp.getVersion());
@@ -66,11 +71,13 @@ class ContextCoordinatesSerializer {
      * @throws SharkKBException
      * @throws SharkException 
      */
-    protected static List<SyncContextPoint> deserializeContextCoordinatesList(String serialized) throws SharkKBException, SharkException {
+    protected static List<SyncContextPoint> deserializeContextCoordinatesList(String serialized) {
         //serialized = disableXMLWorkaround(serialized);
+        
         String cs;
         List<SyncContextPoint> deserialized = new ArrayList<>();
         int index = 0;
+        
         // Extract and iterate over all serialized context coordinates
         while ( (index = serialized.indexOf(startTag(ITEM_TAG), index)) != -1 ) {
             // Extract the exact substring of one <item></item>
@@ -81,8 +88,9 @@ class ContextCoordinatesSerializer {
                 SyncContextPoint cp = new SyncContextPoint(new InMemoContextPoint(extractCC(substr)));
                 cp.setVersion(extractVersion(substr));
                 deserialized.add(cp);
-            } catch (IllegalArgumentException e) {
-                throw new SharkException("Context coordinates deserialization error: " + e);
+            } catch (IllegalArgumentException | SharkKBException e) {
+                L.e("Context coordinates deserialization error: " + e);
+                continue;
             }
             // Add one to index so we don't find that exact same tag again
             index += 1;
@@ -98,7 +106,7 @@ class ContextCoordinatesSerializer {
      * @throws SharkKBException
      * @throws IllegalArgumentException 
      */
-    protected static ContextCoordinates extractCC(String s) throws SharkKBException, IllegalArgumentException {
+    protected static ContextCoordinates extractCC(String s) throws IllegalArgumentException, SharkKBException {
         if (!s.startsWith(startTag(ITEM_TAG)) || !s.endsWith(endTag(ITEM_TAG))) {
             L.d("extractCC in ContextCoordinatesSerializer: parameter does not begin and end with item tag: \n" + s);
             throw new IllegalArgumentException("extractCC in ContextCoordinatesSerializer: parameter does not begin and end with item tag: \n" + s);
