@@ -1,7 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 import net.sharkfw.knowledgeBase.*;
 
 public class InMemoPeerTaxonomy extends InMemoTaxonomy implements PeerTaxonomy, Taxonomy, STSet {

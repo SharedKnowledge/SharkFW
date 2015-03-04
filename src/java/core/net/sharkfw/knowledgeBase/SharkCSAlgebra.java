@@ -46,7 +46,7 @@ public abstract class SharkCSAlgebra {
         
         if(!done) {
             SharkCSAlgebra.spatialAlgebra = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra();
-            L.d("Default Spatial Algebra instanciated");
+            L.d("Default Spatial Algebra instantiated");
         }
     }
 

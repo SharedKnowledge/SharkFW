@@ -5,8 +5,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -75,10 +73,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.knowledge.addListener(this);
     }
     
-    protected STSet getPeers() {
-        return this.peers;
-    }
-    
     ////////////////////////////////////////////////////////////
     //           some additional methods                      //
     ////////////////////////////////////////////////////////////
@@ -118,7 +112,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         
         try {
             // owner already known in kb?
-            this.owner = (PeerSemanticTag) this.getPeers().merge(owner);
+            this.owner = (PeerSemanticTag) this.getPeerSTSet().merge(owner);
         } catch (SharkKBException ex) {
             // very strange
             L.e("cannot save kb owner in kb - go ahead with remote owner", this);
@@ -906,14 +900,17 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     //               kb listener                                          //
     ////////////////////////////////////////////////////////////////////////
 
+    @Override
     public void contextPointAdded(ContextPoint cp) {
         this.notifyCpCreated(cp);
     }
 
+    @Override
     public void cpChanged(ContextPoint cp) {
         this.notifyCpChanged(cp);
     }
     
+    @Override
     public void contextPointRemoved(ContextPoint cp) {
         this.notifyCpRemoved(cp);
     }
