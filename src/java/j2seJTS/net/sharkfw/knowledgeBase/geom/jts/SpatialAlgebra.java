@@ -313,8 +313,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         boolean wasDivided = false;
         for (Geometry geom : geometries) {
             String geomCollClassName = "com.vividsolutions.jts.geom.GeometryCollection";
-            boolean isCollection = ((geom.getClass().getName().compareTo(geomCollClassName) == 0) ||
-                                    (geom.getClass().getSuperclass().getName().compareTo(geomCollClassName) == 0));
+            boolean isCollection = (geom.getClass().getName().compareTo(geomCollClassName) == 0);
             if (isCollection) {
                 List<Geometry> dividedGeometries = divideGeometryCollection((GeometryCollection) geom);
                 geomsWithoutGeometryCollection.addAll(dividedGeometries);
