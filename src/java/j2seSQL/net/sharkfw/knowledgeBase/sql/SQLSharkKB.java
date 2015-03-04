@@ -6,17 +6,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.AbstractSharkKB;
+import net.sharkfw.knowledgeBase.ContextCoordinates;
+import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Interest;
+import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.PeerSTSet;
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTaxonomy;
+import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSTSet;
+import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSemanticNet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoPeerTaxonomy;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSTSet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSTSet;
 import net.sharkfw.system.L;
@@ -35,7 +47,7 @@ import net.sharkfw.system.L;
  * 
  * @author thsc
  */
-public class SQLSharkKB extends InMemoSharkKB implements SharkKB {
+public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     private Connection connection;
     private String connectionString;
     private String user;
@@ -390,5 +402,65 @@ public class SQLSharkKB extends InMemoSharkKB implements SharkKB {
         }
         
         return sis;
+    }
+
+    @Override
+    public Interest createInterest(STSet topics, PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setOwner(PeerSemanticTag owner) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSemanticTag getOwner() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotepeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Knowledge createKnowledge() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Interest createInterest() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<SemanticTag> getTags() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -1,8 +1,13 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
+import net.sharkfw.system.EnumerationChain;
+import net.sharkfw.system.L;
 import net.sharkfw.system.Util;
 
 /**
@@ -409,6 +414,120 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     //                 actual kb implementation starts here                  //
     ///////////////////////////////////////////////////////////////////////////
 
+    public static ContextCoordinates getAnyCoordinates() {
+        return InMemoSharkKB.createInMemoContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
+    }
+
+    /**
+     * Checks wether to coordinates are exactly the same. Means, that two concept
+     * are NOT the same if one is ANY and the other is something else. Don't
+     * mess up this methode with a similiar one in Shark algebra. If you don't
+     * see the difference use shark algebra.
+     *
+     * @param co
+     * @param coordinates
+     * @return
+     */
+    public static boolean exactMatch(ContextCoordinates cc1, ContextCoordinates cc2) {
+        // if references are the same they are identical
+        if (cc1 == cc2) {
+            return true;
+        }
+        if ((cc1 == null) || (cc2 == null)) {
+            // one of them is null, we can't compare
+            return false;
+        }
+        // direction
+        // Bugfix to avoid recreation/duplicate profiles, it was triggered by OpenCV() or anything similar which led to exact direction match failed
+        switch (cc1.getDirection()) {
+            case SharkCS.DIRECTION_OUT:
+                switch (cc2.getDirection()) {
+                    case SharkCS.DIRECTION_IN:
+                        /* OUT/IN, incompatible */
+                        return false;
+                    case SharkCS.DIRECTION_INOUT:
+                        /* OUT/INOUT */
+                        L.w("relax direction match");
+                // fall thru
+                    default:
+                        /* OUT/OUT is OK */
+                        break;
+                }
+                break;
+            case SharkCS.DIRECTION_IN:
+                switch (cc2.getDirection()) {
+                    case SharkCS.DIRECTION_OUT:
+                        /* IN/OUT, incompatible */
+                        return false;
+                    case SharkCS.DIRECTION_INOUT:
+                        /* IN/INOUT */
+                        L.w("relax direction match");
+                // fall thru
+                    default:
+                        /* IN/IN  is OK */
+                        break;
+                }
+                break;
+            case SharkCS.DIRECTION_INOUT:
+                switch (cc2.getDirection()) {
+                    case SharkCS.DIRECTION_OUT:
+/* INOUT/OUT */
+                    case SharkCS.DIRECTION_IN:
+                        /* INOUT/IN */
+                        L.w("relax direction match");
+                // fall thru
+                    case SharkCS.DIRECTION_INOUT:
+                        /* INOUT/INOUT is OK */
+                        break;
+                }
+                break;
+        }
+        // originator
+        if (InMemoSharkKB.exactMatch(cc1.getOriginator(), cc2.getOriginator())) {
+            // topic
+            if (InMemoSharkKB.exactMatch(cc1.getTopic(), cc2.getTopic())) {
+                // peer
+                if (InMemoSharkKB.exactMatch(cc1.getPeer(), cc2.getPeer())) {
+                    // remote peer
+                    if (InMemoSharkKB.exactMatch(cc1.getRemotePeer(), cc2.getRemotePeer())) {
+                        // location
+                        if (InMemoSharkKB.exactMatch(cc1.getLocation(), cc2.getLocation())) {
+                            // time
+                            if (InMemoSharkKB.exactMatch(cc1.getTime(), cc2.getTime())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks wether to tags are exactly the same. Means, that two concept
+     * are NOT the same if one is ANY and the other is something else. Don't
+     * mess up this methode with a similiar one in Shark algebra. If you don't
+     * see the difference use shark algebra.
+     *
+     */
+    public static boolean exactMatch(SemanticTag s1, SemanticTag s2) {
+        // same objects - ok
+        if (s1 == s2) {
+            return true;
+        }
+        // both any - ok
+        if (SharkCSAlgebra.isAny(s1) && SharkCSAlgebra.isAny(s2)) {
+            return true;
+        }
+        // just one is any - wrong
+        if (SharkCSAlgebra.isAny(s1) || SharkCSAlgebra.isAny(s2)) {
+            return false;
+        }
+        // both not null and both not any
+        return SharkCSAlgebra.identical(s1, s2);
+    }
+
     /**
      * Create an empty SharkKB.
      * 
@@ -489,7 +608,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         }
         
         cp = new InMemoContextPoint(coordinates);
-        super.addContextPoint(cp);
+        this.addContextPoint(cp);
         
         return cp;
     }
@@ -567,5 +686,266 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     @Override
     public PeerSemanticTag getOwner() {
         return this.owner;
+    }
+
+    /**
+     * It must be proteced - later FSKB get confuses when using FSKnowledge.
+     * It's bit messy.
+     * @param knowledge
+     */
+    protected void setKnowledge(Knowledge knowledge) {
+        this.knowledge = knowledge;
+        this.knowledge.addListener(this);
+    }
+
+    ////////////////////////////////////////////////////////////
+    //           some additional methods                      //
+    ////////////////////////////////////////////////////////////
+    //    public STSet getAnySTSet() throws SharkKBException {
+    //        return this.createAnySTSet(SharkCS.DIM_PEER);
+    //    }
+    //
+    //    public STSet getAnyGeoSTSet() throws SharkKBException {
+    //        return this.createAnySTSet(SharkCS.DIM_LOCATION);
+    //    }
+    //
+    //    public STSet getAnyTimeSTSet() throws SharkKBException {
+    //        return this.createAnySTSet(SharkCS.DIM_TIME);
+    //    }
+    //
+    //    public STSet getAnyDirectionSTSet() throws SharkKBException {
+    //        return this.createAnySTSet(SharkCS.DIM_DIRECTION);
+    //    }
+    //
+    //    public STSet createAnySTSet(int dimension) throws SharkKBException {
+    //        return null;
+    //    }
+    
+    
+    @Override
+    public void setOwner(PeerSemanticTag owner) {
+        // remove listener from old owner
+        if (this.owner != null && this.owner instanceof AbstractSemanticTag) {
+            AbstractSemanticTag st = (AbstractSemanticTag) this.owner;
+        }
+        try {
+            // owner already known in kb?
+            this.owner = (PeerSemanticTag) this.getPeerSTSet().merge(owner);
+        } catch (SharkKBException ex) {
+            // very strange
+            L.e("cannot save kb owner in kb - go ahead with remote owner", this);
+            this.owner = owner;
+        }
+        this.setOwnerListener();
+        this.persist();
+    }
+
+    /**
+     * Iterats context points. If a perfect match is made - this cp ist returned.
+     * This methode should be reimplemented in deriving classes. This implementation
+     * has a horrible performance.
+     *
+     * @param coordinates
+     * @return
+     * @throws SharkKBException
+     */
+    @Override
+    public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
+        Enumeration<ContextPoint> cpEnum = this.knowledge.contextPoints();
+        while (cpEnum.hasMoreElements()) {
+            ContextPoint cp = cpEnum.nextElement();
+            ContextCoordinates co = cp.getContextCoordinates();
+            if (InMemoSharkKB.exactMatch(co, coordinates)) {
+                return cp;
+            }
+        }
+        return null;
+    }
+
+    //    @Override
+    //    abstract public ContextCoordinates createContextCoordinates(SemanticTag topic,
+    //        PeerSemanticTag originator, PeerSemanticTag peer,
+    //        PeerSemanticTag remotePeer, TimeSemanticTag time,
+    //        SpatialSemanticTag location, int direction)
+    //            throws SharkKBException;
+    //    @Override
+    //    abstract public ContextPoint createContextPoint(ContextCoordinates coordinates)
+    //            throws SharkKBException;
+    protected void addContextPoint(ContextPoint cp) throws SharkKBException {
+        this.knowledge.addContextPoint(cp);
+    }
+
+    @Override
+    public Iterator contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
+        if (cs == null) {
+            return null;
+        }
+        HashSet<ContextPoint> result = new HashSet<ContextPoint>();
+        HashSet<ContextCoordinates> coo = this.possibleCoordinates(cs);
+        if (coo == null) {
+            return null;
+        }
+        Iterator<ContextCoordinates> cooIter = coo.iterator();
+        while (cooIter.hasNext()) {
+            // next possible coordinate
+            ContextCoordinates co = cooIter.next();
+            if (!matchAny) {
+                // exact match
+                ContextPoint cp = this.getContextPoint(co);
+                if (cp != null) {
+                    // copy cp
+                    result.add(cp);
+                }
+            } else {
+                // matchAny - find all matching cps.
+                Enumeration<ContextPoint> cpEnum = this.knowledge.contextPoints();
+                while (cpEnum.hasMoreElements()) {
+                    ContextPoint cp = cpEnum.nextElement();
+                    if (SharkCSAlgebra.identical(cp.getContextCoordinates(), co)) {
+                        result.add(cp);
+                    }
+                }
+            }
+        }
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.iterator();
+    }
+
+    /**
+     * Returns enumeration of all context points. This actually is the same as
+     * getContextPoints with an context space covering anything - which is technically
+     * a null reference.
+     *
+     * Use this methode very carefully. It produces a complete knowledge base dump.
+     * This can be a lot.
+     *
+     * @return
+     * @throws SharkKBException
+     */
+    @Override
+    public Enumeration getAllContextPoints() throws SharkKBException {
+        ContextCoordinates cc = InMemoSharkKB.getAnyCoordinates();
+        return this.getContextPoints(cc);
+    }
+
+    public HashSet possibleCoordinates(SharkCS cs) throws SharkKBException {
+        if (cs == null) {
+            return null;
+        }
+        HashSet<ContextCoordinates> protoCoo = new HashSet<ContextCoordinates>();
+        // create first prototype with direction and owner
+        if (cs.getDirection() == SharkCS.DIRECTION_INOUT) {
+            // two additional coordinates
+            protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, SharkCS.DIRECTION_IN));
+            protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, SharkCS.DIRECTION_OUT));
+        }
+        protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, cs.getDirection()));
+        // no combine with other dimensions
+        protoCoo = this.coordCombination(protoCoo, cs.getTopics(), SharkCS.DIM_TOPIC);
+        protoCoo = this.coordCombination(protoCoo, cs.getPeers(), SharkCS.DIM_PEER);
+        protoCoo = this.coordCombination(protoCoo, cs.getRemotePeers(), SharkCS.DIM_REMOTEPEER);
+        protoCoo = this.coordCombination(protoCoo, cs.getTimes(), SharkCS.DIM_TIME);
+        protoCoo = this.coordCombination(protoCoo, cs.getLocations(), SharkCS.DIM_LOCATION);
+        return protoCoo;
+    }
+
+    protected HashSet coordCombination(HashSet<ContextCoordinates> protoCoo, STSet set, int dim) throws SharkKBException {
+        if (SharkCSAlgebra.isAny(set)) {
+            return protoCoo;
+        }
+        set.setEnumerateHiddenTags(true);
+        Enumeration<SemanticTag> tagEnum = set.tags();
+        if (tagEnum == null || !tagEnum.hasMoreElements()) {
+            return protoCoo;
+        }
+        HashSet<ContextCoordinates> result = new HashSet<ContextCoordinates>();
+        while (tagEnum.hasMoreElements()) {
+            SemanticTag tag = tagEnum.nextElement();
+            // combine with existing
+            Iterator<ContextCoordinates> cooIter = protoCoo.iterator();
+            while (cooIter.hasNext()) {
+                ContextCoordinates oldCC = cooIter.next();
+                SemanticTag topic = oldCC.getTopic();
+                PeerSemanticTag originator = oldCC.getOriginator();
+                PeerSemanticTag peer = oldCC.getPeer();
+                PeerSemanticTag remotePeer = oldCC.getRemotePeer();
+                TimeSemanticTag time = oldCC.getTime();
+                SpatialSemanticTag location = oldCC.getLocation();
+                int direction = oldCC.getDirection();
+                switch (dim) {
+                    case SharkCS.DIM_TOPIC:
+                        topic = tag;
+                        break;
+                    case SharkCS.DIM_PEER:
+                        peer = (PeerSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_REMOTEPEER:
+                        remotePeer = (PeerSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_TIME:
+                        time = (TimeSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_LOCATION:
+                        location = (SpatialSemanticTag) tag;
+                        break;
+                }
+                ContextCoordinates newCC = this.createContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
+                result.add(newCC);
+            }
+        }
+        return result;
+    }
+
+    public Iterator getTags() throws SharkKBException {
+        EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
+        tagEnum.addEnumeration(this.getTopicSTSet().tags());
+        tagEnum.addEnumeration(this.getPeerSTSet().tags());
+        tagEnum.addEnumeration(this.getSpatialSTSet().tags());
+        tagEnum.addEnumeration(this.getTimeSTSet().tags());
+        return tagEnum;
+    }
+
+    @Override
+    public void persist() {
+        super.persist();
+        // owner
+        if (this.owner != null) {
+            String ownerSIString = Util.array2string(this.owner.getSI());
+            if (ownerSIString != null && ownerSIString.length() > 0) {
+                this.setSystemProperty(AbstractSharkKB.OWNER, ownerSIString);
+            }
+        }
+        // default fp
+        if (this.defaultFP != null) {
+            String defaultFPString = Util.fragmentationParameter2string(defaultFP);
+            this.setSystemProperty(AbstractSharkKB.DEFAULT_FP, defaultFPString);
+        }
+    }
+
+    @Override
+    public void refreshStatus() {
+        super.refreshStatus();
+        // owner
+        String ownerSIString = this.getSystemProperty(AbstractSharkKB.OWNER);
+        if (ownerSIString != null) {
+            String[] ownerSIs = Util.string2array(ownerSIString);
+            try {
+                PeerSemanticTag storedOwner = this.getPeerSemanticTag(ownerSIs);
+                if (storedOwner != null) {
+                    this.owner = storedOwner;
+                    // listen to changed in owner
+                    this.setOwnerListener();
+                }
+            } catch (SharkKBException ex) {
+                L.w("cannot find owner tag while restoring kb status from external memory", this);
+            }
+        }
+        // default fp
+        String defaultFPValue = this.getSystemProperty(AbstractSharkKB.DEFAULT_FP);
+        if (defaultFPValue != null) {
+            this.defaultFP = Util.string2fragmentationParameter(defaultFPValue);
+        }
     }
 }

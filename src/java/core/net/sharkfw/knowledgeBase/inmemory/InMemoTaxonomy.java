@@ -3,11 +3,8 @@ package net.sharkfw.knowledgeBase.inmemory;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
-import net.sharkfw.system.L;
 
 /**
  * Follow delegate pattern
@@ -17,7 +14,7 @@ public class InMemoTaxonomy implements Taxonomy, STSet {
     
     private SemanticNet storage;
     
-    protected InMemoTaxonomy(SemanticNet storage) {
+    public InMemoTaxonomy(SemanticNet storage) {
         this.storage = storage;
     }
     
