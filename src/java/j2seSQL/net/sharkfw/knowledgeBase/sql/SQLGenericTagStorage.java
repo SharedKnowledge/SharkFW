@@ -3,9 +3,6 @@ package net.sharkfw.knowledgeBase.sql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sharkfw.knowledgeBase.AbstractSemanticTag;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -15,10 +12,6 @@ import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSemanticTag;
-import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSemanticTag;
-import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_PeerSemanticTag;
-import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_SemanticTag;
 
 /**
  *

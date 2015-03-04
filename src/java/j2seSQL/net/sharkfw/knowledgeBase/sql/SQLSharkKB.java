@@ -24,6 +24,7 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.TaxonomyWrapper;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSemanticNet;
@@ -80,11 +81,11 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         // check if tables already created - if not - do it
         this.setupKB();
         
-        // set vocabulary in this kb - use inherited methods
-        SemanticNet topics = new InMemoSemanticNet(new SQLGenericTagStorage(this));
-        PeerTaxonomy peers = new InMemoPeerTaxonomy(new InMemoPeerSemanticNet((new SQLGenericTagStorage(this))));
-        SpatialSTSet locations = new InMemoSpatialSTSet(new SQLGenericTagStorage(this));
-        TimeSTSet times = new InMemoTimeSTSet(new SQLGenericTagStorage(this));
+        /************     setup vocabulary       **************/
+        SemanticNet topics = new SQLSemanticNet(this);
+        PeerTaxonomy peers = new SQLPeerTaxonomy(new SQLPeerSemanticNet(this));
+        SpatialSTSet locations = new SQLSpatialSTSet(this);
+        TimeSTSet times = new SQLTimeSTSet(this);
         
         this.setTopics(topics);
         this.setPeers(peers);

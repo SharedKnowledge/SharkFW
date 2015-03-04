@@ -13,7 +13,12 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  * @author thsc
  */
 public class SQLSTSet extends AbstractSTSet implements STSet {
+    private final SQLSharkKB kb;
 
+    SQLSTSet(SQLSharkKB kb) {
+        this.kb = kb;
+    }
+    
     @Override
     public SemanticTag merge(SemanticTag tag) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
