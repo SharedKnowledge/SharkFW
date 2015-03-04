@@ -34,7 +34,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     private PeerTaxonomy peers;
     private SpatialSTSet locations;
     private TimeSTSet times;
-    private PeerSemanticTag owner;
+    protected PeerSemanticTag owner;
     private Knowledge knowledge;
     private FragmentationParameter[] defaultFP;
     
@@ -77,25 +77,25 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     //           some additional methods                      //
     ////////////////////////////////////////////////////////////
     
-    public STSet getAnySTSet() throws SharkKBException {
-        return this.createAnySTSet(SharkCS.DIM_PEER);
-    }
-    
-    public STSet getAnyGeoSTSet() throws SharkKBException {
-        return this.createAnySTSet(SharkCS.DIM_LOCATION);
-    }
-    
-    public STSet getAnyTimeSTSet() throws SharkKBException {
-        return this.createAnySTSet(SharkCS.DIM_TIME);
-    }
-    
-    public STSet getAnyDirectionSTSet() throws SharkKBException {
-        return this.createAnySTSet(SharkCS.DIM_DIRECTION);
-    }
-    
-    public STSet createAnySTSet(int dimension) throws SharkKBException {
-        return null;
-    }
+//    public STSet getAnySTSet() throws SharkKBException {
+//        return this.createAnySTSet(SharkCS.DIM_PEER);
+//    }
+//    
+//    public STSet getAnyGeoSTSet() throws SharkKBException {
+//        return this.createAnySTSet(SharkCS.DIM_LOCATION);
+//    }
+//    
+//    public STSet getAnyTimeSTSet() throws SharkKBException {
+//        return this.createAnySTSet(SharkCS.DIM_TIME);
+//    }
+//    
+//    public STSet getAnyDirectionSTSet() throws SharkKBException {
+//        return this.createAnySTSet(SharkCS.DIM_DIRECTION);
+//    }
+//    
+//    public STSet createAnySTSet(int dimension) throws SharkKBException {
+//        return null;
+//    }
     
     ////////////////////////////////////////////////////////////////////
     //              implementations by delegate                       //
@@ -122,11 +122,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.setOwnerListener();
         
         this.persist();
-    }
-
-    @Override
-    public PeerSemanticTag getOwner() {
-        return this.owner;
     }
 
     @Override

@@ -563,4 +563,9 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         
         throw new SharkKBException("InMemoSharkKB cannot be handled like knowledge - knowledge isn't stored as InMemoKnowledge - developers need a workaroung if this exception is thrown");
     }
+
+    @Override
+    public PeerSemanticTag getOwner() {
+        return this.owner;
+    }
 }
