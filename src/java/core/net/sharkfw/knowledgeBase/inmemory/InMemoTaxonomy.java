@@ -2,7 +2,6 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
 
@@ -11,6 +10,7 @@ import net.sharkfw.system.Iterator2Enumeration;
  * @author thsc
  */
 public class InMemoTaxonomy extends TaxonomyWrapper implements Taxonomy, STSet {
+    
     public InMemoTaxonomy(SemanticNet storage) {
         super(storage);
     }
@@ -126,5 +126,4 @@ public class InMemoTaxonomy extends TaxonomyWrapper implements Taxonomy, STSet {
             return new Iterator2Enumeration(rootTags.iterator());
         }
     }
-
 }
