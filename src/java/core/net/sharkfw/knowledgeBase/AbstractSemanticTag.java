@@ -10,7 +10,6 @@ package net.sharkfw.knowledgeBase;
  * 
  * @author mfi, thsc
  */
-@SuppressWarnings("unchecked")
 public abstract class AbstractSemanticTag extends PropertyHolderDelegate 
                                         implements SemanticTag, SystemPropertyHolder {
     

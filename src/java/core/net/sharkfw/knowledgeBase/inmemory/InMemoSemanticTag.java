@@ -12,12 +12,10 @@ import net.sharkfw.system.Util;
  * 
  * @author thsc
  */
-@SuppressWarnings("unchecked")
 public class InMemoSemanticTag extends AbstractSemanticTag {
 
     private String name;
     private String[] si;
-    @SuppressWarnings("rawtypes")
     private InMemoGenericTagStorage storage;
 
     InMemoSemanticTag(String name, String[] si) {
@@ -151,12 +149,10 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
         this.persist();
     }
     
-    @SuppressWarnings("rawtypes")
     void setStorage(InMemoGenericTagStorage storage) {
         this.storage = storage;
     }
 
-    @SuppressWarnings("rawtypes")
     public InMemoGenericTagStorage getStorage() {
         return this.storage;
     }

@@ -23,6 +23,13 @@ public class SQLSpatialSTSet extends SQLSTSet implements SpatialSTSet {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * 
+     * @param point
+     * @return
+     * @throws SharkKBException 
+     * @deprecated
+     */
     @Override
     public SpatialSemanticTag getSpatialSemanticTag(Double[] point) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
