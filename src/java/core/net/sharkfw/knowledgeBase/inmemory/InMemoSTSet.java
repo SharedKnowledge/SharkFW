@@ -21,21 +21,11 @@ import net.sharkfw.knowledgeBase.*;
  * </p>
  * @author mfi, thsc
  */
-public class InMemoSTSet implements STSet {
+public class InMemoSTSet extends AbstractSTSet implements STSet {
 
     @SuppressWarnings("rawtypes")
     private InMemoGenericTagStorage storage;
     
-    /**
-     * creates a semantic tag set by copying tags
-     */
-    InMemoSTSet(Enumeration<SemanticTag> initialTagEnum) throws SharkKBException {
-        this();
-        while(initialTagEnum.hasMoreElements()) {
-            this.merge(initialTagEnum.nextElement());
-        }
-    }
-
     /**
      * That's the prefered way to create an empty stand alone semantic tag set.
      */
@@ -62,7 +52,6 @@ public class InMemoSTSet implements STSet {
      * creates a new st set with same tags - be careful
      * @param storage 
      */
-    @SuppressWarnings("rawtypes")
     public InMemoSTSet(InMemoGenericTagStorage storage) {
         this.storage = storage;
     }
@@ -83,7 +72,6 @@ public class InMemoSTSet implements STSet {
         return this.storage.getSemanticTag(si);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Enumeration<SemanticTag> tags() {
         return this.storage.tags();
@@ -95,39 +83,10 @@ public class InMemoSTSet implements STSet {
     }
     
     /**
-     * Merges another set into this set.
-     * If an two identical tags are found in both set they will be merged
-     * as well. 
-     * 
-     * Merging means: The name of the tag in <i>this</i> set remains unchanged.
-     * Subject identifier are added. It uses the merge operation 
-     * of AbstractSemanticTag.
-     * 
-     * @param set2merge 
-     * @see AbstractSemanticTag
-     */
-    @SuppressWarnings("unused")
-    @Override
-    public void merge(STSet remoteSet) throws SharkKBException {
-        // iterate 
-        if(remoteSet == null) return;
-        
-        Enumeration<SemanticTag> remoteEnum = remoteSet.tags();
-        boolean stMerged = false;
-
-        while(remoteEnum.hasMoreElements()) {
-            SemanticTag remoteST = remoteEnum.nextElement();
-            
-            this.merge(remoteST);
-        }
-    }
-    
-    /**
      * copies name, SIs and properties to the target set
      * @param targetSet
      * @param source 
      */
-    @SuppressWarnings("unchecked")
     @Override
     public SemanticTag merge(SemanticTag source) throws SharkKBException {
         return this.getTagStorage().merge(source);
@@ -156,14 +115,12 @@ public class InMemoSTSet implements STSet {
      * @param tag Tag to add.
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    @SuppressWarnings("unchecked")
     public void add(SemanticTag tag) throws SharkKBException {
         this.storage.add(tag);
         
         this.notifyCreated(tag);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void removeSemanticTag(SemanticTag tag) {
         this.storage.removeSemanticTag(tag);
@@ -237,31 +194,7 @@ public class InMemoSTSet implements STSet {
     public STSet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
         return this.fragment(anchor);
     }
-    
-    private FragmentationParameter defaultFP;
-    
-    /**
-    * Each set has build fragmentation parameter. They can be retrieved.
-    * @return default fragmentation parameter
-    */
-    @Override
-    public FragmentationParameter getDefaultFP() {
-        if(this.defaultFP == null) {
-            // standard FP
-            this.defaultFP = new FragmentationParameter(false, true, 2);
-        }
-        return this.defaultFP;
-    }
-
-    /**
-    * Each set has build fragmentation parameter. They can be set with this 
-    * methode.
-    */
-    @Override
-    public void setDefaultFP(FragmentationParameter fp) {
-        this.defaultFP = fp;
-    }
-    
+        
     /**
      * 
      * @param anchorSet enumeration of semantic tags denoting the context
@@ -295,62 +228,7 @@ public class InMemoSTSet implements STSet {
         return this.contextualize(context, null);
         
     }
-    
-    /*****************************************************
-     *               st set listener                     * 
-     *****************************************************/
-    private ArrayList<STSetListener> listener;
-    
-    // make a late binding - I guess most apps wont use ST listener.
-    private void checkInit() {
-        if(this.listener == null) {
-            this.listener = new ArrayList<STSetListener>();
-        }
-    }
-    
-    /**
-     * Set a listener to listen for changes in this stset.
-     * Each STSet can have exactly one listener (usually the SharkKB).
-     *
-     * @param listen The listener to be notified of changes.
-     */
-    @Override
-    public void addListener(STSetListener listen) {
-        this.checkInit();
-        this.listener.add(listen);
-    }
-
-    /**
-     * Remove a listener.
-     * Will set the reference to the listener to <code>null</code>.
-     */
-    @Override
-    public void removeListener(STSetListener listener) {
-        if(this.listener != null) {
-            this.listener.remove(listener);
-        }
-    }
-    
-    protected void notifyRemoved(SemanticTag st) {
-        this.checkInit();
-        Iterator<STSetListener> listenerIter = this.listener.iterator();
-        
-        while(listenerIter.hasNext()) {
-            STSetListener nextListener = listenerIter.next();
-            nextListener.semanticTagRemoved(st, this);
-        }
-    }
-
-    protected void notifyCreated(SemanticTag st) {
-        this.checkInit();
-        Iterator<STSetListener> listenerIter = this.listener.iterator();
-        
-        while(listenerIter.hasNext()) {
-            STSetListener nextListener = listenerIter.next();
-            nextListener.semanticTagCreated(st, this);
-        }
-    }
-    
+      
     @Override
     public boolean isEmpty() {
         
@@ -366,7 +244,7 @@ public class InMemoSTSet implements STSet {
         return InMemoSTSet.getSemanticTagByName(this, pattern);
     }
     
-    static Iterator<SemanticTag> getSemanticTagByName(STSet source, String pattern) throws SharkKBException {
+    public static Iterator<SemanticTag> getSemanticTagByName(STSet source, String pattern) throws SharkKBException {
         ArrayList<SemanticTag> result = new ArrayList<>();
         
         Enumeration<SemanticTag> tags = source.tags();
