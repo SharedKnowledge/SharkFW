@@ -156,10 +156,10 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         // Geometry with/as GeometryCollection does not work
         List<Geometry> jtsGeomsOnlyA = divideAllExistingGeometryCollections(jtsGeomsA);
         List<Geometry> jtsGeomsOnlyB = divideAllExistingGeometryCollections(jtsGeomsB);
-        List<Geometry> jtsIntersectedGeoms = getIntersectsFromListsWithJTSGeommetries(jtsGeomsOnlyA, jtsGeomsOnlyB);
-        List<Geometry> jtsIntersectedGeomsUnioned = unionTouchedJTSGeometries(jtsIntersectedGeoms);
-        List<Geometry> jtsGeomsOnlyBUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyB);
-        return isListWithGeometriesCovered(jtsIntersectedGeomsUnioned, jtsGeomsOnlyBUnioned);
+        List<Geometry> jtsIntersectedGeomsFromGeomsBWithGeomsA = getIntersectsFromListsWithJTSGeommetries(jtsGeomsOnlyB, jtsGeomsOnlyA);
+        List<Geometry> jtsGeomsOnlyAUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyA);
+        List<Geometry> jtsIntersectedGeomsBUnioned = unionTouchedJTSGeometries(jtsIntersectedGeomsFromGeomsBWithGeomsA);
+        return isListWithGeometriesCovered(jtsGeomsOnlyAUnioned, jtsIntersectedGeomsBUnioned);
     }
 
     /**
@@ -229,23 +229,24 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      * @throws SharkKBException
      */
     private boolean isListWithGeometriesCovered(List<Geometry> a, List<Geometry> b) throws SharkKBException {
-        boolean isCovered = false;
+        boolean isCovered = true;
+        List<Geometry> coveredGeomsA = new ArrayList<Geometry>();
         for (Geometry geomA : a) {
             for (Geometry geomB : b) {
                 try {
-                    if (geomA.covers(geomB)) {
-                        isCovered = true;
-                    } else {
-                        isCovered = false;
-                        break;
+                    if (geomA.coveredBy(geomB) && !coveredGeomsA.contains(geomA)) {
+                        coveredGeomsA.add(geomA);
                     }
                 } catch (IllegalArgumentException ex) {
                     throw new SharkKBException("Covering with GeometryCollection is not allowed.");
                 }
             }
-            if (!isCovered) {
-                break;
-            }
+        }
+        for (Geometry geomA : a) {
+          if(!coveredGeomsA.contains(geomA)) {
+            isCovered = false;
+            break;
+          }
         }
         return isCovered;
     }
@@ -254,26 +255,31 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
     {
       List<Geometry> resultGeometries = new ArrayList();
       boolean wasTouched = false;
-      if (geometries.size() > 0)
-      {
-        Geometry firstGeom = geometries.get(0);
-        for (Geometry geom : geometries) {
+      while (geometries.size() > 0) {
+        Geometry geomA = geometries.get(0);
+        boolean geomAWasUnioned = false;
+        for (Geometry geomB : geometries) {
           try {
-            boolean isTouch = (firstGeom.touches(geom) && !firstGeom.equals((Object)geom));
-            if (isTouch) {
-              resultGeometries.add(firstGeom.union(geom));
-              wasTouched = true;
-            }
-            else {
-              resultGeometries.add(firstGeom);
+            if (!geomA.equals((Object)geomB)) {
+              if (geomA.touches(geomB)) {
+                resultGeometries.add(geomA.union(geomB));
+                geometries.remove(geomB);
+                wasTouched = true;
+                geomAWasUnioned = true;
+                break;
+              }
             }
           } catch (IllegalArgumentException ex) {
               throw new SharkKBException("Touch with GeometryCollection is not allowed.");
           }              
         }
-        if (wasTouched) {
-          resultGeometries = unionTouchedJTSGeometries(resultGeometries);
+        if (!geomAWasUnioned) {
+          resultGeometries.add(geomA);
         }
+        geometries.remove(geomA);
+      }
+      if (wasTouched) {
+        resultGeometries = unionTouchedJTSGeometries(resultGeometries);
       }
       return resultGeometries;
     }
@@ -290,8 +296,8 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         for (Geometry geomA : a) {
             for (Geometry geomB : b) {
                 try {
-                    if (geomA.intersects(geomB)) {
-                        tempIntersects.add(geomA);
+                    if (geomA.intersects(geomB) && !tempIntersects.contains(geomA)) {
+                      tempIntersects.add(geomA);
                     }
                 } catch (IllegalArgumentException ex) {
                     throw new SharkKBException("Intersection with GeometryCollection is not allowed.");
