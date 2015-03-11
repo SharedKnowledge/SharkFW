@@ -113,6 +113,11 @@ public abstract class TaxonomyWrapper implements Taxonomy {
     }
 
     @Override
+    public Iterator<SemanticTag> stTags() throws SharkKBException {
+        return this.storage.stTags();
+    }
+
+    @Override
     public FragmentationParameter getDefaultFP() {
         return this.storage.getDefaultFP();
     }

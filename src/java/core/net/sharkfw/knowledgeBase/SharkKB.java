@@ -276,16 +276,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
      * @throws SharkKBException 
      */
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException;
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param sis
-     * @return
-     * @throws SharkKBException 
-     */
-    public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException;
-    
+     
     /**
      * @deprecated use method semantic tag set instead
      * @param from

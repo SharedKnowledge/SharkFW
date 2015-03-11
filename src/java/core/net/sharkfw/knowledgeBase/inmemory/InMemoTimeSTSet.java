@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.*;
 
 /**
@@ -236,27 +237,12 @@ public class InMemoTimeSTSet extends InMemoSTSet implements TimeSTSet {
 
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        return this.createTimeSemanticTag(name, sis);
+        throw new SharkKBException("don't create plain semantic tag in time semantic tag set");
     }
     
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        return this.createTimeSemanticTag(name, new String[] {si});
-    }
-    
-    @Override
-    public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException {
-        
-        TimeSemanticTag tst = this.getTimeSemanticTag(sis);
-        if(tst != null) {
-            return tst;
-        }
-        
-        tst = new InMemoTimeSemanticTag(name, sis);
-        
-        this.add(tst);
-        
-        return tst;
+        throw new SharkKBException("don't create plain semantic tag in time semantic tag set");
     }
     
     @Override
@@ -283,19 +269,14 @@ public class InMemoTimeSTSet extends InMemoSTSet implements TimeSTSet {
     }
 
     @Override
-    public TimeSemanticTag getTimeSemanticTag(String[] sis) throws SharkKBException {
-        return this.castTST(super.getSemanticTag(sis));
-    }
-
-    @Override
-    public TimeSemanticTag getTimeSemanticTag(String si) throws SharkKBException {
-        return this.castTST(super.getSemanticTag(si));
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
     public Enumeration<TimeSemanticTag> timeTags() throws SharkKBException {
         Enumeration tags = super.tags();
         return tags;
+    }
+    
+    @Override
+    public Iterator<TimeSemanticTag> tstTags() throws SharkKBException {
+        Iterator stTags = super.stTags();
+        return stTags;
     }
 }

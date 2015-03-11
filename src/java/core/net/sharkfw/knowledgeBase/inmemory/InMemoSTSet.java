@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.system.EnumerationChain;
 
 /**
  * <p>
@@ -75,6 +76,12 @@ public class InMemoSTSet extends AbstractSTSet implements STSet {
     @Override
     public Enumeration<SemanticTag> tags() {
         return this.storage.tags();
+    }
+    
+    public Iterator<SemanticTag> stTags() {
+        EnumerationChain enumerationChain = new EnumerationChain();
+        enumerationChain.addEnumeration(this.storage.tags());
+        return enumerationChain;
     }
 
     @Override

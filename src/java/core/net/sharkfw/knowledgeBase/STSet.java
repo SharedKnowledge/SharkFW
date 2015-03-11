@@ -71,6 +71,8 @@ public interface STSet {
      * @throws net.sharkfw.knowledgeBase.SharkKBException
    */
   public Enumeration<SemanticTag> tags() throws SharkKBException;
+  
+  public Iterator<SemanticTag> stTags() throws SharkKBException;
 
   /**
    * Retrieve a SemanticTag by its SIs. If the <code>si</code> array contains a number

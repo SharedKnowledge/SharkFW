@@ -3,6 +3,7 @@ import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.sql.SQLSharkKB;
@@ -46,7 +47,34 @@ public class SQLSharkKBTests {
      }
      
      @Test
-     public void getVocabulary() throws SharkKBException {
+     public void stSetTests() throws SharkKBException {
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        kb.drop();
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        
+        TimeSTSet timeSTSet = kb.getTimeSTSet();
+        
+        TimeSemanticTag tst = timeSTSet.createTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
+        
+        tst.setProperty("p1", "v1");
+        
+        String property = tst.getProperty("p1");
+        
+        Assert.assertEquals(property, "v1");
+        
+        // test persistency
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        timeSTSet = kb.getTimeSTSet();
+        tst = timeSTSet.timeTags().nextElement();
+        property = tst.getProperty("p1");
+        Assert.assertEquals(property, "v1");
+     }
+     
+//     @Test
+     public void vocabularyTests() throws SharkKBException {
         L.setLogLevel(L.LOGLEVEL_ALL);
         SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
         kb.drop();

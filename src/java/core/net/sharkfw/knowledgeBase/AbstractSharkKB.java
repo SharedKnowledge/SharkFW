@@ -2,7 +2,6 @@ package net.sharkfw.knowledgeBase;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -11,8 +10,6 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
 import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.Iterator2Enumeration;
-import net.sharkfw.system.L;
-import net.sharkfw.system.Util;
 
 /**
  * This class implements as much methods from SharkKB as possible
@@ -23,7 +20,6 @@ import net.sharkfw.system.Util;
  * 
  * @author thsc
  */
-@SuppressWarnings("unchecked")
 public abstract class AbstractSharkKB extends PropertyHolderDelegate 
                                 implements SharkKB, KnowledgeListener, 
                                             InterestStorage
@@ -189,16 +185,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, geom);
         this.notifyLocationCreated(sst);
         return sst;
-    }
-    
-    /**
-     * @deprecated
-     */
-    @Override
-    public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException {
-        TimeSemanticTag tst = this.getTimeSTSet().createTimeSemanticTag(name, sis);
-        this.notifyTimeCreated(tst);
-        return tst;
     }
     
     /**

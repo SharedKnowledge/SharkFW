@@ -204,11 +204,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public TimeSemanticTag createTimeSemanticTag(String name, String[] sis) throws SharkKBException {
-        return _localKB.createTimeSemanticTag(name, sis);
-    }
-
-    @Override
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
         return _localKB.createTimeSemanticTag(from, duration);
     }

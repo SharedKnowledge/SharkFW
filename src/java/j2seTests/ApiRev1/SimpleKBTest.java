@@ -93,12 +93,12 @@ public class SimpleKBTest {
 
       PeerSemanticTag peerResult = kb.getPeerSemanticTag(peer.getSI());
       SemanticTag topicResult = kb.getSemanticTag(topic.getSI());
-      TimeSemanticTag timeResult = kb.getTimeSTSet().getTimeSemanticTag(time.getSI());
+//      TimeSemanticTag timeResult = kb.getTimeSTSet().getTimeSemanticTag(time.getSI());
 //      SpatialSemanticTag geoResult = kb.getSpatialSTSet().getSpatialSemanticTag(geo.getSI());
 
       Assert.assertEquals(peer, peerResult);
       Assert.assertEquals(topic, topicResult);
-      Assert.assertEquals(time, timeResult);
+//      Assert.assertEquals(time, timeResult);
 //      Assert.assertEquals(geo, geoResult);
 
     }

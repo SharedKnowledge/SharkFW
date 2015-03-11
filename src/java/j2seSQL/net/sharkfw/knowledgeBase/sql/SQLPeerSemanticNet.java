@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.PeerSNSemanticTag;
 import net.sharkfw.knowledgeBase.PeerSTSet;
@@ -61,6 +62,11 @@ public class SQLPeerSemanticNet extends SQLSemanticNet implements PeerSemanticNe
 
     @Override
     public Enumeration<PeerSemanticTag> peerTags() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<SemanticTag> stTags() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

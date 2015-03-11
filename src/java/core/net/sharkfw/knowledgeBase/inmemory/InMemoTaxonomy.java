@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
 
