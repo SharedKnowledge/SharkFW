@@ -6,6 +6,7 @@ import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.system.Iterator2Enumeration;
 
 /**
  *
@@ -29,7 +30,7 @@ public class SQLTimeSTSet extends SQLSTSet implements TimeSTSet {
 
     @Override
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
-        SQLSemanticTag sqlST = this.createSQLSemanticTag(
+        SQLSemanticTagStorage sqlST = this.createSQLSemanticTag(
                 this.getSSQLSharkKB(), null, null, 
                 from, duration, 
                 false, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE, null);
@@ -39,11 +40,11 @@ public class SQLTimeSTSet extends SQLSTSet implements TimeSTSet {
 
     @Override
     public Enumeration<TimeSemanticTag> timeTags() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Iterator2Enumeration(this.tstTags());
     }
 
     @Override
     public Iterator<TimeSemanticTag> tstTags() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.tags(SQLSharkKB.TIME_SEMANTIC_TAG_TYPE);
     }
 }

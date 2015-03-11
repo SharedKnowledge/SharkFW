@@ -3,13 +3,16 @@ package net.sharkfw.knowledgeBase.sql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import net.sharkfw.knowledgeBase.AbstractSTSet;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.system.Iterator2Enumeration;
 
 /**
  *
@@ -39,7 +42,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
      * @return
      * @throws SharkKBException
      */
-    protected SQLSemanticTag createSQLSemanticTag(
+    protected SQLSemanticTagStorage createSQLSemanticTag(
             SQLSharkKB kb,
             String name, 
             String ewkt, // if spatial semantic tag
@@ -48,98 +51,9 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
             boolean hidden, 
             int type,
             String[] sis) throws SharkKBException {
-/*        
-                        " (id integer PRIMARY KEY default nextval('stid'), "
-                        + "name character varying("+ SQLSharkKB.MAX_ST_NAME_SIZE + "), "
-                        + "ewkt character varying("+ SQLSharkKB.MAX_EWKT_NAME_SIZE + "), "
-                        + "startTime bigint, "
-                        + "durationTime bigint, "
-                        + "hidden boolean default false, "
-                        + "st_type smallint"
-                        + ");");
-        */
         
-        if(type != SQLSharkKB.SEMANTIC_TAG_TYPE && 
-                type != SQLSharkKB.PEER_SEMANTIC_TAG_TYPE && 
-                type != SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE && 
-                type != SQLSharkKB.TIME_SEMANTIC_TAG_TYPE) {
-            
-            throw new SharkKBException("unknown semantic tag type: " + type);
-        }
-        
-        Statement statement = null;
-        try {
-            statement = this.kb.getConnection().createStatement();
-            
-            String sqlHead = "INSERT INTO " + SQLSharkKB.ST_TABLE + " (";
-            String sqlValues = "VALUES ("; 
-            
-            if(name != null) { 
-                sqlHead += "name, ";
-                sqlValues += "'" + name + "', "; 
-            }
-            
-            if(ewkt != null) { 
-                sqlHead += "ewkt, ";
-                sqlValues += "'" + ewkt + "', "; 
-            }
-            
-            // rest
-            sqlHead += "starttime, durationtime, hidden, st_type) ";
-            sqlValues += startTime + ", "
-                    + durationTime + ", "
-                    + "'" + String.valueOf(hidden) + "', "
-                    + type
-                    + ")";
-            
-            String hiddenString;
-            hiddenString = hidden ? "'true'" : "'false'";
-            
-            String sqlStatement = sqlHead + sqlValues;
-            
-            statement.execute(sqlStatement);
-            
-            // add subject identifier - get new id first
-            int semanticTagID = 0;
-            
-            ResultSet result = statement.executeQuery("select currval('stid');");
-            if(result.next()) {
-                // there must be a result
-                semanticTagID = result.getInt(1);
-            } else {
-                // TODO: remove semantic tag entry!!
-                throw new SharkKBException("cannot get current semantic tag primary key");
-            }
-            
-            // insert subject identifier
-            if(sis != null && sis.length > 0) {
-                for (String si : sis) {
-                    // insert each si into si table - duplicates are not allowed
-                    String sqlString = "INSERT INTO " + SQLSharkKB.SI_TABLE + "(si, stid) VALUES ('" + si + "', '" + semanticTagID + "')";
-                    try {
-                        statement.execute(sqlString);
-                    }
-                    catch(SQLException e) {
-                        // tried to insert si twice
-                        // TODO: can that happen here or do we check on merge etc. in callee?
-                    }
-                }
-            }
-            
-            return new SQLSemanticTag(kb, semanticTagID);
-            
-        } catch (SQLException ex) {
-            throw new SharkKBException("cannot create semantic tag in SQL DB: " + ex.getLocalizedMessage());
-        }
-        finally {
-            if(statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException ex) {
-                    // ignore
-                }
-            }
-        }
+        return new SQLSemanticTagStorage(kb, name, ewkt, startTime, durationTime, 
+            hidden, type, sis);
     }
     
     /**
@@ -148,7 +62,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
      * @return
      * @throws SharkKBException
      */
-    protected SQLSemanticTag getSQLSemanticTag(String si) throws SharkKBException {    
+    protected SQLSemanticTagStorage getSQLSemanticTag(String si) throws SharkKBException {    
         Statement statement = null;
         
         try {
@@ -167,7 +81,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
             
             int stID = result.getInt("id");
             
-            return new SQLSemanticTag(kb, stID);
+            return new SQLSemanticTagStorage(kb, stID);
             
         }
         catch(SQLException e) {
@@ -182,6 +96,77 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
                 }
             }
         }
+    }
+    
+    /**
+     * Creates iterator of tags of given type. Note: Semantic Tags cover also
+     * time, spatial and peer semantic tags
+     * @param type
+     * @return
+     * @throws SharkKBException 
+     */
+    protected Iterator tags(int type) throws SharkKBException {
+        List<SemanticTag> tagList = new ArrayList<>();
+        Statement statement = null;
+
+        try {
+            statement  = this.kb.getConnection().createStatement();
+            
+            String sqlString = "select id from " + SQLSharkKB.ST_TABLE;
+            
+            // select specific tag type if not of general semantic tag type
+            switch(type) {
+                case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
+                case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
+                case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
+                    sqlString += " where st_type = " + type;
+                    break;
+            }
+            
+            ResultSet result = statement.executeQuery(sqlString);
+            
+            while(result.next()) {
+                // something found
+                int id = result.getInt("id");
+                SQLSemanticTagStorage sqlST = new SQLSemanticTagStorage(this.kb, id);
+                
+                // wrap into tag of correct type:
+                SemanticTag newTag;
+                switch(type) {
+                    case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
+                        newTag = new SQLPeerSemanticTag(sqlST);
+                        break;
+                        
+                    case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
+                        newTag = new SQLSpatialSemanticTag(sqlST);
+                        break;
+                        
+                    case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
+                        newTag = new SQLTimeSemanticTag(sqlST);
+                        break;
+                        
+                    default:
+                        newTag = new SQLSemanticTag(sqlST);
+                }
+                
+                // add to list
+                tagList.add(newTag);
+            }
+        }
+        catch(SQLException e) {
+            throw new SharkKBException(e.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+        
+        return tagList.iterator();
     }
     
     @Override
@@ -211,7 +196,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public Enumeration<SemanticTag> tags() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Iterator2Enumeration(this.stTags());
     }
 
     @Override
@@ -271,6 +256,6 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public Iterator<SemanticTag> stTags() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.tags(SQLSharkKB.SEMANTIC_TAG_TYPE);
     }
 }

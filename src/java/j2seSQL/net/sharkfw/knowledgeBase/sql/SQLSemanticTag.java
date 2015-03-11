@@ -1,214 +1,115 @@
 package net.sharkfw.knowledgeBase.sql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import net.sharkfw.knowledgeBase.PropertyHolder;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
 /**
  *
  * @author thsc
  */
-class SQLSemanticTag implements PropertyOwner, PropertyHolder {
-    private final SQLSharkKB kb;
-    private final int id;
-    private String name;
-    private String ewkt;
-    private long startTime;
-    private long durationTime;
-    private boolean hidden;
-    private int type;
-    private String[] sis;
+public class SQLSemanticTag implements SemanticTag {
+    protected final SQLSemanticTagStorage sqlST;
     
-    private SQLPropertyHolder propertyHolder;
-
-    SQLSemanticTag(SQLSharkKB kb, int id) throws SharkKBException {
-        this.kb = kb;
-        this.id = id;
-        
-        this.propertyHolder = new SQLPropertyHolder(kb, this);
-        
-        this.refreshBasics();
-    }
-
-    /**
-     * Force to re-read line from st table
-     */
-    private void refreshBasics() throws SharkKBException {
-        Statement statement = null;
-        try {
-            statement = this.kb.getConnection().createStatement();
-            
-            String sqlStatement = "SELECT * FROM " + SQLSharkKB.ST_TABLE + 
-                    " where id = " 
-                    + this.id                 
-                    + ";";
-            
-            ResultSet result = statement.executeQuery(sqlStatement);
-            
-            if(!result.next()) {
-                throw new SharkKBException("semantic tag removed in database");
-            } 
-            
-            // else
-            this.name = result.getString("name");
-            this.ewkt = result.getString("ewkt");
-            this.startTime = result.getLong("startTime");
-            this.durationTime = result.getLong("durationTime");
-            this.hidden = result.getBoolean("hidden");
-            this.type = result.getInt("st_type");
-            
-        } catch (SQLException ex) {
-            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
-        }
-        finally {
-            if(statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException ex) {
-                    // ignore
-                }
-            }
-        }
+    public SQLSemanticTag(SQLSemanticTagStorage sqlST) throws SharkKBException {
+        this.sqlST = sqlST;
     }
     
-    /**
-     * Force to re-read from sis table
-     */
-    private void refreshSIS() throws SharkKBException {
-        Statement statement = null;
-        try {
-            statement = this.kb.getConnection().createStatement();
-            
-            String sqlStatement = "SELECT stid FROM " + SQLSharkKB.ST_TABLE + 
-                    "where id = " 
-                    + this.id                 
-                    + ")";
-            
-            ResultSet result = statement.executeQuery(sqlStatement);
-            
-            if(!result.next()) {
-                // no si - it's an any tag
-                return;
-            } 
-            
-            // else
-            List<String> siList = new ArrayList<>();
-            
-            do {
-                String si = result.getString(1);
-                siList.add(si);
-            } while(result.next());
-            
-            String[] sisTmp = new String[siList.size()];
-            Iterator<String> siIter = siList.iterator();
-            
-            for(int i = 0; i < sisTmp.length; i++) {
-                sisTmp[i] = siIter.next();
-            }
-            
-            this.sis = sisTmp;
-        } catch (SQLException ex) {
-            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
-        }
-        finally {
-            if(statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException ex) {
-                    // ignore
-                }
-            }
-        }
-    }
-    
-    private void refreshPropertys() throws SharkKBException {
-        this.propertyHolder.refresh();
-    }
-        
-    String getName() {
-        return this.name;
+    @Override
+    public String getName() {
+        return this.sqlST.getName();
     }
 
     @Override
-    public int getID() {
-        return this.id;
+    public String[] getSI() {
+        try {
+            return this.sqlST.getSIS();
+        } catch (SharkKBException ex) {
+            // TODO
+        }
+        
+        return null;
     }
 
     @Override
-    public int getType() {
-        return this.type;
-    }
-    
-    String getEWKT() {
-        return this.ewkt;
-    }
-    
-    long getStartTime() {
-        return this.startTime;
-    }
-    
-    long getDurationTime() {
-        return this.durationTime;
-    }
-    
-    boolean isHidden() {
-        return this.hidden;
-    }
-    
-    String[] getSIS() throws SharkKBException {
-        this.refreshSIS();
-        return this.sis;
+    public void removeSI(String si) throws SharkKBException {
+        this.sqlST.removeSI(si);
     }
 
-    void removeSI(String si) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public void addSI(String si) throws SharkKBException {
+        this.sqlST.addSI(si);
     }
 
-    void addSI(String si) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public void setName(String name) {
+        this.sqlST.setName(name);
     }
 
-    void setName(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public void merge(SemanticTag st) {
+        SharkCSAlgebra.merge(this, st);
     }
 
-    void setHidden(boolean hidden) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public void setHidden(boolean isHidden) {
+        this.sqlST.setHidden(isHidden);
+    }
+
+    @Override
+    public boolean hidden() {
+        return this.sqlST.isHidden();
+    }
+
+    @Override
+    public boolean isAny() {
+        return SharkCSAlgebra.isAny(this);
+    }
+
+    @Override
+    public boolean identical(SemanticTag other) {
+        return SharkCSAlgebra.identical(this, other);
+    }
+
+    @Override
+    public void setSystemProperty(String name, String value) { 
+        // no implemented and used here
+    }
+
+    @Override
+    public String getSystemProperty(String name) { 
+        // no implemented and used here
+        return null; 
     }
 
     @Override
     public void setProperty(String name, String value) throws SharkKBException {
-        this.propertyHolder.setProperty(name, value);
+        this.sqlST.setProperty(name, value);
     }
 
     @Override
     public String getProperty(String name) throws SharkKBException {
-        return this.propertyHolder.getProperty(name);
+        return this.sqlST.getProperty(name);
     }
 
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        this.propertyHolder.setProperty(name, value, transfer);
+        this.sqlST.setProperty(name, value, transfer);
     }
 
     @Override
     public void removeProperty(String name) throws SharkKBException {
-        this.propertyHolder.removeProperty(name);
+        this.sqlST.removeProperty(name);
     }
 
     @Override
     public Enumeration<String> propertyNames() throws SharkKBException {
-        return this.propertyHolder.propertyNames();
+        return this.sqlST.propertyNames();
     }
 
     @Override
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return this.propertyHolder.propertyNames(all);
+        return this.sqlST.propertyNames(all);
     }
 }
