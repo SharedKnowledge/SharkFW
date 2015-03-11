@@ -68,49 +68,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
     }
     
     protected SQLSemanticTagStorage getSQLSemanticTagStorage(String[] sis) throws SharkKBException {
-        if(sis == null || sis.length == 0) {
-            return null;
-        }
-        
-        Statement statement = null;
-        
-        try {
-            statement  = this.kb.getConnection().createStatement();
-            
-            String sqlString = "select * from " + SQLSharkKB.ST_TABLE + 
-                    " where id = (select stid from " + 
-                    SQLSharkKB.SI_TABLE + " where si = '" + sis[0];
-            
-            for(int i = 1; i < sis.length; i++) {
-                sqlString += " OR si = '" + sis[i] + "'";
-            }
-            
-            sqlString += "');";
-            
-            ResultSet result = statement.executeQuery(sqlString);
-            
-            if(!result.next()) {
-                // nothing found - leave
-                return null;
-            }
-            
-            int stID = result.getInt("id");
-            
-            return new SQLSemanticTagStorage(kb, stID);
-            
-        }
-        catch(SQLException e) {
-            throw new SharkKBException(e.getLocalizedMessage());
-        }
-        finally {
-            if(statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException ex) {
-                    // ignore
-                }
-            }
-        }
+        return this.kb.getSQLSemanticTagStorage(sis);
     }
     
     /**

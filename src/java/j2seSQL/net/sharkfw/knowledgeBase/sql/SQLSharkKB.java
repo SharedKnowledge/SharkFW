@@ -95,10 +95,11 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
     public static final String SHARKKB_TABLE = "knowledgebase";
     public static final String ST_TABLE = "semantictags";
-    public static final String PROERTIES_TABLE = "properties";
+    public static final String PROPERTY_TABLE = "properties";
     public static final String SI_TABLE = "subjectidentifier";
     public static final String ADDRESS_TABLE = "addresses";
     public static final String CP_TABLE = "contextpoints";
+    public static final String PREDICATE_TABLE = "predicates";
     
     public static final String MAX_SI_SIZE = "200";
     public static final String MAX_ST_NAME_SIZE = "200";
@@ -106,6 +107,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     public static final String MAX_PROPERTY_NAME_SIZE = "200";
     public static final String MAX_PROPERTY_VALUE_SIZE = "200";
     public static final String MAX_ADDR_SIZE = "200";
+    public static final String MAX_PREDICATE_SIZE = "200";
     
     /**
      * Tables: 
@@ -164,16 +166,16 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
             /************** properties table *****************************/
             try {
-                statement.execute("SELECT * from " + SQLSharkKB.PROERTIES_TABLE);
-                L.d(SQLSharkKB.PROERTIES_TABLE + " already exists", this);
+                statement.execute("SELECT * from " + SQLSharkKB.PROPERTY_TABLE);
+                L.d(SQLSharkKB.PROPERTY_TABLE + " already exists", this);
             }
             catch(SQLException e) {
                 // does not exist: create
-                L.d(SQLSharkKB.PROERTIES_TABLE + " does not exists - create", this);
+                L.d(SQLSharkKB.PROPERTY_TABLE + " does not exists - create", this);
                 try { statement.execute("drop sequence propertyid;"); }
                 catch(SQLException ee) { /* ignore */ }
                 statement.execute("create sequence propertyid;");
-                statement.execute("CREATE TABLE " + SQLSharkKB.PROERTIES_TABLE + 
+                statement.execute("CREATE TABLE " + SQLSharkKB.PROPERTY_TABLE + 
                         " (id integer PRIMARY KEY default nextval('propertyid'), "
                         + "name character varying("+ SQLSharkKB.MAX_PROPERTY_NAME_SIZE + "), "
                         + "value character varying("+ SQLSharkKB.MAX_PROPERTY_VALUE_SIZE + "), "
@@ -201,8 +203,6 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
                         + ");");
             }
             
-            // TODO: si must be unique!
-            
             /************** addresses table *****************************/
             try {
                 statement.execute("SELECT * from " + SQLSharkKB.ADDRESS_TABLE);
@@ -218,6 +218,24 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
                         " (id integer PRIMARY KEY default nextval('addrid'), "
                         + "addr character varying("+ SQLSharkKB.MAX_ADDR_SIZE + "), "
                         + "stID integer"
+                        + ");");
+            }
+            
+            /************** predicate table *****************************/
+            try {
+                statement.execute("SELECT * from " + SQLSharkKB.PREDICATE_TABLE);
+                L.d(SQLSharkKB.PREDICATE_TABLE + " already exists", this);
+            }
+            catch(SQLException e) {
+                // does not exist: create
+                L.d(SQLSharkKB.PREDICATE_TABLE + " does not exists - create", this);
+                try { statement.execute("drop sequence predicateid;"); }
+                catch(SQLException ee) { /* ignore */ }
+                statement.execute("create sequence predicateid;");
+                statement.execute("CREATE TABLE " + SQLSharkKB.PREDICATE_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('predicateid'), "
+                        + "predicate character varying("+ SQLSharkKB.MAX_PREDICATE_SIZE + "), "
+                        + "sourceID integer, targetID integer"
                         + ");");
             }
             
@@ -258,6 +276,52 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         }
     }
     
+    SQLSemanticTagStorage getSQLSemanticTagStorage(String[] sis) throws SharkKBException {
+        if(sis == null || sis.length == 0) {
+            return null;
+        }
+        
+        Statement statement = null;
+        
+        try {
+            statement  = this.getConnection().createStatement();
+            
+            String sqlString = "select * from " + SQLSharkKB.ST_TABLE + 
+                    " where id = (select stid from " + 
+                    SQLSharkKB.SI_TABLE + " where si = '" + sis[0];
+            
+            for(int i = 1; i < sis.length; i++) {
+                sqlString += " OR si = '" + sis[i] + "'";
+            }
+            
+            sqlString += "');";
+            
+            ResultSet result = statement.executeQuery(sqlString);
+            
+            if(!result.next()) {
+                // nothing found - leave
+                return null;
+            }
+            
+            int stID = result.getInt("id");
+            
+            return new SQLSemanticTagStorage(this, stID);
+            
+        }
+        catch(SQLException e) {
+            throw new SharkKBException(e.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+    
     /**
      * Removes all tables in SQL database which store Shark data
      * @throws net.sharkfw.knowledgeBase.SharkKBException
@@ -284,7 +348,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
             /************** properties table *****************************/
             try {
-                statement.execute("DROP TABLE " + SQLSharkKB.PROERTIES_TABLE);
+                statement.execute("DROP TABLE " + SQLSharkKB.PROPERTY_TABLE);
             }
             catch(SQLException e) {
             }

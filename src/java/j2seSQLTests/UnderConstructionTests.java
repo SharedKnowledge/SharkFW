@@ -1,6 +1,9 @@
 import net.sharkfw.knowledgeBase.PeerSTSet;
+import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
+import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
@@ -30,6 +33,44 @@ public class UnderConstructionTests {
     }
 
      @Test
+     public void semanticNet() throws SharkKBException {
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        kb.drop();
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        
+        SemanticNet sn = kb.getTopicsAsSemanticNet();
+        
+        SNSemanticTag stA = sn.createSemanticTag("A", "http://a.de");
+        SNSemanticTag stB = sn.createSemanticTag("B", "http://b.de");
+        
+        stA.setPredicate("p1", stB);
+        
+        SNSemanticTag stAA = sn.getSemanticTag("http://a.de");
+        
+        Assert.assertNotNull(stAA);
+        
+        SNSemanticTag stBB = stAA.targetTags("p1").nextElement();
+        
+        Assert.assertTrue(SharkCSAlgebra.identical(stAA, stBB));
+        
+        // check persistency
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        
+        sn = kb.getTopicsAsSemanticNet();
+        
+        stAA = sn.getSemanticTag("http://a.de");
+        
+        Assert.assertNotNull(stAA);
+        
+        stBB = stAA.targetTags("p1").nextElement();
+        
+        Assert.assertTrue(SharkCSAlgebra.identical(stAA, stBB));
+     }
+
+//     @Test
      public void vocabularyTests() throws SharkKBException {
         L.setLogLevel(L.LOGLEVEL_ALL);
         SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");

@@ -62,9 +62,6 @@ class SQLSemanticTagStorage implements PropertyOwner {
         try {
             statement = this.kb.getConnection().createStatement();
             
-            // get next id
-            int semanticTagID = 0;
-            
             ResultSet result = statement.executeQuery("select nextval('stid');");
             if(result.next()) {
                 // there must be a result
@@ -106,7 +103,7 @@ class SQLSemanticTagStorage implements PropertyOwner {
             if(sis != null && sis.length > 0) {
                 for (String si : sis) {
                     // insert each si into si table - duplicates are not allowed
-                    String sqlString = "INSERT INTO " + SQLSharkKB.SI_TABLE + "(si, stid) VALUES ('" + si + "', '" + semanticTagID + "')";
+                    String sqlString = "INSERT INTO " + SQLSharkKB.SI_TABLE + "(si, stid) VALUES ('" + si + "', '" + this.id + "')";
                     try {
                         statement.execute(sqlString);
                     }
@@ -180,10 +177,9 @@ class SQLSemanticTagStorage implements PropertyOwner {
         try {
             statement = this.kb.getConnection().createStatement();
             
-            String sqlStatement = "SELECT stid FROM " + SQLSharkKB.ST_TABLE + 
-                    "where id = " 
-                    + this.id                 
-                    + ")";
+            String sqlStatement = "SELECT si FROM " + SQLSharkKB.SI_TABLE + 
+                    " WHERE stid = " 
+                    + this.id;
             
             ResultSet result = statement.executeQuery(sqlStatement);
             

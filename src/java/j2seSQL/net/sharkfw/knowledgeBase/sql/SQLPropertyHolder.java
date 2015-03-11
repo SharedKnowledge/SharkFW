@@ -38,7 +38,7 @@ public class SQLPropertyHolder implements PropertyHolder {
         try {
             statement = this.kb.getConnection().createStatement();
             
-            String sqlStatement = "SELECT name, value, hidden FROM " + SQLSharkKB.PROERTIES_TABLE + 
+            String sqlStatement = "SELECT name, value, hidden FROM " + SQLSharkKB.PROPERTY_TABLE + 
                     " where ownerid = " 
                     + this.pOwner.getID() + " AND "
                     + "entity_type = " + this.pOwner.getType()
@@ -89,7 +89,7 @@ public class SQLPropertyHolder implements PropertyHolder {
                      
                      // write unhidden property to db
                     String sqlStatement = "INSERT INTO " + 
-                            SQLSharkKB.PROERTIES_TABLE
+                            SQLSharkKB.PROPERTY_TABLE
                             + "(name, value, hidden, ownerid, entity_type) VALUES ('"
                             + name + "', '"
                             + value + "', 'false',"
@@ -111,7 +111,7 @@ public class SQLPropertyHolder implements PropertyHolder {
                      
                      // write unhidden property to db
                     String sqlStatement = "INSERT INTO " + 
-                            SQLSharkKB.PROERTIES_TABLE
+                            SQLSharkKB.PROPERTY_TABLE
                             + "(name, value, hidden) VALUES ('"
                             + name + "', '"
                             + value + "', 'true')";
@@ -181,7 +181,7 @@ public class SQLPropertyHolder implements PropertyHolder {
             statement = this.kb.getConnection().createStatement();
             
             // remove all properties first
-            String sqlremove = "DELETE FROM " + SQLSharkKB.PROERTIES_TABLE +
+            String sqlremove = "DELETE FROM " + SQLSharkKB.PROPERTY_TABLE +
                     " WHERE ownerid = '" 
                     + this.pOwner.getID() + "' and entity_type = '"
                     + this.pOwner.getType() + "';";

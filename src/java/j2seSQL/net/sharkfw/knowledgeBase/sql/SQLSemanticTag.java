@@ -12,7 +12,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 public class SQLSemanticTag implements SemanticTag {
     private SQLPropertyHolder propertyHolder;
     protected final SQLSemanticTagStorage sqlST;
-    private final SQLSharkKB kb;
+    protected final SQLSharkKB kb;
     
     SQLSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
         this.kb = kb;
