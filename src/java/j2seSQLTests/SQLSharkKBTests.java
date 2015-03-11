@@ -29,7 +29,7 @@ public class SQLSharkKBTests {
     public void tearDown() {
     }
 
-//     @Test
+     @Test
      public void createDB() throws SharkKBException {
          L.setLogLevel(L.LOGLEVEL_ALL);
          SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
@@ -44,7 +44,7 @@ public class SQLSharkKBTests {
          kb.close();
      }
      
-//     @Test
+     @Test
      public void basicSTSetTests() throws SharkKBException {
         L.setLogLevel(L.LOGLEVEL_ALL);
         SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
@@ -110,32 +110,4 @@ public class SQLSharkKBTests {
         Assert.assertEquals(property, "v1");
      }
      
-//     @Test
-     public void vocabularyTests() throws SharkKBException {
-        L.setLogLevel(L.LOGLEVEL_ALL);
-        SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
-        kb.drop();
-        kb.close();
-        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
-        
-        STSet topics = kb.getTopicSTSet();
-        
-        topics.createSemanticTag("Shark", "http://sharksystem.net");
-
-        PeerSTSet peers = kb.getPeerSTSet();
-        peers.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@sharksystem.net");
-        
-        kb.getTimeSTSet().createTimeSemanticTag(System.currentTimeMillis(), TimeSemanticTag.FOREVER);
-        kb.getSpatialSTSet().createSpatialSemanticTag("spatial tag", new String[] {"http://spatialSI"}, (SharkGeometry) null);
-        
-        SemanticTag semanticTag = topics.getSemanticTag("http://sharksystem.net");
-        Assert.assertNotNull(semanticTag);
-
-        String[] sis = new String[] {"http://a.de", "http://b.de"};
-        topics.createSemanticTag("A", sis);
-        semanticTag = topics.getSemanticTag("http://a.de");
-        Assert.assertNotNull(semanticTag);
-        
-        
-     }
 }

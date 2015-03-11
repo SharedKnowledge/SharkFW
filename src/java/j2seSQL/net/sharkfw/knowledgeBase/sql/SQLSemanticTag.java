@@ -1,8 +1,6 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -16,10 +14,14 @@ public class SQLSemanticTag implements SemanticTag {
     protected final SQLSemanticTagStorage sqlST;
     private final SQLSharkKB kb;
     
-    public SQLSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+    SQLSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
         this.kb = kb;
         this.sqlST = sqlST;
         this.propertyHolder = new SQLPropertyHolder(kb, sqlST);
+    }
+    
+    protected SQLSemanticTagStorage getSQLSemanticTagStorage() {
+        return this.sqlST;
     }
     
     @Override
