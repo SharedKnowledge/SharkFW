@@ -39,10 +39,10 @@ public class SQLPropertyHolder implements PropertyHolder {
             statement = this.kb.getConnection().createStatement();
             
             String sqlStatement = "SELECT name, value, hidden FROM " + SQLSharkKB.PROERTIES_TABLE + 
-                    "where ownerid = " 
+                    " where ownerid = " 
                     + this.pOwner.getID() + " AND "
                     + "entity_type = " + this.pOwner.getType()
-                    + ")";
+                    + ";";
             
             ResultSet result = statement.executeQuery(sqlStatement);
             
@@ -77,6 +77,14 @@ public class SQLPropertyHolder implements PropertyHolder {
         Statement statement = null;
         try {
             statement = this.kb.getConnection().createStatement();
+            
+            // remove all properties first
+            String sqlremove = "DELETE FROM " + SQLSharkKB.PROERTIES_TABLE +
+                    " WHERE ownerid = '" 
+                    + this.pOwner.getID() + "' and entity_type = '"
+                    + this.pOwner.getType() + "';";
+            
+            statement.execute(sqlremove);
             
             // not hidden properties
             HashMap<String, String> props = this.pHolder.getUnhiddenProperties();
@@ -129,45 +137,46 @@ public class SQLPropertyHolder implements PropertyHolder {
                 }
             }
         }
+        
+        this.inSync = true;
     }
     
     @Override
     public void setProperty(String name, String value) throws SharkKBException {
-        this.inSync = false;
-        
-        // save
+        this.refresh();
+        this.pHolder.setProperty(name, value);
         this.save();
     }
 
     @Override
     public String getProperty(String name) throws SharkKBException {
         this.refresh();
-        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.pHolder.getProperty(name);
     }
 
     @Override
-    public void setProperty(String name, String value, boolean transfer) {
-        this.inSync = false;
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
+        this.refresh();
+        this.pHolder.setProperty(name, value, transfer);
+        this.save();
     }
 
     @Override
-    public void removeProperty(String name) {
-        this.inSync = false;
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void removeProperty(String name) throws SharkKBException {
+        this.refresh();
+        this.pHolder.removeProperty(name);
+        this.save();
     }
 
     @Override
     public Enumeration<String> propertyNames() throws SharkKBException {
         this.refresh();
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.pHolder.propertyNames();
     }
 
     @Override
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
         this.refresh();
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.pHolder.propertyNames(all);
     }
-
 }

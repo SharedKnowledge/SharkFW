@@ -1,7 +1,10 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 
@@ -10,104 +13,121 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
  * @author thsc
  */
 class SQLTimeSemanticTag implements TimeSemanticTag {
+    private final SQLSemanticTag sqlST;
 
-    public SQLTimeSemanticTag(SQLSemanticTag sqlST) {
+    public SQLTimeSemanticTag(SQLSemanticTag sqlST) throws SharkKBException {
+        this.sqlST = sqlST;
+        
+        if(sqlST.getType() != SQLSharkKB.TIME_SEMANTIC_TAG_TYPE) {
+            throw new SharkKBException("cannot create time semantic tag with non time semantic tag values");
+        }
     }
 
     @Override
     public long getFrom() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.sqlST.getStartTime();
     }
 
     @Override
     public long getDuration() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.sqlST.getDurationTime();
     }
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.sqlST.getName();
     }
 
     @Override
     public String[] getSI() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            return this.sqlST.getSIS();
+        } catch (SharkKBException ex) {
+            // TODO
+        }
+        
+        return null;
     }
 
     @Override
     public void removeSI(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.sqlST.removeSI(si);
     }
 
     @Override
     public void addSI(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.sqlST.addSI(si);
     }
 
     @Override
-    public void setName(String newName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setName(String name) {
+        this.sqlST.setName(name);
     }
 
     @Override
     public void merge(SemanticTag st) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SharkCSAlgebra.merge(this, st);
     }
 
     @Override
     public void setHidden(boolean isHidden) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.sqlST.setHidden(isHidden);
     }
 
     @Override
     public boolean hidden() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.sqlST.isHidden();
     }
 
     @Override
     public boolean isAny() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return SharkCSAlgebra.isAny(this);
     }
 
     @Override
     public boolean identical(SemanticTag other) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return SharkCSAlgebra.identical(this, other);
     }
 
     @Override
-    public void setSystemProperty(String name, String value) { }
-
-    @Override
-    public String getSystemProperty(String name) { return null; }
-
-    @Override
-    public void setProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setSystemProperty(String name, String value) { 
+        // no implemented and used here
     }
 
     @Override
-    public String getProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getSystemProperty(String name) { 
+        // no implemented and used here
+        return null; 
     }
 
     @Override
-    public void setProperty(String name, String value, boolean transfer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setProperty(String name, String value) throws SharkKBException {
+        this.sqlST.setProperty(name, value);
     }
 
     @Override
-    public void removeProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getProperty(String name) throws SharkKBException {
+        return this.sqlST.getProperty(name);
     }
 
     @Override
-    public Enumeration<String> propertyNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
+        this.sqlST.setProperty(name, value, transfer);
     }
 
     @Override
-    public Enumeration<String> propertyNames(boolean all) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void removeProperty(String name) throws SharkKBException {
+        this.sqlST.removeProperty(name);
+    }
+
+    @Override
+    public Enumeration<String> propertyNames() throws SharkKBException {
+        return this.sqlST.propertyNames();
+    }
+
+    @Override
+    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
+        return this.sqlST.propertyNames(all);
     }
     
 }

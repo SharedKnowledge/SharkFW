@@ -4,15 +4,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
 /**
  *
  * @author thsc
  */
-class SQLSemanticTag implements PropertyOwner {
+class SQLSemanticTag implements PropertyOwner, PropertyHolder {
     private final SQLSharkKB kb;
     private final int id;
     private String name;
@@ -25,11 +27,13 @@ class SQLSemanticTag implements PropertyOwner {
     
     private SQLPropertyHolder propertyHolder;
 
-    SQLSemanticTag(SQLSharkKB kb, int id) {
+    SQLSemanticTag(SQLSharkKB kb, int id) throws SharkKBException {
         this.kb = kb;
         this.id = id;
         
         this.propertyHolder = new SQLPropertyHolder(kb, this);
+        
+        this.refreshBasics();
     }
 
     /**
@@ -41,9 +45,9 @@ class SQLSemanticTag implements PropertyOwner {
             statement = this.kb.getConnection().createStatement();
             
             String sqlStatement = "SELECT * FROM " + SQLSharkKB.ST_TABLE + 
-                    "where id = " 
+                    " where id = " 
                     + this.id                 
-                    + ")";
+                    + ";";
             
             ResultSet result = statement.executeQuery(sqlStatement);
             
@@ -57,7 +61,7 @@ class SQLSemanticTag implements PropertyOwner {
             this.startTime = result.getLong("startTime");
             this.durationTime = result.getLong("durationTime");
             this.hidden = result.getBoolean("hidden");
-            this.type = result.getInt("durationTime");
+            this.type = result.getInt("st_type");
             
         } catch (SQLException ex) {
             throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
@@ -128,7 +132,7 @@ class SQLSemanticTag implements PropertyOwner {
     }
         
     String getName() {
-        return null;
+        return this.name;
     }
 
     @Override
@@ -141,4 +145,70 @@ class SQLSemanticTag implements PropertyOwner {
         return this.type;
     }
     
+    String getEWKT() {
+        return this.ewkt;
+    }
+    
+    long getStartTime() {
+        return this.startTime;
+    }
+    
+    long getDurationTime() {
+        return this.durationTime;
+    }
+    
+    boolean isHidden() {
+        return this.hidden;
+    }
+    
+    String[] getSIS() throws SharkKBException {
+        this.refreshSIS();
+        return this.sis;
+    }
+
+    void removeSI(String si) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void addSI(String si) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void setName(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void setHidden(boolean hidden) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setProperty(String name, String value) throws SharkKBException {
+        this.propertyHolder.setProperty(name, value);
+    }
+
+    @Override
+    public String getProperty(String name) throws SharkKBException {
+        return this.propertyHolder.getProperty(name);
+    }
+
+    @Override
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
+        this.propertyHolder.setProperty(name, value, transfer);
+    }
+
+    @Override
+    public void removeProperty(String name) throws SharkKBException {
+        this.propertyHolder.removeProperty(name);
+    }
+
+    @Override
+    public Enumeration<String> propertyNames() throws SharkKBException {
+        return this.propertyHolder.propertyNames();
+    }
+
+    @Override
+    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
+        return this.propertyHolder.propertyNames(all);
+    }
 }
