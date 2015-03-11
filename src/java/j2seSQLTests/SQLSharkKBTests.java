@@ -44,8 +44,8 @@ public class SQLSharkKBTests {
          kb.close();
      }
      
-     @Test
-     public void stSetTests() throws SharkKBException {
+//     @Test
+     public void basicSTSetTests() throws SharkKBException {
         L.setLogLevel(L.LOGLEVEL_ALL);
         SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
         kb.drop();
@@ -68,6 +68,45 @@ public class SQLSharkKBTests {
         timeSTSet = kb.getTimeSTSet();
         tst = timeSTSet.timeTags().nextElement();
         property = tst.getProperty("p1");
+        Assert.assertEquals(property, "v1");
+     }
+     
+     @Test
+     public void addAndRemoveOnSemanticTag() throws SharkKBException {
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        kb.drop();
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        
+        STSet stSet = kb.getTopicSTSet();
+        SemanticTag st = stSet.createSemanticTag("Shark", "http://www.sharksystem.net");
+        
+        st.setProperty("p1", "v1");
+        String property = st.getProperty("p1");
+        Assert.assertEquals(property, "v1");
+        
+        st.setName("SharkFW");
+        Assert.assertEquals("SharkFW", st.getName());
+        
+        st.addSI("http://www.sharkfw.net");
+        st.removeSI("http://www.sharksystem.net");
+        
+        // test persistency
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        
+        
+        stSet = kb.getTopicSTSet();
+        st = stSet.getSemanticTag("http://www.sharksystem.net");
+        Assert.assertNull(st);
+        
+        st = stSet.getSemanticTag("http://www.sharkfw.net");
+        Assert.assertNotNull(st);
+        
+        Assert.assertEquals("SharkFW", st.getName());
+        
+        property = st.getProperty("p1");
         Assert.assertEquals(property, "v1");
      }
      

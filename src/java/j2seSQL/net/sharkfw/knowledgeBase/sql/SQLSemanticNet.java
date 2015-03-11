@@ -25,27 +25,46 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
 
     @Override
     public SNSemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String si = null;
+        
+        if(sis != null && sis.length > 0) {
+            si = sis[0];
+        }
+        
+        SQLSemanticTagStorage sqlST = this.getSQLSemanticTagStorage(si);
+        
+        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
     }
 
     @Override
     public SNSemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLSemanticTagStorage sqlST = this.createSQLSemanticTag(
+                this.getSSQLSharkKB(), name, null, 0, 0, false, 
+                SQLSharkKB.SEMANTIC_TAG, new String[] {si});
+        
+        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
     }
 
     @Override
     public void removeSemanticTag(SNSemanticTag tag) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SemanticTag st = tag;
+        super.removeSemanticTag(st);
     }
 
     @Override
     public SNSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLSemanticTagStorage sqlST = this.getSQLSemanticTagStorage(sis);
+        
+        if(sqlST == null) {
+            return null;
+        }
+        
+        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
     }
 
     @Override
     public SNSemanticTag getSemanticTag(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getSemanticTag(new String[]{si});
     }
 
     @Override
@@ -102,4 +121,5 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
     public void add(SemanticTag tag) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

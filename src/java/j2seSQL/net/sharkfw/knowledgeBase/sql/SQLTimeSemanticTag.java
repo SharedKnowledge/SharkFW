@@ -8,8 +8,8 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
  * @author thsc
  */
 class SQLTimeSemanticTag extends SQLSemanticTag implements TimeSemanticTag {
-    SQLTimeSemanticTag(SQLSemanticTagStorage sqlST) throws SharkKBException {
-        super(sqlST);
+    SQLTimeSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+        super(kb, sqlST);
         
         if(sqlST.getType() != SQLSharkKB.TIME_SEMANTIC_TAG_TYPE) {
             throw new SharkKBException("cannot create time semantic tag with non time semantic tag values");

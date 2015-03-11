@@ -8,8 +8,8 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  * @author thsc
  */
 public class SQLPeerSemanticTag extends SQLSemanticTag implements PeerSemanticTag {
-    SQLPeerSemanticTag(SQLSemanticTagStorage sqlST) throws SharkKBException {
-        super(sqlST);
+    SQLPeerSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+        super(kb, sqlST);
         
         if(sqlST.getType() != SQLSharkKB.TIME_SEMANTIC_TAG_TYPE) {
             throw new SharkKBException("cannot create time semantic tag with non time semantic tag values");

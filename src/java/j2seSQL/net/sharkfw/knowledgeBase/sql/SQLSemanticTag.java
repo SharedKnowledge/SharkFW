@@ -1,6 +1,8 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -10,10 +12,14 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  * @author thsc
  */
 public class SQLSemanticTag implements SemanticTag {
+    private SQLPropertyHolder propertyHolder;
     protected final SQLSemanticTagStorage sqlST;
+    private final SQLSharkKB kb;
     
-    public SQLSemanticTag(SQLSemanticTagStorage sqlST) throws SharkKBException {
+    public SQLSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+        this.kb = kb;
         this.sqlST = sqlST;
+        this.propertyHolder = new SQLPropertyHolder(kb, sqlST);
     }
     
     @Override
@@ -44,7 +50,11 @@ public class SQLSemanticTag implements SemanticTag {
 
     @Override
     public void setName(String name) {
-        this.sqlST.setName(name);
+        try {
+            this.sqlST.setName(name);
+        } catch (SharkKBException ex) {
+            // todo
+        }
     }
 
     @Override
@@ -54,7 +64,11 @@ public class SQLSemanticTag implements SemanticTag {
 
     @Override
     public void setHidden(boolean isHidden) {
-        this.sqlST.setHidden(isHidden);
+        try {
+            this.sqlST.setHidden(isHidden);
+        } catch (SharkKBException ex) {
+            // TODO
+        }
     }
 
     @Override
@@ -82,34 +96,49 @@ public class SQLSemanticTag implements SemanticTag {
         // no implemented and used here
         return null; 
     }
-
+    
+    private void refreshPropertys() throws SharkKBException {
+        this.propertyHolder.refresh();
+    }
+        
     @Override
     public void setProperty(String name, String value) throws SharkKBException {
-        this.sqlST.setProperty(name, value);
+        this.refreshPropertys();
+        this.propertyHolder.setProperty(name, value);
     }
 
     @Override
     public String getProperty(String name) throws SharkKBException {
-        return this.sqlST.getProperty(name);
+        this.refreshPropertys();
+        return this.propertyHolder.getProperty(name);
     }
 
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        this.sqlST.setProperty(name, value, transfer);
+        this.refreshPropertys();
+        this.propertyHolder.setProperty(name, value, transfer);
     }
 
     @Override
     public void removeProperty(String name) throws SharkKBException {
-        this.sqlST.removeProperty(name);
+        this.refreshPropertys();
+        this.propertyHolder.removeProperty(name);
     }
 
     @Override
     public Enumeration<String> propertyNames() throws SharkKBException {
-        return this.sqlST.propertyNames();
+        this.refreshPropertys();
+        return this.propertyHolder.propertyNames();
     }
 
     @Override
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return this.sqlST.propertyNames(all);
+        this.refreshPropertys();
+        return this.propertyHolder.propertyNames(all);
+    }
+    
+    void remove() throws SharkKBException {
+        this.propertyHolder.removeAllProperties();
+        this.sqlST.remove();
     }
 }

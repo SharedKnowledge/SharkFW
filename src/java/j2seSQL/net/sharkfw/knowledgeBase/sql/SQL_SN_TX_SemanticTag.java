@@ -1,24 +1,50 @@
 package net.sharkfw.knowledgeBase.sql;
 
-import net.sharkfw.knowledgeBase.SystemPropertyHolder;
-import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_SemanticTag;
+import java.util.Enumeration;
+import net.sharkfw.knowledgeBase.SNSemanticTag;
+import net.sharkfw.knowledgeBase.SharkKBException;
 
 /**
  *
  * @author thsc
  */
-public class SQL_SN_TX_SemanticTag extends InMemo_SN_TX_SemanticTag {
-    private final int stID;
-
-    SQL_SN_TX_SemanticTag(String name, String[] si, int stID, SQLPropertyHolder sqlPropertyHolder) {
-        super(name, si);
-        
-        this.stID = stID;
-        this.setPropertyHolder((SystemPropertyHolder) sqlPropertyHolder);
+public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticTag {
+    public SQL_SN_TX_SemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+        super(kb, sqlST);
     }
-    
+
     @Override
-    public void persist() {
-        // save name and/or sis to db
+    public Enumeration<String> predicateNames() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Enumeration<String> targetPredicateNames() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Enumeration<SNSemanticTag> targetTags(String predicateName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Enumeration<SNSemanticTag> sourceTags(String predicateName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setPredicate(String type, SNSemanticTag target) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removePredicate(String type, SNSemanticTag target) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void merge(SNSemanticTag toMerge) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

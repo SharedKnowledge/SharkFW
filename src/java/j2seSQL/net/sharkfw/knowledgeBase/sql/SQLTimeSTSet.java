@@ -35,7 +35,7 @@ public class SQLTimeSTSet extends SQLSTSet implements TimeSTSet {
                 from, duration, 
                 false, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE, null);
         
-        return new SQLTimeSemanticTag(sqlST);
+        return new SQLTimeSemanticTag(this.getSSQLSharkKB(), sqlST);
     }
 
     @Override

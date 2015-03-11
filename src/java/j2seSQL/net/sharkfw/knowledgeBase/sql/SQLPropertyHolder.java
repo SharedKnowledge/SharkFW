@@ -46,19 +46,12 @@ public class SQLPropertyHolder implements PropertyHolder {
             
             ResultSet result = statement.executeQuery(sqlStatement);
             
-            if(!result.next()) {
-                // no properties in DB - that's ok.
-                return;
-            } 
-            
-            // else - there are properties - fill in propertyHolder
-            do {
+            while(result.next()) {
                 this.pHolder.setProperty(
                     result.getString("name"),
                     result.getString("value"),
                     result.getBoolean("hidden"));
-            } while (result.next());
-            
+            }
         } catch (SQLException ex) {
             throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
         }
@@ -71,20 +64,18 @@ public class SQLPropertyHolder implements PropertyHolder {
                 }
             }
         }
+        
+        this.inSync = true;
     }
     
     private void save() throws SharkKBException {
         Statement statement = null;
+        
+        this.removeAllProperties();
+        
+        // write again
         try {
             statement = this.kb.getConnection().createStatement();
-            
-            // remove all properties first
-            String sqlremove = "DELETE FROM " + SQLSharkKB.PROERTIES_TABLE +
-                    " WHERE ownerid = '" 
-                    + this.pOwner.getID() + "' and entity_type = '"
-                    + this.pOwner.getType() + "';";
-            
-            statement.execute(sqlremove);
             
             // not hidden properties
             HashMap<String, String> props = this.pHolder.getUnhiddenProperties();
@@ -99,9 +90,12 @@ public class SQLPropertyHolder implements PropertyHolder {
                      // write unhidden property to db
                     String sqlStatement = "INSERT INTO " + 
                             SQLSharkKB.PROERTIES_TABLE
-                            + "(name, value, hidden) VALUES ('"
+                            + "(name, value, hidden, ownerid, entity_type) VALUES ('"
                             + name + "', '"
-                            + value + "', 'false')";
+                            + value + "', 'false',"
+                            + this.pOwner.getID() + ", "
+                            + this.pOwner.getType()
+                            + ")";
                     
                     statement.execute(sqlStatement);
                  }
@@ -178,5 +172,32 @@ public class SQLPropertyHolder implements PropertyHolder {
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
         this.refresh();
         return this.pHolder.propertyNames(all);
+    }
+
+    void removeAllProperties() throws SharkKBException {
+        Statement statement = null;
+
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            // remove all properties first
+            String sqlremove = "DELETE FROM " + SQLSharkKB.PROERTIES_TABLE +
+                    " WHERE ownerid = '" 
+                    + this.pOwner.getID() + "' and entity_type = '"
+                    + this.pOwner.getType() + "';";
+            
+            statement.execute(sqlremove);
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
     }
 }

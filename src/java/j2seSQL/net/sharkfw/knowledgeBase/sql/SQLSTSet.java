@@ -11,6 +11,7 @@ import net.sharkfw.knowledgeBase.AbstractSTSet;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.system.Iterator2Enumeration;
 
@@ -62,7 +63,15 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
      * @return
      * @throws SharkKBException
      */
-    protected SQLSemanticTagStorage getSQLSemanticTag(String si) throws SharkKBException {    
+    protected SQLSemanticTagStorage getSQLSemanticTagStorage(String si) throws SharkKBException {    
+        return this.getSQLSemanticTagStorage(new String[]{si});
+    }
+    
+    protected SQLSemanticTagStorage getSQLSemanticTagStorage(String[] sis) throws SharkKBException {
+        if(sis == null || sis.length == 0) {
+            return null;
+        }
+        
         Statement statement = null;
         
         try {
@@ -70,13 +79,19 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
             
             String sqlString = "select * from " + SQLSharkKB.ST_TABLE + 
                     " where id = (select stid from " + 
-                    SQLSharkKB.SI_TABLE + " where si = '" + si + "');";
+                    SQLSharkKB.SI_TABLE + " where si = '" + sis[0];
+            
+            for(int i = 1; i < sis.length; i++) {
+                sqlString += " OR si = '" + sis[i] + "'";
+            }
+            
+            sqlString += "');";
             
             ResultSet result = statement.executeQuery(sqlString);
             
             if(!result.next()) {
                 // nothing found - leave
-                throw new SharkKBException("tag not found with si:  " + si);
+                return null;
             }
             
             int stID = result.getInt("id");
@@ -134,19 +149,19 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
                 SemanticTag newTag;
                 switch(type) {
                     case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
-                        newTag = new SQLPeerSemanticTag(sqlST);
+                        newTag = new SQLPeerSemanticTag(this.kb, sqlST);
                         break;
                         
                     case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
-                        newTag = new SQLSpatialSemanticTag(sqlST);
+                        newTag = new SQLSpatialSemanticTag(this.kb, sqlST);
                         break;
                         
                     case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
-                        newTag = new SQLTimeSemanticTag(sqlST);
+                        newTag = new SQLTimeSemanticTag(this.kb, sqlST);
                         break;
                         
                     default:
-                        newTag = new SQLSemanticTag(sqlST);
+                        newTag = new SQLSemanticTag(this.kb, sqlST);
                 }
                 
                 // add to list
@@ -171,22 +186,30 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
     
     @Override
     public SemanticTag merge(SemanticTag tag) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return SharkCSAlgebra.merge(this, tag);
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLSemanticTagStorage sqlSTStorage = this.createSQLSemanticTag(kb, name, null, 0, 0, false, SQLSharkKB.SEMANTIC_TAG_TYPE, sis);
+        
+        return new SQLSemanticTag(this.kb, sqlSTStorage);
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.createSemanticTag(name, new String[]{si});
     }
 
     @Override
     public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String si = null;
+        if(tag.getSI() != null && tag.getSI().length > 0) {
+            si = tag.getSI()[0];
+        }
+        
+        SQLSemanticTagStorage sqlST = this.getSQLSemanticTagStorage(si);
+        sqlST.remove();
     }
 
     @Override

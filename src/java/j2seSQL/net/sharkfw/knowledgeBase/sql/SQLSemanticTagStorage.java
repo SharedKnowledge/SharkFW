@@ -4,17 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.system.L;
 
 /**
  *
  * @author thsc
  */
-class SQLSemanticTagStorage implements PropertyOwner, PropertyHolder {
+class SQLSemanticTagStorage implements PropertyOwner {
     private final SQLSharkKB kb;
     private final int id;
     private String name;
@@ -25,13 +24,9 @@ class SQLSemanticTagStorage implements PropertyOwner, PropertyHolder {
     private int type;
     private String[] sis;
     
-    private SQLPropertyHolder propertyHolder;
-
     SQLSemanticTagStorage(SQLSharkKB kb, int id) throws SharkKBException {
         this.kb = kb;
         this.id = id;
-        
-        this.propertyHolder = new SQLPropertyHolder(kb, this);
         
         this.refreshBasics();
     }
@@ -62,7 +57,6 @@ class SQLSemanticTagStorage implements PropertyOwner, PropertyHolder {
         this.hidden = hidden;
         this.type = type;
         this.sis = sis;
-        this.propertyHolder = new SQLPropertyHolder(kb, this);
         
         Statement statement = null;
         try {
@@ -228,12 +222,36 @@ class SQLSemanticTagStorage implements PropertyOwner, PropertyHolder {
         }
     }
     
-    private void refreshPropertys() throws SharkKBException {
-        this.propertyHolder.refresh();
-    }
-        
     String getName() {
         return this.name;
+    }
+
+    void setName(String name) throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "UPDATE " + SQLSharkKB.ST_TABLE + 
+                    " SET name = '"
+                    + name + "' WHERE id = "
+                    + this.id;
+            
+            statement.execute(sqlStatement);
+            
+            this.name = name;
+        } catch (SQLException ex) {
+            L.d("cannot access SQL DB properly: " + ex.getLocalizedMessage(), this);
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
     }
 
     @Override
@@ -262,54 +280,137 @@ class SQLSemanticTagStorage implements PropertyOwner, PropertyHolder {
         return this.hidden;
     }
     
+    void setHidden(boolean hidden) throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "UPDATE " + SQLSharkKB.ST_TABLE + 
+                    " SET hidden = "
+                    + String.valueOf(hidden) + " WHERE id = "
+                    + this.id;
+            
+            statement.execute(sqlStatement);
+            
+            this.hidden = hidden;
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+
     String[] getSIS() throws SharkKBException {
         this.refreshSIS();
         return this.sis;
     }
 
-    void removeSI(String si) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    void removeSI(String si) throws SharkKBException {
+        
+        if(sis.length == 1) {
+            throw new SharkKBException("cannot remove final subject identifier");
+        }
+        
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "DELETE FROM " + SQLSharkKB.SI_TABLE + 
+                    " WHERE si = '" 
+                    + si + "'";
+            
+            statement.execute(sqlStatement);
+            
+            String[] oldSIS = this.sis;
+            this.sis = new String[oldSIS.length-1];
+            int j = 0;
+            for(int i = 0; i < this.sis.length; i++) {
+                if(oldSIS[j].equalsIgnoreCase(si)) {
+                    j++; // happens exactly once!
+                } else {
+                    this.sis[i] = oldSIS[j++];
+                }
+            }
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
     }
 
-    void addSI(String si) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    void addSI(String si) throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "INSERT INTO " + SQLSharkKB.SI_TABLE + 
+                    " (si, stid) VALUES ('"
+                    + si + "', "
+                    + this.id
+                    + ")";
+            
+            statement.execute(sqlStatement);
+            
+            String[] oldSIS = this.sis;
+            this.sis = new String[oldSIS.length+1];
+            
+            // add new sis
+            this.sis[0] = si;
+            
+            for(int i = 1; i < this.sis.length; i++) {
+                this.sis[i] = oldSIS[i-1];
+            }
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
     }
 
-    void setName(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    void setHidden(boolean hidden) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-        this.propertyHolder.setProperty(name, value);
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        return this.propertyHolder.getProperty(name);
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        this.propertyHolder.setProperty(name, value, transfer);
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-        this.propertyHolder.removeProperty(name);
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        return this.propertyHolder.propertyNames();
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return this.propertyHolder.propertyNames(all);
+    /**
+     * Removes entries in kb
+     */
+    void remove() throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "DELETE FROM " + SQLSharkKB.ST_TABLE
+                    + " WHERE id = " + this.id;
+            
+            statement.execute(sqlStatement);
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
     }
 }

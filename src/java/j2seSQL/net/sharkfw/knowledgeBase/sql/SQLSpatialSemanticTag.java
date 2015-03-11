@@ -10,8 +10,8 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
  */
 public class SQLSpatialSemanticTag extends SQLSemanticTag implements SpatialSemanticTag {
     
-    SQLSpatialSemanticTag(SQLSemanticTagStorage sqlST) throws SharkKBException {
-        super(sqlST);
+    SQLSpatialSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+        super(kb, sqlST);
         
         if(sqlST.getType() != SQLSharkKB.TIME_SEMANTIC_TAG_TYPE) {
             throw new SharkKBException("cannot create time semantic tag with non time semantic tag values");
