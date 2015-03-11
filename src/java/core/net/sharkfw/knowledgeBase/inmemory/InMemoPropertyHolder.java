@@ -13,11 +13,11 @@ public class InMemoPropertyHolder implements SystemPropertyHolder {
     private HashMap<String,String> properties = null;
     private HashMap<String,String> hiddenProperties = null;
     
-    protected HashMap<String,String> getProperties() {
+    public HashMap<String,String> getUnhiddenProperties() {
         return this.properties;
     }
     
-    protected HashMap<String,String> getHiddenProperties() {
+    public HashMap<String,String> getHiddenProperties() {
         return this.hiddenProperties;
     }
     

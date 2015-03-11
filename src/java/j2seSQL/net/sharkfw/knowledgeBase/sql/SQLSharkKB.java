@@ -24,14 +24,8 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.TaxonomyWrapper;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
-import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSemanticNet;
-import net.sharkfw.knowledgeBase.inmemory.InMemoPeerTaxonomy;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSTSet;
-import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSTSet;
 import net.sharkfw.system.L;
 
 /**
@@ -54,15 +48,15 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     private String user;
     private String pwd;
     
-    public static final int SEMANTIC_TAG_TYPE = 0;
-    public static final int PEER_SEMANTIC_TAG_TYPE = 1;
-    public static final int SPATIAL_SEMANTIC_TAG_TYPE = 2;
-    public static final int TIME_SEMANTIC_TAG_TYPE = 3;
+    static final int SEMANTIC_TAG_TYPE = 0;
+    static final int PEER_SEMANTIC_TAG_TYPE = 1;
+    static final int SPATIAL_SEMANTIC_TAG_TYPE = 2;
+    static final int TIME_SEMANTIC_TAG_TYPE = 3;
     
-    public static final int SEMANTIC_TAG = SEMANTIC_TAG_TYPE;
-    public static final int CONTEXT_POINT = 1;
-    public static final int KNOWLEDGEBASE = 2;
-    public static final int INFORMATION = 3;
+    static final int SEMANTIC_TAG = 0;
+    static final int CONTEXT_POINT = 1;
+    static final int KNOWLEDGEBASE = 2;
+    static final int INFORMATION = 3;
     
     public SQLSharkKB(String connectionString, String user, String pwd) throws SharkKBException {
 	try {
@@ -163,6 +157,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
                         + "ewkt character varying("+ SQLSharkKB.MAX_EWKT_NAME_SIZE + "), "
                         + "startTime bigint, "
                         + "durationTime bigint, "
+                        + "hidden boolean default false, "
                         + "st_type smallint"
                         + ");");
             }
@@ -182,7 +177,8 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
                         " (id integer PRIMARY KEY default nextval('propertyid'), "
                         + "name character varying("+ SQLSharkKB.MAX_PROPERTY_NAME_SIZE + "), "
                         + "value character varying("+ SQLSharkKB.MAX_PROPERTY_VALUE_SIZE + "), "
-                        + "stID integer, "
+                        + "ownerID integer, "
+                        + "hidden boolean default false, "
                         + "entity_type smallint"
                         + ");");
             }

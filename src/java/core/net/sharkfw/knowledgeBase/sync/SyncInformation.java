@@ -5,10 +5,13 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationListener;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.system.L;
 
 /**
  * Implements a synchronized information. Delegates most of its
@@ -20,10 +23,14 @@ public class SyncInformation implements Information{
 	protected static String VERSION_PROPERTY_NAME = "SyncInformation_internalVersion";
 	protected static String VERSION_DEFAULT_VALUE = "1";
 	
-	public SyncInformation(Information i){
-		_localInformation = i;
-		if(_localInformation.getProperty(VERSION_PROPERTY_NAME) == null)
-			_localInformation.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+	public SyncInformation(Information i) {
+            _localInformation = i;
+            try {
+                if(_localInformation.getProperty(VERSION_PROPERTY_NAME) == null)
+                    _localInformation.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+            } catch (SharkKBException ex) {
+                // TODO
+            }
 	}
 
 	@Override
@@ -38,33 +45,33 @@ public class SyncInformation implements Information{
 	}
 
 	@Override
-	public void setProperty(String name, String value) {
+	public void setProperty(String name, String value) throws SharkKBException {
 		_localInformation.setProperty(name, value);
 	}
 
 	@Override
-	public String getProperty(String name) {
+	public String getProperty(String name) throws SharkKBException {
 		return _localInformation.getProperty(name);
 	}
 
 	@Override
-	public void setProperty(String name, String value, boolean transfer) {
+	public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
 		_localInformation.setProperty(name, value, transfer);
 	}
 
 	@Override
-	public void removeProperty(String name) {
+	public void removeProperty(String name) throws SharkKBException {
 		_localInformation.removeProperty(name);
 		
 	}
 
 	@Override
-	public Enumeration<String> propertyNames() {
+	public Enumeration<String> propertyNames() throws SharkKBException {
 		return _localInformation.propertyNames();
 	}
 
 	@Override
-	public Enumeration<String> propertyNames(boolean all) {
+	public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
 		return _localInformation.propertyNames(all);
 	}
 
@@ -164,8 +171,13 @@ public class SyncInformation implements Information{
 	}
 
 	private void versionUp() {
-            int oldVersion = Integer.parseInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
-            _localInformation.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
+            int oldVersion;
+            try {
+                oldVersion = Integer.parseInt(_localInformation.getProperty(VERSION_PROPERTY_NAME));
+                _localInformation.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
+            } catch (SharkKBException ex) {
+                L.e("fatal: cannot access properties", this);
+            }
 	}
         
         /* Listeners */

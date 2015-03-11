@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.*;
@@ -31,14 +33,18 @@ public class Util {
      * @param source 
      */
     public static void mergeProperties(SystemPropertyHolder target, SystemPropertyHolder source) {
-        Enumeration<String> ph2KeyEnum = source.propertyNames();
-        while (ph2KeyEnum != null && ph2KeyEnum.hasMoreElements()) {
-            String ph2Key = ph2KeyEnum.nextElement();
-            String ph2Value = source.getProperty(ph2Key);
-            String ph1Value = target.getProperty(ph2Key);
-            if(ph1Value == null) {
-                target.setProperty(ph2Key, ph2Value);
+        try {
+            Enumeration<String> ph2KeyEnum = source.propertyNames();
+            while (ph2KeyEnum != null && ph2KeyEnum.hasMoreElements()) {
+                String ph2Key = ph2KeyEnum.nextElement();
+                String ph2Value = source.getProperty(ph2Key);
+                String ph1Value = target.getProperty(ph2Key);
+                if(ph1Value == null) {
+                    target.setProperty(ph2Key, ph2Value);
+                }
             }
+        } catch (SharkKBException ex) {
+            L.e("cannot access properties");
         }
     }
 
@@ -1288,16 +1294,20 @@ public class Util {
      */
     @SuppressWarnings("rawtypes")
     public static void copyPropertiesFromPropertyHolderToPropertyHolder(SystemPropertyHolder source, SystemPropertyHolder copy) {
-        Enumeration nameEnum = source.propertyNames(true);
-        while (nameEnum != null && nameEnum.hasMoreElements()) {
-            String name = (String) nameEnum.nextElement();
-            String value = source.getProperty(name);
-            /*
-             * TODO: Handle transferable and untransferable props
-             */
-            if(value != null) {
-                copy.setProperty(name, value);
+        try {
+            Enumeration nameEnum = source.propertyNames(true);
+            while (nameEnum != null && nameEnum.hasMoreElements()) {
+                String name = (String) nameEnum.nextElement();
+                String value = source.getProperty(name);
+                /*
+                * TODO: Handle transferable and untransferable props
+                */
+                if(value != null) {
+                    copy.setProperty(name, value);
+                }
             }
+        } catch (SharkKBException ex) {
+            L.e("cannot access properties");
         }
     }
 

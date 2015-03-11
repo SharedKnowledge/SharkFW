@@ -329,32 +329,32 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public void setProperty(String name, String value) {
+    public void setProperty(String name, String value) throws SharkKBException {
         _localKB.setProperty(name, value);
     }
 
     @Override
-    public String getProperty(String name) {
+    public String getProperty(String name) throws SharkKBException {
         return _localKB.getProperty(name);
     }
 
     @Override
-    public void setProperty(String name, String value, boolean transfer) {
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
         _localKB.setProperty(name, value, transfer);
     }
 
     @Override
-    public void removeProperty(String name) {
+    public void removeProperty(String name) throws SharkKBException {
         _localKB.removeProperty(name);
     }
 
     @Override
-    public Enumeration<String> propertyNames() {
+    public Enumeration<String> propertyNames() throws SharkKBException {
         return _localKB.propertyNames();
     }
 
     @Override
-    public Enumeration<String> propertyNames(boolean all) {
+    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
         return _localKB.propertyNames(all);
     }
 

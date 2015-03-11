@@ -8,12 +8,16 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationListener;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
 /**
  * Implements a synchronized context point. Delegates 
@@ -30,7 +34,7 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
      * The constructor. Needs a context point to wrap.
      * @param c - the internal context point 
      */
-    public SyncContextPoint(ContextPoint c){
+    public SyncContextPoint(ContextPoint c) throws SharkKBException{
             _localCP = c;
             if(_localCP.getProperty(VERSION_PROPERTY_NAME) == null){
                 _localCP.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
@@ -85,32 +89,32 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
     }
 
     @Override
-    public void setProperty(String name, String value) {
+    public void setProperty(String name, String value) throws SharkKBException {
         _localCP.setProperty(name, value);
     }
 
     @Override
-    public String getProperty(String name) {
+    public String getProperty(String name) throws SharkKBException {
         return _localCP.getProperty(name);
     }
 
     @Override
-    public void setProperty(String name, String value, boolean transfer) {
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
         _localCP.setProperty(name, value);
     }
 
     @Override
-    public void removeProperty(String name) {
+    public void removeProperty(String name) throws SharkKBException {
         _localCP.removeProperty(name);
     }
 
     @Override
-    public Enumeration<String> propertyNames() {
+    public Enumeration<String> propertyNames() throws SharkKBException {
         return _localCP.propertyNames();
     }
 
     @Override
-    public Enumeration<String> propertyNames(boolean all) {
+    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
         return _localCP.propertyNames(all);
     }
 
@@ -211,7 +215,11 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
     public void setContextCoordinates(ContextCoordinates cc) {
         if(cc != _localCP.getContextCoordinates()){
             _localCP.setContextCoordinates(cc);
-            _localCP.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+            try {
+                _localCP.setProperty(VERSION_PROPERTY_NAME, VERSION_DEFAULT_VALUE);
+            } catch (SharkKBException ex) {
+                L.e("fatal: cannot set properties");
+            }
         }
     }
 
@@ -231,18 +239,29 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
     }
 
     private void versionUp() {
-        int oldVersion = Integer.parseInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
-        _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
-        setTimestamp(new Date());
+        int oldVersion;
+        try {
+            oldVersion = Integer.parseInt(_localCP.getProperty(VERSION_PROPERTY_NAME));
+            _localCP.setProperty(VERSION_PROPERTY_NAME, String.valueOf(oldVersion + 1));
+            setTimestamp(new Date());
+        } catch (SharkKBException ex) {
+            L.e("fatal: cannot set properties");
+        }
     }	
 
     	
-    public void setVersion(String version) {
+    public void setVersion(String version) throws SharkKBException {
         setProperty(VERSION_PROPERTY_NAME, version);
     }    
         
     public int getVersion() {
-        return Integer.parseInt(getProperty(VERSION_PROPERTY_NAME));
+        try {
+            return Integer.parseInt(getProperty(VERSION_PROPERTY_NAME));
+        } catch (SharkKBException ex) {
+            // TODO
+        }
+        
+        return 0;
     }
 
     @Override
@@ -260,11 +279,11 @@ public class SyncContextPoint implements ContextPoint, InformationListener {
         versionUp();
     }
     
-    public void setTimestamp(Date d) {
+    public void setTimestamp(Date d) throws SharkKBException {
         _localCP.setProperty(TIMESTAMP_PROPERTY_NAME, String.valueOf(d.getTime()));
     }
     
-    public void getTimestamp() {
+    public void getTimestamp() throws SharkKBException {
         _localCP.getProperty(TIMESTAMP_PROPERTY_NAME);
     }
 }

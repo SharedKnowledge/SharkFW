@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sql;
 
+import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.inmemory.InMemo_SN_TX_SemanticTag;
 
 /**
@@ -13,7 +14,7 @@ public class SQL_SN_TX_SemanticTag extends InMemo_SN_TX_SemanticTag {
         super(name, si);
         
         this.stID = stID;
-        this.setPropertyHolder(sqlPropertyHolder);
+        this.setPropertyHolder((SystemPropertyHolder) sqlPropertyHolder);
     }
     
     @Override

@@ -29,7 +29,12 @@ public class SQLTimeSTSet extends SQLSTSet implements TimeSTSet {
 
     @Override
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLSemanticTag sqlST = this.createSQLSemanticTag(
+                this.getSSQLSharkKB(), null, null, 
+                from, duration, 
+                false, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE, null);
+        
+        return new SQLTimeSemanticTag(sqlST);
     }
 
     @Override

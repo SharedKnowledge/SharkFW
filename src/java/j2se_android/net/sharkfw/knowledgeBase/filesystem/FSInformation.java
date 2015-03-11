@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.NonReadableChannelException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sharkfw.system.TimeLong;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -104,8 +106,12 @@ public class FSInformation extends InMemoInformation {
      */
     private void setupUniqueID(){
         if (this.getUniqueID().equals("")){
-            //there is no id yet, so we set it
-            this.setProperty(InMemoInformation.INFO_ID_PROPERTY_NAME, java.util.UUID.randomUUID().toString());
+            try {
+                //there is no id yet, so we set it
+                this.setProperty(InMemoInformation.INFO_ID_PROPERTY_NAME, java.util.UUID.randomUUID().toString());
+            } catch (SharkKBException ex) {
+                // TODO
+            }
         }
     }
     
@@ -342,45 +348,53 @@ public class FSInformation extends InMemoInformation {
     
     @Override
     public void persist() {
-        super.persist();
-        
-        // content-Type
-        this.setProperty(INFO_CONTENT_TYPE, this.getContentType());
-        
-        // creationTime
-        this.setProperty(INFO_CREATION_TIME, String.valueOf(this.creationTime()));
-        
-        // lastModified
-        this.setProperty(INFO_LAST_MODIFED, String.valueOf(this.lastModified()));
-        
-        //unique id
-        this.setProperty(INFO_ID_PROPERTY_NAME, this.getUniqueID());
+        try {
+            super.persist();
+            
+            // content-Type
+            this.setProperty(INFO_CONTENT_TYPE, this.getContentType());
+            
+            // creationTime
+            this.setProperty(INFO_CREATION_TIME, String.valueOf(this.creationTime()));
+            
+            // lastModified
+            this.setProperty(INFO_LAST_MODIFED, String.valueOf(this.lastModified()));
+            
+            //unique id
+            this.setProperty(INFO_ID_PROPERTY_NAME, this.getUniqueID());
+        } catch (SharkKBException ex) {
+            // TODO
+        }
     }
     
     @Override
     public void refreshStatus() {
-        super.refreshStatus();
-        
-        String value;
-        // content-Type
-        value = this.getProperty(INFO_CONTENT_TYPE);
-        if(value != null) {
-            this.setContentType(value);
-        }
-
-        long time;
-        // creationTime
-        value = this.getProperty(INFO_CREATION_TIME);
-        if(value != null) {
-            time = TimeLong.parse(value);
-            this.setCreationTime(time);
-        }
-        
-        // lastModified
-        value = this.getProperty(INFO_LAST_MODIFED);
-        if(value != null) {
-            time = TimeLong.parse(value);
-            this.setLastModified(time);
+        try {
+            super.refreshStatus();
+            
+            String value;
+            // content-Type
+            value = this.getProperty(INFO_CONTENT_TYPE);
+            if(value != null) {
+                this.setContentType(value);
+            }
+            
+            long time;
+            // creationTime
+            value = this.getProperty(INFO_CREATION_TIME);
+            if(value != null) {
+                time = TimeLong.parse(value);
+                this.setCreationTime(time);
+            }
+            
+            // lastModified
+            value = this.getProperty(INFO_LAST_MODIFED);
+            if(value != null) {
+                time = TimeLong.parse(value);
+                this.setLastModified(time);
+            }
+        } catch (SharkKBException ex) {
+            // TODO
         }
 
     }

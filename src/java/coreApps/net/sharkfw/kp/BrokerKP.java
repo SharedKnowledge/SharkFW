@@ -1,6 +1,8 @@
 package net.sharkfw.kp;
 
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
@@ -89,35 +91,36 @@ public class BrokerKP extends KnowledgePort {
 
                 this.doProcess(interest, kepConnection, this.inInterests);
             }
+            
+            // finally save it
+            if(interest.getDirection() == SharkCS.DIRECTION_IN || 
+                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
+
+                this.inInterests.addInterest(interest);
+
+                // persist
+                if(this.ph != null) {
+                    String serialized = this.inInterests.serialize();
+                    this.ph.setProperty(RECEIVING_INTEREST_LIST, serialized, false);
+                }
+            }
+
+            if(interest.getDirection() == SharkCS.DIRECTION_OUT || 
+                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
+
+                this.outInterests.addInterest(interest);
+
+                // persist
+                if(this.ph != null) {
+                    String serialized = this.outInterests.serialize();
+                    this.ph.setProperty(SENDING_INTEREST_LIST, serialized, false);
+                }
+            }
         }
         catch(SharkException e) {
             L.l("failure while processing interest in HubKP: " + e.getMessage(), this);
         }
         
-        // finally save it
-        if(interest.getDirection() == SharkCS.DIRECTION_IN || 
-                interest.getDirection() == SharkCS.DIRECTION_INOUT) {
-            
-            this.inInterests.addInterest(interest);
-            
-            // persist
-            if(this.ph != null) {
-                String serialized = this.inInterests.serialize();
-                this.ph.setProperty(RECEIVING_INTEREST_LIST, serialized, false);
-            }
-        }
-        
-        if(interest.getDirection() == SharkCS.DIRECTION_OUT || 
-                interest.getDirection() == SharkCS.DIRECTION_INOUT) {
-            
-            this.outInterests.addInterest(interest);
-            
-            // persist
-            if(this.ph != null) {
-                String serialized = this.outInterests.serialize();
-                this.ph.setProperty(SENDING_INTEREST_LIST, serialized, false);
-            }
-        }
     }
     
     /**
@@ -125,20 +128,24 @@ public class BrokerKP extends KnowledgePort {
      */
     private void restore() {
         if(this.ph != null) {
-            String value = this.ph.getProperty(RECEIVING_INTEREST_LIST);
-            
-            if(value != null) {
-                if(this.inInterests != null) {
-                    this.inInterests.restore(value);
+            try {
+                String value = this.ph.getProperty(RECEIVING_INTEREST_LIST);
+                
+                if(value != null) {
+                    if(this.inInterests != null) {
+                        this.inInterests.restore(value);
+                    }
                 }
-            }
-            
-            value = this.ph.getProperty(SENDING_INTEREST_LIST);
-            
-            if(value != null) {
-                if(this.inInterests != null) {
-                    this.inInterests.restore(value);
+                
+                value = this.ph.getProperty(SENDING_INTEREST_LIST);
+                
+                if(value != null) {
+                    if(this.inInterests != null) {
+                        this.inInterests.restore(value);
+                    }
                 }
+            } catch (SharkKBException ex) {
+                Logger.getLogger(BrokerKP.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

@@ -177,7 +177,11 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
         super.persist();
         
         if(this.geom != null) {
-            this.setProperty(GEOM_WKT, this.geom.getEWKT());
+            try {
+                this.setProperty(GEOM_WKT, this.geom.getEWKT());
+            } catch (SharkKBException ex) {
+                L.e("cannot access properties", this);
+            }
         }
     }
     
@@ -186,7 +190,12 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
     public void refreshStatus() {
         super.refreshStatus();
         
-        String wkt = this.getProperty(GEOM_WKT);
+        String wkt = null;
+        try {
+            wkt = this.getProperty(GEOM_WKT);
+        } catch (SharkKBException ex) {
+                L.e("cannot access properties", this);
+        }
         
         if(wkt != null) {
             try {

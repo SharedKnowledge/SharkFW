@@ -1,6 +1,8 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sharkfw.system.TimeLong;
 import net.sharkfw.kep.KEPMessage;
@@ -64,10 +66,14 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     protected InMemoInformation(String contentType, long lastModified,
             long creationTime, PeerSTSet recipientSet) {
 
-        this.setProperty(InMemoInformation.INFO_CONTENT_TYPE, contentType);
-        this.setProperty(InMemoInformation.INFO_LAST_MODIFED, Long.toString(lastModified));
-        this.setProperty(InMemoInformation.INFO_CREATION_TIME, Long.toString(creationTime));
-        this.setProperty(InMemoInformation.INFO_ID_PROPERTY_NAME, java.util.UUID.randomUUID().toString());
+        try {
+            this.setProperty(InMemoInformation.INFO_CONTENT_TYPE, contentType);
+            this.setProperty(InMemoInformation.INFO_LAST_MODIFED, Long.toString(lastModified));
+            this.setProperty(InMemoInformation.INFO_CREATION_TIME, Long.toString(creationTime));
+            this.setProperty(InMemoInformation.INFO_ID_PROPERTY_NAME, java.util.UUID.randomUUID().toString());
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
 
     }
 
@@ -79,7 +85,11 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     private void defaultInit() {
 
         setTimes();
-        this.setProperty(InMemoInformation.INFO_ID_PROPERTY_NAME, java.util.UUID.randomUUID().toString());
+        try {
+            this.setProperty(InMemoInformation.INFO_ID_PROPERTY_NAME, java.util.UUID.randomUUID().toString());
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
 
     }
 
@@ -107,7 +117,13 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     @Override
     public String getName() {
-        return this.getProperty(InMemoInformation.INFO_NAME);
+        try {
+            return this.getProperty(InMemoInformation.INFO_NAME);
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
+        
+        return null;
     }
 
     /**
@@ -198,11 +214,15 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public String getContentType() {
-        String contentTypeString = this.getProperty(InMemoInformation.INFO_CONTENT_TYPE);
-        if (contentTypeString != null) {
-            return contentTypeString;
+        try {
+            String contentTypeString = this.getProperty(InMemoInformation.INFO_CONTENT_TYPE);
+            if (contentTypeString != null) {
+                return contentTypeString;
+            }
+        } catch (SharkKBException ex) {
+            // cannot happen
         }
-
+            
         return InMemoInformation.INFO_DEFAULT_CONTENT_TYPE;
     }
 
@@ -286,10 +306,14 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     
     protected void setTimes() {
-        String nowString = Long.toString(System.currentTimeMillis());
-
-        this.setProperty(InMemoInformation.INFO_LAST_MODIFED, nowString);
-        this.setProperty(InMemoInformation.INFO_CREATION_TIME, nowString);
+        try {
+            String nowString = Long.toString(System.currentTimeMillis());
+            
+            this.setProperty(InMemoInformation.INFO_LAST_MODIFED, nowString);
+            this.setProperty(InMemoInformation.INFO_CREATION_TIME, nowString);
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
     }
 
     /**
@@ -324,12 +348,21 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public void setContentType(String mimeType) {
-        this.setProperty(InMemoInformation.INFO_CONTENT_TYPE, mimeType);
+        try {
+            this.setProperty(InMemoInformation.INFO_CONTENT_TYPE, mimeType);
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
     }
 
     @Override
     public long lastModified() {
-        String value = this.getProperty(InMemoInformation.INFO_LAST_MODIFED);
+        String value = null;
+        try {
+            value = this.getProperty(InMemoInformation.INFO_LAST_MODIFED);
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
         if (value == null) {
             return 0;
         }
@@ -340,12 +373,21 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     }
 
     protected void setLastModified(long time) {
-        this.setProperty(InMemoInformation.INFO_LAST_MODIFED, Long.toString(time));
+        try {
+            this.setProperty(InMemoInformation.INFO_LAST_MODIFED, Long.toString(time));
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
     }
 
     @Override
     public long creationTime() {
-        String value = this.getProperty(InMemoInformation.INFO_CREATION_TIME);
+        String value = null;
+        try {
+            value = this.getProperty(InMemoInformation.INFO_CREATION_TIME);
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
         if (value == null) {
             return 0;
         }
@@ -355,7 +397,11 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     // allow classes on this package to modify that time
     protected void setCreationTime(long time) {
-        this.setProperty(InMemoInformation.INFO_LAST_MODIFED, Long.toString(time));
+        try {
+            this.setProperty(InMemoInformation.INFO_LAST_MODIFED, Long.toString(time));
+        } catch (SharkKBException ex) {
+            // cannot happen
+        }
     }
 
     /**
@@ -391,7 +437,12 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      * @return Unique ID as String, empty String ("") if there is no ID
      */
     public String getUniqueID() {
-        String uniqueID = this.getProperty(InMemoInformation.INFO_ID_PROPERTY_NAME);
+        String uniqueID = null;
+        try {
+            uniqueID = this.getProperty(InMemoInformation.INFO_ID_PROPERTY_NAME);
+        } catch (SharkKBException ex) {
+            // ??
+        }
         if (uniqueID != null) {
             return uniqueID;
         } else {

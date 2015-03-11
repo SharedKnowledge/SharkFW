@@ -19,27 +19,27 @@ public class PropertyHolderDelegate implements SystemPropertyHolder {
     }
     
     @Override
-    public String getProperty(String name) {
+    public String getProperty(String name) throws SharkKBException {
         return this.propertyHolder.getProperty(name);
     }
     
     @Override
-    public void setProperty(String name, String value) {
+    public void setProperty(String name, String value) throws SharkKBException {
         this.propertyHolder.setProperty(name, value);
     }
 
     @Override
-    public void setProperty(String name, String value, boolean transfer) {
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
         this.propertyHolder.setProperty(name, value, transfer);
     }
 
     @Override
-    public Enumeration propertyNames() {
+    public Enumeration propertyNames() throws SharkKBException {
         return this.propertyHolder.propertyNames();
     }
 
     @Override
-    public Enumeration propertyNames(boolean all) {
+    public Enumeration propertyNames(boolean all) throws SharkKBException {
         return this.propertyHolder.propertyNames(all);
     }
     
@@ -74,7 +74,7 @@ public class PropertyHolderDelegate implements SystemPropertyHolder {
     }
 
     @Override
-    public void removeProperty(String name) {
+    public void removeProperty(String name) throws SharkKBException {
         this.setProperty(name, null);
     }
 }

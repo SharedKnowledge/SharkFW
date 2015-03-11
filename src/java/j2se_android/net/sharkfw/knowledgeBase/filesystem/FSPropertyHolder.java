@@ -107,7 +107,7 @@ public class FSPropertyHolder extends InMemoPropertyHolder {
     
     private void persistProperties() throws FileNotFoundException, IOException {
         String filename = this.getPropertyFilename();
-        FSPropertyHolder.persistToFile(this.getProperties(), filename);
+        FSPropertyHolder.persistToFile(this.getUnhiddenProperties(), filename);
     }
     
     public static final String DELIMITER = ":\t";
@@ -196,7 +196,7 @@ public class FSPropertyHolder extends InMemoPropertyHolder {
     
     public void restore() throws SharkKBException {
         FSPropertyHolder.restoreFromFile(this.getHiddenProperties(), this.getHiddenPropertyFilename());
-        FSPropertyHolder.restoreFromFile(this.getProperties(), this.getPropertyFilename());
+        FSPropertyHolder.restoreFromFile(this.getUnhiddenProperties(), this.getPropertyFilename());
         FSPropertyHolder.restoreFromFile(this.getSystemProperties(), this.getSystemPropertyFilename());
     }
 

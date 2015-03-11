@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -156,14 +158,23 @@ class TimestampList {
     
     //Persistance function. Is called whenever the list changes.
     protected void persist() {
-        _kb.setProperty(LIST_PROPERTY, serializeTimestamps());
+        try {
+            _kb.setProperty(LIST_PROPERTY, serializeTimestamps());
+        } catch (SharkKBException ex) {
+            // TODO
+        }
     }
     
     //retrieval function. Is called from within the constructor.
     protected void retrieve() {
         _timestamps = new ArrayList<>();
         
-        String x = _kb.getProperty(LIST_PROPERTY);
+        String x = null;
+        try {
+            x = _kb.getProperty(LIST_PROPERTY);
+        } catch (SharkKBException ex) {
+            // TODO
+        }
         
         if(x != null){ 
             deserializeTimestamps(x);

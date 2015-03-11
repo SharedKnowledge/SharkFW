@@ -362,7 +362,7 @@ public class XMLSerializer implements KnowledgeSerializer {
         }
     }
 
-    private String serializeTag(SemanticTag tag) {
+    private String serializeTag(SemanticTag tag) throws SharkKBException {
         if(tag == null) {
             return null;
         }
@@ -518,7 +518,7 @@ public class XMLSerializer implements KnowledgeSerializer {
         return ret;
     }
     
-    private String serializeProperties(SystemPropertyHolder target) {
+    private String serializeProperties(SystemPropertyHolder target) throws SharkKBException {
         if(target == null) {
             return null;
         }
@@ -559,7 +559,7 @@ public class XMLSerializer implements KnowledgeSerializer {
         return buf.toString();
     }
     
-    private void deserializeProperties(SystemPropertyHolder target, String s) {
+    private void deserializeProperties(SystemPropertyHolder target, String s) throws SharkKBException {
         if(s == null || target == null) {
             return;
         }
