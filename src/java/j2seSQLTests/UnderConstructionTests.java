@@ -61,6 +61,8 @@ public class UnderConstructionTests {
         kb.close();
         kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
         
+        tx = kb.getTopicsAsTaxonomy();
+        
         txA = tx.getSemanticTag("http://a.de");
         txB = tx.getSemanticTag("http://b.de");
         
@@ -70,6 +72,10 @@ public class UnderConstructionTests {
         txBB = txA.getSuperTag();
         
         Assert.assertTrue(SharkCSAlgebra.identical(txB, txBB));
+        
+        txAA = txB.getSubTags().nextElement();
+        
+        Assert.assertTrue(SharkCSAlgebra.identical(txA, txAA));
      }
     
 
