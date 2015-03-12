@@ -1,4 +1,7 @@
 
+import java.util.Enumeration;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -95,10 +98,10 @@ public class JTSMain {
                 + "52.45684499901483 13.528932183980942, 52.45441290345384 13.526121228933334, 52.45586433148305 13.523031324148178, "
                 + "52.45860862010212 13.526121228933334), (52.45606650054853 13.523988202214241, 52.45549525426796 13.525406420230865, "
                 + "52.45515160397337 13.525016158819199, 52.45582827785886 13.523717299103737, 52.45606650054853 13.523988202214241))";
-        string_Multipolygon_Berlin_HTW_WH_Complete = "MULTIPOLYGON (((52.45684499901483 13.528932183980942, 52.45772680955847 13.527526706457138, "
-                + "52.45513861746844 13.524576276540756, 52.45441290345384 13.526121228933334, 52.45684499901483 13.528932183980942)), "
-                + "((52.45772680955847 13.527526706457138, 52.45513861746844 13.524576276540756, 52.45586433148305 13.523031324148178, "
-                + "52.45860862010212 13.526121228933334, 52.45772680955847 13.527526706457138)))";
+        string_Multipolygon_Berlin_HTW_WH_Complete = "MULTIPOLYGON (((52.45684499901483 13.528932183980942, 52.457726809558475 13.527526706457138, "
+                + "52.45513861746845 13.524576276540756, 52.45441290345384 13.526121228933334, 52.45684499901483 13.528932183980942)), "
+                + "((52.457726809558475 13.527526706457138, 52.45513861746845 13.524576276540756, 52.45586433148305 13.523031324148178, "
+                + "52.45860862010212 13.526121228933334, 52.457726809558475 13.527526706457138)))";
         string_Multipolygon_Berlin_HTW_Complete = "MULTIPOLYGON (((52.45860862010212 13.526121228933334, 52.45684499901483 13.528932183980942, "
                 + "52.45441290345384 13.526121228933334, 52.45586433148305 13.523031324148178, 52.45860862010212 13.526121228933334)),"
                 + "((52.49363039643433 13.522881120443344, 52.49429668066099 13.525370210409164, "
@@ -162,10 +165,11 @@ public class JTSMain {
      */
     @Test
     public void create_test_AnyTag() throws SharkKBException {
-        SpatialSemanticTag any = InMemoSharkKB.createInMemoSpatialSemanticTag(null);
-        Assert.assertEquals(null, any);
-        Assert.assertEquals(true, usedFunctionClass.identical(any, any));
-        Assert.assertEquals(true, usedFunctionClass.isIn(any, any));
+        SemanticTag anyTag = InMemoSharkKB.createInMemoSemanticTag("anyTag", SharkCS.ANYURL);
+        //SpatialSTSet anySTSet = InMemoSharkKB.createInMemoSpatialSemanticTag("anySTTag", , Point_Berlin_HTW_TA);
+        //Assert.assertEquals(null, any);
+        //Assert.assertEquals(true, usedFunctionClass.identical(any, any));
+        //Assert.assertEquals(true, usedFunctionClass.isIn(any, any));
     }
 
     @Test
@@ -1196,10 +1200,10 @@ public class JTSMain {
     }
 
     @Test
-    public void checkSpatialAlgebraIsInSemanticTags_GEOMETRYCOLLECTION_POINT_FALSE() throws SharkKBException {
+    public void checkSpatialAlgebraIsInSemanticTags_GEOMETRYCOLLECTION_POINT_2() throws SharkKBException {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON_WITHOUT_WH_G);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Point_Berlin_HTW_WH_G);
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
         Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
     }
 
@@ -1215,7 +1219,7 @@ public class JTSMain {
     public void checkSpatialAlgebraIsInSemanticTags_GEOMETRYCOLLECTION_LINESTRING_FALSE() throws SharkKBException {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON_WITHOUT_WH_G);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(LineString_Berlin_HTW_WH_G);
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
         Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
     }
 
@@ -1244,10 +1248,10 @@ public class JTSMain {
     }
 
     @Test
-    public void checkSpatialAlgebraIsInSemanticTags_GEOMETRYCOLLECTION_MULTIPOINT_FALSE() throws SharkKBException {
+    public void checkSpatialAlgebraIsInSemanticTags_GEOMETRYCOLLECTION_MULTIPOINT_2() throws SharkKBException {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON_WITHOUT_WH_G);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipoint_Berlin_HTW_WH_G);
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
         Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
     }
 
@@ -1260,10 +1264,10 @@ public class JTSMain {
     }
 
     @Test
-    public void checkSpatialAlgebraIsInSemanticTags_GEOMETRYCOLLECTION_MULTILINESTRING_FALSE() throws SharkKBException {
+    public void checkSpatialAlgebraIsInSemanticTags_GEOMETRYCOLLECTION_MULTILINESTRING_2() throws SharkKBException {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON_WITHOUT_WH_G);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Multilinestring_Berlin_HTW_WH_G);
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
         Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
     }
 
@@ -1286,7 +1290,22 @@ public class JTSMain {
     //Todo add Fragment Tests
     @Test
     public void checkSpatialAlgebraIsFragment() throws SharkKBException {
+        SpatialSTSet HTW = InMemoSharkKB.createInMemoSpatialSTSet();
+        SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON);
+        SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Polygon_Berlin_HTW_WH_Complete);
+        SpatialSemanticTag tag3 = InMemoSharkKB.createInMemoSpatialSemanticTag(Point_Berlin_HTW_WH_G);
+        HTW.merge(tag1);
+        HTW.merge(tag2);
+        HTW.merge(tag3);
+        SpatialSemanticTag anchorTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Polygon_Berlin_HTW_WH_Complete);
+        SpatialSTSet fragmentSet = InMemoSharkKB.createInMemoSpatialSTSet();
+        usedFunctionClass.fragment(fragmentSet, HTW, anchorTag);
+        Enumeration<SpatialSemanticTag> spatialSTEnum = fragmentSet.spatialTags();
+        SpatialSemanticTag resultTag = spatialSTEnum.nextElement();
+        Assert.assertEquals(true, usedFunctionClass.identical(resultTag, tag2));
+        Assert.assertEquals(resultTag.getGeometry().getWKT(), Polygon_Berlin_HTW_WH_Complete.getWKT());
 
     }
 
+    //Todo add FrameworkTest
 }

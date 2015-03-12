@@ -243,45 +243,44 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
             }
         }
         for (Geometry geomA : a) {
-          if(!coveredGeomsA.contains(geomA)) {
-            isCovered = false;
-            break;
-          }
+            if (!coveredGeomsA.contains(geomA)) {
+                isCovered = false;
+                break;
+            }
         }
         return isCovered;
     }
-    
-    private List<Geometry> unionTouchedJTSGeometries(List<Geometry> geometries) throws SharkKBException
-    {
-      List<Geometry> resultGeometries = new ArrayList();
-      boolean wasTouched = false;
-      while (geometries.size() > 0) {
-        Geometry geomA = geometries.get(0);
-        boolean geomAWasUnioned = false;
-        for (Geometry geomB : geometries) {
-          try {
-            if (!geomA.equals((Object)geomB)) {
-              if (geomA.touches(geomB)) {
-                resultGeometries.add(geomA.union(geomB));
-                geometries.remove(geomB);
-                wasTouched = true;
-                geomAWasUnioned = true;
-                break;
-              }
+
+    private List<Geometry> unionTouchedJTSGeometries(List<Geometry> geometries) throws SharkKBException {
+        List<Geometry> resultGeometries = new ArrayList();
+        boolean wasTouched = false;
+        while (geometries.size() > 0) {
+            Geometry geomA = geometries.get(0);
+            boolean geomAWasUnioned = false;
+            for (Geometry geomB : geometries) {
+                try {
+                    if (!geomA.equals((Object) geomB)) {
+                        if (geomA.touches(geomB)) {
+                            resultGeometries.add(geomA.union(geomB));
+                            geometries.remove(geomB);
+                            wasTouched = true;
+                            geomAWasUnioned = true;
+                            break;
+                        }
+                    }
+                } catch (IllegalArgumentException ex) {
+                    throw new SharkKBException("Touch with GeometryCollection is not allowed.");
+                }
             }
-          } catch (IllegalArgumentException ex) {
-              throw new SharkKBException("Touch with GeometryCollection is not allowed.");
-          }              
+            if (!geomAWasUnioned) {
+                resultGeometries.add(geomA);
+            }
+            geometries.remove(geomA);
         }
-        if (!geomAWasUnioned) {
-          resultGeometries.add(geomA);
+        if (wasTouched) {
+            resultGeometries = unionTouchedJTSGeometries(resultGeometries);
         }
-        geometries.remove(geomA);
-      }
-      if (wasTouched) {
-        resultGeometries = unionTouchedJTSGeometries(resultGeometries);
-      }
-      return resultGeometries;
+        return resultGeometries;
     }
 
     /**
@@ -297,7 +296,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
             for (Geometry geomB : b) {
                 try {
                     if (geomA.intersects(geomB) && !tempIntersects.contains(geomA)) {
-                      tempIntersects.add(geomA);
+                        tempIntersects.add(geomA);
                     }
                 } catch (IllegalArgumentException ex) {
                     throw new SharkKBException("Intersection with GeometryCollection is not allowed.");
@@ -329,7 +328,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
             }
         }
         if (wasDivided) {
-          geomsWithoutGeometryCollection = divideAllExistingGeometryCollections(geomsWithoutGeometryCollection);
+            geomsWithoutGeometryCollection = divideAllExistingGeometryCollections(geomsWithoutGeometryCollection);
         }
         return geomsWithoutGeometryCollection;
     }
