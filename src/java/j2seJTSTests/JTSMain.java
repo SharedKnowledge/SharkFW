@@ -1290,21 +1290,43 @@ public class JTSMain {
     //Todo add Fragment Tests
     @Test
     public void checkSpatialAlgebraIsFragment() throws SharkKBException {
-        SpatialSTSet HTW = InMemoSharkKB.createInMemoSpatialSTSet();
-        SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON);
-        SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Polygon_Berlin_HTW_WH_Complete);
-        SpatialSemanticTag tag3 = InMemoSharkKB.createInMemoSpatialSemanticTag(Point_Berlin_HTW_WH_G);
-        HTW.merge(tag1);
-        HTW.merge(tag2);
-        HTW.merge(tag3);
-        SpatialSemanticTag anchorTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Polygon_Berlin_HTW_WH_Complete);
-        SpatialSTSet fragmentSet = InMemoSharkKB.createInMemoSpatialSTSet();
-        usedFunctionClass.fragment(fragmentSet, HTW, anchorTag);
-        Enumeration<SpatialSemanticTag> spatialSTEnum = fragmentSet.spatialTags();
-        SpatialSemanticTag resultTag = spatialSTEnum.nextElement();
-        Assert.assertEquals(true, usedFunctionClass.identical(resultTag, tag2));
-        Assert.assertEquals(resultTag.getGeometry().getWKT(), Polygon_Berlin_HTW_WH_Complete.getWKT());
-
+      String string_Blue_Collection = "GEOMETRYCOLLECTION (POLYGON ((166 426, 480 426, 480 230, 166 230, 166 426)), " +
+                                      "LINESTRING (693 485, 360 480, 910 310, 570 140), " +
+                                      "POINT (530 340), " +
+                                      "POINT (434 196), " +
+                                      "POINT (771 415), " +
+                                      "POINT (705 328), " +
+                                      "LINESTRING (180 520, 46 506, 115 376, 50 330, 80 220), " +
+                                      "POLYGON ((210 230, 278 230, 278 115, 210 115, 210 230)))";
+      String string_Red_Collection = "GEOMETRYCOLLECTION (POLYGON ((270 520, 534 520, 534 386, 270 386, 270 520)), " +
+                                     "POLYGON ((346 294, 670 294, 670 90, 346 90, 346 294)), " +
+                                     "LINESTRING (620 520, 790 170), " +
+                                     "POLYGON ((250 200, 346 200, 346 90, 250 90, 250 200)))";
+      String string_ExpectedResult_Collection = "GEOMETRYCOLLECTION (POLYGON ((480 386, 270 386, 270 426, 480 426, 480 386)), " +
+                                        "MULTIPOLYGON (((346 294, 480 294, 480 230, 346 230, 346 294)), " +
+                                        "((250 115, 250 200, 278 200, 278 115, 250 115))), " +
+                                        "LINESTRING (534 482.6126126126126, 360 480, 534 426.2181818181818), " +
+                                        "LINESTRING (670 190, 570 140), " +
+                                        "MULTIPOINT ((637.4054514480409 484.16524701873936), (688.7897310513447 378.37408312958433), (758.735632183908 234.367816091954)), " +
+                                        "POINT (434 196))";
+      SharkGeometry Blue_Collection = InMemoSharkGeometry.createGeomByWKT(string_Blue_Collection);
+      SharkGeometry Red_Collection = InMemoSharkGeometry.createGeomByWKT(string_Red_Collection);
+      SharkGeometry ExpectedResult_Collection = InMemoSharkGeometry.createGeomByWKT(string_ExpectedResult_Collection);
+      SpatialSemanticTag sourceSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Blue_Collection);
+      SpatialSemanticTag anchorSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Red_Collection);
+      SpatialSemanticTag expectedResultSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(ExpectedResult_Collection);
+      SpatialSTSet sourceSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
+      sourceSTSet.merge(sourceSpatialTag);
+      SpatialSTSet fragmentSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
+      SpatialSemanticTag containTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipolygon_Berlin_HTW_Complete);
+      fragmentSTSet.merge(containTag);
+      SpatialSTSet resultFragmentSTSet = usedFunctionClass.fragment(fragmentSTSet, sourceSTSet, anchorSpatialTag);
+      
+      Enumeration<SpatialSemanticTag> spatialEnum = resultFragmentSTSet.spatialTags();
+      SpatialSemanticTag firstTag = spatialEnum.nextElement();
+      SpatialSemanticTag secondTag = spatialEnum.nextElement();
+      Assert.assertEquals(firstTag, containTag);
+      Assert.assertEquals(true, usedFunctionClass.identical(secondTag, expectedResultSpatialTag));
     }
 
     //Todo add FrameworkTest

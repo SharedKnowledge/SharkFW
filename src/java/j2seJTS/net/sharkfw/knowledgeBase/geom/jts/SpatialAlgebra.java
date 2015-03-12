@@ -7,10 +7,13 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 /**
@@ -173,17 +176,31 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
      */
     @Override
     public SpatialSTSet fragment(SpatialSTSet fragment, SpatialSTSet source, SpatialSemanticTag anchor) throws SharkKBException {
-        if (fragment == null) {
-            throw new SharkKBException("fragment is null");
-        } else {
-            Enumeration<SpatialSemanticTag> spatialSTEnum = source.spatialTags();
-            while (spatialSTEnum.hasMoreElements()) {
-                SpatialSemanticTag temp1 = spatialSTEnum.nextElement();
-                if (temp1.identical(anchor)) {
-                    fragment.merge(temp1);
-                }
+        SpatialSTSet tempAnchor = InMemoSharkKB.createInMemoSpatialSTSet();
+        tempAnchor.merge(anchor);
+        List<Geometry> jtsAnchorGeoms = getListWithJTSGeometries(tempAnchor);
+        List<Geometry> jtsSourceGeoms = getListWithJTSGeometries(source);
+        List<Geometry> jtsAnchorGeomsOnly = divideAllExistingGeometryCollections(jtsAnchorGeoms);
+        List<Geometry> jtsSourceGeomsOnly = divideAllExistingGeometryCollections(jtsSourceGeoms);
+        List<Geometry> jtsIntersectedSourceGeomsWithAnchorGeoms = getIntersectsFromListsWithJTSGeommetries(jtsSourceGeomsOnly, jtsAnchorGeomsOnly);
+        List<Geometry> jtsAnchorGeomsOnlyUnioned = unionTouchedJTSGeometries(jtsAnchorGeomsOnly);
+        List<Geometry> jtsIntersectedSourceGeomsWithAnchorGeomsUnioned = unionTouchedJTSGeometries(jtsIntersectedSourceGeomsWithAnchorGeoms);
+        List<Geometry> jtsSelectedGeomsUnioned = new ArrayList();
+        for (Geometry geomSource : jtsIntersectedSourceGeomsWithAnchorGeomsUnioned) {
+          for (Geometry geomAnchor : jtsAnchorGeomsOnlyUnioned) {
+            Geometry resultGeom = geomAnchor.intersection(geomSource);
+            if (!resultGeom.isEmpty()) {
+              jtsSelectedGeomsUnioned.add(resultGeom);
             }
+          }
         }
+        GeometryFactory factory = jtsAnchorGeoms.get(0).getFactory();
+        Geometry resultGeom = factory.buildGeometry(jtsSelectedGeomsUnioned);
+        SharkGeometry sharkGeom = InMemoSharkGeometry.createGeomByWKT(resultGeom.toText());
+        if (fragment == null) {
+            fragment = InMemoSharkKB.createInMemoSpatialSTSet();
+        }
+        fragment.merge(InMemoSharkKB.createInMemoSpatialSemanticTag(sharkGeom));
         return fragment;
     }
 
@@ -211,6 +228,9 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
                     a.remove(i);
                     if (!geomA.isEmpty()) {
                         a.add(i, geomA);
+                    } else {
+                      i--;
+                      break;
                     }
                 }
             }
@@ -252,6 +272,20 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
     }
 
     private List<Geometry> unionTouchedJTSGeometries(List<Geometry> geometries) throws SharkKBException {
+        List filteredGeometries = new ArrayList();
+        for (Geometry geom : geometries) {
+            if (geom.getGeometryType().compareTo("MultiPolygon") == 0) {
+              List<Geometry> dividedPolygons = divideGeometryCollection((GeometryCollection)geom);
+              List<Geometry> dividedUnionedPolygons = unionTouchedAtomicJTSGeometries(dividedPolygons);
+              GeometryFactory factory = geom.getFactory();
+              geom = factory.buildGeometry(dividedUnionedPolygons);
+            }
+            filteredGeometries.add(geom);
+        }
+        return unionTouchedAtomicJTSGeometries(filteredGeometries);
+    }
+    
+    private List<Geometry> unionTouchedAtomicJTSGeometries(List<Geometry> geometries) throws SharkKBException {
         List<Geometry> resultGeometries = new ArrayList();
         boolean wasTouched = false;
         while (geometries.size() > 0) {
@@ -280,7 +314,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         if (wasTouched) {
             resultGeometries = unionTouchedJTSGeometries(resultGeometries);
         }
-        return resultGeometries;
+        return resultGeometries;      
     }
 
     /**
