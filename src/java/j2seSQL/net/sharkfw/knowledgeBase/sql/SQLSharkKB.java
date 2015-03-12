@@ -25,6 +25,8 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.Taxonomy;
+import net.sharkfw.knowledgeBase.TaxonomyWrapper;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.system.L;
@@ -89,6 +91,19 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         this.setTimes(times);
         
         // TODO attach knowledge
+    }
+    
+    @Override
+    public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
+        if(this.topics instanceof Taxonomy) {
+            return (Taxonomy) this.topics;
+        } else {
+            if(this.topics instanceof SemanticNet) {
+                return new SQLTaxonomy(this, (SemanticNet)this.topics);
+            } else {
+                throw new SharkKBException("topic semantic tag set is not a taxonomy and cannot be used as taxonomy");
+            }
+        }
     }
     
     Connection getConnection() {
@@ -491,7 +506,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             
             switch (sqlST.getType()) {
                 case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
-                    newTag = new SQL_SN_TX_PeerSemanticTag(kb, sqlST);
+                    newTag = new SQL_SN_TX_PeerSemanticTag(kb, kb.getTopicsAsSQLSemanticNet(), sqlST);
                     break;
                 case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
                     newTag = new SQLSpatialSemanticTag(kb, sqlST);
@@ -500,11 +515,15 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
                     newTag = new SQLTimeSemanticTag(kb, sqlST);
                     break;
                 default:
-                    newTag = new SQL_SN_TX_SemanticTag(kb, sqlST);
+                    newTag = new SQL_SN_TX_SemanticTag(kb, kb.getTopicsAsSQLSemanticNet(), sqlST);
             }
             tagList.add(newTag);
         }
         return tagList;
+    }
+    
+    SQLSemanticNet getTopicsAsSQLSemanticNet() {
+        return (SQLSemanticNet)this.topics;
     }
     
     @Override

@@ -8,7 +8,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
+import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.system.Iterator2Enumeration;
 import net.sharkfw.system.L;
 
@@ -16,9 +18,12 @@ import net.sharkfw.system.L;
  *
  * @author thsc
  */
-public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticTag {
-    public SQL_SN_TX_SemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticTag, TXSemanticTag {
+    private final SQLSemanticNet sn;
+    
+    public SQL_SN_TX_SemanticTag(SQLSharkKB kb, SQLSemanticNet sn, SQLSemanticTagStorage sqlST) throws SharkKBException {
         super(kb, sqlST);
+        this.sn = sn;
     }
 
     @Override
@@ -136,5 +141,38 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
     @Override
     public void merge(SNSemanticTag toMerge) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Enumeration<SemanticTag> subTags() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TXSemanticTag getSuperTag() {
+        Iterator<SNSemanticTag> targets = this.targets(SUPER_TAG);
+        if(targets != null && targets.hasNext()) {
+            return (TXSemanticTag) targets.next();
+        }
+        
+        return null;
+    }
+
+    @Override
+    public Enumeration<TXSemanticTag> getSubTags() {
+        return (Enumeration<TXSemanticTag>) this.targets(SUB_TAG);
+    }
+
+    private final static String SUPER_TAG = "super";
+    private final static String SUB_TAG = "aub";
+    
+    @Override
+    public void move(TXSemanticTag supertag) {
+        this.setPredicate(SUPER_TAG, (SNSemanticTag) supertag);
+    }
+
+    @Override
+    public void merge(TXSemanticTag toMerge) {
+        this.merge((SNSemanticTag) toMerge);
     }
 }

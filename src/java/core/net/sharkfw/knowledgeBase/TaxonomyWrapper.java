@@ -10,27 +10,27 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
  * @author thsc
  */
 public abstract class TaxonomyWrapper implements Taxonomy {
-    protected SemanticNet storage;
+    protected SemanticNet sn;
         
     protected TaxonomyWrapper() { 
-        this.storage = null;
+        this.sn = null;
     }
     
     protected void setStorage(SemanticNet storage) {
-        this.storage = storage;
+        this.sn = storage;
     }
     
     public TaxonomyWrapper(SemanticNet storage) {
-        this.storage = storage;
+        this.sn = storage;
     }
     
     protected void add(TXSemanticTag tag) throws SharkKBException {
-        this.storage.add(tag);
+        this.sn.add(tag);
     }
     
     @Override
     public void merge(TXSemanticTag tag) throws SharkKBException {
-            this.storage.merge(tag);
+            this.sn.merge(tag);
     }
 
     @Override
@@ -51,7 +51,7 @@ public abstract class TaxonomyWrapper implements Taxonomy {
     
     @Override
     public Taxonomy fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
-        SemanticNet fragment = this.storage.fragment(anchor, fp);
+        SemanticNet fragment = this.sn.fragment(anchor, fp);
 
         if(fragment == null) return null;
 
@@ -60,7 +60,7 @@ public abstract class TaxonomyWrapper implements Taxonomy {
 
     @Override
     public Taxonomy fragment(SemanticTag anchor) throws SharkKBException {
-        SemanticNet fragment = this.storage.fragment(anchor);
+        SemanticNet fragment = this.sn.fragment(anchor);
         
         if(fragment == null) return null;
         
@@ -69,7 +69,7 @@ public abstract class TaxonomyWrapper implements Taxonomy {
 
     @Override
     public Taxonomy contextualize(Enumeration<SemanticTag> anchorSet) throws SharkKBException {
-        SemanticNet fragment = this.storage.contextualize(anchorSet);
+        SemanticNet fragment = this.sn.contextualize(anchorSet);
         
         if(fragment == null) return null;
         
@@ -78,7 +78,7 @@ public abstract class TaxonomyWrapper implements Taxonomy {
 
     @Override
     public Taxonomy contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
-        SemanticNet fragment = this.storage.contextualize(context, fp);
+        SemanticNet fragment = this.sn.contextualize(context, fp);
         
         if(fragment == null) return null;
         
@@ -87,7 +87,7 @@ public abstract class TaxonomyWrapper implements Taxonomy {
 
     @Override
     public Taxonomy contextualize(STSet context) throws SharkKBException {
-        SemanticNet fragment = this.storage.contextualize(context);
+        SemanticNet fragment = this.sn.contextualize(context);
         
         if(fragment == null) return null;
         
@@ -100,7 +100,7 @@ public abstract class TaxonomyWrapper implements Taxonomy {
             TaxonomyWrapper imt = (TaxonomyWrapper) toMerge;
             SemanticNet storage2Merge = imt.getStorage();
             
-            this.storage.merge(storage2Merge);
+            this.sn.merge(storage2Merge);
         } else {
             throw new SharkKBException("InMemoTaxonomy can only merge "
                     + "another InMemoTaxonomy in this version - sorry");
@@ -109,27 +109,27 @@ public abstract class TaxonomyWrapper implements Taxonomy {
 
     @Override
     public Enumeration<SemanticTag> tags() throws SharkKBException {
-        return this.storage.tags();
+        return this.sn.tags();
     }
 
     @Override
     public Iterator<SemanticTag> stTags() throws SharkKBException {
-        return this.storage.stTags();
+        return this.sn.stTags();
     }
 
     @Override
     public FragmentationParameter getDefaultFP() {
-        return this.storage.getDefaultFP();
+        return this.sn.getDefaultFP();
     }
 
     @Override
     public void setDefaultFP(FragmentationParameter fp) {
-        this.storage.setDefaultFP(fp);
+        this.sn.setDefaultFP(fp);
     }
 
     @Override
     public Taxonomy contextualize(Enumeration<SemanticTag> anchorSet, FragmentationParameter fp) throws SharkKBException {
-        SemanticNet fragment = this.storage.contextualize(anchorSet, fp);
+        SemanticNet fragment = this.sn.contextualize(anchorSet, fp);
         
         if(fragment == null) return null;
         
@@ -138,31 +138,31 @@ public abstract class TaxonomyWrapper implements Taxonomy {
 
     @Override
     public SemanticTag merge(SemanticTag source) throws SharkKBException {
-        return this.storage.merge(source);
+        return this.sn.merge(source);
     }
 
     @Override
     public void addListener(STSetListener listen) {
-        this.storage.addListener(listen);
+        this.sn.addListener(listen);
     }
 
     @Override
     public void removeListener(STSetListener listener) throws SharkKBException {
-        this.storage.removeListener(listener);
+        this.sn.removeListener(listener);
     }
 
     protected SemanticNet getStorage() {
-        return this.storage;
+        return this.sn;
     }
 
     @Override
     public boolean isEmpty() {
-        return this.storage.isEmpty();
+        return this.sn.isEmpty();
     }
 
     @Override
     public void setEnumerateHiddenTags(boolean hide) {
-        this.storage.setEnumerateHiddenTags(hide);
+        this.sn.setEnumerateHiddenTags(hide);
     }
 
     @Override
@@ -231,7 +231,7 @@ public abstract class TaxonomyWrapper implements Taxonomy {
 
     @Override
     public int size() {
-        return this.storage.size();
+        return this.sn.size();
     }
     
     @Override

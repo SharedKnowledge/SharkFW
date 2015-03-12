@@ -27,10 +27,10 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public static String SHARKFW_SENDER_PROPERTY = "sharkfw_sender";
     public static String SHARKFW_TIME_RECEIVED_PROPERTY = "sharkfw_timeReceived";
 
-    private SemanticNet topics;
-    private PeerTaxonomy peers;
-    private SpatialSTSet locations;
-    private TimeSTSet times;
+    protected SemanticNet topics;
+    protected PeerTaxonomy peers;
+    protected SpatialSTSet locations;
+    protected TimeSTSet times;
     protected PeerSemanticTag owner;
     protected Knowledge knowledge;
     protected FragmentationParameter[] defaultFP;

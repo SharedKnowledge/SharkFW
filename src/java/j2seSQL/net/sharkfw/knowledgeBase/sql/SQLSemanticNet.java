@@ -25,24 +25,20 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
 
     @Override
     public SNSemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        String si = null;
+        SQLSemanticTagStorage sqlST = this.getSQLSemanticTagStorage(sis);
         
-        if(sis != null && sis.length > 0) {
-            si = sis[0];
+        if(sqlST == null) {
+            sqlST = this.createSQLSemanticTag(
+                this.getSSQLSharkKB(), name, null, 0, 0, false, 
+                SQLSharkKB.SEMANTIC_TAG, sis);
         }
         
-        SQLSemanticTagStorage sqlST = this.getSQLSemanticTagStorage(si);
-        
-        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
+        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), this, sqlST);
     }
 
     @Override
     public SNSemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        SQLSemanticTagStorage sqlST = this.createSQLSemanticTag(
-                this.getSSQLSharkKB(), name, null, 0, 0, false, 
-                SQLSharkKB.SEMANTIC_TAG, new String[] {si});
-        
-        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
+        return this.createSemanticTag(name, new String[] {si});
     }
 
     @Override
@@ -59,7 +55,7 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
             return null;
         }
         
-        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
+        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), this, sqlST);
     }
 
     @Override

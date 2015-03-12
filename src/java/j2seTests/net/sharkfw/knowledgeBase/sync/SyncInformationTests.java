@@ -57,7 +57,7 @@ public class SyncInformationTests {
     }
 
     @Test
-    public void syncInformation_createInformation_hasDefaultVersion() {
+    public void syncInformation_createInformation_hasDefaultVersion() throws SharkKBException {
         Information teapotInfo = new SyncInformation(InMemoSharkKB.createInMemoInformation());
         assertNotNull(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME));
         assertEquals(teapotInfo.getProperty(SyncInformation.VERSION_PROPERTY_NAME), SyncInformation.VERSION_DEFAULT_VALUE);
@@ -76,7 +76,7 @@ public class SyncInformationTests {
     }
 
     @Test
-    public void syncInformation_removeContent_versionIncreased() {
+    public void syncInformation_removeContent_versionIncreased() throws SharkKBException {
         Information teapotInformation = new SyncInformation(teapotCP.addInformation("Teapots teapots"));
         teapotInformation.removeContent();
         
@@ -85,7 +85,7 @@ public class SyncInformationTests {
     } 
     
     @Test
-    public void syncInformation_setContent_versionIncreased() {
+    public void syncInformation_setContent_versionIncreased() throws SharkKBException {
         Information teapotInformation = new SyncInformation(teapotCP.addInformation("I like tea."));
         
         teapotInformation.setContent("Especially green and black tea.");
@@ -99,7 +99,7 @@ public class SyncInformationTests {
     }
     
     @Test
-    public void syncInformation_setContentType_versionIncreased() {
+    public void syncInformation_setContentType_versionIncreased() throws SharkKBException {
         Information teapotInformation = new SyncInformation(teapotCP.addInformation("Teapots are a formidable invention."));
         teapotInformation.setContentType("image");
         

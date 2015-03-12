@@ -31,7 +31,7 @@ public class InMemoTaxonomy extends TaxonomyWrapper implements Taxonomy, STSet {
             return st;
         }
         st = new InMemo_SN_TX_SemanticTag(name, sis);
-        this.storage.add(st);
+        this.sn.add(st);
         return st;
     }
 
@@ -46,7 +46,7 @@ public class InMemoTaxonomy extends TaxonomyWrapper implements Taxonomy, STSet {
          * But maybe there is a super tag that should become new supertag of
          * the subs.
          */
-        SNSemanticTag snTag = this.storage.getSemanticTag(tag.getSI());
+        SNSemanticTag snTag = this.sn.getSemanticTag(tag.getSI());
         if (snTag == null) {
             return;
         }
@@ -77,7 +77,7 @@ public class InMemoTaxonomy extends TaxonomyWrapper implements Taxonomy, STSet {
                 }
             }
         }
-        this.storage.removeSemanticTag((SemanticTag) tag);
+        this.sn.removeSemanticTag((SemanticTag) tag);
     }
 
     @Override
@@ -86,13 +86,13 @@ public class InMemoTaxonomy extends TaxonomyWrapper implements Taxonomy, STSet {
         if (tag instanceof TXSemanticTag) {
             this.removeSemanticTag((TXSemanticTag) tag);
         } else {
-            this.storage.removeSemanticTag(tag);
+            this.sn.removeSemanticTag(tag);
         }
     }
 
     @Override
     public TXSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        SemanticTag st = this.storage.getSemanticTag(sis);
+        SemanticTag st = this.sn.getSemanticTag(sis);
         if (st instanceof TXSemanticTag) {
             return (TXSemanticTag) st;
         } else {
@@ -106,7 +106,7 @@ public class InMemoTaxonomy extends TaxonomyWrapper implements Taxonomy, STSet {
      */
     @Override
     public Enumeration rootTags() throws SharkKBException {
-        Enumeration<SemanticTag> tagEnum = this.storage.tags();
+        Enumeration<SemanticTag> tagEnum = this.sn.tags();
         if (tagEnum == null) {
             return null;
         }
