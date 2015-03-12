@@ -156,10 +156,10 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         // Geometry with/as GeometryCollection does not work
         List<Geometry> jtsGeomsOnlyA = divideAllExistingGeometryCollections(jtsGeomsA);
         List<Geometry> jtsGeomsOnlyB = divideAllExistingGeometryCollections(jtsGeomsB);
-        List<Geometry> jtsIntersectedGeomsFromGeomsBWithGeomsA = getIntersectsFromListsWithJTSGeommetries(jtsGeomsOnlyB, jtsGeomsOnlyA);
-        List<Geometry> jtsGeomsOnlyAUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyA);
-        List<Geometry> jtsIntersectedGeomsBUnioned = unionTouchedJTSGeometries(jtsIntersectedGeomsFromGeomsBWithGeomsA);
-        return isListWithGeometriesCovered(jtsGeomsOnlyAUnioned, jtsIntersectedGeomsBUnioned);
+        List<Geometry> jtsIntersectedGeomsFromGeomsAWithGeomsB = getIntersectsFromListsWithJTSGeommetries(jtsGeomsOnlyA, jtsGeomsOnlyB);
+        List<Geometry> jtsGeomsOnlyBUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyB);
+        List<Geometry> jtsIntersectedGeomsAUnioned = unionTouchedJTSGeometries(jtsIntersectedGeomsFromGeomsAWithGeomsB);
+        return isListWithGeometriesCovered(jtsGeomsOnlyBUnioned, jtsIntersectedGeomsAUnioned);
     }
 
     /**

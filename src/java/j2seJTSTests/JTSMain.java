@@ -849,8 +849,8 @@ public class JTSMain {
     public void checkSpatialAlgebraIsInSemanticTags_LINESTRING_GEOMETRYCOLLECTION() throws SharkKBException {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(LineString_Berlin_HTW_WH_Complete);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON);
-        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
+        Assert.assertEquals(false, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag2, tag1));
     }
 
     @Test
@@ -952,7 +952,7 @@ public class JTSMain {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Polygon_Berlin_HTW_WH_Complete);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipolygon_Berlin_HTW_WH_Complete);
         Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag2, tag1));
     }
 
     @Test
@@ -967,8 +967,8 @@ public class JTSMain {
     public void checkSpatialAlgebraIsInSemanticTags_POLYGON_GEOMETRYCOLLECTION() throws SharkKBException {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Polygon_Berlin_HTW_WH_G);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON);
-        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
+        Assert.assertEquals(false, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag2, tag1));
     }
 
     @Test
@@ -1177,8 +1177,8 @@ public class JTSMain {
     public void checkSpatialAlgebraIsInSemanticTags_MULTIPOLYGON_GEOMETRYCOLLECTION() throws SharkKBException {
         SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipolygon_Berlin_HTW_WH_Complete);
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(Geometrycollection_Berlin_HTW_Complete_With_MULTIPOLYGON);
-        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
-        Assert.assertEquals(false, usedFunctionClass.isIn(tag2, tag1));
+        Assert.assertEquals(false, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag2, tag1));
     }
 
     @Test
