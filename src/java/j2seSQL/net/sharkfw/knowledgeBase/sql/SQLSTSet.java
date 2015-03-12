@@ -79,52 +79,27 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
      * @throws SharkKBException 
      */
     protected Iterator tags(int type) throws SharkKBException {
-        List<SemanticTag> tagList = new ArrayList<>();
+        List<SemanticTag> tagList;
         Statement statement = null;
 
         try {
             statement  = this.kb.getConnection().createStatement();
             
-            String sqlString = "select id from " + SQLSharkKB.ST_TABLE;
+            String sqlString = "SELECT id, st_type FROM " + SQLSharkKB.ST_TABLE;
             
             // select specific tag type if not of general semantic tag type
             switch(type) {
                 case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
                 case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
                 case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
-                    sqlString += " where st_type = " + type;
+                    sqlString += " WHERE st_type = " + type;
                     break;
             }
             
             ResultSet result = statement.executeQuery(sqlString);
             
-            while(result.next()) {
-                // something found
-                int id = result.getInt("id");
-                SQLSemanticTagStorage sqlST = new SQLSemanticTagStorage(this.kb, id);
-                
-                // wrap into tag of correct type:
-                SemanticTag newTag;
-                switch(type) {
-                    case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
-                        newTag = new SQLPeerSemanticTag(this.kb, sqlST);
-                        break;
-                        
-                    case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
-                        newTag = new SQLSpatialSemanticTag(this.kb, sqlST);
-                        break;
-                        
-                    case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
-                        newTag = new SQLTimeSemanticTag(this.kb, sqlST);
-                        break;
-                        
-                    default:
-                        newTag = new SQLSemanticTag(this.kb, sqlST);
-                }
-                
-                // add to list
-                tagList.add(newTag);
-            }
+            tagList = SQLSharkKB.createSTListBySTTableEntries(this.kb, result);
+            
         }
         catch(SQLException e) {
             throw new SharkKBException(e.getLocalizedMessage());
@@ -141,7 +116,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
         
         return tagList.iterator();
     }
-    
+       
     @Override
     public SemanticTag merge(SemanticTag tag) throws SharkKBException {
         return SharkCSAlgebra.merge(this, tag);

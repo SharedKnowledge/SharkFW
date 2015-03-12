@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -43,6 +44,7 @@ import net.sharkfw.system.L;
  * @author thsc
  */
 public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
+
     private Connection connection;
     private String connectionString;
     private String user;
@@ -353,6 +355,13 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             catch(SQLException e) {
             }
             
+            /************** properties table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.PREDICATE_TABLE);
+            }
+            catch(SQLException e) {
+            }
+            
             /************** si table *****************************/
             try {
                 statement.execute("DROP TABLE " + SQLSharkKB.SI_TABLE);
@@ -464,7 +473,40 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         
         return sis;
     }
-
+    
+    /**
+     *
+     * @param result result set of semantic tags table - must constist of id
+     * @return
+     * @throws SQLException
+     * @throws SharkKBException
+     */
+    static List<SemanticTag> createSTListBySTTableEntries(SQLSharkKB kb, ResultSet result) throws SQLException, SharkKBException {
+        List<SemanticTag> tagList = new ArrayList<>();
+        while (result.next()) {
+            int id = result.getInt("id");
+            SQLSemanticTagStorage sqlST = new SQLSemanticTagStorage(kb, id);
+            
+            SemanticTag newTag;
+            
+            switch (sqlST.getType()) {
+                case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
+                    newTag = new SQL_SN_TX_PeerSemanticTag(kb, sqlST);
+                    break;
+                case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
+                    newTag = new SQLSpatialSemanticTag(kb, sqlST);
+                    break;
+                case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
+                    newTag = new SQLTimeSemanticTag(kb, sqlST);
+                    break;
+                default:
+                    newTag = new SQL_SN_TX_SemanticTag(kb, sqlST);
+            }
+            tagList.add(newTag);
+        }
+        return tagList;
+    }
+    
     @Override
     public Interest createInterest(STSet topics, PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

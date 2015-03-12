@@ -3,11 +3,13 @@ package net.sharkfw.knowledgeBase.sql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Iterator;
+import java.util.List;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.system.Iterator2Enumeration;
 import net.sharkfw.system.L;
 
 /**
@@ -29,28 +31,31 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Enumeration<SNSemanticTag> targetTags(String predicateName) {
+    public Iterator<SNSemanticTag> targets(String predicateName) {
         Statement statement = null;
         String sqlString = null;
+        
+        List stList = new ArrayList();
         
         try {
             statement  = this.kb.getConnection().createStatement();
             
-            // HIER WEITERMACHEN!!
-             sqlString = "SELECT * FROM " + SQLSharkKB.ST_TABLE
-                    + " WHERE id = (SELECT (targetid) FROM " + SQLSharkKB.PREDICATE_TABLE + 
-                    " WHERE sourceid = "
-                    + this.sqlST.getID() + " AND predicate = '"
-                    + predicateName + "')";
-                    
+            /* Example
+            select distinct semantictags.* from semantictags, predicates where semantictags.id = predicates.targetid and predicates.predicate = 'p1'
+            */
+             sqlString = "SELECT DISTINCT " + SQLSharkKB.ST_TABLE + ".* FROM "
+                     + SQLSharkKB.ST_TABLE + ", " + SQLSharkKB.PREDICATE_TABLE 
+                     + " WHERE "
+                     + SQLSharkKB.ST_TABLE + ".id = " 
+                     + SQLSharkKB.PREDICATE_TABLE + ".targetid AND "
+                     + SQLSharkKB.PREDICATE_TABLE + ".predicate = '"
+                     + predicateName + "'";
+                     
             ResultSet result = statement.executeQuery(sqlString);
             
-            while(result.next()) {
-                result.getInt(1);
-            }
+            stList = SQLSharkKB.createSTListBySTTableEntries(this.kb, result);
         }
-        catch(SQLException e) {
+        catch(SQLException | SharkKBException e) {
             L.l("couldn't execute: " + sqlString + " because: " + e.getLocalizedMessage(), this);
         }
         finally {
@@ -62,9 +67,16 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
                 }
             }
         }
-        
-        return null; // TODO
+            
+        // those are only SNSemanticTags - be sure!
+        return (Iterator<SNSemanticTag>)stList.iterator();
     }
+    
+    @Override
+    public Enumeration<SNSemanticTag> targetTags(String predicateName) {
+        return new Iterator2Enumeration(this.targets(predicateName));
+    }
+    
 
     @Override
     public Enumeration<SNSemanticTag> sourceTags(String predicateName) {
@@ -87,6 +99,8 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
         
         Statement statement = null;
         String sqlString = null;
+        
+        // TODO: duplicate supression!!!
         
         try {
             statement  = this.kb.getConnection().createStatement();
