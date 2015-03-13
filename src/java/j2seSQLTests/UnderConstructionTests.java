@@ -36,7 +36,7 @@ public class UnderConstructionTests {
     
     
 
-//     @Test
+     @Test
      public void vocabularyTests() throws SharkKBException {
         L.setLogLevel(L.LOGLEVEL_ALL);
         SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");

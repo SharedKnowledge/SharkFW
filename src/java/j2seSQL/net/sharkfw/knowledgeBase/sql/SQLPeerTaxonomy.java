@@ -51,6 +51,7 @@ public class SQLPeerTaxonomy extends TaxonomyWrapper implements PeerTaxonomy {
     @Override
     public PeerSTSet asPeerSTSet() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //return this.psn;
     }
 
     @Override
