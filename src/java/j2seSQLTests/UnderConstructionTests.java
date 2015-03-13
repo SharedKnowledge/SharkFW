@@ -34,49 +34,6 @@ public class UnderConstructionTests {
     public void tearDown() {
     }
     
-     @Test
-     public void txTests() throws SharkKBException {
-        L.setLogLevel(L.LOGLEVEL_ALL);
-        SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
-        kb.drop();
-        kb.close();
-        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
-        
-        Taxonomy tx = kb.getTopicsAsTaxonomy();
-        
-        TXSemanticTag txA = tx.createTXSemanticTag("A", "http://a.de");
-        TXSemanticTag txB = tx.createTXSemanticTag("B", "http://b.de");
-        
-        txA.move(txB);
-        
-        TXSemanticTag txAA = tx.getSemanticTag("http://a.de");
-        
-        Assert.assertNotNull(txAA);
-        
-        TXSemanticTag txBB = txAA.getSuperTag();
-        
-        Assert.assertTrue(SharkCSAlgebra.identical(txB, txBB));
-
-        // check persistency
-        kb.close();
-        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
-        
-        tx = kb.getTopicsAsTaxonomy();
-        
-        txA = tx.getSemanticTag("http://a.de");
-        txB = tx.getSemanticTag("http://b.de");
-        
-        Assert.assertNotNull(txA);
-        Assert.assertNotNull(txB);
-        
-        txBB = txA.getSuperTag();
-        
-        Assert.assertTrue(SharkCSAlgebra.identical(txB, txBB));
-        
-        txAA = txB.getSubTags().nextElement();
-        
-        Assert.assertTrue(SharkCSAlgebra.identical(txA, txAA));
-     }
     
 
 //     @Test

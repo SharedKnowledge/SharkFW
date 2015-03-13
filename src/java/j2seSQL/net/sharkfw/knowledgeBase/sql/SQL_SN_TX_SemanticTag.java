@@ -36,15 +36,15 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    protected Iterator sources_SQL_SN_TX_(String predicateName) {
-        return this.connected_SQL_SN_TX_(predicateName, false);
+    protected Iterator sources_SQL_SN_TX_(int targetID, String predicateName) {
+        return this.connected_SQL_SN_TX_(targetID, predicateName, false);
     }
     
-    protected Iterator targets_SQL_SN_TX_(String predicateName) {
-        return this.connected_SQL_SN_TX_(predicateName, true);
+    protected Iterator targets_SQL_SN_TX_(int sourceID, String predicateName) {
+        return this.connected_SQL_SN_TX_(sourceID, predicateName, true);
     }
     
-    private Iterator connected_SQL_SN_TX_(String predicateName, boolean target) {
+    private Iterator connected_SQL_SN_TX_(int tagID, String predicateName, boolean isSource) {
         Statement statement = null;
         String sqlString = null;
         
@@ -57,18 +57,25 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
             select distinct semantictags.* from semantictags, predicates where semantictags.id = predicates.targetid and predicates.predicate = 'p1'
             */
             
-            String referenceIDString = null;
-            if(target) {
-                referenceIDString = "targetid";
+            String aim = null;
+            String nonaim = null;
+            if(isSource) {
+                aim = "targetid";
+                nonaim = "sourceid";
             } else {
-                referenceIDString = "sourceid";
+                aim = "sourceid";
+                nonaim = "targetid";
             }
             
              sqlString = "SELECT DISTINCT " + SQLSharkKB.ST_TABLE + ".* FROM "
                      + SQLSharkKB.ST_TABLE + ", " + SQLSharkKB.PREDICATE_TABLE 
                      + " WHERE "
                      + SQLSharkKB.ST_TABLE + ".id = " 
-                     + SQLSharkKB.PREDICATE_TABLE + "." + referenceIDString + " AND "
+                     + SQLSharkKB.PREDICATE_TABLE + "." + aim 
+                     + " AND "
+                     + SQLSharkKB.PREDICATE_TABLE + "." + nonaim 
+                     + " = " + tagID
+                     + " AND "
                      + SQLSharkKB.PREDICATE_TABLE + ".predicate = '"
                      + predicateName + "'";
                      
@@ -93,7 +100,7 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
     }
     
     public Iterator<SNSemanticTag> targets(String predicateName) {
-        return (Iterator<SNSemanticTag>)this.targets_SQL_SN_TX_(predicateName);
+        return (Iterator<SNSemanticTag>)this.targets_SQL_SN_TX_(this.sqlST.getID(), predicateName);
     }
     
     @Override
@@ -169,7 +176,7 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
 
     @Override
     public TXSemanticTag getSuperTag() {
-        Iterator iter = this.sources_SQL_SN_TX_(SUPER_TAG);
+        Iterator iter = this.sources_SQL_SN_TX_(this.sqlST.getID(), SUPER_TAG);
         if(iter == null || !iter.hasNext()) {
             return null;
         }
@@ -184,12 +191,12 @@ public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticT
 
     @Override
     public Enumeration<TXSemanticTag> getSubTags() {
-        Iterator iter = this.sources_SQL_SN_TX_(SUPER_TAG);
+        Iterator iter = this.sources_SQL_SN_TX_(this.sqlST.getID(), SUPER_TAG);
         if(iter == null || !iter.hasNext()) {
             return null;
         }
         
-        return (Enumeration<TXSemanticTag>) iter;
+        return new Iterator2Enumeration(iter);
     }
 
     private final static String SUPER_TAG = "super";
