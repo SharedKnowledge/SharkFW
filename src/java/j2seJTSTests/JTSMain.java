@@ -1,5 +1,4 @@
 
-import java.util.Arrays;
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
@@ -1491,7 +1490,8 @@ public class JTSMain {
                 + "52.45606650054853 13.523988202214241, 52.45582827785886 13.523717299103737, 52.45574285714286 13.5238812621726, "
                 + "52.45574285714286 13.524791703128813)), POLYGON ((52.45727142857143 13.527230902640454, 52.45768305 13.5277319, 52.4583891 13.52590799, "
                 + "52.457382491517635 13.524657142857142, 52.45727142857143 13.524657142857142, 52.45727142857143 13.527230902640454)), POINT (52.45662394 13.52822542),"
-                + "MULTILINESTRING ((52.45596363 13.52752805, 52.45621207 13.52636933)))");
+                + "MULTILINESTRING ((52.45616873824678 13.526571428571428, 52.45621207 13.52636933), " 
+                + "(52.45596363 13.52752805, 52.45621207 13.52636933)))");
 
         SpatialSemanticTag htw_tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(htw_SharkGeom1);
         SpatialSemanticTag htw_tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(htw_SharkGeom2);
@@ -1501,8 +1501,10 @@ public class JTSMain {
         SpatialSemanticTag anchorSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(fragment_Testcase);
         SpatialSemanticTag expectedResultSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(ExpectedResult_Collection);
         SpatialSTSet sourceSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
-        sourceSTSet.merge(htw_tag1).merge(htw_tag2);
-        sourceSTSet.merge(htw_tag3).merge(htw_tag4);
+        sourceSTSet.merge(htw_tag1);
+        sourceSTSet.merge(htw_tag2);
+        sourceSTSet.merge(htw_tag3);
+        sourceSTSet.merge(htw_tag4);
         SpatialSTSet fragmentSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSemanticTag containTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipolygon_Berlin_HTW_Complete);
         fragmentSTSet.merge(containTag);
