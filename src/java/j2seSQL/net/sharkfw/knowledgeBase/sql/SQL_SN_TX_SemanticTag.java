@@ -203,22 +203,59 @@ class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticTag, TXS
 
     @Override
     public void removePredicate(String type, SNSemanticTag target) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            // get target tag from kb first
+            SQLSemanticTag st = (SQLSemanticTag) this.kb.getTopicSTSet().getSemanticTag(target.getSI());
+            
+            if(st == null) { return; }
+            
+            int targetID = st.getSQLSemanticTagStorage().getID();
+            
+            Statement statement = null;
+            String sqlString = null;
+
+            try {
+                statement  = this.kb.getConnection().createStatement();
+
+                 sqlString = "DELETE FROM " + SQLSharkKB.PREDICATE_TABLE + 
+                        " WHERE  predicate = '" + type + "' AND targetid = "
+                        + targetID;
+
+                statement.execute(sqlString);
+            }
+            catch(SQLException e) {
+                L.l("couldn't execute: " + sqlString + " because: " + e.getLocalizedMessage(), this);
+            }
+            finally {
+                if(statement != null) {
+                    try {
+                        statement.close();
+                    } catch (SQLException ex) {
+                        // ignore
+                    }
+                }
+            }
+        } catch (SharkKBException ex) {
+            L.d("cannot remove predicate: " + ex.getLocalizedMessage(), this);
+        }
     }
 
     @Override
     public void merge(SNSemanticTag toMerge) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        super.merge(toMerge);
+        
+        // TODO: merge predicates as well
     }
 
     @Override
     public Enumeration<SemanticTag> subTags() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Enumeration enumTags = this.getSubTags();
+        return enumTags;
     }
 
     @Override
     public TXSemanticTag getSuperTag() {
-        Iterator iter = this.sources_SQL_SN_TX_(this.sqlST.getID(), SUPER_TAG);
+        Iterator iter = this.targets_SQL_SN_TX_(this.sqlST.getID(), SUPER_TAG);
         if(iter == null || !iter.hasNext()) {
             return null;
         }

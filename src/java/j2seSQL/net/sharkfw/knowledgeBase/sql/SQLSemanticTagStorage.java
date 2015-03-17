@@ -554,7 +554,32 @@ class SQLSemanticTagStorage implements PropertyOwner {
             }
         }
     }
-
+    
+    void removeAllPredicates() throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            // remove Addresses
+            String sqlStatement = "DELETE FROM " + SQLSharkKB.PREDICATE_TABLE
+                    + " WHERE sourceid = " + this.id
+                    + " OR targetid = " + this.id;
+            
+            statement.execute(sqlStatement);
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+    
     void addAddress(String addr) throws SharkKBException {
         Statement statement = null;
         try {

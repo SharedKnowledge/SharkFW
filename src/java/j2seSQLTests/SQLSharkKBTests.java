@@ -171,10 +171,10 @@ public class SQLSharkKBTests {
         txA.move(txB);
         
         TXSemanticTag txAA = tx.getSemanticTag("http://a.de");
-        
         Assert.assertNotNull(txAA);
         
         TXSemanticTag txBB = txAA.getSuperTag();
+        Assert.assertNotNull(txBB);
         
         Assert.assertTrue(SharkCSAlgebra.identical(txB, txBB));
 
@@ -195,6 +195,7 @@ public class SQLSharkKBTests {
         Assert.assertTrue(SharkCSAlgebra.identical(txB, txBB));
         
         txAA = txB.getSubTags().nextElement();
+        Assert.assertNotNull(txAA);
         
         Assert.assertTrue(SharkCSAlgebra.identical(txA, txAA));
      }

@@ -44,6 +44,16 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
     @Override
     public void removeSemanticTag(SNSemanticTag tag) throws SharkKBException {
         SemanticTag st = tag;
+        
+        SQLSemanticTagStorage sqlTag = null;
+        // remove predicates
+        if(tag instanceof SQLSemanticTag) {
+            sqlTag = ((SQLSemanticTag)tag).getSQLSemanticTagStorage();
+        } else {
+            sqlTag = this.getSQLSemanticTagStorage(tag.getSI());
+        }
+        
+        sqlTag.removeAllPredicates();
         super.removeSemanticTag(st);
     }
 

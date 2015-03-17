@@ -1,5 +1,8 @@
 package net.sharkfw.knowledgeBase.sql;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticNet;
@@ -23,6 +26,57 @@ public class SQLTaxonomy extends TaxonomyWrapper implements Taxonomy {
 
     @Override
     public void removeSemanticTag(TXSemanticTag tag) throws SharkKBException {
+        // take tag out of its hierarchy first
+        
+        SQLSemanticTagStorage sqlST = null;
+        if(tag instanceof SQLSemanticTag) {
+             sqlST = ((SQLSemanticTag)tag).getSQLSemanticTagStorage();
+        } else {
+            SQLSemanticTag s = (SQLSemanticTag)this.sn.getSemanticTag(tag.getSI());
+            if(s == null) { return; }
+            sqlST = s.getSQLSemanticTagStorage();
+        }
+        
+        Statement statement = null;
+        
+        TXSemanticTag superTag = tag.getSuperTag();
+        if(superTag != null) {
+            
+            SQLSemanticTagStorage superSqlST = null;
+            if(superTag instanceof SQLSemanticTag) {
+                 superSqlST = ((SQLSemanticTag)superTag).getSQLSemanticTagStorage();
+            } else {
+                SQLSemanticTag s = (SQLSemanticTag)this.sn.getSemanticTag(superTag.getSI());
+                if(s == null) { return; }
+                superSqlST = s.getSQLSemanticTagStorage();
+            }
+        
+            try {
+                statement  = this.kb.getConnection().createStatement();
+
+                // HIER WEITERMACHEN
+                String sqlString = "UPDATE  " + SQLSharkKB.PREDICATE_TABLE + 
+                        " SET targetid = " + superSqlST.getID()
+                        + " WHERE predicate = '" + SemanticNet.SUPERTAG + "'"
+                        + " AND targetid = " + sqlST.getID();
+
+                statement.execute(sqlString);
+
+            }
+            catch(SQLException e) {
+                throw new SharkKBException(e.getLocalizedMessage());
+            }
+            finally {
+                if(statement != null) {
+                    try {
+                        statement.close();
+                    } catch (SQLException ex) {
+                        // ignore
+                    }
+                }
+            }
+        }
+            
         if(tag instanceof SNSemanticTag) {
             this.sn.removeSemanticTag((SNSemanticTag) tag);
         } else {
