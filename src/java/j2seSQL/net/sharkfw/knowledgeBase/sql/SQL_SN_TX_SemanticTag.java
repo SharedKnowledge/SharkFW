@@ -23,14 +23,59 @@ class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticTag, TXS
         super(kb, sqlST);
     }
 
-    @Override
-    public Enumeration<String> predicateNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected Iterator<String> predicates(boolean target) {
+        Statement statement = null;
+        String sqlString = null;
+        
+        List predicateList = new ArrayList();
+        
+        String idString = target ? "sourceid" : "targetid";
+        
+        try {
+            statement  = this.kb.getConnection().createStatement();
+            
+             sqlString = "SELECT predicate FROM " + SQLSharkKB.PREDICATE_TABLE + 
+                    " WHERE " + idString + " = "
+                    + this.sqlST.getID();
+                    
+            ResultSet result = statement.executeQuery(sqlString);
+            while(result.next()) {
+                predicateList.add(result.getString(1));
+            }
+            
+        }
+        catch(SQLException e) {
+            L.l("couldn't execute: " + sqlString + " because: " + e.getLocalizedMessage(), this);
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+        
+        return predicateList.iterator();
     }
 
+    public Iterator<String> predicates() {
+        return this.predicates(true);
+    }
+    
+    @Override
+    public Enumeration<String> predicateNames() {
+        return new Iterator2Enumeration(this.predicates());
+    }
+    
+    public Iterator<String> targetPredicates() {
+        return this.predicates(false);
+    }
+    
     @Override
     public Enumeration<String> targetPredicateNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Iterator2Enumeration(this.targetPredicates());
     }
     
     protected Iterator sources_SQL_SN_TX_(int targetID, String predicateName) {

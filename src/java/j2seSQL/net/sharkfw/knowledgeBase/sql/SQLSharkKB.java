@@ -15,6 +15,7 @@ import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
+import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTaxonomy;
 import net.sharkfw.knowledgeBase.STSet;
@@ -542,6 +543,16 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     @Override
     public PeerSTSet getPeerSTSet() throws SharkKBException {
         return new SQLPeerSTSet(this);
+    }
+    
+    @Override
+    public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
+        return new SQLPeerSemanticNet(this);
+    }
+    
+    @Override
+    public Enumeration<SemanticTag> tags() throws SharkKBException {
+        return this.getTimeSTSet().tags();
     }
     
     @Override
