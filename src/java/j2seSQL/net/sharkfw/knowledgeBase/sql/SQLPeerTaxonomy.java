@@ -3,7 +3,6 @@ package net.sharkfw.knowledgeBase.sql;
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTXSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTaxonomy;
@@ -17,9 +16,11 @@ import net.sharkfw.knowledgeBase.TaxonomyWrapper;
  * @author thsc
  */
 public class SQLPeerTaxonomy extends TaxonomyWrapper implements PeerTaxonomy {
-    private final PeerSemanticNet psn;
+    private final SQLPeerSemanticNet psn;
+    private final SQLSharkKB kb;
     
-    SQLPeerTaxonomy(PeerSemanticNet psn) {
+    SQLPeerTaxonomy(SQLSharkKB kb, SQLPeerSemanticNet psn) {
+        this.kb = kb;
         this.psn = psn;
     }
 
@@ -50,8 +51,7 @@ public class SQLPeerTaxonomy extends TaxonomyWrapper implements PeerTaxonomy {
 
     @Override
     public PeerSTSet asPeerSTSet() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        //return this.psn;
+        return this.kb.getPeerSTSet();
     }
 
     @Override

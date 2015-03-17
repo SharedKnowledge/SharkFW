@@ -18,12 +18,9 @@ import net.sharkfw.system.L;
  *
  * @author thsc
  */
-public class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticTag, TXSemanticTag {
-    private final SQLSemanticNet sn;
-    
-    public SQL_SN_TX_SemanticTag(SQLSharkKB kb, SQLSemanticNet sn, SQLSemanticTagStorage sqlST) throws SharkKBException {
+class SQL_SN_TX_SemanticTag extends SQLSemanticTag implements SNSemanticTag, TXSemanticTag {
+    SQL_SN_TX_SemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
         super(kb, sqlST);
-        this.sn = sn;
     }
 
     @Override

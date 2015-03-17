@@ -51,6 +51,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     private String user;
     private String pwd;
     
+    static final int UNKNOWN_SEMANTIC_TAG_TYPE = -1;
     static final int SEMANTIC_TAG_TYPE = 0;
     static final int PEER_SEMANTIC_TAG_TYPE = 1;
     static final int SPATIAL_SEMANTIC_TAG_TYPE = 2;
@@ -80,7 +81,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         
         /************     setup vocabulary       **************/
         SemanticNet topics = new SQLSemanticNet(this);
-        PeerTaxonomy peers = new SQLPeerTaxonomy(new SQLPeerSemanticNet(this));
+        PeerTaxonomy peers = new SQLPeerTaxonomy(this, new SQLPeerSemanticNet(this));
         SpatialSTSet locations = new SQLSpatialSTSet(this);
         TimeSTSet times = new SQLTimeSTSet(this);
         
@@ -304,13 +305,13 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             
             String sqlString = "select * from " + SQLSharkKB.ST_TABLE + 
                     " where id = (select stid from " + 
-                    SQLSharkKB.SI_TABLE + " where si = '" + sis[0];
+                    SQLSharkKB.SI_TABLE + " where si = '" + sis[0] + "'";
             
             for(int i = 1; i < sis.length; i++) {
                 sqlString += " OR si = '" + sis[i] + "'";
             }
             
-            sqlString += "');";
+            sqlString += ");";
             
             ResultSet result = statement.executeQuery(sqlString);
             
@@ -501,28 +502,46 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             int id = result.getInt("id");
             SQLSemanticTagStorage sqlST = new SQLSemanticTagStorage(kb, id);
             
-            SemanticTag newTag;
+            SemanticTag newTag = SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.UNKNOWN_SEMANTIC_TAG_TYPE);
             
-            switch (sqlST.getType()) {
-                case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
-                    newTag = new SQL_SN_TX_PeerSemanticTag(kb, kb.getTopicsAsSQLSemanticNet(), sqlST);
-                    break;
-                case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
-                    newTag = new SQLSpatialSemanticTag(kb, sqlST);
-                    break;
-                case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
-                    newTag = new SQLTimeSemanticTag(kb, sqlST);
-                    break;
-                default:
-                    newTag = new SQL_SN_TX_SemanticTag(kb, kb.getTopicsAsSQLSemanticNet(), sqlST);
-            }
             tagList.add(newTag);
         }
         return tagList;
     }
     
+    static SQLSemanticTag wrapSQLTagStorage(SQLSharkKB kb, SQLSemanticTagStorage sqlST, int wishedType) throws SharkKBException {
+        SQLSemanticTag newTag = null;
+
+        int type = sqlST.getType();
+        
+        if(wishedType != SQLSharkKB.UNKNOWN_SEMANTIC_TAG_TYPE && wishedType != type) {
+            throw new SharkKBException("type mismatch: semantic tag type in database differs from wrapper type");
+        }
+       
+        switch (type) {
+            case SQLSharkKB.PEER_SEMANTIC_TAG_TYPE:
+                newTag = new SQL_SN_TX_PeerSemanticTag(kb, sqlST);
+                break;
+            case SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE:
+                newTag = new SQLSpatialSemanticTag(kb, sqlST);
+                break;
+            case SQLSharkKB.TIME_SEMANTIC_TAG_TYPE:
+                newTag = new SQLTimeSemanticTag(kb, sqlST);
+                break;
+            default:
+                newTag = new SQL_SN_TX_SemanticTag(kb, sqlST);
+        }
+        
+        return newTag;
+    }
+    
     SQLSemanticNet getTopicsAsSQLSemanticNet() {
         return (SQLSemanticNet)this.topics;
+    }
+    
+    @Override
+    public PeerSTSet getPeerSTSet() throws SharkKBException {
+        return new SQLPeerSTSet(this);
     }
     
     @Override

@@ -30,10 +30,10 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
         if(sqlST == null) {
             sqlST = this.createSQLSemanticTag(
                 this.getSSQLSharkKB(), name, null, 0, 0, false, 
-                SQLSharkKB.SEMANTIC_TAG, sis);
+                SQLSharkKB.SEMANTIC_TAG, sis, null);
         }
         
-        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), this, sqlST);
+        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
             return null;
         }
         
-        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), this, sqlST);
+        return new SQL_SN_TX_SemanticTag(this.getSSQLSharkKB(), sqlST);
     }
 
     @Override

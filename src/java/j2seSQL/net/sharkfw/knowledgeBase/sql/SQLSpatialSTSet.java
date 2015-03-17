@@ -1,12 +1,13 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.system.Iterator2Enumeration;
 
 /**
  *
@@ -23,18 +24,6 @@ public class SQLSpatialSTSet extends SQLSTSet implements SpatialSTSet {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    /**
-     * 
-     * @param point
-     * @return
-     * @throws SharkKBException 
-     * @deprecated
-     */
-    @Override
-    public SpatialSemanticTag getSpatialSemanticTag(Double[] point) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     @Override
     public double getDistance(SpatialSemanticTag gc1, SpatialSemanticTag gc2) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -47,41 +36,25 @@ public class SQLSpatialSTSet extends SQLSTSet implements SpatialSTSet {
 
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry geom) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sI, Vector points) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sI, Double[] centerPoint, double radius) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, Double[][] points) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLSemanticTagStorage sqlTag = this.createSQLSemanticTag(kb, name, null, 0, 0, false, SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE, si, null);
+        return (SpatialSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlTag, SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE);
     }
 
     @Override
     public SpatialSemanticTag getSpatialSemanticTag(String[] sis) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLSemanticTagStorage sqlTag = this.getSQLSemanticTagStorage(sis);
+        return (SpatialSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlTag, SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE);
     }
 
     @Override
     public SpatialSemanticTag getSpatialSemanticTag(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public SpatialSTSet fragment(Enumeration<String> anchor, double range) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getSpatialSemanticTag(new String[] {si});
     }
 
     @Override
     public Enumeration<SpatialSemanticTag> spatialTags() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }   
+        Iterator tags = this.tags(SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE);
+        
+        return new Iterator2Enumeration(tags);
+    }
 }

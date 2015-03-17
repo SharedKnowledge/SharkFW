@@ -23,6 +23,7 @@ class SQLSemanticTagStorage implements PropertyOwner {
     private boolean hidden;
     private int type;
     private String[] sis;
+    private String[] addresses;
     
     SQLSemanticTagStorage(SQLSharkKB kb, int id) throws SharkKBException {
         this.kb = kb;
@@ -39,7 +40,8 @@ class SQLSemanticTagStorage implements PropertyOwner {
             long durationTime, // if time semantic tag
             boolean hidden, 
             int type,
-            String[] sis) throws SharkKBException {
+            String[] sis,
+            String[] addresses) throws SharkKBException {
         
         if(type != SQLSharkKB.SEMANTIC_TAG_TYPE && 
                 type != SQLSharkKB.PEER_SEMANTIC_TAG_TYPE && 
@@ -114,6 +116,20 @@ class SQLSemanticTagStorage implements PropertyOwner {
                 }
             }
             
+            // insert addresses if any
+            if(addresses != null && addresses.length > 0) {
+                for (String addr : addresses) {
+                    // insert each si into si table - duplicates are not allowed
+                    String sqlString = "INSERT INTO " + SQLSharkKB.ADDRESS_TABLE + "(addr, stid) VALUES ('" + addr + "', '" + this.id + "')";
+                    try {
+                        statement.execute(sqlString);
+                    }
+                    catch(SQLException e) {
+                        // tried to insert si twice
+                        // TODO: can that happen here or do we check on merge etc. in callee?
+                    }
+                }
+            }
         } catch (SQLException ex) {
             throw new SharkKBException("cannot create semantic tag in SQL DB: " + ex.getLocalizedMessage());
         }
@@ -383,7 +399,197 @@ class SQLSemanticTagStorage implements PropertyOwner {
             }
         }
     }
+    
+    String[] getAddresses() throws SharkKBException {
+        this.refreshAddresses();
+        return this.addresses;
+    }
 
+    void removeAddress(String addr) throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "DELETE FROM " + SQLSharkKB.ADDRESS_TABLE + 
+                    " WHERE addr = '" 
+                    + addr + "'";
+            
+            statement.execute(sqlStatement);
+            
+            if(this.addresses.length > 1) {
+                String[] oldAddr = this.addresses;
+                this.addresses = new String[oldAddr.length-1];
+                int j = 0;
+                for(int i = 0; i < this.sis.length; i++) {
+                    if(oldAddr[j].equalsIgnoreCase(addr)) {
+                        j++; // happens exactly once!
+                    } else {
+                        this.addresses[i] = oldAddr[j++];
+                    }
+                }
+            } else {
+                this.addresses = new String[0];
+            }
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+    
+    void setAddresses(String[] addresses) throws SharkKBException {
+        this.removeAllAddresses();
+        
+        if(addresses == null || addresses.length == 0) return;
+        
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            for(String addr : addresses) {
+                String sqlStatement = "INSERT INTO " + SQLSharkKB.ADDRESS_TABLE + 
+                        " (addr, stid) VALUES ('"
+                        + addr + "', "
+                        + this.id
+                        + ")";
+
+                statement.execute(sqlStatement);
+            }
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+        
+        this.addresses = new String[addresses.length];
+        
+        net.sharkfw.system.Util.copyStringArray(this.addresses, addresses, addresses.length);
+    }
+    
+    /**
+     * Force to re-read from sis table
+     */
+    private void refreshAddresses() throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "SELECT addr FROM " + SQLSharkKB.ADDRESS_TABLE + 
+                    " WHERE stid = " 
+                    + this.id;
+            
+            ResultSet result = statement.executeQuery(sqlStatement);
+            
+            if(!result.next()) {
+                // no addr
+                return;
+            } 
+            
+            // else
+            List<String> addrList = new ArrayList<>();
+            
+            do {
+                String si = result.getString(1);
+                addrList.add(si);
+            } while(result.next());
+            
+            String[] addrTmp = new String[addrList.size()];
+            Iterator<String> addrIter = addrList.iterator();
+            
+            for(int i = 0; i < addrTmp.length; i++) {
+                addrTmp[i] = addrIter.next();
+            }
+            
+            this.addresses = addrTmp;
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+    
+    void removeAllAddresses() throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            // remove Addresses
+            String sqlStatement = "DELETE FROM " + SQLSharkKB.ADDRESS_TABLE
+                    + " WHERE stid = " + this.id;
+            
+            statement.execute(sqlStatement);
+            
+            
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    void addAddress(String addr) throws SharkKBException {
+        Statement statement = null;
+        try {
+            statement = this.kb.getConnection().createStatement();
+            
+            String sqlStatement = "INSERT INTO " + SQLSharkKB.ADDRESS_TABLE + 
+                    " (addr, stid) VALUES ('"
+                    + addr + "', "
+                    + this.id
+                    + ")";
+            
+            statement.execute(sqlStatement);
+            
+            String[] oldAddr = this.addresses;
+            this.addresses = new String[oldAddr.length+1];
+            
+            // add new sis
+            this.addresses[0] = addr;
+            
+            for(int i = 1; i < this.addresses.length; i++) {
+                this.addresses[i] = oldAddr[i-1];
+            }
+        } catch (SQLException ex) {
+            throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
     /**
      * Removes entries in kb
      */
@@ -396,6 +602,20 @@ class SQLSemanticTagStorage implements PropertyOwner {
                     + " WHERE id = " + this.id;
             
             statement.execute(sqlStatement);
+            
+            // remove SI
+            sqlStatement = "DELETE FROM " + SQLSharkKB.SI_TABLE
+                    + " WHERE stid = " + this.id;
+            
+            statement.execute(sqlStatement);
+            
+            // remove Addresses
+            sqlStatement = "DELETE FROM " + SQLSharkKB.ADDRESS_TABLE
+                    + " WHERE stid = " + this.id;
+            
+            statement.execute(sqlStatement);
+            
+            
         } catch (SQLException ex) {
             throw new SharkKBException("cannot access SQL DB properly: " + ex.getLocalizedMessage());
         }

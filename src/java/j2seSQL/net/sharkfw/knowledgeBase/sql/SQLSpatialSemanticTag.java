@@ -13,8 +13,8 @@ public class SQLSpatialSemanticTag extends SQLSemanticTag implements SpatialSema
     SQLSpatialSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
         super(kb, sqlST);
         
-        if(sqlST.getType() != SQLSharkKB.TIME_SEMANTIC_TAG_TYPE) {
-            throw new SharkKBException("cannot create time semantic tag with non time semantic tag values");
+        if(sqlST.getType() != SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE) {
+            throw new SharkKBException("cannot create spatial semantic tag with non spatial semantic tag values");
         }
     }
 

@@ -172,9 +172,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      */
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException {
-        SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, (Double[][]) null);
-        this.notifyLocationCreated(sst);
-        return sst;
+        return null;
     }
 
     /**

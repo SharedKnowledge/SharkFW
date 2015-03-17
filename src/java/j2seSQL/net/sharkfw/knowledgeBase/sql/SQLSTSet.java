@@ -20,7 +20,7 @@ import net.sharkfw.system.Iterator2Enumeration;
  * @author thsc
  */
 public class SQLSTSet extends AbstractSTSet implements STSet {
-    private final SQLSharkKB kb;
+    protected final SQLSharkKB kb;
 
     SQLSTSet(SQLSharkKB kb) {
         this.kb = kb;
@@ -51,10 +51,11 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
             long durationTime, // if time semantic tag
             boolean hidden, 
             int type,
-            String[] sis) throws SharkKBException {
+            String[] sis,
+            String[] addresses) throws SharkKBException {
         
         return new SQLSemanticTagStorage(kb, name, ewkt, startTime, durationTime, 
-            hidden, type, sis);
+            hidden, type, sis, addresses);
     }
     
     /**
@@ -124,7 +125,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        SQLSemanticTagStorage sqlSTStorage = this.createSQLSemanticTag(kb, name, null, 0, 0, false, SQLSharkKB.SEMANTIC_TAG_TYPE, sis);
+        SQLSemanticTagStorage sqlSTStorage = this.createSQLSemanticTag(kb, name, null, 0, 0, false, SQLSharkKB.SEMANTIC_TAG_TYPE, sis, null);
         
         return new SQLSemanticTag(this.kb, sqlSTStorage);
     }
@@ -157,12 +158,13 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SQLSemanticTagStorage sqlTag = this.getSQLSemanticTagStorage(si);
+        return SQLSharkKB.wrapSQLTagStorage(this.kb, sqlTag, SQLSharkKB.UNKNOWN_SEMANTIC_TAG_TYPE);
     }
 
     @Override
     public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getSemanticTag(new String[] {si});
     }
 
     @Override
