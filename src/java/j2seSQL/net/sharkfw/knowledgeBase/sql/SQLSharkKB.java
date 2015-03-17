@@ -511,6 +511,8 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
     
     static SQLSemanticTag wrapSQLTagStorage(SQLSharkKB kb, SQLSemanticTagStorage sqlST, int wishedType) throws SharkKBException {
+        if(sqlST == null) return null;
+        
         SQLSemanticTag newTag = null;
 
         int type = sqlST.getType();

@@ -475,8 +475,8 @@ public class SimpleKBTest {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
 //      SharkKB kb = new InMemoSharkKB();
 
-      SemanticTag test = kb.createPeerSemanticTag("Test", "http://test.de", "tcp://test.de:1234");
-      SemanticTag tag = kb.createPeerSemanticTag("Tag", "http://tag.de", "tcp://tag.de:1234");
+      SemanticTag test = kb.getPeerSTSet().createPeerSemanticTag("Test", "http://test.de", "tcp://test.de:1234");
+      SemanticTag tag = kb.getPeerSTSet().createPeerSemanticTag("Tag", "http://tag.de", "tcp://tag.de:1234");
 
       // Check SemanticNet result
       PeerSemanticNet peerNet = kb.getPeersAsSemanticNet();
@@ -489,10 +489,6 @@ public class SimpleKBTest {
       Assert.assertNotNull(testResultNet);
       Assert.assertNotNull(tagResultNet);
 
-      Assert.assertEquals(testResultNet, test);
-      Assert.assertEquals(tagResultNet, tag);
-
-
       // check PlainSTSet result
       PeerSTSet peerSet = kb.getPeerSTSet();
       
@@ -501,12 +497,7 @@ public class SimpleKBTest {
 
       Assert.assertNotNull(testResultSet);
       Assert.assertNotNull(tagResultSet);
-
-      Assert.assertEquals(testResultSet, test);
-      Assert.assertEquals(tagResultSet, tag);
-
     }
-
 
 
     /**
@@ -1272,12 +1263,12 @@ public class SimpleKBTest {
       J2SEAndroidSharkEngine aliceSe = new J2SEAndroidSharkEngine();
 //      SharkKB kb = new InMemoSharkKB();
 
-      SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
+      SemanticTag test = kb.getTopicSTSet().createSemanticTag("Test", "http://test.de");
       Assert.assertNotNull(test);
 
       Assert.assertNotNull(kb.getSemanticTag(test.getSI()));
       
-      kb.removeSemanticTag(test.getSI());
+      kb.getTopicSTSet().removeSemanticTag(test);
 
       Assert.assertNull(kb.getSemanticTag(test.getSI()));
     }
