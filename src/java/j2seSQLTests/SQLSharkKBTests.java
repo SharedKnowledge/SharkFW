@@ -1,4 +1,3 @@
-import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
@@ -9,7 +8,6 @@ import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.sql.SQLSharkKB;
 import net.sharkfw.system.L;
 import org.junit.After;
