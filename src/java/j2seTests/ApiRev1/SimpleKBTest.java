@@ -16,13 +16,9 @@ import org.junit.*;
  * @author mfi
  */
 public class SimpleKBTest {
-
-    public SimpleKBTest() {
-    }
-
+    
   @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
+  public static void setUpClass() throws Exception { }
 
   @AfterClass
   public static void tearDownClass() throws Exception {
@@ -30,16 +26,17 @@ public class SimpleKBTest {
 
     @Before
     public void setUp() {
+        this.kb = new InMemoSharkKB();
     }
 
     @After
     public void tearDown() {
     }
+    
+    protected SharkKB kb = null;
 
     @Test
     public void testGetSTSet() throws SharkKBException, SharkNotSupportedException, SharkKBException, SharkKBException, SharkKBException {
-      InMemoSharkKB kb = new InMemoSharkKB();
-
       SemanticTag topic = kb.createSemanticTag("Test", "http://test.de");
       PeerSemanticTag peer = kb.createPeerSemanticTag("Testpeer", "http://testpeer.de", "tcp://localhost:1234");
       TimeSemanticTag time = kb.createTimeSemanticTag(1000, 2000);
@@ -84,8 +81,6 @@ public class SimpleKBTest {
      */
     @Test
     public void testSTManagement() throws SharkKBException {
-      SharkKB kb = new InMemoSharkKB();
-
       PeerSemanticTag peer = kb.createPeerSemanticTag("Peer", new String[]{"http://peer.de"}, new String[]{"tcp://peer.de:1234"});
       SemanticTag topic = kb.createSemanticTag("Topic", new String[]{"http://Topic.de"});
       TimeSemanticTag time = kb.createTimeSemanticTag(1000, 2000);
@@ -117,7 +112,7 @@ public class SimpleKBTest {
      */
     @Test
     public void testCreateSTSet() throws SharkKBException {
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       // Create a tag
       SemanticTag topic = kb.createSemanticTag("Topic", new String[]{"http://topic.de"});
@@ -146,7 +141,7 @@ public class SimpleKBTest {
      */
     @Test
     public void testCreatePeerSTSet() throws SharkKBException {
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       // Create a tag
       PeerSemanticTag peer = kb.createPeerSemanticTag("Peer", new String[]{"http://peer.de"}, new String[]{"tcp://peer.de:1234"});
@@ -175,7 +170,7 @@ public class SimpleKBTest {
      */
     @Test
     public void testCreateTimeSTSet() throws SharkKBException {
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       // Create a tag
       TimeSemanticTag time = kb.createTimeSemanticTag(1000, 2000);
@@ -205,7 +200,7 @@ public class SimpleKBTest {
      */
     @Test
     public void testAssociationsInTopics() throws SharkKBException {
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SNSemanticTag progLang = kb.getTopicsAsSemanticNet().createSemanticTag("Programming languages", new String[]{"http://en.wikipedia.org/wiki/programming_languages"});
       SNSemanticTag java = kb.getTopicsAsSemanticNet().createSemanticTag("Java", "http://en.wikipedia.org/wiki/java");
@@ -237,7 +232,7 @@ public class SimpleKBTest {
      */
     @Test
     public void testGetContextPointsViaCS() throws SharkKBException {
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       // Create Vocabulary
       SemanticTag java = kb.createSemanticTag("Java", "http://java.net");
@@ -444,7 +439,7 @@ public class SimpleKBTest {
     @Test
     public void testTypingOfTopicSTSet() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
       SemanticTag tag = kb.createSemanticTag("Tag", "http://tag.de");
@@ -488,7 +483,7 @@ public class SimpleKBTest {
     @Test
     public void testTypingOfPeerSTSet() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticTag test = kb.createPeerSemanticTag("Test", "http://test.de", "tcp://test.de:1234");
       SemanticTag tag = kb.createPeerSemanticTag("Tag", "http://tag.de", "tcp://tag.de:1234");
@@ -534,7 +529,7 @@ public class SimpleKBTest {
     @Test
     public void testTypingOfTopicSTSetTaxonomy() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
       SemanticTag tag = kb.createSemanticTag("Tag", "http://tag.de");
@@ -586,7 +581,7 @@ public class SimpleKBTest {
     @Test
     public void testTypingOfPeerSTSetTaxonomy() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       PeerSemanticTag test = kb.createPeerSemanticTag("Test", "http://test.de", "tcp://test.de:1234");
       PeerSemanticTag tag = kb.createPeerSemanticTag("Tag", "http://tag.de", "tcp://tag.de:1234");
@@ -647,7 +642,7 @@ public class SimpleKBTest {
     public void testSTSetTyping() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
 
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       STSet topics = kb.getTopicSTSet();
       Assert.assertNotNull(topics);
@@ -691,7 +686,7 @@ public class SimpleKBTest {
     public void testSerializableProperties() throws SharkKBException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       String value1 = "value1";
       String value2 = "value2";
@@ -717,7 +712,7 @@ public class SimpleKBTest {
     public void semanticNetFragmentTestDepth1() throws SharkKBException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticNet topics = kb.getTopicsAsSemanticNet();
       SNSemanticTag top = kb.getTopicsAsSemanticNet().createSemanticTag("Top", "http://top.de");
@@ -766,7 +761,7 @@ public class SimpleKBTest {
     public void semanticNetFragmentTestDepth2() throws SharkKBException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticNet topics = kb.getTopicsAsSemanticNet();
       SNSemanticTag top = kb.getTopicsAsSemanticNet().createSemanticTag("Top", "http://top.de");
@@ -822,7 +817,7 @@ public class SimpleKBTest {
     public void semanticNetFragmentTestDepth0() throws SharkKBException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticNet topics = kb.getTopicsAsSemanticNet();
       SNSemanticTag top = kb.getTopicsAsSemanticNet().createSemanticTag("Top", "http://top.de");
@@ -864,7 +859,7 @@ public class SimpleKBTest {
     public void semanticTaxFragmentTestDepth1() throws SharkKBException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       Taxonomy topics = kb.getTopicsAsTaxonomy();
       TXSemanticTag top = kb.getTopicsAsTaxonomy().createTXSemanticTag("Top", "http://top.de");
@@ -916,7 +911,7 @@ public class SimpleKBTest {
     public void testSTSetFragment() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
 
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticTag test1 = kb.createSemanticTag("Test1", "http://test1.de");
       SemanticTag test2 = kb.createSemanticTag("Test2", "http://test2.de");
@@ -945,7 +940,7 @@ public class SimpleKBTest {
     @Test
     public void testPeerSemanticNetFragmentDepth1() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       PeerSNSemanticTag alice = kb.getPeersAsSemanticNet().createSemanticTag("Alice", "http://alice.org", "tcp://alice.org:1234");
       PeerSNSemanticTag aliceCorp = kb.getPeersAsSemanticNet().createSemanticTag("Alice Corp.", "http://alicecorp.org", "tcp://alicecorp.org:1234");
@@ -983,7 +978,7 @@ public class SimpleKBTest {
     @Test
     public void testPeerTaxFragmentDepth1() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
 
       PeerTXSemanticTag alice = kb.getPeersAsTaxonomy().createPeerTXSemanticTag("Alice", "http://alice.org", "tcp://alice.org:1234");
@@ -1022,7 +1017,7 @@ public class SimpleKBTest {
     public void testPeerSTSetFragment() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
 
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       PeerSemanticTag test1 = kb.createPeerSemanticTag("Test1", "http://test1.de", "tcp://test1.de:1234");
       PeerSemanticTag test2 = kb.createPeerSemanticTag("Test2", "http://test2.de", "tcp://test2.de:1234");
@@ -1048,7 +1043,7 @@ public class SimpleKBTest {
     @Test
     public void testMergeTopicsNet() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SNSemanticTag topic1 = kb.getTopicsAsSemanticNet().createSemanticTag("Topic1", "http://topic1.de");
       SNSemanticTag topic2 = kb.getTopicsAsSemanticNet().createSemanticTag("Topic2", "http://topic2.de");
@@ -1088,7 +1083,7 @@ public class SimpleKBTest {
     @Test
     public void testMergePeersNet() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       PeerSNSemanticTag peer1 = kb.getPeersAsSemanticNet().createSemanticTag("Topic1", "http://topic1.de", "tcp://topic1.de:1234");
       PeerSNSemanticTag peer2 = kb.getPeersAsSemanticNet().createSemanticTag("Topic2", "http://topic2.de", "tcp://topci2.de:1234");
@@ -1130,7 +1125,7 @@ public class SimpleKBTest {
     public void testSemanticNetContextualizationWith1Tag() throws SharkException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticNet source = InMemoSharkKB.createInMemoSemanticNet();
       SemanticNet context = InMemoSharkKB.createInMemoSemanticNet();
@@ -1177,7 +1172,7 @@ public class SimpleKBTest {
     @Test
     public void testContextPointsViaContextSpace() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticTag topic1 = kb.createSemanticTag("Topic1", "http://topic1.de");
       SemanticTag topic2 = kb.createSemanticTag("Topic2", "http://topic2.de");
@@ -1253,7 +1248,7 @@ public class SimpleKBTest {
     @Test
     public void testTimeTagsInTopicsSemanticNet() throws SharkKBException {
        J2SEAndroidSharkEngine aliceSe = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SNSemanticTag topic1 = kb.getTopicsAsSemanticNet().createSemanticTag("Topic1", "http://topic1.org");
       SNSemanticTag topic2 = kb.getTopicsAsSemanticNet().createSemanticTag("Topic2", "http://topic2.org");
@@ -1285,7 +1280,7 @@ public class SimpleKBTest {
     @Test
     public void testRemoveTag() throws SharkKBException {
       J2SEAndroidSharkEngine aliceSe = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
       Assert.assertNotNull(test);
@@ -1311,7 +1306,7 @@ public class SimpleKBTest {
     public void testGetAllCps() throws SharkKBException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
 
       // We need two distinct topics
       SemanticTag topic = kb.createSemanticTag("Topic", "http://topic.de");
@@ -1385,7 +1380,7 @@ public class SimpleKBTest {
     public void removeTagFromTaxomomyTest() throws SharkKBException {
 
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
       
       Taxonomy topicTX = kb.getTopicsAsTaxonomy();
 
@@ -1416,7 +1411,7 @@ public class SimpleKBTest {
     @Test
     public void testRemoveTopicFromTax() throws SharkKBException {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
-      SharkKB kb = new InMemoSharkKB();
+//      SharkKB kb = new InMemoSharkKB();
       
       TXSemanticTag top = kb.getTopicsAsTaxonomy().createTXSemanticTag("Top", "http://top.de");
       TXSemanticTag middle = kb.getTopicsAsTaxonomy().createTXSemanticTag("Middle", "http://middle.de");
@@ -1437,7 +1432,7 @@ public class SimpleKBTest {
      */
     @Test
     public void addSITest() throws SharkKBException {
-        SharkKB kb = new InMemoSharkKB();
+//        SharkKB kb = new InMemoSharkKB();
         SemanticTag tag = kb.createSemanticTag("test1", "http://si-1.de");
         tag.addSI("http://si-2.de");
         
