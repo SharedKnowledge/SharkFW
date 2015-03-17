@@ -1,12 +1,16 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
 
 /**
  *
@@ -20,7 +24,7 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
 
     @Override
     public STSet asSTSet() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this;
     }
 
     @Override
@@ -75,57 +79,79 @@ public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
 
     @Override
     public void setPredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        source.setPredicate(type, target);    
     }
 
     @Override
     public void removePredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        source.removePredicate(type, target);
     }
 
     @Override
-    public SemanticNet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SemanticNet fragment(SemanticTag anchor, 
+        FragmentationParameter fp) throws SharkKBException {
+        
+        SemanticNet fragment = new InMemoSemanticNet();
+        return SharkCSAlgebra.fragment(fragment, anchor, this, 
+                fp.getAllowedPredicates(), 
+                fp.getForbiddenPredicates(), fp.getDepth());
     }
-
+    
     @Override
     public SemanticNet fragment(SemanticTag anchor) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.fragment(anchor, this.getDefaultFP());
     }
 
     @Override
-    public SemanticNet contextualize(Enumeration<SemanticTag> anchorSet, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SemanticNet contextualize(Enumeration<SemanticTag> anchorSet, 
+        FragmentationParameter fp) throws SharkKBException {
+        
+            SemanticNet fragment = new InMemoSemanticNet();
+            
+            if(fp != null) {
+                SharkCSAlgebra.contextualize(fragment, anchorSet, this, 
+                        fp.getAllowedPredicates(), fp.getForbiddenPredicates(), 
+                        fp.getDepth());
+            } else {
+                SharkCSAlgebra.contextualize(fragment, this, anchorSet);
+            }
+            
+            return fragment;
     }
 
     @Override
-    public SemanticNet contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SemanticNet contextualize(Enumeration<SemanticTag> anchorSet) 
+            throws SharkKBException {
+        
+        return this.contextualize(anchorSet, this.getDefaultFP());
     }
 
     @Override
-    public SemanticNet contextualize(Enumeration<SemanticTag> anchorSet) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SemanticNet contextualize(STSet context, FragmentationParameter fp) 
+            throws SharkKBException {
+        
+        if(context == null) return null;
+        
+        return this.contextualize(context.tags(), fp);
     }
-
+    
     @Override
     public SemanticNet contextualize(STSet context) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.contextualize(context, this.getDefaultFP());
     }
 
     @Override
     public void merge(SemanticNet remoteSemanticNet) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SharkCSAlgebra.merge(this, remoteSemanticNet);
     }
 
     @Override
     public SNSemanticTag merge(SemanticTag source) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (SNSemanticTag) super.merge(source);
     }
 
     @Override
     public void add(SemanticTag tag) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new SharkKBException("adding a tag is not supported in SQL implementation");
     }
-
 }

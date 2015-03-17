@@ -6,7 +6,10 @@ import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSTSet;
+import net.sharkfw.system.L;
 
 /**
  *
@@ -55,36 +58,47 @@ class SQLPeerSTSet extends SQLSTSet implements PeerSTSet {
 
     @Override
     public PeerSTSet fragment(SemanticTag anchor) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PeerSTSet fragment = new InMemoPeerSTSet();
+        return (PeerSTSet) SharkCSAlgebra.fragment(fragment, this, anchor);
     }
-
+    
     @Override
     public PeerSTSet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.fragment(anchor);
     }
 
     @Override
     public PeerSTSet contextualize(Enumeration<SemanticTag> anchor, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.contextualize(anchor);
     }
 
     @Override
     public PeerSTSet contextualize(Enumeration<SemanticTag> anchor) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PeerSTSet fragment = new InMemoPeerSTSet();
+        
+        return (PeerSTSet) SharkCSAlgebra.contextualize(fragment, this, anchor);
+        
     }
 
     @Override
     public PeerSTSet contextualize(STSet context) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.contextualize(context.tags());
     }
 
     @Override
     public PeerSTSet contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.contextualize(context.tags());
     }
 
     @Override
     public Enumeration<PeerSemanticTag> peerTags() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Enumeration tags = null;
+        try {
+            tags = super.tags();
+        } catch (SharkKBException ex) {
+            L.e("cannot enumerate tags: " + ex.getLocalizedMessage(), this);
+        }
+        
+        return (Enumeration<PeerSemanticTag>) tags;
     }
 }

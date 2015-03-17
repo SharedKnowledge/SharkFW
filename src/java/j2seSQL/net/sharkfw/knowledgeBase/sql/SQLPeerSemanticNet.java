@@ -10,7 +10,9 @@ import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSemanticNet;
 import net.sharkfw.system.Iterator2Enumeration;
 import net.sharkfw.system.L;
 
@@ -78,7 +80,12 @@ public class SQLPeerSemanticNet extends SQLSemanticNet implements PeerSemanticNe
 
     @Override
     public PeerSemanticNet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PeerSemanticNet fragment = new InMemoPeerSemanticNet();
+        SharkCSAlgebra.fragment(fragment, anchor, this, 
+                fp.getAllowedPredicates(), 
+                fp.getForbiddenPredicates(), fp.getDepth());
+        
+        return fragment;
     }
 
     @Override

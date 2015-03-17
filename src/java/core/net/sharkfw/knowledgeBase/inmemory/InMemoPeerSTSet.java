@@ -7,7 +7,7 @@ import net.sharkfw.knowledgeBase.*;
  *
  * @author thsc
  */
-class InMemoPeerSTSet extends InMemoSTSet implements PeerSTSet {
+public class InMemoPeerSTSet extends InMemoSTSet implements PeerSTSet {
     
     private PeerSemanticTag castPST(SemanticTag st)  throws SharkKBException {
         if(st == null) return null;

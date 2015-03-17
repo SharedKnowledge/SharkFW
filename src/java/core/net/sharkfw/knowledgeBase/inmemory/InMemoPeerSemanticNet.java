@@ -9,7 +9,7 @@ import net.sharkfw.knowledgeBase.*;
  */
 public class InMemoPeerSemanticNet extends InMemoSemanticNet implements PeerSemanticNet {
     
-    InMemoPeerSemanticNet() {
+    public InMemoPeerSemanticNet() {
         super(new InMemoGenericTagStorage<PeerSemanticTag>());
     }
     

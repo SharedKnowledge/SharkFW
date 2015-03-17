@@ -20,6 +20,5 @@ public class SQLTestSuite {
 
     @After
     public void tearDown() throws Exception {
-    }
-    
+    } 
 }
