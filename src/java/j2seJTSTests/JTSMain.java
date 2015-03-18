@@ -17,14 +17,13 @@ import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 /**
- *
- * @author s0542709, s0542541
- * @version 1.0
- *
  * This class provides some tests for SharkGeometry which uses the JTS-Library.
  * Hint: WKT = Well-known text; SRS = Spatial Reference System; SRID = Spatial
  * Reference System Identifier; SRS == SRID; WKT with SRS/SRID = Extended
  * Well-Known Text (EWKT);
+ * 
+ * @author Fabian Schmöker (s0542541), Tino Herrmann (s0542709)
+ * @version 1.0
  */
 public class JTSMain {
 
