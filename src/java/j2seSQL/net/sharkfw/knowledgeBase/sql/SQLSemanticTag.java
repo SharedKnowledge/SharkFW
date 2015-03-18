@@ -9,18 +9,17 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  *
  * @author thsc
  */
-public class SQLSemanticTag implements SemanticTag {
-    private SQLPropertyHolder propertyHolder;
+public class SQLSemanticTag extends SQLPropertyHolderDelegate implements SemanticTag {
     protected final SQLSemanticTagStorage sqlST;
     protected final SQLSharkKB kb;
     
     SQLSemanticTag(SQLSharkKB kb, SQLSemanticTagStorage sqlST) throws SharkKBException {
+        super(kb, sqlST);
         this.kb = kb;
         this.sqlST = sqlST;
-        this.propertyHolder = new SQLPropertyHolder(kb, sqlST);
     }
     
-    protected SQLSemanticTagStorage getSQLSemanticTagStorage() {
+    SQLSemanticTagStorage getSQLSemanticTagStorage() {
         return this.sqlST;
     }
     
@@ -89,58 +88,8 @@ public class SQLSemanticTag implements SemanticTag {
     }
 
     @Override
-    public void setSystemProperty(String name, String value) { 
-        // no implemented and used here
-    }
-
-    @Override
-    public String getSystemProperty(String name) { 
-        // no implemented and used here
-        return null; 
-    }
-    
-    private void refreshPropertys() throws SharkKBException {
-        this.propertyHolder.refresh();
-    }
-        
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-        this.refreshPropertys();
-        this.propertyHolder.setProperty(name, value);
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        this.refreshPropertys();
-        return this.propertyHolder.getProperty(name);
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        this.refreshPropertys();
-        this.propertyHolder.setProperty(name, value, transfer);
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-        this.refreshPropertys();
-        this.propertyHolder.removeProperty(name);
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        this.refreshPropertys();
-        return this.propertyHolder.propertyNames();
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        this.refreshPropertys();
-        return this.propertyHolder.propertyNames(all);
-    }
-    
     void remove() throws SharkKBException {
-        this.propertyHolder.removeAllProperties();
+        super.remove();
         this.sqlST.remove();
     }
 }

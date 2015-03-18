@@ -29,6 +29,9 @@ import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.EnumerationChain;
+import net.sharkfw.system.Iterator2Enumeration;
 import net.sharkfw.system.L;
 
 /**
@@ -118,6 +121,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     public static final String ADDRESS_TABLE = "addresses";
     public static final String CP_TABLE = "contextpoints";
     public static final String PREDICATE_TABLE = "predicates";
+    public static final String INFORMATION_TABLE = "information";
     
     public static final String MAX_SI_SIZE = "200";
     public static final String MAX_ST_NAME_SIZE = "200";
@@ -279,6 +283,26 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
                         + "direction smallint"
                         + ");");
             }
+            
+            /************** information table *****************************/
+            try {
+                statement.execute("SELECT * from " + SQLSharkKB.INFORMATION_TABLE);
+                L.d(SQLSharkKB.INFORMATION_TABLE + " already exists", this);
+            }
+            catch(SQLException e) {
+                // does not exist: create
+                L.d(SQLSharkKB.INFORMATION_TABLE + " does not exists - create", this);
+                try { statement.execute("drop sequence infoid;"); }
+                catch(SQLException ee) { /* ignore */ }
+                statement.execute("create sequence infoid;");
+                statement.execute("CREATE TABLE " + SQLSharkKB.INFORMATION_TABLE + 
+                        " (id integer PRIMARY KEY default nextval('infoid'), "
+                        + "cpID integer, "
+                        + "content bytea, "
+                        + "name character varying("+ SQLSharkKB.MAX_ST_NAME_SIZE + ")"
+                        + ");");
+            }
+            
         } catch (SQLException e) {
             L.w("error while setting up tables: " + e.getLocalizedMessage(), this);
             throw new SharkKBException("error while setting up tables: " + e.getLocalizedMessage());
@@ -395,6 +419,13 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             /************** contextpoints table *****************************/
             try {
                 statement.execute("DROP TABLE " + SQLSharkKB.CP_TABLE);
+            }
+            catch(SQLException e) {
+            }
+            
+            /************** information table *****************************/
+            try {
+                statement.execute("DROP TABLE " + SQLSharkKB.INFORMATION_TABLE);
             }
             catch(SQLException e) {
             }
@@ -538,6 +569,28 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         return newTag;
     }
     
+    SQLSemanticTag getOrCreateAnyTag() throws SharkKBException {
+        return (SQLSemanticTag) this.getTopicSTSet().createSemanticTag((String) null, (String) null);
+    }
+    
+    int getOrMergeTagID(SemanticTag tag) throws SharkKBException {
+        if(tag == null) { 
+            // it's the ANY tag
+            SQLSemanticTag anyTag = this.getOrCreateAnyTag();
+            return anyTag.getSQLSemanticTagStorage().getID();
+        }
+        
+        SQLSemanticTagStorage sqlTag = null;
+        
+        if(tag instanceof SQLSemanticTag) {
+            sqlTag = ((SQLSemanticTag) tag).getSQLSemanticTagStorage();
+        } else{
+            sqlTag = ((SQLSemanticTag) this.getTopicSTSet().merge(tag)).getSQLSemanticTagStorage();
+        }
+        
+        return sqlTag.getID();
+    }
+
     SQLSemanticNet getTopicsAsSQLSemanticNet() {
         return (SQLSemanticNet)this.topics;
     }
@@ -554,7 +607,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     
     @Override
     public Enumeration<SemanticTag> tags() throws SharkKBException {
-        return this.getTimeSTSet().tags();
+        return this.getTopicSTSet().tags();
     }
     
     @Override
@@ -573,23 +626,66 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
 
     @Override
-    public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ContextPoint getContextPoint(ContextCoordinates cc) throws SharkKBException {
+        int topicID = this.getOrMergeTagID(cc.getTopic());
+        int originatorID = this.getOrMergeTagID(cc.getOriginator());
+        int peerID = this.getOrMergeTagID(cc.getPeer());
+        int remotePeerID = this.getOrMergeTagID(cc.getRemotePeer());
+        int locationID = this.getOrMergeTagID(cc.getLocation());
+        int timeID = this.getOrMergeTagID(cc.getTime());
+        
+        Statement statement = null;
+        try {
+            statement  = this.getConnection().createStatement();
+            
+            String sqlString = "SELECT id FROM " + SQLSharkKB.CP_TABLE
+                    + " WHERE " 
+                    + "topicid = " + topicID + " AND "
+                    + "originatorid = " + originatorID + " AND "
+                    + "peerid = " + peerID + " AND "
+                    + "remotepeerid = " + remotePeerID + " AND "
+                    + "locationid = " + locationID + " AND "
+                    + "timeid = " + timeID + " AND "
+                    + "direction = " + cc.getDirection();
+            
+            ResultSet result = statement.executeQuery(sqlString);
+            if(result.next()) {
+                int cpID = result.getInt(1);
+                return new SQLContextPoint(this, cpID);
+            }
+
+        } catch (SQLException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+            throw new SharkKBException("error while creating SQL-statement: " + e.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+        
+        return null;
     }
 
     @Override
     public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotepeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return InMemoSharkKB.createInMemoContextCoordinates(topic, originator, peer, remotepeer, time, location, direction);
     }
 
     @Override
     public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(coordinates == null) { return null; }
+        
+        return new SQLContextPoint(this, coordinates);   
     }
 
     @Override
     public Knowledge createKnowledge() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return InMemoSharkKB.createInMemoKnowledge(this);
     }
 
     @Override
@@ -599,7 +695,35 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
     @Override
     public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Statement statement = null;
+        ArrayList<SQLContextPoint> cpList = new ArrayList();
+        try {
+            
+            statement  = connection.createStatement();
+            
+            String sqlStatement = "SELECT id FROM " + SQLSharkKB.CP_TABLE;
+            
+            ResultSet result = statement.executeQuery(sqlStatement);
+            while(result.next()) {
+                int cpid = result.getInt(1);
+                SQLContextPoint sqlCP = new SQLContextPoint(this, cpid);
+                cpList.add(sqlCP);
+            }
+        }
+        catch(SQLException e) {
+            // go ahead
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+            
+        return new Iterator2Enumeration(cpList.iterator());
     }
 
     @Override
@@ -614,6 +738,9 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
     @Override
     public Iterator<SemanticTag> getTags() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        EnumerationChain eChain = new EnumerationChain();
+        eChain.addEnumeration(this.tags());
+        
+        return eChain;
     }
 }

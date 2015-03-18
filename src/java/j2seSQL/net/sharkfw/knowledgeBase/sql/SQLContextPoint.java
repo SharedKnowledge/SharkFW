@@ -1,18 +1,88 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
 /**
  *
  * @author thsc
  */
-public class SQLContextPoint implements ContextPoint {
+public class SQLContextPoint extends SQLPropertyHolderDelegate implements ContextPoint, PropertyOwner {
+    private final SQLSharkKB kb;
+    private int id;
+    private ContextCoordinates coordinates = null;
+    
+    SQLContextPoint(SQLSharkKB kb, int id) {
+        this.initPropertyHolderDelegate(kb, this);
+        this.kb = kb;
+        this.id = id;
+    }
+    
+    SQLContextPoint(SQLSharkKB kb, ContextCoordinates cc) throws SharkKBException {
+        this.initPropertyHolderDelegate(kb, this);
+        
+        this.kb = kb;
+        
+        int topicID = this.kb.getOrMergeTagID(cc.getTopic());
+        int originatorID = this.kb.getOrMergeTagID(cc.getOriginator());
+        int peerID = this.kb.getOrMergeTagID(cc.getPeer());
+        int remotePeerID = this.kb.getOrMergeTagID(cc.getRemotePeer());
+        int locationID = this.kb.getOrMergeTagID(cc.getLocation());
+        int timeID = this.kb.getOrMergeTagID(cc.getTime());
+        
+        Statement statement = null;
+        try {
+            statement  = kb.getConnection().createStatement();
+            
+            ResultSet result = statement.executeQuery("select nextval('cpid');");
+            if(result.next()) {
+                // there must be a result
+                this.id = result.getInt(1);
+            } else {
+                // TODO: remove cp !
+                throw new SharkKBException("cannot get next semantic tag primary key");
+            }
+            
+            String sqlString = "INSERT INTO " + SQLSharkKB.CP_TABLE
+                    + " (topicid, originatorid, peerid, remotepeerid, locationid, " 
+                    + "timeid, direction) VALUES ("
+                    + topicID + ", "
+                    + originatorID + ", "
+                    + peerID + ", "
+                    + remotePeerID + ", "
+                    + locationID + ", "
+                    + timeID + ", "
+                    + cc.getDirection()
+                    + ")";
+            
+            statement.execute(sqlString);
+
+        } catch (SQLException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+            throw new SharkKBException("error while creating SQL-statement: " + e.getLocalizedMessage());
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
 
     @Override
     public Information addInformation() {
@@ -61,17 +131,134 @@ public class SQLContextPoint implements ContextPoint {
 
     @Override
     public ContextCoordinates getContextCoordinates() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        if(this.coordinates == null) {
 
+            Statement statement = null;
+            try {
+                statement  = kb.getConnection().createStatement();
+
+                String sqlString = "SELECT topicid, originatorid, peerid, remotepeerid, locationid, " 
+                        + "timeid, direction FROM " + SQLSharkKB.CP_TABLE
+                        + " WHERE id = " + this.id;
+
+                ResultSet result = statement.executeQuery(sqlString);
+                if(result.next()) {
+                    int stid = result.getInt("topicid");
+                    SQLSemanticTagStorage sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                    SQLSemanticTag topic = SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.SEMANTIC_TAG_TYPE);
+                    
+                    stid = result.getInt("originatorid");
+                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                    SQLPeerSemanticTag originator = (SQLPeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    
+                    stid = result.getInt("peerid");
+                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                    SQLPeerSemanticTag peer = (SQLPeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    
+                    stid = result.getInt("remotepeerid");
+                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                    SQLPeerSemanticTag remotePeer = (SQLPeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    
+                    stid = result.getInt("locationid");
+                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                    SQLSpatialSemanticTag location = (SQLSpatialSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE);
+                    
+                    stid = result.getInt("timeid");
+                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                    SQLTimeSemanticTag time = (SQLTimeSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE);
+                    
+                    int direction = result.getInt("direction");
+                    
+                    this.coordinates = InMemoSharkKB.createInMemoContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
+                }
+
+            } catch (SQLException | SharkKBException e) {
+                L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+                return null;
+            } 
+            finally {
+                if(statement != null) {
+                    try {
+                        statement.close();
+                    } catch (SQLException ex) {
+                        // ignore
+                    }
+                }
+            }
+        }
+        
+        return this.coordinates;
+    }
+    
     @Override
     public void setContextCoordinates(ContextCoordinates cc) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(cc == null) { return; }
+        
+        Statement statement = null;
+        try {
+            int topicID = this.kb.getOrMergeTagID(cc.getTopic());
+            int originatorID = this.kb.getOrMergeTagID(cc.getOriginator());
+            int peerID = this.kb.getOrMergeTagID(cc.getPeer());
+            int remotePeerID = this.kb.getOrMergeTagID(cc.getRemotePeer());
+            int locationID = this.kb.getOrMergeTagID(cc.getLocation());
+            int timeID = this.kb.getOrMergeTagID(cc.getTime());
+
+            statement  = this.kb.getConnection().createStatement();
+
+            String sqlString = "UPDATE " + SQLSharkKB.CP_TABLE
+                    + " SET topicid = " + topicID
+                    + ", SET originatorid = " + originatorID
+                    + ", SET peerid = " + peerID
+                    + ", SET remotepeerid = " + remotePeerID
+                    + ", SET locationid = " + locationID
+                    + ", SET timeid = " + timeID
+                    + " WHERE id = " + this.id;
+
+            statement.execute(sqlString);
+            this.coordinates = InMemoSharkKB.createInMemoCopy(cc);
+            
+        } catch (SQLException | SharkKBException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+        } 
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
     }
 
     @Override
     public int getNumberInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Statement statement = null;
+        try {
+            statement  = kb.getConnection().createStatement();
+
+            String sqlString = "SELECT COUNT(id) FROM " + SQLSharkKB.INFORMATION_TABLE
+                    + " WHERE cpid = " + this.id;
+
+            ResultSet result = statement.executeQuery(sqlString);
+            
+            if(result.next()) {
+                return result.getInt(1);
+            }
+        } catch (SQLException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+        } 
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+        
+        return 0;
     }
 
     @Override
@@ -85,43 +272,12 @@ public class SQLContextPoint implements ContextPoint {
     }
 
     @Override
-    public void setSystemProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getID() {
+        return this.id;
     }
 
     @Override
-    public String getSystemProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getType() {
+        return SQLSharkKB.CONTEXT_POINT;
     }
-
-    @Override
-    public void setProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void removeProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }

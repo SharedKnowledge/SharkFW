@@ -8,7 +8,6 @@ import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTXSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTaxonomy;
-import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TXSemanticTag;
@@ -27,6 +26,8 @@ public class SQLPeerTaxonomy extends TaxonomyWrapper implements PeerTaxonomy {
     SQLPeerTaxonomy(SQLSharkKB kb, SQLPeerSemanticNet psn) {
         this.kb = kb;
         this.psn = psn;
+        
+        this.setStorage(psn);
     }
 
     @Override
@@ -99,5 +100,16 @@ public class SQLPeerTaxonomy extends TaxonomyWrapper implements PeerTaxonomy {
     public Enumeration<PeerSemanticTag> peerTags() throws SharkKBException {
         Iterator tags = this.psn.tags(SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
         return new Iterator2Enumeration(tags);
+    }
+    
+    @Override
+    public PeerTaxonomy fragment(SemanticTag anchor, FragmentationParameter fp) 
+            throws SharkKBException {
+        
+        PeerSemanticNet fragment = this.psn.fragment(anchor, fp);
+        
+        if(fragment == null) return null;
+        
+        return new InMemoPeerTaxonomy(fragment);
     }
 }
