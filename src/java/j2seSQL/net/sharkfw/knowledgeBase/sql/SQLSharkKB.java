@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -31,7 +32,6 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.EnumerationChain;
-import net.sharkfw.system.Iterator2Enumeration;
 import net.sharkfw.system.L;
 
 /**
@@ -569,15 +569,21 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         return newTag;
     }
     
-    SQLSemanticTag getOrCreateAnyTag() throws SharkKBException {
-        return (SQLSemanticTag) this.getTopicSTSet().createSemanticTag((String) null, (String) null);
+    private static final int DEFAULT_ANY_TAG_ID = -1;
+    
+    int getAnyTagID() throws SharkKBException {
+        SemanticTag any = this.getTopicSTSet().getSemanticTag((String)null);
+        if(any == null) {
+            return SQLSharkKB.DEFAULT_ANY_TAG_ID;
+        }
+        
+        return ((SQLSemanticTag)any).getSQLSemanticTagStorage().getID();
     }
     
     int getOrMergeTagID(SemanticTag tag) throws SharkKBException {
         if(tag == null) { 
             // it's the ANY tag
-            SQLSemanticTag anyTag = this.getOrCreateAnyTag();
-            return anyTag.getSQLSemanticTagStorage().getID();
+            return this.getAnyTagID();
         }
         
         SQLSemanticTagStorage sqlTag = null;
@@ -690,13 +696,44 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
     @Override
     public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
+        int anyID = this.getAnyTagID();
+
+        ArrayList topicIDs = new ArrayList();
+        if(matchAny) { topicIDs.add(anyID); }
+        STSet topicST = cs.getTopics();
+        if(topicST != null) {
+            Iterator<SemanticTag> stTags = topicST.stTags();
+            while(stTags != null && stTags.hasNext()) {
+                SemanticTag tag = stTags.next();
+            // HIER WEITERMACHEN
+            }
+        }
+        
+        cs.getPeers();
+        cs.getRemotePeers();
+        cs.getOriginator();
+        cs.getLocations();
+        cs.getTimes();
+        cs.getDirection();
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private ArrayList<SQLContextPoint> cpList(ResultSet result) throws SQLException {
+        ArrayList<SQLContextPoint> cpList = new ArrayList();
+        while(result.next()) {
+            int cpid = result.getInt(1);
+            SQLContextPoint sqlCP = new SQLContextPoint(this, cpid);
+            cpList.add(sqlCP);
+        }
+        
+        return cpList;
     }
 
     @Override
     public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
+        ArrayList<SQLContextPoint> cpList = null;
         Statement statement = null;
-        ArrayList<SQLContextPoint> cpList = new ArrayList();
         try {
             
             statement  = connection.createStatement();
@@ -704,11 +741,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             String sqlStatement = "SELECT id FROM " + SQLSharkKB.CP_TABLE;
             
             ResultSet result = statement.executeQuery(sqlStatement);
-            while(result.next()) {
-                int cpid = result.getInt(1);
-                SQLContextPoint sqlCP = new SQLContextPoint(this, cpid);
-                cpList.add(sqlCP);
-            }
+            cpList = this.cpList(result);
         }
         catch(SQLException e) {
             // go ahead
@@ -723,7 +756,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             }
         }
             
-        return new Iterator2Enumeration(cpList.iterator());
+        return null;
     }
 
     @Override
