@@ -68,14 +68,8 @@ public abstract class SharkCSAlgebra {
         if(tagA == tagB) return true;
         
         if(SharkCSAlgebra.isAny(tagA) || SharkCSAlgebra.isAny(tagB)) return true;
-        
-        String si_a[] = tagA.getSI();
-        String si_b[] = tagB.getSI();
-        
-        boolean sisIdentical = SharkCSAlgebra.identical(si_a, si_b);
-        
-        if(!sisIdentical) return false;
-        
+
+        // Geometries super overrule sis
         if(tagA instanceof SpatialSemanticTag && tagB instanceof SpatialSemanticTag) {
             SpatialSemanticTag sTagA = (SpatialSemanticTag)tagA;
             SpatialSemanticTag sTagB = (SpatialSemanticTag)tagB;
@@ -91,6 +85,13 @@ public abstract class SharkCSAlgebra {
             }
             
         }
+        
+        String si_a[] = tagA.getSI();
+        String si_b[] = tagB.getSI();
+        
+        boolean sisIdentical = SharkCSAlgebra.identical(si_a, si_b);
+        
+        if(!sisIdentical) return false;
         
         return sisIdentical;
     }
@@ -1507,6 +1508,10 @@ public abstract class SharkCSAlgebra {
         }
         
         return true;
+    }
+    
+    public static boolean isIn(SpatialSemanticTag sst1, SpatialSemanticTag sst2) throws SharkKBException {
+        return SharkCSAlgebra.getSpatialAlgebra().isIn(sst1, sst2);
     }
     
     public static boolean isIn(TimeSTSet tSet, TimeSemanticTag tst) throws SharkKBException {
