@@ -1,11 +1,16 @@
+import java.util.Iterator;
+import net.sharkfw.knowledgeBase.ContextCoordinates;
+import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.TimeSTSet;
@@ -231,4 +236,37 @@ public class SQLSharkKBTests {
         semanticTag = topics.getSemanticTag("http://a.de");
         Assert.assertNotNull(semanticTag);
      }
+     
+    @Test
+    public void cpTest() throws SharkKBException {
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        kb.drop();
+        kb.close();
+        kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
+        
+        STSet topics = kb.getTopicSTSet();
+        SemanticTag sharkTag = topics.createSemanticTag("Shark", "http://sharksystem.net");
+
+        PeerSTSet peers = kb.getPeerSTSet();
+        PeerSemanticTag alice = peers.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@sharksystem.net");
+        PeerSemanticTag bob = peers.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@sharksystem.net");
+        PeerSemanticTag clara = peers.createPeerSemanticTag("Clara", "http://www.sharksystem.net/clara.html", "clara@sharksystem.net");
+        
+        TimeSemanticTag tst = kb.getTimeSTSet().createTimeSemanticTag(System.currentTimeMillis(), TimeSemanticTag.FOREVER);
+        SpatialSemanticTag sst = kb.getSpatialSTSet().createSpatialSemanticTag("spatial tag", new String[] {"http://spatialSI"}, (SharkGeometry) null);
+        
+        ContextCoordinates cc = kb.createContextCoordinates(sharkTag, clara, alice, bob, tst, sst, SharkCS.DIRECTION_INOUT);
+        ContextPoint cp = kb.createContextPoint(cc);
+        
+        ContextPoint cp2 = kb.getContextPoint(cc);
+        Assert.assertNotNull(cp2);
+        
+        SharkCS cs = kb.asSharkCS();
+        Iterator<ContextPoint> cps = kb.contextPoints(cs, true);
+        
+        Assert.assertNotNull(cps);
+        Assert.assertTrue(cps.hasNext());
+     }
+     
 }

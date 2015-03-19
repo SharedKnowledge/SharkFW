@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SharkURI;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -33,7 +34,9 @@ public class SQLTimeSTSet extends SQLSTSet implements TimeSTSet {
         SQLSemanticTagStorage sqlST = this.createSQLSemanticTag(
                 this.getSSQLSharkKB(), null, null, 
                 from, duration, 
-                false, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE, null, null);
+                false, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE, 
+                new String[] {SharkURI.timeST(from, duration)}, // sis
+                null); // no address
         
         return new SQLTimeSemanticTag(this.getSSQLSharkKB(), sqlST);
     }

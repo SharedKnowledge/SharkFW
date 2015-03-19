@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -23,6 +24,7 @@ import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
@@ -569,7 +571,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         return newTag;
     }
     
-    private static final int DEFAULT_ANY_TAG_ID = -1;
+    public static final int DEFAULT_ANY_TAG_ID = -1;
     
     int getAnyTagID() throws SharkKBException {
         SemanticTag any = this.getTopicSTSet().getSemanticTag((String)null);
@@ -693,30 +695,91 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     public Knowledge createKnowledge() {
         return InMemoSharkKB.createInMemoKnowledge(this);
     }
-
-    @Override
-    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
-        int anyID = this.getAnyTagID();
-
-        ArrayList topicIDs = new ArrayList();
-        if(matchAny) { topicIDs.add(anyID); }
-        STSet topicST = cs.getTopics();
-        if(topicST != null) {
-            Iterator<SemanticTag> stTags = topicST.stTags();
+        
+    private void addWhereClause(StringBuffer sqlStatement, String idString, STSet stset, boolean matchAny) throws SharkKBException {
+        
+        /* matchAny: As soon as stset is any - any tag is allowed in this dimension.
+        which means: no contraints to define in where clause
+        */
+        if(matchAny) {
+            if(SharkCSAlgebra.isAny(stset)) return;
+        }
+        
+        HashSet idSet = new HashSet();
+        if(stset != null) {
+            Iterator<SemanticTag> stTags = stset.stTags();
             while(stTags != null && stTags.hasNext()) {
                 SemanticTag tag = stTags.next();
-            // HIER WEITERMACHEN
+                idSet.add(this.getOrMergeTagID(tag));
             }
         }
         
-        cs.getPeers();
-        cs.getRemotePeers();
-        cs.getOriginator();
-        cs.getLocations();
-        cs.getTimes();
-        cs.getDirection();
+        Iterator iterator = idSet.iterator();
+        boolean first = true;
+        while(iterator.hasNext()) {
+            if(first) {
+                sqlStatement.append(" ( ");
+                first = false;
+            } else {
+                sqlStatement.append(" OR ");
+            }
+            sqlStatement.append(" " + idString + " = " + iterator.next());
+        }
+
+        if(!first) {
+                sqlStatement.append(" ) AND ");
+        }
+    }
+    
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
+        ArrayList cpList = new ArrayList();
+        Statement statement = null;
+        try {
+            
+            statement  = connection.createStatement();
+            
+            StringBuffer sqlStatement = new StringBuffer();
+            sqlStatement.append("SELECT id FROM " + SQLSharkKB.CP_TABLE + " WHERE ");
+                    
+            this.addWhereClause(sqlStatement, "topicid", cs.getTopics(), matchAny);
+            this.addWhereClause(sqlStatement, "peerid", cs.getPeers(), matchAny);
+            this.addWhereClause(sqlStatement, "remotepeerid", cs.getRemotePeers(), matchAny);
+            this.addWhereClause(sqlStatement, "locationid", cs.getLocations(), matchAny);
+            this.addWhereClause(sqlStatement, "timeid", cs.getTimes(), matchAny);
+            
+            int originatorID = this.getOrMergeTagID(cs.getOriginator());
+            if(originatorID != this.getAnyTagID()) {
+                sqlStatement.append(" originatorid = " + originatorID);
+                sqlStatement.append(" AND ");
+            }
+            
+            if(cs.getDirection() == SharkCS.DIRECTION_INOUT) {
+                sqlStatement.append(" ( direction = ").append(SharkCS.DIRECTION_IN);
+                sqlStatement.append(" OR direction = ").append(SharkCS.DIRECTION_OUT);
+                sqlStatement.append(" OR direction = ").append(SharkCS.DIRECTION_INOUT);
+                sqlStatement.append(" ) ");
+            } else {
+                sqlStatement.append(" direction = ").append(cs.getDirection());
+            }
+            
+            ResultSet result = statement.executeQuery(sqlStatement.toString());
+            cpList = this.cpList(result);
+        }
+        catch(SQLException e) {
+            // go ahead
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return cpList.iterator();
     }
     
     private ArrayList<SQLContextPoint> cpList(ResultSet result) throws SQLException {

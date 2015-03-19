@@ -1,7 +1,5 @@
 package net.sharkfw.knowledgeBase.sql;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.PeerSNSemanticTag;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTXSemanticTag;

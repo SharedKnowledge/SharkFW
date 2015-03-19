@@ -146,6 +146,15 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
 
   public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException;
   
+  /**
+   * 
+   * @param cs
+   * @param matchAny true: any tags in each dimensions are used as joker signs: There
+   * are no contraints on the dimension in which the st set in any. If false: 
+   * any tag is used as each other tag and it is looked for an exact match
+   * @return
+   * @throws SharkKBException 
+   */
   public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException;
   
   /**

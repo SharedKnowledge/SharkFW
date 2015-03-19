@@ -234,14 +234,14 @@ public class SimpleKBTest {
 //      SharkKB kb = new InMemoSharkKB();
 
       // Create Vocabulary
-      SemanticTag java = kb.createSemanticTag("Java", "http://java.net");
-      SemanticTag coffee = kb.createSemanticTag("Coffee", "http://coffee.org");
+      SemanticTag java = kb.getTopicSTSet().createSemanticTag("Java", "http://java.net");
+      SemanticTag coffee = kb.getTopicSTSet().createSemanticTag("Coffee", "http://coffee.org");
 
-      PeerSemanticTag peerA = kb.createPeerSemanticTag("PeerA", "http://peerA.de", "tcp://peerA.de:1234");
-      PeerSemanticTag peerB = kb.createPeerSemanticTag("PeerB", "http://peerB.de", "tcp://peerB.de:1234");
+      PeerSemanticTag peerA = kb.getPeerSTSet().createPeerSemanticTag("PeerA", "http://peerA.de", "tcp://peerA.de:1234");
+      PeerSemanticTag peerB = kb.getPeerSTSet().createPeerSemanticTag("PeerB", "http://peerB.de", "tcp://peerB.de:1234");
 
-      TimeSemanticTag ttag1 = kb.createTimeSemanticTag(1, 4);
-      TimeSemanticTag ttag2 = kb.createTimeSemanticTag(100, 400);
+      TimeSemanticTag ttag1 = kb.getTimeSTSet().createTimeSemanticTag(1, 4);
+      TimeSemanticTag ttag2 = kb.getTimeSTSet().createTimeSemanticTag(100, 400);
 
       // create ContextPoints
       ContextCoordinates co1 = kb.createContextCoordinates(java, null, peerA, null, ttag1, null, SharkCS.DIRECTION_IN);
@@ -1153,12 +1153,12 @@ public class SimpleKBTest {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
 //      SharkKB kb = new InMemoSharkKB();
 
-      SemanticTag topic1 = kb.createSemanticTag("Topic1", "http://topic1.de");
-      SemanticTag topic2 = kb.createSemanticTag("Topic2", "http://topic2.de");
-      SemanticTag topic3 = kb.createSemanticTag("Topic3", "http://topic3.de");
+      SemanticTag topic1 = kb.getTopicSTSet().createSemanticTag("Topic1", "http://topic1.de");
+      SemanticTag topic2 = kb.getTopicSTSet().createSemanticTag("Topic2", "http://topic2.de");
+      SemanticTag topic3 = kb.getTopicSTSet().createSemanticTag("Topic3", "http://topic3.de");
 
-      PeerSemanticTag peer1 = kb.createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
-      PeerSemanticTag peer2 = kb.createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
+      PeerSemanticTag peer1 = kb.getPeerSTSet().createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
+      PeerSemanticTag peer2 = kb.getPeerSTSet().createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
 
       ContextCoordinates co1 = InMemoSharkKB.createInMemoContextCoordinates(topic1, null, peer1, peer2, null, null, SharkCS.DIRECTION_OUT);
       ContextPoint cp1 = kb.createContextPoint(co1);

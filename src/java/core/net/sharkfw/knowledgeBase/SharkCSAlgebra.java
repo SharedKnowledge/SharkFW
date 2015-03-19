@@ -6,6 +6,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -379,9 +381,10 @@ public abstract class SharkCSAlgebra {
         if(copy == null) {
             copy = target.createSemanticTag(source.getName(), source.getSI());
             Util.mergeProperties(copy, source);
-        } else {
-            SharkCSAlgebra.merge(target, source);
-        }
+        } 
+//        else {
+//            SharkCSAlgebra.merge(target, source);
+//        }
         
         return copy;
     }
@@ -1033,7 +1036,22 @@ public abstract class SharkCSAlgebra {
     }
     
     public static boolean isAny(STSet set) {
-        return (set == null || set.isEmpty());
+        if (set == null || set.isEmpty()) return true;
+        
+        try {
+            // iterate and look for any tag
+            Iterator<SemanticTag> stTags = set.stTags();
+            while(stTags != null && stTags.hasNext()) {
+                SemanticTag tag = stTags.next();
+                if(tag.isAny()) {
+                    return true;
+                }
+            }
+            
+        } catch (SharkKBException ex) {
+            L.e("cannot iterate set"); // TODO
+        }
+        return false;
     }
     
     public static boolean isAny(SemanticTag tag) {
@@ -1075,7 +1093,7 @@ public abstract class SharkCSAlgebra {
             return true;
         }
         
-        if( (cc1 == null && cc2 != null) || (cc1 == null && cc2 != null) ) {
+        if( (cc1 != null && cc2 == null) || (cc1 == null && cc2 != null) ) {
             return false; // it a guess but a good one. The non empty cc could describe anytag in any dimension - should be tested..
         }
         

@@ -148,7 +148,7 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public void setEnumerateHiddenTags(boolean hide) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO
     }
 
     @Override

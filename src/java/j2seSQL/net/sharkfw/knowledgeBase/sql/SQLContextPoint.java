@@ -10,8 +10,11 @@ import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
 
@@ -142,30 +145,51 @@ public class SQLContextPoint extends SQLPropertyHolderDelegate implements Contex
                         + " WHERE id = " + this.id;
 
                 ResultSet result = statement.executeQuery(sqlString);
+                
+                SemanticTag topic = null;
+                PeerSemanticTag originator = null;
+                PeerSemanticTag peer = null;
+                PeerSemanticTag remotePeer = null;
+                SpatialSemanticTag location = null;
+                TimeSemanticTag time = null;
+                
                 if(result.next()) {
                     int stid = result.getInt("topicid");
-                    SQLSemanticTagStorage sqlST = new SQLSemanticTagStorage(this.kb, stid);
-                    SQLSemanticTag topic = SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.SEMANTIC_TAG_TYPE);
+                    SQLSemanticTagStorage sqlST = null;
+                    if(stid != SQLSharkKB.DEFAULT_ANY_TAG_ID) {
+                        sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                        topic = SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.SEMANTIC_TAG_TYPE);
+                    }
                     
                     stid = result.getInt("originatorid");
-                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
-                    SQLPeerSemanticTag originator = (SQLPeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    if(stid != SQLSharkKB.DEFAULT_ANY_TAG_ID) {
+                        sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                        originator = (PeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    }
                     
                     stid = result.getInt("peerid");
-                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
-                    SQLPeerSemanticTag peer = (SQLPeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    if(stid != SQLSharkKB.DEFAULT_ANY_TAG_ID) {
+                        sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                        peer = (PeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    }
                     
                     stid = result.getInt("remotepeerid");
-                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
-                    SQLPeerSemanticTag remotePeer = (SQLPeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    if(stid != SQLSharkKB.DEFAULT_ANY_TAG_ID) {
+                        sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                        remotePeer = (PeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+                    }
                     
                     stid = result.getInt("locationid");
-                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
-                    SQLSpatialSemanticTag location = (SQLSpatialSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE);
+                    if(stid != SQLSharkKB.DEFAULT_ANY_TAG_ID) {
+                        sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                        location = (SpatialSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE);
+                    }
                     
                     stid = result.getInt("timeid");
-                    sqlST = new SQLSemanticTagStorage(this.kb, stid);
-                    SQLTimeSemanticTag time = (SQLTimeSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE);
+                    if(stid != SQLSharkKB.DEFAULT_ANY_TAG_ID) {
+                        sqlST = new SQLSemanticTagStorage(this.kb, stid);
+                        time = (TimeSemanticTag) SQLSharkKB.wrapSQLTagStorage(kb, sqlST, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE);
+                    }
                     
                     int direction = result.getInt("direction");
                     
