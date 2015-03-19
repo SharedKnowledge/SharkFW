@@ -1535,5 +1535,19 @@ public class JTSMain {
         net.sharkfw.knowledgeBase.geom.SpatialAlgebra a = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra();
         Assert.assertEquals(true, a.isIn(tag1, tag2));
     }
-
+    
+    @Test
+    public void finalTest_thsc() throws SharkKBException {
+        String l1String = "LINESTRING (52 13, 53 13, 54 13)";
+        String l2String = "LINESTRING (52 13, 54 13)";
+        SharkGeometry shark_geom1 = net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry.createGeomByWKT(l1String);
+        SharkGeometry shark_geom2 = net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry.createGeomByWKT(l2String);
+        SpatialSemanticTag tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(shark_geom1);
+        SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(shark_geom2);
+        net.sharkfw.knowledgeBase.geom.SpatialAlgebra a = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra();
+        
+        Assert.assertTrue(a.identical(tag1, tag2));
+        
+        Assert.assertTrue(SharkCSAlgebra.identical(tag1, tag2));
+    }
 }
