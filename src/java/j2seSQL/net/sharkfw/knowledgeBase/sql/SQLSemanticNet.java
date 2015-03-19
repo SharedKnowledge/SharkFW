@@ -18,8 +18,8 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
  */
 public class SQLSemanticNet extends SQLSTSet implements SemanticNet {
 
-    SQLSemanticNet(SQLSharkKB kb) {
-        super(kb);
+    SQLSemanticNet(SQLSharkKB kb, int type) {
+        super(kb, SQLSharkKB.SEMANTIC_TAG_TYPE);
     }
 
     @Override

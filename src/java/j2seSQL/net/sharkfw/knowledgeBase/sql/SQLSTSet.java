@@ -3,12 +3,10 @@ package net.sharkfw.knowledgeBase.sql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.knowledgeBase.AbstractSTSet;
-import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
@@ -21,9 +19,11 @@ import net.sharkfw.system.Iterator2Enumeration;
  */
 public class SQLSTSet extends AbstractSTSet implements STSet {
     protected final SQLSharkKB kb;
+    private final int type;
 
-    SQLSTSet(SQLSharkKB kb) {
+    SQLSTSet(SQLSharkKB kb, int type) {
         this.kb = kb;
+        this.type = type;
     }
     
     SQLSharkKB getSSQLSharkKB() {
@@ -173,47 +173,45 @@ public class SQLSTSet extends AbstractSTSet implements STSet {
     }
 
     @Override
-    public STSet fragment(SemanticTag anchor) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public STSet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public STSet contextualize(Enumeration<SemanticTag> anchorSet, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public STSet contextualize(Enumeration<SemanticTag> anchorSet) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public STSet contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public STSet contextualize(STSet context) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.size() > 0;
     }
 
     @Override
     public int size() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Statement statement = null;
+
+        try {
+            statement  = this.kb.getConnection().createStatement();
+            
+            String sqlString = "SELECT COUNT(id) FROM " + SQLSharkKB.ST_TABLE;
+            if(this.type != SQLSharkKB.SEMANTIC_TAG_TYPE) {
+                sqlString += " WHERE st_type = " + this.type;
+            }
+            ResultSet result = statement.executeQuery(sqlString);
+            
+            if(result.next()) {
+                return result.getInt(1);
+            }
+        }
+        catch(SQLException e) {
+            // TODO
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+            
+        return 0;
     }
 
     @Override
     public Iterator<SemanticTag> stTags() throws SharkKBException {
-        return this.tags(SQLSharkKB.SEMANTIC_TAG_TYPE);
+        return this.tags(this.type);
     }
 }

@@ -16,7 +16,7 @@ import net.sharkfw.system.Iterator2Enumeration;
 public class SQLSpatialSTSet extends SQLSTSet implements SpatialSTSet {
 
     SQLSpatialSTSet(SQLSharkKB kb) {
-        super(kb);
+        super(kb, SQLSharkKB.SPATIAL_SEMANTIC_TAG_TYPE);
     }
 
     @Override

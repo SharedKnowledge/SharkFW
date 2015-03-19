@@ -16,7 +16,7 @@ import net.sharkfw.system.Iterator2Enumeration;
 public class SQLTimeSTSet extends SQLSTSet implements TimeSTSet {
     
     SQLTimeSTSet(SQLSharkKB kb) {
-        super(kb);
+        super(kb, SQLSharkKB.TIME_SEMANTIC_TAG_TYPE);
     }
 
     @Override

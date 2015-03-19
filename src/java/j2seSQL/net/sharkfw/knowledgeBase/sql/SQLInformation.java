@@ -2,16 +2,62 @@ package net.sharkfw.knowledgeBase.sql;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.system.L;
 
 /**
  *
  * @author thsc
  */
-public class SQLInformation implements Information {
+public class SQLInformation extends SQLPropertyHolderDelegate implements Information, PropertyOwner {
+    private int id;
 
+    SQLInformation(SQLSharkKB kb, int id) {
+        this.initPropertyHolderDelegate(kb, this);
+        this.id = id;
+    }
+    
+    SQLInformation(SQLSharkKB kb, int cpid, String name) {
+        this.initPropertyHolderDelegate(kb, this);
+        
+        Statement statement = null;
+        try {
+            statement  = kb.getConnection().createStatement();
+            
+            ResultSet result = statement.executeQuery("select nextval('infoid');");
+            if(result.next()) {
+                // there must be a result
+                this.id = result.getInt(1);
+            } else {
+                // TODO
+            }
+            
+            StringBuilder sqlString = new StringBuilder("INSERT INTO ");
+            sqlString.append(SQLSharkKB.INFORMATION_TABLE);
+            sqlString.append(" (cpid) VALUES ( ");
+            sqlString.append(cpid);
+            sqlString.append(" )");
+            
+            statement.execute(sqlString.toString());
+
+        } catch (SQLException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+    
     @Override
     public long lastModified() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -94,47 +140,16 @@ public class SQLInformation implements Information {
 
     @Override
     public String getUniqueID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return String.valueOf(this.id);
     }
 
     @Override
-    public void setSystemProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getID() {
+        return this.id;
     }
 
     @Override
-    public String getSystemProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getType() {
+        return SQLSharkKB.INFORMATION;
     }
-
-    @Override
-    public void setProperty(String name, String value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void removeProperty(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }

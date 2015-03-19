@@ -267,6 +267,7 @@ public class SQLSharkKBTests {
         
         Assert.assertNotNull(cps);
         Assert.assertTrue(cps.hasNext());
-     }
-     
+        
+        cp.addInformation();
+     }     
 }

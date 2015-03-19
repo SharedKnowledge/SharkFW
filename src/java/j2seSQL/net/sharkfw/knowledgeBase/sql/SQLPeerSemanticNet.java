@@ -23,7 +23,7 @@ import net.sharkfw.system.L;
 public class SQLPeerSemanticNet extends SQLSemanticNet implements PeerSemanticNet {
 
     public SQLPeerSemanticNet(SQLSharkKB kb) {
-        super(kb);
+        super(kb, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
     }    
 
     @Override

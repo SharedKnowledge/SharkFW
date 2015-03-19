@@ -18,7 +18,7 @@ import net.sharkfw.system.L;
 class SQLPeerSTSet extends SQLSTSet implements PeerSTSet {
     
     SQLPeerSTSet(SQLSharkKB kb) {
-        super(kb);
+        super(kb, SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
     }
 
     @Override

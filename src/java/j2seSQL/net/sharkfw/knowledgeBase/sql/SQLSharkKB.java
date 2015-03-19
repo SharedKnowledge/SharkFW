@@ -86,7 +86,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         this.setupKB();
         
         /************     setup vocabulary       **************/
-        SemanticNet topics = new SQLSemanticNet(this);
+        SemanticNet topics = new SQLSemanticNet(this, SQLSharkKB.SEMANTIC_TAG_TYPE);
         PeerTaxonomy peers = new SQLPeerTaxonomy(this, new SQLPeerSemanticNet(this));
         SpatialSTSet locations = new SQLSpatialSTSet(this);
         TimeSTSet times = new SQLTimeSTSet(this);

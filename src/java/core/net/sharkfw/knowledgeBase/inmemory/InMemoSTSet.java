@@ -24,13 +24,12 @@ import net.sharkfw.system.EnumerationChain;
  */
 public class InMemoSTSet extends AbstractSTSet implements STSet {
 
-    @SuppressWarnings("rawtypes")
     private InMemoGenericTagStorage storage;
     
     /**
      * That's the prefered way to create an empty stand alone semantic tag set.
      */
-    InMemoSTSet() {
+    public InMemoSTSet() {
         this.storage = new InMemoGenericTagStorage<SemanticTag>();
     }
 
@@ -169,72 +168,6 @@ public class InMemoSTSet extends AbstractSTSet implements STSet {
         return this.createSemanticTag(name, new String[]{si});
     }
 
-    /**
-     * This methods checks whether a tag exists that is identical to anchor.
-     * If so, a new STSet is created that contains a copy of the concept in
-     * this set. 
-     * 
-     * Note1: The resulting set contains only a single tag which is a copy
-     * of the fitting tag in this set. The anchor remains unchanged. The anchor 
-     * is also not merged with the found tag.
-     * 
-     * @param anchor
-     * @return set containing a tag or null
-     */
-    @Override
-    public STSet fragment(SemanticTag anchor) throws SharkKBException {
-        STSet fragment = new InMemoSTSet();
-        
-        return SharkCSAlgebra.fragment(fragment, this, anchor);
-    }
-    
-    /**
-     * Fragmentation Parameter are ignored in this implementation. It makes
-     * no sense in plain semantic tag sets.
-     * 
-     * @param anchor
-     * @param fp
-     * @return
-     * @throws SharkKBException 
-     */
-    @Override
-    public STSet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
-        return this.fragment(anchor);
-    }
-        
-    /**
-     * 
-     * @param anchorSet enumeration of semantic tags denoting the context
-     * @param fp no used in this implementation
-     * @return fragment of this set or null of anchorSet is empty. An empty 
-     * set can also be returned.
-     */
-    @Override
-    public STSet contextualize(Enumeration<SemanticTag> anchorSet, 
-                                FragmentationParameter fp) throws SharkKBException {
-        
-        if(anchorSet == null || !anchorSet.hasMoreElements()) return null;
-        
-        InMemoSTSet fragment = new InMemoSTSet();
-        
-        return SharkCSAlgebra.contextualize(fragment, this, anchorSet);
-    }
-    
-    @Override
-    public STSet contextualize(Enumeration<SemanticTag> anchorSet) throws SharkKBException {
-        return this.contextualize(anchorSet, null);
-    }
-    
-    @Override
-    public STSet contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
-        return this.contextualize(context.tags(), fp);
-    }
-
-    @Override
-    public STSet contextualize(STSet context) throws SharkKBException {
-        return this.contextualize(context, null);
-        
-    }
       
     @Override
     public boolean isEmpty() {

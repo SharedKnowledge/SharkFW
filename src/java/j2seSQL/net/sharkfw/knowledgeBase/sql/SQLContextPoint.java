@@ -89,7 +89,7 @@ public class SQLContextPoint extends SQLPropertyHolderDelegate implements Contex
 
     @Override
     public Information addInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new SQLInformation(this.kb, this.id, null);
     }
 
     @Override
