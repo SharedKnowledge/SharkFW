@@ -1288,12 +1288,12 @@ public class SimpleKBTest {
 //      SharkKB kb = new InMemoSharkKB();
 
       // We need two distinct topics
-      SemanticTag topic = kb.createSemanticTag("Topic", "http://topic.de");
-      SemanticTag otherTopic = kb.createSemanticTag("Other-Topic", "http://other-topic.de");
+      SemanticTag topic = kb.getTopicSTSet().createSemanticTag("Topic", "http://topic.de");
+      SemanticTag otherTopic = kb.getTopicSTSet().createSemanticTag("Other-Topic", "http://other-topic.de");
 
       // Also two distinct originator
-      PeerSemanticTag peerA = kb.createPeerSemanticTag("PeerA", "http://peerA.com", (String[]) null);
-      PeerSemanticTag peerB = kb.createPeerSemanticTag("PeerB", "http://peerB.com", (String[]) null);
+      PeerSemanticTag peerA = kb.getPeerSTSet().createPeerSemanticTag("PeerA", "http://peerA.com", (String[]) null);
+      PeerSemanticTag peerB = kb.getPeerSTSet().createPeerSemanticTag("PeerB", "http://peerB.com", (String[]) null);
 
       // Create three different coordinates, of which two share a mutual topic
       ContextCoordinates co1 = kb.createContextCoordinates(topic, peerA, null, null, null, null, SharkCS.DIRECTION_INOUT);
@@ -1315,7 +1315,7 @@ public class SimpleKBTest {
       // exact match
       Enumeration<ContextPoint> resultEnum = kb.getContextPoints(extractCo, false);
       
-      Assert.assertNull(resultEnum);
+      Assert.assertTrue(resultEnum == null || !resultEnum.hasMoreElements());
       
       // sloppy match: allow any matching
       resultEnum = kb.getContextPoints(extractCo, true);

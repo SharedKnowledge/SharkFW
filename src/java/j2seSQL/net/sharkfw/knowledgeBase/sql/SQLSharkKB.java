@@ -765,7 +765,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
             this.addWhereClause(sqlStatement, "timeid", cs.getTimes(), matchAny);
             
             int originatorID = this.getOrMergeTagID(cs.getOriginator());
-            if(originatorID != this.getAnyTagID()) {
+            if(originatorID != this.getAnyTagID() || !matchAny ) {
                 sqlStatement.append(" originatorid = " + originatorID);
                 sqlStatement.append(" AND ");
             }
