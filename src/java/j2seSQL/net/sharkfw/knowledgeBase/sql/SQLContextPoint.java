@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
@@ -16,6 +17,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.Iterator2Enumeration;
 import net.sharkfw.system.L;
 
 /**
@@ -58,19 +60,21 @@ public class SQLContextPoint extends SQLPropertyHolderDelegate implements Contex
                 throw new SharkKBException("cannot get next semantic tag primary key");
             }
             
-            String sqlString = "INSERT INTO " + SQLSharkKB.CP_TABLE
-                    + " (topicid, originatorid, peerid, remotepeerid, locationid, " 
-                    + "timeid, direction) VALUES ("
-                    + topicID + ", "
-                    + originatorID + ", "
-                    + peerID + ", "
-                    + remotePeerID + ", "
-                    + locationID + ", "
-                    + timeID + ", "
-                    + cc.getDirection()
-                    + ")";
+            StringBuilder sqlString = new StringBuilder("INSERT INTO ");
+            sqlString.append(SQLSharkKB.CP_TABLE);
+            sqlString.append(" (id, topicid, originatorid, peerid, remotepeerid, locationid, "); 
+            sqlString.append("timeid, direction) VALUES (");
+            sqlString.append(this.id).append(", ");
+            StringBuilder append = sqlString.append(topicID).append(", ");
+            sqlString.append(originatorID).append(", ");
+            sqlString.append(peerID).append(", ");
+            sqlString.append(remotePeerID).append(", ");
+            sqlString.append(locationID).append(", ");
+            sqlString.append(timeID).append(", ");
+            sqlString.append(cc.getDirection());
+            sqlString.append(")");
             
-            statement.execute(sqlString);
+            statement.execute(sqlString.toString());
 
         } catch (SQLException e) {
             L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
@@ -94,37 +98,90 @@ public class SQLContextPoint extends SQLPropertyHolderDelegate implements Contex
 
     @Override
     public void addInformation(Information source) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // merge info into this system
+        Information newInfo = this.addInformation();
+        
+        try {
+            newInfo.setName(source.getName());
+            newInfo.setContentType(source.getContentType());
+            newInfo.streamContent(source.getOutputStream());
+        } catch (SharkKBException ex) {
+            L.e("cannot copy information: " + ex.getLocalizedMessage(), this);
+        }
     }
 
     @Override
     public Information addInformation(InputStream is, long len) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Information newInfo = this.addInformation();
+        newInfo.setContent(is, len);
+        
+        return newInfo;
     }
 
     @Override
     public Information addInformation(byte[] content) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Information newInfo = this.addInformation();
+        newInfo.setContent(content);
+        
+        return newInfo;
     }
 
     @Override
     public Information addInformation(String content) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Information newInfo = this.addInformation();
+        newInfo.setContent(content);
+        
+        return newInfo;
     }
 
     @Override
     public Enumeration<Information> enumInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Iterator2Enumeration(this.getInformation());
     }
 
     @Override
     public Iterator<Information> getInformation(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Statement statement = null;
+        ArrayList<Information> infoList = new ArrayList<>();
+        try {
+            statement  = this.kb.getConnection().createStatement();
+            
+            StringBuilder sqlString = new StringBuilder("SELECT id from "); 
+            sqlString.append(SQLSharkKB.INFORMATION_TABLE);
+            sqlString.append(" WHERE cpid = ");
+            sqlString.append(this.id);
+            
+            if(name != null && name.length() > 0) {
+                sqlString.append(" AND name = '");
+                sqlString.append(name);
+                sqlString.append("'");
+            }
+            
+            ResultSet result = statement.executeQuery(sqlString.toString());
+            while(result.next()) {
+                int iid = result.getInt(1);
+                SQLInformation sqlInformation = new SQLInformation(this.kb, iid);
+                infoList.add(sqlInformation);
+            }
+        } catch (SQLException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
+        
+        return infoList.iterator();
     }
 
     @Override
     public Iterator<Information> getInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getInformation(null);
     }
 
     @Override

@@ -1,6 +1,7 @@
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;

@@ -133,6 +133,8 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     public static final String MAX_ADDR_SIZE = "200";
     public static final String MAX_PREDICATE_SIZE = "200";
     
+    public static final int MAX_BUFFER_SIZE = 10000;
+    
     /**
      * Tables: 
      * <ul>
@@ -301,7 +303,11 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
                         " (id integer PRIMARY KEY default nextval('infoid'), "
                         + "cpID integer, "
                         + "content bytea, "
-                        + "name character varying("+ SQLSharkKB.MAX_ST_NAME_SIZE + ")"
+                        + "contentlength bigint, "
+                        + "name character varying("+ SQLSharkKB.MAX_ST_NAME_SIZE + "), "
+                        + "contentType character varying("+ SQLSharkKB.MAX_ST_NAME_SIZE + "), "
+                        + "creationtime bigint, "
+                        + "lastmodifiedtime bigint"
                         + ");");
             }
             
@@ -706,28 +712,38 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         }
         
         HashSet idSet = new HashSet();
-        if(stset != null) {
+        if(stset != null && !stset.isEmpty()) {
             Iterator<SemanticTag> stTags = stset.stTags();
             while(stTags != null && stTags.hasNext()) {
                 SemanticTag tag = stTags.next();
                 idSet.add(this.getOrMergeTagID(tag));
             }
-        }
-        
-        Iterator iterator = idSet.iterator();
-        boolean first = true;
-        while(iterator.hasNext()) {
-            if(first) {
-                sqlStatement.append(" ( ");
-                first = false;
-            } else {
-                sqlStatement.append(" OR ");
+            
+            Iterator iterator = idSet.iterator();
+            boolean first = true;
+            while(iterator.hasNext()) {
+                if(first) {
+                    sqlStatement.append(" ( ");
+                    first = false;
+                } else {
+                    sqlStatement.append(" OR ");
+                }
+                sqlStatement.append(" ").append(idString).append(" = ").append(iterator.next());
             }
-            sqlStatement.append(" " + idString + " = " + iterator.next());
-        }
 
-        if(!first) {
+            if(!first) {
+                    sqlStatement.append(" ) AND ");
+            }
+        } else {
+            // stset empty or null
+            if(!matchAny) {
+                // any tag is not a joker - it's a must!!
+                sqlStatement.append("( ");
+                sqlStatement.append(idString);
+                sqlStatement.append(" = ");
+                sqlStatement.append(this.getAnyTagID());
                 sqlStatement.append(" ) AND ");
+            }
         }
     }
     

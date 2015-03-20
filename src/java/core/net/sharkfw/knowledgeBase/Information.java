@@ -118,21 +118,17 @@ public interface Information extends SystemPropertyHolder {
     /**
      * Return an OutputStream containing the content of this Information.
      * @return An OutputStream containing the content of this Information.
-     * @deprecated use getOutputStream();
-     */
-//     public OutputStream getWriteAccess();
-    
-    /**
-     * Return an OutputStream containing the content of this Information.
-     * @return An OutputStream containing the content of this Information.
      *     public OutputStream getWriteAccess();
      * @throws SharkKBException 
+     * @deprecated use streamContent instead
      */
     public OutputStream getOutputStream() throws SharkKBException;
     
     /**
      * Return an InputStream that allows streaming data into information object.
      * @return InputStream to information object
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
+     * @deprecated use setContent(InputStream instead)
      */
     public InputStream getInputStream() throws SharkKBException;
     

@@ -1,6 +1,7 @@
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
@@ -236,9 +237,9 @@ public class SQLSharkKBTests {
         semanticTag = topics.getSemanticTag("http://a.de");
         Assert.assertNotNull(semanticTag);
      }
-     
+    
     @Test
-    public void cpTest() throws SharkKBException {
+    public void cpTest() throws SharkKBException, InterruptedException {
         L.setLogLevel(L.LOGLEVEL_ALL);
         SQLSharkKB kb = new SQLSharkKB("jdbc:postgresql://localhost:5432/SharkKB", "test", "test");
         kb.drop();
@@ -268,6 +269,22 @@ public class SQLSharkKBTests {
         Assert.assertNotNull(cps);
         Assert.assertTrue(cps.hasNext());
         
-        cp.addInformation();
-     }     
+        Information info = cp.addInformation();
+        
+        long lastModified = info.lastModified();
+        long creationTime = info.creationTime();
+        
+        Thread.sleep(10);
+        
+        info.setName("neuerName");
+        Assert.assertTrue(info.getName().equalsIgnoreCase("neuerName"));
+        long lastModified2 = info.lastModified();
+        
+        Assert.assertTrue(lastModified != lastModified2);
+        Assert.assertTrue(creationTime == info.creationTime());
+        
+        info.setContent("content");
+        String contentAsString = info.getContentAsString();
+        Assert.assertEquals("content", contentAsString);
+     }  
 }
