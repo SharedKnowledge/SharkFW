@@ -11,9 +11,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
@@ -57,6 +60,8 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     private String user;
     private String pwd;
     
+    private int ownerID;
+    
     static final int UNKNOWN_SEMANTIC_TAG_TYPE = -1;
     static final int SEMANTIC_TAG_TYPE = 0;
     static final int PEER_SEMANTIC_TAG_TYPE = 1;
@@ -96,7 +101,41 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         this.setLocations(locations);
         this.setTimes(times);
         
+        this.refreshStatus();
+        
         // TODO attach knowledge
+    }
+    
+    @Override
+    public void refreshStatus() {
+        // don't call super method
+        
+        Statement statement = null;
+        ArrayList<Information> infoList = new ArrayList<>();
+        try {
+            statement  = this.getConnection().createStatement();
+            
+            StringBuilder sqlString = new StringBuilder("SELECT (ownerid) from "); 
+            sqlString.append(SQLSharkKB.KNOWLEDGEBASE);
+            
+            // we assume there is just a single knowledge base per database..
+            
+            ResultSet result = statement.executeQuery(sqlString.toString());
+            while(result.next()) {
+                int ownerid = result.getInt("ownerid");
+            }
+        } catch (SQLException e) {
+            L.w("error while creating SQL-statement: " + e.getLocalizedMessage(), this);
+        }
+        finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    // ignore
+                }
+            }
+        }
     }
     
     @Override
@@ -636,7 +675,14 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
     @Override
     public PeerSemanticTag getOwner() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            return (PeerSemanticTag) SQLSharkKB.wrapSQLTagStorage(this,
+                    new SQLSemanticTagStorage(this, this.ownerID),
+                    SQLSharkKB.PEER_SEMANTIC_TAG_TYPE);
+        } catch (SharkKBException ex) {
+            // TODO
+            return null;
+        }
     }
 
     @Override
