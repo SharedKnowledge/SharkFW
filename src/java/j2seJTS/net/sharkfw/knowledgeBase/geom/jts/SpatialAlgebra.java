@@ -123,10 +123,9 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         // Geometry with/as GeometryCollection does not work
         List<Geometry> jtsGeomsOnlyA = divideAllExistingGeometryCollections(jtsGeomsA);
         List<Geometry> jtsGeomsOnlyB = divideAllExistingGeometryCollections(jtsGeomsB);
-        List<Geometry> jtsIntersectedGeoms = getIntersectsFromListsWithJTSGeommetries(jtsGeomsOnlyA, jtsGeomsOnlyB);
-        List<Geometry> jtsIntersectedGeomsUnioned = unionTouchedJTSGeometries(jtsIntersectedGeoms);
+        List<Geometry> jtsGeomsOnlyAUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyA);
         List<Geometry> jtsGeomsOnlyBUnioned = unionTouchedJTSGeometries(jtsGeomsOnlyB);
-        return isListDifferent(jtsIntersectedGeomsUnioned, jtsGeomsOnlyBUnioned);
+        return isListDifferent(jtsGeomsOnlyAUnioned, jtsGeomsOnlyBUnioned);
     }
 
     /**
@@ -278,7 +277,31 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
                 }
             }
         }
-        if (a.isEmpty()) {
+        if (!a.isEmpty()) {
+          for (int i = 0; i < b.size(); i++) {
+              Geometry geomB = b.get(i);
+              for (Geometry geomA : a) {
+                  if (geomB.covers(geomA)) {
+                      try {
+                          geomB = geomB.difference(geomA);
+                      } catch (IllegalArgumentException ex) {
+                          throw new SharkKBException("Differentiation with GeometryCollection is not allowed.");
+                      }
+                      b.remove(i);
+                      if (!geomB.isEmpty()) {
+                          b.add(i, geomB);
+                      } else {
+                        i--;
+                        break;
+                      }
+                  }
+              }
+          }
+        }
+        else {
+            isdifferent = true;
+        }
+        if (!isdifferent && b.isEmpty()) {
             isdifferent = true;
         }
         return isdifferent;

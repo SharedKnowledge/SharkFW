@@ -50,7 +50,7 @@ public class JTSMain {
             LineString_Berlin_HTW_WH_G, LineString_Berlin_HTW_WH_G_EWKT,
             LineString_Berlin_HTW_WH_Complete, LineString_Berlin_HTW_WH_Complete_EWKT,
             Polygon_Berlin_HTW_WH_G, Polygon_Berlin_HTW_WH_G_EWKT, Polygon_Berlin_HTW_TA_Complete,
-            Polygon_Berlin_HTW_WH_Complete, Polygon_Berlin_HTW_WH_Complete_EWKT,
+            Polygon_Berlin_HTW_TA_Complete_EWKT, Polygon_Berlin_HTW_WH_Complete, Polygon_Berlin_HTW_WH_Complete_EWKT,
             Polygon_Berlin_HTW_WH_Complete_WITHOUT_G, Polygon_Berlin_HTW_WH_Complete_WITHOUT_G_EWKT,
             Multipoint_Berlin_HTW_WH_G, Multipoint_Berlin_HTW_WH_G_EWKT, Multipoint_Berlin_HTW_WH_Complete,
             Multilinestring_Berlin_HTW_WH_G, Multilinestring_Berlin_HTW_WH_G_EWKT,
@@ -131,6 +131,7 @@ public class JTSMain {
         Polygon_Berlin_HTW_WH_Complete = InMemoSharkGeometry.createGeomByWKT(string_Polygon_Berlin_HTW_WH_Complete);
         Polygon_Berlin_HTW_WH_Complete_EWKT = InMemoSharkGeometry.createGeomByEWKT(string_Polygon_Berlin_HTW_WH_Complete + "; SRID=" + srs);
         Polygon_Berlin_HTW_TA_Complete = InMemoSharkGeometry.createGeomByWKT(string_Polygon_Berlin_HTW_TA_Complete);
+        Polygon_Berlin_HTW_TA_Complete_EWKT = InMemoSharkGeometry.createGeomByEWKT(string_Polygon_Berlin_HTW_TA_Complete + "; SRID=" + srs);
         Polygon_Berlin_HTW_WH_Complete_WITHOUT_G = InMemoSharkGeometry.createGeomByWKT(string_Polygon_Berlin_HTW_WH_Complete_WITHOUT_G);
         Polygon_Berlin_HTW_WH_Complete_WITHOUT_G_EWKT = InMemoSharkGeometry.createGeomByEWKT(string_Polygon_Berlin_HTW_WH_Complete_WITHOUT_G + "; SRID=" + srs);
         Multipoint_Berlin_HTW_WH_G = InMemoSharkGeometry.createGeomByWKT(string_Multipoint_Berlin_HTW_WH_G);
@@ -1281,7 +1282,9 @@ public class JTSMain {
         Assert.assertEquals(true, usedFunctionClass.isIn(tag2, tag1));
     }
 
-    //Todo add Fragment Tests
+    /*
+     * fragment tests start here ->
+     */
     @Test
     public void checkSpatialAlgebraIsFragment() throws SharkKBException {
         String string_Blue_Collection = "GEOMETRYCOLLECTION (POLYGON ((166 426, 480 426, 480 230, 166 230, 166 426)), "
@@ -1382,7 +1385,8 @@ public class JTSMain {
         SpatialSemanticTag anchorSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(fragment_Testcase);
         SpatialSemanticTag expectedResultSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(ExpectedResult_Collection);
         SpatialSTSet sourceSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
-        sourceSTSet.merge(htw_tag1).merge(htw_tag2);
+        sourceSTSet.merge(htw_tag1);
+        sourceSTSet.merge(htw_tag2);
         SpatialSTSet fragmentSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSemanticTag containTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipolygon_Berlin_HTW_Complete);
         fragmentSTSet.merge(containTag);
@@ -1421,7 +1425,8 @@ public class JTSMain {
         SpatialSemanticTag anchorSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(fragment_Testcase);
         SpatialSemanticTag expectedResultSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(ExpectedResult_Collection);
         SpatialSTSet sourceSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
-        sourceSTSet.merge(htw_tag1).merge(htw_tag2);
+        sourceSTSet.merge(htw_tag1);
+        sourceSTSet.merge(htw_tag2);
         SpatialSTSet fragmentSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSemanticTag containTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipolygon_Berlin_HTW_Complete);
         fragmentSTSet.merge(containTag);
@@ -1452,7 +1457,8 @@ public class JTSMain {
                 + "52.456442857142854 13.526222422349827, 52.456442857142854 13.52491756093066)), POLYGON ((52.45574285714286 13.524791703128813, "
                 + "52.45606650054853 13.523988202214241, 52.45582827785886 13.523717299103737, 52.45574285714286 13.5238812621726, "
                 + "52.45574285714286 13.524791703128813)), POLYGON ((52.45727142857143 13.527230902640454, 52.45768305 13.5277319, 52.4583891 13.52590799, "
-                + "52.457382491517635 13.524657142857142, 52.45727142857143 13.524657142857142, 52.45727142857143 13.527230902640454)), POINT (52.45662394 13.52822542))");
+                + "52.457382491517635 13.524657142857142, 52.45727142857143 13.524657142857142, 52.45727142857143 13.527230902640454)), "
+                + "POINT (52.45662394 13.52822542), POINT (52.45621207 13.52636933))");
 
         SpatialSemanticTag htw_tag1 = InMemoSharkKB.createInMemoSpatialSemanticTag(htw_SharkGeom1);
         SpatialSemanticTag htw_tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(htw_SharkGeom2);
@@ -1461,7 +1467,8 @@ public class JTSMain {
         SpatialSemanticTag anchorSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(fragment_Testcase);
         SpatialSemanticTag expectedResultSpatialTag = InMemoSharkKB.createInMemoSpatialSemanticTag(ExpectedResult_Collection);
         SpatialSTSet sourceSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
-        sourceSTSet.merge(htw_tag1).merge(htw_tag2);
+        sourceSTSet.merge(htw_tag1);
+        sourceSTSet.merge(htw_tag2);
         sourceSTSet.merge(htw_tag3);
         SpatialSTSet fragmentSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
         SpatialSemanticTag containTag = InMemoSharkKB.createInMemoSpatialSemanticTag(Multipolygon_Berlin_HTW_Complete);
@@ -1526,7 +1533,9 @@ public class JTSMain {
 //        Assert.assertTrue(SharkCSAlgebra.identical(secondTag, expectedResultSpatialTag));
     }
 
-    //Todo add FrameworkTest
+    /*
+     * Framework tests start here ->
+     */
     @Test
     public void checkSpatialAlgebraIdentical_SharkSpatialAlgebra() throws SharkKBException {
         SharkGeometry shark_geom1 = net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry.createGeomByWKT(string_Multipolygon_Berlin_HTW_WH_Complete);
@@ -1545,9 +1554,66 @@ public class JTSMain {
         SpatialSemanticTag tag2 = InMemoSharkKB.createInMemoSpatialSemanticTag(shark_geom2);
         net.sharkfw.knowledgeBase.geom.SpatialAlgebra a = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra(); // dummy class
 // was:        Assert.assertEquals(true, a.isIn(tag1, tag2));
-        Assert.assertEquals(true, usedFunctionClass.isIn(tag1, tag2));
+        Assert.assertEquals(true, usedFunctionClass.isIn(tag2, tag1));
         
 //        Assert.assertTrue(SharkCSAlgebra.isIn(tag1, tag2));
+    }
+    
+    @Test
+    public void checkSpatialAlgebraComplete() throws SharkKBException {
+        SpatialSemanticTag htwBerlinOnly = InMemoSharkKB.createInMemoSpatialSemanticTag("HTW Berlin",
+                                                                                        new String[]{"https://www.htw-berlin.de"},
+                                                                                        Multipolygon_Berlin_HTW_Complete_EWKT);
+        SpatialSemanticTag htwBerlinWHOnly = InMemoSharkKB.createInMemoSpatialSemanticTag("HTW Berlin Wilhelminenhof",
+                                                                                          new String[]{"https://www.htw-berlin.de/htw/standorte/campus-wilhelminenhof/"},
+                                                                                          Polygon_Berlin_HTW_WH_Complete_EWKT);
+        SpatialSemanticTag htwBerlinTAOnly = InMemoSharkKB.createInMemoSpatialSemanticTag("HTW Berlin Treskowallee",
+                                                                                          new String[]{"https://www.htw-berlin.de/htw/standorte/campus-treskowallee/"},
+                                                                                          Polygon_Berlin_HTW_TA_Complete_EWKT);
+        SpatialSemanticTag htwBerlinWHWithoutGOnly = InMemoSharkKB.createInMemoSpatialSemanticTag("HTW Berlin Wilhelminenhof, without Building G",
+                                                                                          new String[]{"https://www.htw-berlin.de/fileadmin/HTW/Zentral/DE/HTW/ZR1_Presse/Infomaterial/Campusuebersicht_Wilhelminenhof.pdf"},
+                                                                                          Polygon_Berlin_HTW_WH_Complete_WITHOUT_G_EWKT);        
+        SpatialSemanticTag htwBerlinWHGOnly = InMemoSharkKB.createInMemoSpatialSemanticTag("HTW Berlin Wilhelminenhof, Building G",
+                                                                                           new String[]{"http://bibliothek.htw-berlin.de/standorte/bibliothek-campus-wilhelminenhof/"},
+                                                                                           Polygon_Berlin_HTW_WH_G_EWKT);
+        SpatialSTSet htwBerlinAssembledWHAndTA = InMemoSharkKB.createInMemoSpatialSTSet();
+        htwBerlinAssembledWHAndTA.merge(htwBerlinWHOnly);
+        htwBerlinAssembledWHAndTA.merge(htwBerlinTAOnly);
+        SpatialSTSet htwBerlinWHGAssembledWHWithoutGAndG = InMemoSharkKB.createInMemoSpatialSTSet();
+        htwBerlinWHGAssembledWHWithoutGAndG.merge(htwBerlinWHWithoutGOnly);
+        htwBerlinWHGAssembledWHWithoutGAndG.merge(htwBerlinWHGOnly);
+        SpatialSTSet htwBerlinOnlyInSTSet = InMemoSharkKB.createInMemoSpatialSTSet();
+        htwBerlinOnlyInSTSet.merge(htwBerlinOnly);    
+        SpatialSTSet fragmentHTWBerlinWHOnly = usedFunctionClass.fragment(null, htwBerlinOnlyInSTSet, htwBerlinWHOnly);
+        SpatialSTSet fragmentHTWBerlinWHGOnly = usedFunctionClass.fragment(null, fragmentHTWBerlinWHOnly, htwBerlinWHGOnly);
+        
+        Assert.assertEquals(true, usedFunctionClass.identical(htwBerlinAssembledWHAndTA, htwBerlinOnly));
+        Assert.assertEquals(false, usedFunctionClass.identical(htwBerlinTAOnly, htwBerlinWHGOnly));
+        Assert.assertEquals(false, usedFunctionClass.identical(htwBerlinWHOnly, htwBerlinWHWithoutGOnly));
+        Assert.assertEquals(true, usedFunctionClass.identical(htwBerlinWHGAssembledWHWithoutGAndG, htwBerlinWHOnly));
+        Assert.assertEquals(false, usedFunctionClass.identical(htwBerlinAssembledWHAndTA, htwBerlinWHGAssembledWHWithoutGAndG));
+        Assert.assertEquals(false, usedFunctionClass.identical(htwBerlinAssembledWHAndTA, fragmentHTWBerlinWHOnly));
+        Assert.assertEquals(true, usedFunctionClass.identical(fragmentHTWBerlinWHGOnly, htwBerlinWHGOnly));
+        Assert.assertEquals(true, usedFunctionClass.identical(fragmentHTWBerlinWHOnly, htwBerlinWHOnly));
+        Assert.assertEquals(false, usedFunctionClass.identical(fragmentHTWBerlinWHOnly, htwBerlinTAOnly));
+        Assert.assertEquals(false, usedFunctionClass.identical(fragmentHTWBerlinWHGOnly, htwBerlinWHWithoutGOnly));
+        
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinWHOnly, htwBerlinWHOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinOnly, htwBerlinWHOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinOnly, htwBerlinTAOnly));
+        Assert.assertEquals(false, usedFunctionClass.isIn(htwBerlinTAOnly, htwBerlinOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinOnly, htwBerlinWHGOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinAssembledWHAndTA, htwBerlinWHOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinAssembledWHAndTA, htwBerlinTAOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinAssembledWHAndTA, htwBerlinWHGOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinWHOnly, htwBerlinWHGOnly));
+        Assert.assertEquals(false, usedFunctionClass.isIn(htwBerlinWHWithoutGOnly, htwBerlinWHGOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinWHGAssembledWHWithoutGAndG, htwBerlinWHGOnly));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinAssembledWHAndTA, htwBerlinWHGAssembledWHWithoutGAndG));
+        Assert.assertEquals(true, usedFunctionClass.isIn(fragmentHTWBerlinWHOnly, htwBerlinWHGOnly));
+        Assert.assertEquals(false, usedFunctionClass.isIn(fragmentHTWBerlinWHOnly, htwBerlinAssembledWHAndTA));
+        Assert.assertEquals(true, usedFunctionClass.isIn(htwBerlinWHGAssembledWHWithoutGAndG, fragmentHTWBerlinWHGOnly));
+        Assert.assertEquals(false, usedFunctionClass.isIn(fragmentHTWBerlinWHGOnly, htwBerlinWHWithoutGOnly));
     }
     
     @Test
