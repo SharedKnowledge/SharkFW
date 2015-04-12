@@ -190,19 +190,19 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             // Check if the other peer is a sync KP
             if (synchronizationTag != null) {
                 
-                // Abort if still within retry timeout for this peer
-                if (System.currentTimeMillis() < 
-                        (_timestamps.getTimestamp(kepConnection.getSender()).getTime() + _retryTimeout)
-                    ) {
-                    return;
-                }
-                
                 // Find out in which state of the protocol we are
                 String state = synchronizationTag.getProperty(SYNCHRONIZATION_PROTOCOL_STATE);
                 
                 // Is the serialized CC property set? If not, Send back a list of CCs we have to offer to this peer
                 // ------------------ DEFAULT ------------------
                 if (state == null) {
+                    
+                    // Abort if still within retry timeout for this peer
+                    if (System.currentTimeMillis() < 
+                             (_timestamps.getTimestamp(kepConnection.getSender()).getTime() + _retryTimeout)
+                       ) {
+                        return;
+                    }
                     List<SyncContextPoint> possibleCCsForPeer = retrieve(_timestamps.getTimestamp(kepConnection.getSender()));
                     this.setStepOffer(possibleCCsForPeer);
                     L.e(_kb.getOwner().getName() + " sent offer expose.");

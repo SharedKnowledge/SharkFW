@@ -100,7 +100,7 @@ class TimestampList {
      */
     public Date getTimestamp(PeerSemanticTag peer) {
         PeerTimestamp p = findPeerTimestamp(peer);
-        if (p == null) return null;
+        if (p == null) return new Date(0);
         else return p.getDate();
     }
     
