@@ -41,6 +41,9 @@ public class AndroidSharkEngine extends J2SEAndroidSharkEngine {
     
     @Override
     protected Stub createWifiDirectStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
+    	if (_wifi != null) {
+    		_wifi.stop();
+    	}
     	_wifi = new WifiDirectStreamStub(getContext(), this, kepStub);
     	_wifi.start();
         return _wifi;

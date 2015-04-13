@@ -2,7 +2,7 @@ package net.sharkfw.protocols.wifidirect;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 
-public class WifiP2pDeviceConnectionInfo {
+public class WifiP2pDeviceConnectionInfo implements Comparable {
 
 	public enum DeviceConnectionState {
 		NONE,
@@ -51,6 +51,17 @@ public class WifiP2pDeviceConnectionInfo {
 	
 	public void setIsDeviceAvailable(boolean isDeviceAvailable) {
 		_isDeviceAvailable = isDeviceAvailable;
+	}
+
+	@Override
+	public int compareTo(Object another) {
+		WifiP2pDeviceConnectionInfo other = (WifiP2pDeviceConnectionInfo) another;
+		if (other.getLastConnectionEstablishedTimestamp() == this.getLastConnectionEstablishedTimestamp())
+			return 0;
+		if (other.getLastConnectionEstablishedTimestamp() > this.getLastConnectionEstablishedTimestamp()) 
+			return 1;
+		else 
+			return -1;
 	}
 	
 }
