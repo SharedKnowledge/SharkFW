@@ -20,7 +20,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
         {
-            revisionTests.Version2.class
+            revisionTests.Version2.class,
+            security.BasicSecurityTests.class
         })
 public class Version3 {
 
