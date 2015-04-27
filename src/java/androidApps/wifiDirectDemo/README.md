@@ -48,5 +48,5 @@ This app was developed in the winter semester 2014/2015 at the University of app
 
 * Jetmir Gigollaj
 * Ruben Ahlhelm
-* Veit Heller
-* Simon Arnold
+* Veit Heller (veit@veitheller.de, @hellerve)
+* Simon Arnold  (simonh.arnold@gmail.com, @simonArnold)
