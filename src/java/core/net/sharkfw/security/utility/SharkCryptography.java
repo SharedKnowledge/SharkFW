@@ -18,7 +18,7 @@ import java.security.*;
 
 //TODO: the process of encoding and decoding should run in a separate thread with an event notifier
 
-public class SharkCoder {
+public class SharkCryptography {
 
     private static Cipher cipher;
 
