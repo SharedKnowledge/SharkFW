@@ -7,15 +7,15 @@ import java.security.*;
 /**
  * Created by Alexander on 28.04.2015.
  */
-public class KeyHandler {
+public class SharkKeyHandler {
 
     private String cipherAlgorithm;
     private int keySize;
     private KeyPair keyPair;
     private byte[] sessionKey;
 
-    public KeyHandler(KeyPairAlgorithm keyPairAlgorithm, int keySize) {
-        this.cipherAlgorithm = keyPairAlgorithm.name();
+    public SharkKeyHandler(SharkKeyPairAlgorithm sharkKeyPairAlgorithm, int keySize) {
+        this.cipherAlgorithm = sharkKeyPairAlgorithm.name();
         this.keySize = keySize;
         this.keyPair = generateKeyPair();
     }
@@ -28,13 +28,13 @@ public class KeyHandler {
         return keyPair.getPrivate();
     }
 
-    public byte[] getRandomSessionKey(KeyAlgorithm keyAlgorithm) {
-        return generateRandomSessionKey(keyAlgorithm);
+    public byte[] getRandomSessionKey(SharkKeyAlgorithm sharkKeyAlgorithm) {
+        return generateRandomSessionKey(sharkKeyAlgorithm);
     }
 
-    private byte[] generateRandomSessionKey(KeyAlgorithm keyAlgorithm) {
+    private byte[] generateRandomSessionKey(SharkKeyAlgorithm sharkKeyAlgorithm) {
         try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlgorithm.name());
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(sharkKeyAlgorithm.name());
             keyGenerator.init(keySize/8);
             SecretKey secretKey = keyGenerator.generateKey();
             return secretKey.getEncoded();

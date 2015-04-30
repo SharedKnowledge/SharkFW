@@ -1,7 +1,7 @@
 package net.sharkfw.security.utility;
 
-import net.sharkfw.security.KeyAlgorithm;
-import net.sharkfw.security.KeyPairAlgorithm;
+import net.sharkfw.security.SharkKeyAlgorithm;
+import net.sharkfw.security.SharkKeyPairAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
  * @author ac
  *
  */
-public class CoderTest {
+public class SharkCoderTest {
 
     //region VARIABLES
     private final byte[] decodedSessionKey = {103, 56, -29, 60, 117, -25, -96, 105, -71, -43, -15, 17, 24, -55, -28, 7, -63, 3, 15, 58, 33, -126, 50, -97, -29, -28, 14, -91, -120, 11, 77, -118};
@@ -40,13 +40,13 @@ public class CoderTest {
 
     @Test
     public void testEncodeSessionKey() throws Exception {
-        String encoded = Coder.encodeSessionKey(decodedSessionKey, privateKey, KeyPairAlgorithm.RSA);
+        String encoded = SharkCoder.encodeSessionKey(decodedSessionKey, privateKey, SharkKeyPairAlgorithm.RSA);
         assertEquals(encoded, encodedSessionKey);
     }
 
     @Test
     public void testDecodeSessionKey() throws Exception {
-        byte[] decoded = Coder.decodeSessionKey(encodedSessionKey, publicKey, KeyPairAlgorithm.RSA);
+        byte[] decoded = SharkCoder.decodeSessionKey(encodedSessionKey, publicKey, SharkKeyPairAlgorithm.RSA);
         assertArrayEquals(decoded, decodedSessionKey);
     }
 
@@ -54,13 +54,13 @@ public class CoderTest {
     public void testEncodeData() throws Exception {
         //Keep in mind that the session key cannot exceed 128bit expect you use the Unlimited Strength library
         //see http://examples.javacodegeeks.com/core-java/security/invalidkeyexception/java-security-invalidkeyexception-how-to-solve-invalidkeyexception/
-        String encoded = Coder.encodeData(decodedSessionKey, sessionKey, KeyAlgorithm.AES);
+        String encoded = SharkCoder.encodeData(decodedSessionKey, sessionKey, SharkKeyAlgorithm.AES);
         assertEquals(encoded, encodedData);
     }
 
     @Test
     public void testDecodeData() throws Exception {
-        byte[] decoded = Coder.decodeData(encodedData, sessionKey, KeyAlgorithm.AES);
+        byte[] decoded = SharkCoder.decodeData(encodedData, sessionKey, SharkKeyAlgorithm.AES);
         assertArrayEquals(decoded, decodedSessionKey);
     }
 }

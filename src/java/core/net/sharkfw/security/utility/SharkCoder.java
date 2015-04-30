@@ -1,7 +1,7 @@
 package net.sharkfw.security.utility;
 
-import net.sharkfw.security.KeyAlgorithm;
-import net.sharkfw.security.KeyPairAlgorithm;
+import net.sharkfw.security.SharkKeyAlgorithm;
+import net.sharkfw.security.SharkKeyPairAlgorithm;
 import net.sharkfw.system.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -18,7 +18,7 @@ import java.security.*;
 
 //TODO: the process of encoding and decoding should run in a separate thread with an event notifier
 
-public class Coder {
+public class SharkCoder {
 
     private static Cipher cipher;
 
@@ -28,9 +28,9 @@ public class Coder {
      * @param privateKey
      * @return Base64 encoded string
      */
-    public static String encodeSessionKey(byte[] buffer, PrivateKey privateKey, KeyPairAlgorithm keyPairAlgorithm) {
+    public static String encodeSessionKey(byte[] buffer, PrivateKey privateKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {
         try {
-            cipher = Cipher.getInstance(keyPairAlgorithm.name());
+            cipher = Cipher.getInstance(sharkKeyPairAlgorithm.name());
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
             return Base64.encodeBytes(cipher.doFinal(buffer));
         } catch (InvalidKeyException e) {
@@ -50,13 +50,13 @@ public class Coder {
      * Decode Base64 string.
      * @param base64String
      * @param publicKey
-     * @param keyPairAlgorithm
+     * @param sharkKeyPairAlgorithm
      * @return bytearray
      */
-    public static byte[] decodeSessionKey(String base64String, PublicKey publicKey, KeyPairAlgorithm keyPairAlgorithm) {
+    public static byte[] decodeSessionKey(String base64String, PublicKey publicKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {
         try {
             byte[] buffer = Base64.decode(base64String);
-            cipher = Cipher.getInstance(keyPairAlgorithm.name());
+            cipher = Cipher.getInstance(sharkKeyPairAlgorithm.name());
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
             return cipher.doFinal(buffer);
         } catch (NoSuchAlgorithmException e) {
@@ -78,13 +78,13 @@ public class Coder {
      * Encode data stored in a bytearray.
      * @param buffer
      * @param sessionKey
-     * @param keyAlgorithm
+     * @param sharkKeyAlgorithm
      * @return Base64 encoded string
      */
-    public static String encodeData(byte[] buffer, byte[] sessionKey, KeyAlgorithm keyAlgorithm) {
+    public static String encodeData(byte[] buffer, byte[] sessionKey, SharkKeyAlgorithm sharkKeyAlgorithm) {
         try {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(sessionKey, keyAlgorithm.name());
-            cipher = Cipher.getInstance(keyAlgorithm.name());
+            SecretKeySpec secretKeySpec = new SecretKeySpec(sessionKey, sharkKeyAlgorithm.name());
+            cipher = Cipher.getInstance(sharkKeyAlgorithm.name());
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
             return Base64.encodeBytes(cipher.doFinal(buffer));
         } catch (NoSuchAlgorithmException e) {
@@ -104,14 +104,14 @@ public class Coder {
      * Decode Base64 data.
      * @param base64String
      * @param sessionKey
-     * @param keyAlgorithm
+     * @param sharkKeyAlgorithm
      * @return bytearray
      */
-    public static byte[] decodeData(String base64String, byte[] sessionKey, KeyAlgorithm keyAlgorithm) {
+    public static byte[] decodeData(String base64String, byte[] sessionKey, SharkKeyAlgorithm sharkKeyAlgorithm) {
         try {
             byte[] buffer = Base64.decode(base64String);
-            SecretKeySpec secretKeySpec = new SecretKeySpec(sessionKey, keyAlgorithm.name());
-            cipher = Cipher.getInstance(keyAlgorithm.name());
+            SecretKeySpec secretKeySpec = new SecretKeySpec(sessionKey, sharkKeyAlgorithm.name());
+            cipher = Cipher.getInstance(sharkKeyAlgorithm.name());
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
             return cipher.doFinal(buffer);
         } catch (NoSuchAlgorithmException e) {
