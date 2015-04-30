@@ -1,0 +1,17 @@
+Features:
+    - Vorhaben(Syncs) => Protokoll implementieren
+        1. Interests festmachen (Was hat Peer A in den Syncbuckets für Peer B)
+        2. Contextcoordiantes vergleichen (Was braucht Peer B davon tatsächlich)
+        3. Daten senden
+        -> ausser für WifiDirect(zweiter Check auf leeres all interesse; siehe unten)
+    - Contextspaces syncen
+    - Bucketlist persistent
+    - eigeninformation auf allinteresse
+
+Identifizieren der Wissensbasis, damit, wenn ein Peer 2 Sync KPs besitzt, nicht der eine Step zur einen, der andere Step zur anderen geschickt wird.
+
+addInformation(Information source) setzt nur Referenz, keine copy  
+
+SyncKP bug tests
+
+Race Condition(broken fucking pipe)
