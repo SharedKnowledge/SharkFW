@@ -1,7 +1,7 @@
 package net.sharkfw.security.utility;
 
-import net.sharkfw.security.SharkKeyAlgorithm;
-import net.sharkfw.security.SharkKeyPairAlgorithm;
+import net.sharkfw.security.key.SharkKeyAlgorithm;
+import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import net.sharkfw.system.Base64;
 
 import javax.crypto.BadPaddingException;

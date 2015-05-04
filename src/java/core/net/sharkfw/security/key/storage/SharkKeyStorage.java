@@ -1,6 +1,6 @@
-package net.sharkfw.security.keystorage;
+package net.sharkfw.security.key.storage;
 
-import net.sharkfw.security.SharkKeyPairAlgorithm;
+import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 
 import java.io.Serializable;
 import java.security.PrivateKey;

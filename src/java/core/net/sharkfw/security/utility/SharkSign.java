@@ -1,13 +1,19 @@
 package net.sharkfw.security.utility;
 
-import net.sharkfw.security.SharkSignatureAlgorithm;
-
 import java.security.*;
 
 /**
  * @author ac
  */
 public class SharkSign {
+
+    /**
+     * see https://docs.oracle.com/javase/7/docs/api/java/security/Signature.html
+     * for additional algorithms
+     */
+    public enum SharkSignatureAlgorithm {
+        SHA1withRSA
+    }
 
     /**
      * Calculates the signature of a given bytearray.

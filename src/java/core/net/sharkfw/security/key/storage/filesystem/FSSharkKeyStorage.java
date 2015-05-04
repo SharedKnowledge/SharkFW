@@ -1,6 +1,6 @@
-package net.sharkfw.security.keystorage.filesystem;
+package net.sharkfw.security.key.storage.filesystem;
 
-import net.sharkfw.security.keystorage.SharkKeyStorage;
+import net.sharkfw.security.key.storage.SharkKeyStorage;
 
 import java.io.*;
 

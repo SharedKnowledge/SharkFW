@@ -1,4 +1,4 @@
-package net.sharkfw.security;
+package net.sharkfw.security.key;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -7,7 +7,7 @@ import java.security.*;
 /**
  * @author ac
  */
-public class SharkKeyHandler {
+public class SharkKeyGenerator {
 
     private String cipherAlgorithm;
     private int keySize;
@@ -18,7 +18,7 @@ public class SharkKeyHandler {
      * @param sharkKeyPairAlgorithm
      * @param keySize
      */
-    public SharkKeyHandler(SharkKeyPairAlgorithm sharkKeyPairAlgorithm, int keySize) {
+    public SharkKeyGenerator(SharkKeyPairAlgorithm sharkKeyPairAlgorithm, int keySize) {
         this.cipherAlgorithm = sharkKeyPairAlgorithm.name();
         this.keySize = keySize;
         this.keyPair = generateKeyPair();

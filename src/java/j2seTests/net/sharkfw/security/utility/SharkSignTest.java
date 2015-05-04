@@ -1,6 +1,5 @@
 package net.sharkfw.security.utility;
 
-import net.sharkfw.security.SharkSignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +8,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -37,12 +35,12 @@ public class SharkSignTest {
 
     @Test
     public void testSign() throws Exception {
-        byte[] signature = SharkSign.sign(data, privateKey, SharkSignatureAlgorithm.SHA1withRSA);
+        byte[] signature = SharkSign.sign(data, privateKey, SharkSign.SharkSignatureAlgorithm.SHA1withRSA);
         assertArrayEquals(this.signature, signature);
     }
 
     @Test
     public void testVerify() throws Exception {
-        assertTrue(SharkSign.verify(data, this.signature, publicKey, SharkSignatureAlgorithm.SHA1withRSA));
+        assertTrue(SharkSign.verify(data, this.signature, publicKey, SharkSign.SharkSignatureAlgorithm.SHA1withRSA));
     }
 }

@@ -1,7 +1,7 @@
-package net.sharkfw.security.keystorage.filesystem;
+package net.sharkfw.security.key.storage.filesystem;
 
-import net.sharkfw.security.SharkKeyPairAlgorithm;
-import net.sharkfw.security.keystorage.SharkKeyStorage;
+import net.sharkfw.security.key.SharkKeyPairAlgorithm;
+import net.sharkfw.security.key.storage.SharkKeyStorage;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

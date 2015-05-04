@@ -1,4 +1,4 @@
-package net.sharkfw.security;
+package net.sharkfw.security.key;
 
 /**
  * @author ac
