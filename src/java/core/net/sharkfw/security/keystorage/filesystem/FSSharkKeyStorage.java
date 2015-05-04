@@ -11,10 +11,19 @@ public class FSSharkKeyStorage {
 
     private String filePath;
 
+    /**
+     * Constructor.
+     * @param filePath
+     */
     public FSSharkKeyStorage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Serialize the given object and saved it to the given path.
+     * @param sharkKeyStorage
+     * @return
+     */
     public boolean save(SharkKeyStorage sharkKeyStorage) {
         try {
             FileOutputStream fileOutputStream =  new FileOutputStream(filePath);
@@ -30,6 +39,10 @@ public class FSSharkKeyStorage {
         return true;
     }
 
+    /**
+     * Deserialize the object from the given filepath.
+     * @return SharkKeyStorage
+     */
     public SharkKeyStorage load() {
 
         SharkKeyStorage sharkKeyStorage = null;

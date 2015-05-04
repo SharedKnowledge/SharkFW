@@ -5,33 +5,55 @@ import javax.crypto.SecretKey;
 import java.security.*;
 
 /**
- * Created by Alexander on 28.04.2015.
+ * @author ac
  */
 public class SharkKeyHandler {
 
     private String cipherAlgorithm;
     private int keySize;
     private KeyPair keyPair;
-    private byte[] sessionKey;
 
+    /**
+     * Constructor.
+     * @param sharkKeyPairAlgorithm
+     * @param keySize
+     */
     public SharkKeyHandler(SharkKeyPairAlgorithm sharkKeyPairAlgorithm, int keySize) {
         this.cipherAlgorithm = sharkKeyPairAlgorithm.name();
         this.keySize = keySize;
         this.keyPair = generateKeyPair();
     }
 
+    /**
+     *
+     * @return PublicKey
+     */
     public PublicKey getPublicKey() {
         return keyPair.getPublic();
     }
 
+    /**
+     *
+     * @return PrivateKey
+     */
     public PrivateKey getPrivateKey() {
         return keyPair.getPrivate();
     }
 
+    /**
+     * Method overloading.
+     * @param sharkKeyAlgorithm
+     * @return SessionKey
+     */
     public byte[] getRandomSessionKey(SharkKeyAlgorithm sharkKeyAlgorithm) {
         return generateRandomSessionKey(sharkKeyAlgorithm);
     }
 
+    /**
+     * Generates a random session key using the given algorithm and keysize.
+     * @param sharkKeyAlgorithm
+     * @return SessionKey
+     */
     private byte[] generateRandomSessionKey(SharkKeyAlgorithm sharkKeyAlgorithm) {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance(sharkKeyAlgorithm.name());
@@ -43,6 +65,10 @@ public class SharkKeyHandler {
         }
     }
 
+    /**
+     * Generates an new public- and privatekey pair.
+     * @return KeyPair
+     */
     private KeyPair generateKeyPair() {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(cipherAlgorithm);

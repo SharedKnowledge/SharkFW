@@ -2,7 +2,6 @@ package net.sharkfw.security.utility;
 
 import net.sharkfw.security.SharkSignatureAlgorithm;
 
-import java.io.BufferedInputStream;
 import java.security.*;
 
 /**
@@ -10,6 +9,13 @@ import java.security.*;
  */
 public class SharkSign {
 
+    /**
+     * Calculates the signature of a given bytearray.
+     * @param data
+     * @param privateKey
+     * @param sharkSignatureAlgorithm
+     * @return Signature
+     */
     public static byte[] sign(byte[] data, PrivateKey privateKey, SharkSignatureAlgorithm sharkSignatureAlgorithm) {
         try {
             Signature signature = Signature.getInstance(sharkSignatureAlgorithm.name());
@@ -25,12 +31,20 @@ public class SharkSign {
         }
     }
 
+    /**
+     * Validates signature and data.
+     * @param data
+     * @param signature
+     * @param publicKey
+     * @param sharkSignatureAlgorithm
+     * @return true or false
+     */
     public static boolean verify(byte[] data, byte[] signature, PublicKey publicKey, SharkSignatureAlgorithm sharkSignatureAlgorithm) {
         try {
             Signature sig = Signature.getInstance(sharkSignatureAlgorithm.name());
             sig.initVerify(publicKey);
             sig.update(data);
-            return sig.verify(signature) ? true : false;
+            return sig.verify(signature);
         } catch (NoSuchAlgorithmException e) {
             return false;
         } catch (InvalidKeyException e) {
