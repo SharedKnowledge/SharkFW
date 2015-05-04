@@ -5,6 +5,7 @@ package net.sharkfw.security.key;
  */
 
 /**
+ * Asymmetric encryption
  * see https://docs.oracle.com/javase/7/docs/api/java/security/KeyPairGenerator.html
  * for additional algorithms
  */
