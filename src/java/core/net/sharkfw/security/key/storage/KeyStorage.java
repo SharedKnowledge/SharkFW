@@ -14,35 +14,35 @@ public interface KeyStorage  {
      *
      * @return PublicKey
      */
-    public PublicKey getPublicKey();
+    PublicKey getPublicKey();
 
     /**
      * Stores PublicKeys.
      * @param publicKey
      */
-    public void setPublicKey(PublicKey publicKey);
+    void setPublicKey(PublicKey publicKey);
 
     /**
      *
      * @return PrivateKey
      */
-    public PrivateKey getPrivateKey();
+    PrivateKey getPrivateKey();
 
     /**
      * Stores PrivateKey.
      * @param privateKey
      */
-    public void setPrivateKey(PrivateKey privateKey);
+    void setPrivateKey(PrivateKey privateKey);
 
     /**
      *
      * @return SharkKeyPairAlgorithm
      */
-    public SharkKeyPairAlgorithm getSharkKeyPairAlgorithm();
+    SharkKeyPairAlgorithm getSharkKeyPairAlgorithm();
 
     /**
      * Stores SharkKeyPairAlgorithm.
      * @param sharkKeyPairAlgorithm
      */
-    public void setSharkKeyPairAlgorithm(SharkKeyPairAlgorithm sharkKeyPairAlgorithm);
+    void setSharkKeyPairAlgorithm(SharkKeyPairAlgorithm sharkKeyPairAlgorithm);
 }
