@@ -15,7 +15,7 @@ public class FSSharkKeyStorage {
      * Constructor.
      * @param filePath
      */
-    public FSSharkKeyStorage(String filePath) {
+    public FSSharkKeyStorage(final String filePath) {
         this.filePath = filePath;
     }
 

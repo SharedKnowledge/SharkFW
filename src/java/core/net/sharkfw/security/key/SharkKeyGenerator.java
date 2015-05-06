@@ -18,7 +18,7 @@ public class SharkKeyGenerator {
      * @param sharkKeyPairAlgorithm
      * @param keySize
      */
-    public SharkKeyGenerator(SharkKeyPairAlgorithm sharkKeyPairAlgorithm, int keySize) {
+    public SharkKeyGenerator(final SharkKeyPairAlgorithm sharkKeyPairAlgorithm, final int keySize) {
         this.cipherAlgorithm = sharkKeyPairAlgorithm.name();
         this.keySize = keySize;
         this.keyPair = generateKeyPair();
