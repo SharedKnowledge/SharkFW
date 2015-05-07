@@ -22,7 +22,7 @@ public class SharkCertificate implements Certificate {
      * @param subjectPublicKey
      * @param validity
      */
-    SharkCertificate(PeerSemanticTag subject, PeerSemanticTag issuer, PublicKey subjectPublicKey, Date validity) {
+    public SharkCertificate(PeerSemanticTag subject, PeerSemanticTag issuer, PublicKey subjectPublicKey, Date validity) {
         this.subject = subject;
         this.issuer = issuer;
         this.subjectPublicKey = subjectPublicKey;

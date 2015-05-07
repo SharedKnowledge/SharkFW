@@ -58,6 +58,6 @@ public class FSSharkKeyStorageTest {
             isEqual = true;
         }
 
-        assertEquals(true, isEqual);
+        assertTrue(isEqual);
     }
 }
