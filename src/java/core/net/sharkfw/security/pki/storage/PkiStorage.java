@@ -3,9 +3,10 @@ package net.sharkfw.security.pki.storage;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.filesystem.FSSharkKB;
-import net.sharkfw.security.pki.SharkPkiCertificate;
+import net.sharkfw.security.pki.SharkCertificate;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
@@ -17,21 +18,21 @@ public interface PkiStorage {
     /**
      *
      * @param peerSemanticTag
-     * @return SharkPkiCertificate
+     * @return SharkCertificate
      */
-    SharkPkiCertificate getSharkCertificate(PeerSemanticTag peerSemanticTag);
+    SharkCertificate getSharkCertificate(PeerSemanticTag peerSemanticTag, PublicKey publicKey) throws SharkKBException;
 
     /**
      *
-     * @param sharkPkiCertificate
+     * @param sharkCertificate
      */
-    void addSharkCertificate(SharkPkiCertificate sharkPkiCertificate) throws SharkKBException;
+    void addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException;
 
     /**
      *
      * @return All stored SharkCertificates
      */
-    List<SharkPkiCertificate> getSharkPkiCertificateList() throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException;
+    List<SharkCertificate> getSharkCertificateList() throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException;
 
     /**
      *

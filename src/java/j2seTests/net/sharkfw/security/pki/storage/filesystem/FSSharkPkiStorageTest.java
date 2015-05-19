@@ -4,7 +4,7 @@
 //import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 //import net.sharkfw.security.key.SharkKeyGenerator;
 //import net.sharkfw.security.key.SharkKeyPairAlgorithm;
-//import net.sharkfw.security.pki.SharkPkiCertificate;
+//import net.sharkfw.security.pki.SharkCertificate;
 //import net.sharkfw.security.pki.storage.SharkPkiStorage;
 //import org.junit.AfterClass;
 //import org.junit.BeforeClass;
@@ -45,7 +45,7 @@
 //        publicKey = sharkKeyGenerator.getPublicKey();
 //        valid = new SimpleDateFormat("yyyy.MM.dd").parse("2020.01.01");
 //
-//        SharkPkiCertificate sharkPkiCertificate = new SharkPkiCertificate(alice, bob, publicKey, valid);
+//        SharkCertificate sharkPkiCertificate = new SharkCertificate(alice, bob, publicKey, valid);
 //        sharkPkiStorage.addSharkCertificate(sharkPkiCertificate);
 //    }
 //
