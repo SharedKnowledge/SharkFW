@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * @author ac
  */
-public class SharkCertificate implements Certificate {
+public class SharkPkiCertificate implements Certificate {
 
     private PeerSemanticTag subject;
     private PeerSemanticTag issuer;
@@ -22,7 +22,7 @@ public class SharkCertificate implements Certificate {
      * @param subjectPublicKey
      * @param validity
      */
-    public SharkCertificate(PeerSemanticTag subject, PeerSemanticTag issuer, PublicKey subjectPublicKey, Date validity) {
+    public SharkPkiCertificate(PeerSemanticTag subject, PeerSemanticTag issuer, PublicKey subjectPublicKey, Date validity) {
         this.subject = subject;
         this.issuer = issuer;
         this.subjectPublicKey = subjectPublicKey;
