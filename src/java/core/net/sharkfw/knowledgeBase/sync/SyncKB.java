@@ -392,4 +392,9 @@ public class SyncKB implements SharkKB {
     public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
         return _localKB.contextPoints(cs, matchAny);
     }
+
+    @Override
+    public void semanticTagChanged(SemanticTag tag, STSet stset) {
+        this._localKB.semanticTagChanged(tag, stset);
+    }
 }

@@ -54,6 +54,7 @@ abstract public class KnowledgePort {
      * Section 5.1 requires this constructor
      * 
      * @param se
+     * @param kb
      */
     protected KnowledgePort(SharkEngine se, SharkKB kb) {
         this.se = se;

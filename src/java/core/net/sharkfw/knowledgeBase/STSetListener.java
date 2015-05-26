@@ -20,4 +20,11 @@ public interface STSetListener {
    * @param stset The stset from which it has been removed.
    */
   public void semanticTagRemoved(SemanticTag tag, STSet stset);
+  
+  /**
+   * A SemanticTag changed
+   * @param tag The removed tag.
+   * @param stset The stset from which it has been removed.
+   */
+  public void semanticTagChanged(SemanticTag tag, STSet stset);
 }

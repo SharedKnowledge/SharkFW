@@ -463,6 +463,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     @Override
     public void contextPointRemoved(ContextPoint cp) {
     }
-    
-    
+
+    @Override
+    public void tagChanged(SemanticTag tag) {
+    }    
 }

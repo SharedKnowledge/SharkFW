@@ -24,13 +24,14 @@ public interface KnowledgeBaseListener extends KnowledgeListener {
 
   /**
    * Called when a location is created.
+     * @param location
    * @param tag The geo tag that has been created.
    */
   public void locationAdded(SpatialSemanticTag location);
 
   /**
    * Called when a timespan is created.
-   * @param tag The time tag that has been created.
+     * @param time
    */
   public void timespanAdded(TimeSemanticTag time);
 
@@ -74,4 +75,6 @@ public interface KnowledgeBaseListener extends KnowledgeListener {
    * @param object The tag a statement is made about.
    */
   public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object);
+
+  public void tagChanged(SemanticTag tag);
 }
