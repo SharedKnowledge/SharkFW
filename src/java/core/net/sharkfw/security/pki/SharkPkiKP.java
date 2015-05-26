@@ -37,19 +37,13 @@ public class SharkPkiKP extends KnowledgePort {
 
     @Override //incoming knowledge
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
-
         for(ContextPoint cp : Collections.list(knowledge.contextPoints())) {
-            //TODO
+            //TODO if certificate ....
         }
     }
 
     @Override //outgoing knowledge
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-        //TODO
-    }
-
-    @Override
-    public SharkKB getKB() {
-        return super.getKB();
+        //TODO if certificate ....
     }
 }

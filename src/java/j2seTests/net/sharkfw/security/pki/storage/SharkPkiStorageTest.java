@@ -44,7 +44,7 @@ public class SharkPkiStorageTest {
         alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "http://www.alice.de", "192.168.0.1");
         bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", new String[]{"http://www.bob.de", "http://www.bob.net", "http://www.bob.com"}, new String[]{"192.168.0.2", "192.168.0.3", "192.168.0.4"});
         time = InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, System.currentTimeMillis());
-        sharkPkiStorage = new SharkPkiStorage(testKB, alice);
+        sharkPkiStorage = new SharkPkiStorage(testKB, alice, SharkPkiStorage.Trustlevel.NONE, SharkPkiStorage.TrustedIssuer.ALL);
         date = new Date();
         date.setTime(new SimpleDateFormat("dd.MM.yyyy").parse(DATE_TIME).getTime());
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -65,7 +65,7 @@ public class SharkPkiStorageTest {
 
     @Test
     public void testAddSharkCertificate() throws Exception {
-        SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
+        SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice, SharkPkiStorage.Trustlevel.NONE, SharkPkiStorage.TrustedIssuer.ALL);
         sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, publicKey, date));
         assertNotNull(sharkPkiStorage);
         assertEquals(1, sharkPkiStorage.getSharkCertificateList().size());

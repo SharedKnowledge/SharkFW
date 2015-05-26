@@ -16,29 +16,51 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/* TODO addCertificate
+    - Estimate the trustlevel of the certificate issuer
+    - Estimate if the issuer is in the known peers list
+ */
+
+
 /**
  * @author ac
  */
 public class SharkPkiStorage implements PkiStorage {
 
-    private final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_NAME = "certificate";
-    private final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_SI = "cc:certificate";
-    private final static String PKI_INFORMATION_PUBLIC_KEY_NAME = "public_key";
-    private final static String PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME = "transmitter_list";
-    private final static String LINKED_LIST_SEPARATOR_NAME = "<name>";
-    private final static String LINKED_LIST_SEPARATOR_SIS = "<sis>";
-    private final static String LINKED_LIST_SEPARATOR_ADR = "<adr>";
-    private final static String LINKED_LIST_SEPARATOR_END = "<end>";
+    public static enum Trustlevel {
+        UNKNOWN,
+        NONE,
+        MARGINAL,
+        FULL
+    }
+
+    public static enum TrustedIssuer {
+        ALL,
+        KNOWN
+    }
+
+    public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_NAME = "certificate";
+    public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_SI = "cc:certificate";
+    public final static String PKI_INFORMATION_PUBLIC_KEY_NAME = "public_key";
+    public final static String PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME = "transmitter_list";
+    private final String LINKED_LIST_SEPARATOR_NAME = "<name>";
+    private final String LINKED_LIST_SEPARATOR_SIS = "<sis>";
+    private final String LINKED_LIST_SEPARATOR_ADR = "<adr>";
+    private final String LINKED_LIST_SEPARATOR_END = "<end>";
     private final SemanticTag PKI_CONTEXT_COORDINATE_TOPIC = InMemoSharkKB.createInMemoSemanticTag(PKI_CONTEXT_POINT_SEMANTIC_TAG_NAME, new String[]{PKI_CONTEXT_POINT_SEMANTIC_TAG_SI});
     ContextCoordinates contextCoordinatesFilter;
     KeyFactory keyFactory;
     private HashSet<SharkCertificate> sharkCertificateList;
     private SharkKB sharkPkiStorageKB;
     private PeerSemanticTag sharkPkiStorageOwner;
+    private Trustlevel trustlevel;
+    private TrustedIssuer trustedIssuer;
 
-    public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner) throws SharkKBException, NoSuchAlgorithmException {
+    public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner, Trustlevel trustlevel, TrustedIssuer trustedIssuer) throws SharkKBException, NoSuchAlgorithmException {
         sharkPkiStorageKB = sharkKB;
         sharkPkiStorageOwner = owner;
+        this.trustlevel = trustlevel;
+        this.trustedIssuer = trustedIssuer;
         sharkCertificateList = new HashSet<>();
         contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                 PKI_CONTEXT_COORDINATE_TOPIC,
@@ -74,6 +96,13 @@ public class SharkPkiStorage implements PkiStorage {
 
         contextPoint.addInformation(publicKey);
         contextPoint.addInformation(transmitterList);
+    }
+
+    @Override
+    public void addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException {
+        for(SharkCertificate sharkCertificate : sharkCertificateHashSet) {
+            addSharkCertificate(sharkCertificate);
+        }
     }
 
     @Override
