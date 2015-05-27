@@ -12,6 +12,24 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+/*
+    TODO: Incoming knowledge
+        - check if incoming knowledge contains one or several certificate
+            - compare semantic tag with the attached information to the context point
+        - extract one or several certificate
+        - add certificate to the sharkPkiStorage (this assumed the filtering**)
+            - question: should the storage or the kp uses filter like trust level or issuer lists?
+            - question: should the filtering be fixed or adjustable
+
+            **progress
+                - check if owner and issuer already exist in the sharkPkiStorage
+                - check if the trust level matches (after it has been updated)
+                - check if the issuer list matches (limited or open for all peers)
+                - check validity of the certificate
+    TODO: Outgoing knowledge
+        - process interest for a certificate to the given peer or peers
+ */
+
 /**
  * @author ac
  */
