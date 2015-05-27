@@ -567,4 +567,9 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         }
     }
   }
+
+    @Override
+    public void tagChanged(SemanticTag tag) {
+        this.syncInterest();
+    }
 }

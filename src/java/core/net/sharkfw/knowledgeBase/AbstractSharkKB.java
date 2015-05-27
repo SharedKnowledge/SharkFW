@@ -486,6 +486,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.notifySemanticTagRemoved(tag);
     }
 
+    @Override
+    public void semanticTagChanged(SemanticTag tag, STSet stset) {
+        this.notifySemanticTagChanged(tag);
+    }
+
     /**
      * 
      * @return
@@ -631,6 +636,14 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         while(listenerIterator.hasNext()) {
             KnowledgeBaseListener listener = listenerIterator.next();
             listener.topicRemoved(tag);
+        }
+    }
+
+    protected void notifySemanticTagChanged(SemanticTag tag) {
+        Iterator<KnowledgeBaseListener> listenerIterator = this.listeners.iterator();
+        while(listenerIterator.hasNext()) {
+            KnowledgeBaseListener listener = listenerIterator.next();
+            listener.tagChanged(tag);
         }
     }
 
