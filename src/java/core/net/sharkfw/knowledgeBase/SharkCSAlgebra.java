@@ -38,7 +38,7 @@ public abstract class SharkCSAlgebra {
             L.d("JTS Algebra instanciated");
             done = true;
                     
-        } catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException | java.lang.NoClassDefFoundError ex) {
             L.d("no JTS Spatial Algebra found - take default: " + ex.getMessage());
         } catch (InstantiationException | IllegalAccessException ex) {
             L.d("couldn't instantiate JTS Spatial Algebra - take default: " + ex.getMessage());
