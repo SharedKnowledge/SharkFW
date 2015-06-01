@@ -1,6 +1,8 @@
 package net.sharkfw.security.pki.storage;
 
+import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.security.pki.SharkCertificate;
 
@@ -28,6 +30,11 @@ public interface PkiStorage {
     void addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException;
 
     /**
+     * @param sharkCertificate
+     */
+    void addSharkCertificate(ContextPoint sharkCertificate);
+
+    /**
      * @param sharkCertificateHashSet
      * @throws SharkKBException
      */
@@ -37,4 +44,9 @@ public interface PkiStorage {
      * @return All stored SharkCertificates
      */
     HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException;
+
+    /**
+     * @return Knowledgebase containing the SharkPkiStorage
+     */
+    SharkKB getSharkPkiStorageKB();
 }
