@@ -87,6 +87,10 @@ public class InMemoPeerTaxonomy extends InMemoTaxonomy implements PeerTaxonomy, 
 
     @Override
     public void merge(STSet source) throws SharkKBException {
+        if(source == null) {
+            return;
+        }
+        
         if(source instanceof InMemoPeerTaxonomy) {
             super.merge(source);
         } else {
