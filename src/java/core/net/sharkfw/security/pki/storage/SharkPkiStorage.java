@@ -48,13 +48,9 @@ public class SharkPkiStorage implements PkiStorage {
     private HashSet<SharkCertificate> sharkCertificateList;
     private SharkKB sharkPkiStorageKB;
     private PeerSemanticTag sharkPkiStorageOwner;
-    private Trustlevel trustlevel;
-    private TrustedIssuer trustedIssuer;
-    public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner, Trustlevel trustlevel, TrustedIssuer trustedIssuer) throws SharkKBException, NoSuchAlgorithmException {
+    public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner) throws SharkKBException, NoSuchAlgorithmException {
         sharkPkiStorageKB = sharkKB;
         sharkPkiStorageOwner = owner;
-        this.trustlevel = trustlevel;
-        this.trustedIssuer = trustedIssuer;
         sharkCertificateList = new HashSet<>();
         contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                 PKI_CONTEXT_COORDINATE,
@@ -214,17 +210,5 @@ public class SharkPkiStorage implements PkiStorage {
         }
 
         return matchList;
-    }
-
-    public static enum Trustlevel {
-        NONE,
-        UNKNOWN,
-        MARGINAL,
-        FULL
-    }
-
-    public static enum TrustedIssuer {
-        ALL,
-        KNOWN
     }
 }
