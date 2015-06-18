@@ -11,6 +11,8 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,8 +91,9 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public void addSharkCertificate(ContextPoint sharkCertificate) {
+    public void addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException {
         //TODO add ContextPoint
+        SharkCSAlgebra.merge(sharkPkiStorageKB, null, sharkCertificate, false);
     }
 
     @Override
@@ -101,10 +104,10 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public SharkCertificate getSharkCertificate(PeerSemanticTag peerSemanticTag, PublicKey publicKey) throws SharkKBException {
+    public SharkCertificate getSharkCertificate(PeerSemanticTag subject, PublicKey publicKey) throws SharkKBException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
-            if (cp.getContextCoordinates().getRemotePeer().getName().equals(peerSemanticTag.getName())
+            if (cp.getContextCoordinates().getRemotePeer().getName().equals(subject.getName())
                     && Arrays.equals(cp.getInformation(PKI_INFORMATION_PUBLIC_KEY_NAME).next().getContentAsByte(), publicKey.getEncoded())) {
 
                 Information transmitterList = extractInformation(cp, PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
