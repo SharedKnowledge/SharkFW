@@ -76,16 +76,16 @@ public class SharkPkiStorage implements PkiStorage {
                 SharkCS.DIRECTION_INOUT);           //Direction
         ContextPoint contextPoint = sharkPkiStorageKB.createContextPoint(contextCoordinates);
 
-        Information publicKey = InMemoSharkKB.createInMemoInformation();
+        Information publicKey = contextPoint.addInformation();
         publicKey.setName(PKI_INFORMATION_PUBLIC_KEY_NAME);
         publicKey.setContent(sharkCertificate.getSubjectPublicKey().getEncoded());
 
-        Information transmitterList = InMemoSharkKB.createInMemoInformation();
+        Information transmitterList = contextPoint.addInformation();
         transmitterList.setName(PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
         transmitterList.setContent(getByteArrayFromLinkedList(sharkCertificate.getTransmitterList()));
 
-        contextPoint.addInformation(publicKey);
-        contextPoint.addInformation(transmitterList);
+        //contextPoint.addInformation(publicKey);
+        //contextPoint.addInformation(transmitterList);
     }
 
     @Override
