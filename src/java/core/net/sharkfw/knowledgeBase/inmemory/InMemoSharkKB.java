@@ -898,15 +898,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return result;
     }
 
-    public Iterator getTags() throws SharkKBException {
-        EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
-        tagEnum.addEnumeration(this.getTopicSTSet().tags());
-        tagEnum.addEnumeration(this.getPeerSTSet().tags());
-        tagEnum.addEnumeration(this.getSpatialSTSet().tags());
-        tagEnum.addEnumeration(this.getTimeSTSet().tags());
-        return tagEnum;
-    }
-
     @Override
     public void persist() {
         super.persist();

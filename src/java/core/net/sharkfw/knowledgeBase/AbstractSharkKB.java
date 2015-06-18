@@ -509,6 +509,17 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return tagEnum;
     }
     
+    public Iterator getTags() throws SharkKBException {
+        EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
+        tagEnum.addEnumeration(this.getTopicSTSet().tags());
+        tagEnum.addEnumeration(this.getPeerSTSet().tags());
+        tagEnum.addEnumeration(this.getSpatialSTSet().tags());
+        tagEnum.addEnumeration(this.getTimeSTSet().tags());
+        return tagEnum;
+    }
+
+
+    
     /**
      * Delete tag in any dimension - if it can be found
      * @param sis
