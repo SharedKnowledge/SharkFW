@@ -118,6 +118,7 @@ public class SharkPkiStorage implements PkiStorage {
             }
         }
 
+        //TODO: SharkSecurityException definieren /ShakrKBException
         return null;
     }
 
@@ -137,9 +138,11 @@ public class SharkPkiStorage implements PkiStorage {
                     new Date(cp.getContextCoordinates().getTime().getDuration())
             ));
         }
-        return sharkCertificateList;
+        return sharkCertificateList; //TODO: Iterator evaluieren,
     }
 
+
+    //TODO entfernen
     @Override
     public SharkKB getSharkPkiStorageKB() {
         return this.sharkPkiStorageKB;

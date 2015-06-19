@@ -36,6 +36,7 @@ public class SharkPkiKP extends KnowledgePort {
     private TrustLevel trustLevel;
     private TrustedIssuer trustedIssuer;
 
+    //PeerSTSet (for truesdedIssuere)
     public SharkPkiKP(SharkEngine se, SharkPkiStorage sharkPkiStorage, TrustLevel trustLevel, TrustedIssuer trustedIssuer) {
         super(se);
         this.sharkPkiStorage = sharkPkiStorage;
@@ -50,6 +51,7 @@ public class SharkPkiKP extends KnowledgePort {
                 //SharkPkiStorage needs and method to add directly a contextpoint to keep this slim
             }
         }
+        this.notifyKnowledgeReceived(knowledge); //TODO: Testen
     }
 
     @Override //outgoing knowledge
