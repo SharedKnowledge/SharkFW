@@ -31,8 +31,9 @@ public interface PkiStorage {
 
     /**
      * @param sharkCertificate
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    void addSharkCertificate(ContextPoint sharkCertificate);
+    void addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException;
 
     /**
      * @param sharkCertificateHashSet
