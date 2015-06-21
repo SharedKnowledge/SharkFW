@@ -1,4 +1,4 @@
-package knowledgeBase;
+package net.sharkfw.knowledgeBase.rdf;
 
 public final class RDFConstants {
 	

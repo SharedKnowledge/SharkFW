@@ -1,4 +1,4 @@
-package knowledgeBase;
+package net.sharkfw.knowledgeBase.rdf;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
