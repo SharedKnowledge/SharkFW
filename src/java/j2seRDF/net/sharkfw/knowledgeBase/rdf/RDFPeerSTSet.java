@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.rdf;
+package knowledgeBase;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -32,6 +32,18 @@ public class RDFPeerSTSet implements PeerSTSet {
 		dataset.begin(ReadWrite.READ);
 		model = dataset.getNamedModel("Peer");
 		dataset.end();		
+	}
+	
+
+	@Override
+	public RDFPeerSemanticTag getSemanticTag(String[] si)
+			throws SharkKBException {
+		return getSemanticTag(si[0]);
+	}
+
+	@Override
+	public RDFPeerSemanticTag getSemanticTag(String si) throws SharkKBException {
+		return new RDFPeerSemanticTag(kb, si);
 	}
 	
 	@Override
@@ -196,18 +208,6 @@ public class RDFPeerSTSet implements PeerSTSet {
 		return null;
 	}
 
-	@Override
-	public PeerSemanticTag getSemanticTag(String[] arg0)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PeerSemanticTag getSemanticTag(String arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Enumeration<PeerSemanticTag> peerTags() {

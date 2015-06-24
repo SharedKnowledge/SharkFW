@@ -79,6 +79,9 @@ public class TestRDFKB {
 		String topic = "Shark";
 		RDFPeerSemanticTag tag = peerSet.createPeerSemanticTag(topic, si,
 				addresses);
+		
+		
+		
 		kb.getDataset().begin(ReadWrite.READ);
 		kb.getDataset().getNamedModel(RDFConstants.PEER_MODEL_NAME)
 				.write(System.out);

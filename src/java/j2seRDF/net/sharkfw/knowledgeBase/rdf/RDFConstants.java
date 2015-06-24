@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.rdf;
+package knowledgeBase;
 
 public final class RDFConstants {
 	
@@ -24,4 +24,12 @@ public final class RDFConstants {
 	public static final String PEER_TAG_PREDICATE = "contactableby";
 	
 	public static final String PEER_TAG_ADDRESS_PREDICATE = "contacts";
+	
+	
+	
+	/************************************************* 
+	 *  Object names for PeerTags
+	 ************************************************/
+	
+	public static final String PEER_TAG_OBJECT_NAME_ADDRESS = "/address";
 }
