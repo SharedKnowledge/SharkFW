@@ -3,70 +3,102 @@ package net.sharkfw.knowledgeBase.rdf;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.ReadWrite;
+
 import net.sharkfw.knowledgeBase.FragmentationParameter;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.STSetListener;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
-
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ReadWrite;
+import net.sharkfw.knowledgeBase.SpatialSTSet;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  * 
  * @author Barret dfe
  *
  */
-public class RDFPeerSTSet implements PeerSTSet {
+public class RDFSpatialSTSet implements SpatialSTSet {
 
 	private RDFSharkKB kb;
 	
-	public RDFPeerSTSet(RDFSharkKB kb) {
+	public RDFSpatialSTSet(RDFSharkKB kb) {
 		
 		this.kb = kb;
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
-		dataset.getNamedModel(RDFConstants.PEER_MODEL_NAME);
+		dataset.getNamedModel(RDFConstants.SPATIAL_MODEL_NAME);
 		dataset.end();		
 	}
 	
-
+	/************************************************* 
+	 *  Implemented and tested methods - BEGIN
+	 ************************************************/
+	
 	@Override
-	public RDFPeerSemanticTag getSemanticTag(String[] si)
-			throws SharkKBException {
-		return getSemanticTag(si[0]);
+	public RDFSpatialSemanticTag createSpatialSemanticTag(String topic,
+			String[] si, SharkGeometry sg) throws SharkKBException {
+		return new RDFSpatialSemanticTag(kb, si, topic, sg);
 	}
+	
 
 	@Override
-	public RDFPeerSemanticTag getSemanticTag(String si) throws SharkKBException {
-		return new RDFPeerSemanticTag(kb, si);
+	public RDFSpatialSemanticTag getSpatialSemanticTag(String si)
+			throws SharkKBException {
+		return new RDFSpatialSemanticTag(kb, si);
 	}
 	
 	@Override
-	public RDFPeerSemanticTag createPeerSemanticTag(String topic, String[] si,
-			String[] addresses) throws SharkKBException {
-		return new RDFPeerSemanticTag(kb, si, topic, addresses);
+	public RDFSpatialSemanticTag getSpatialSemanticTag(String[] si)
+			throws SharkKBException {
+		return this.getSpatialSemanticTag(si[0]);
+		}
+
+	@Override
+	public RDFSemanticTag getSemanticTag(String si) throws SharkKBException {
+		return new RDFSemanticTag(kb, si, RDFConstants.SPATIAL_MODEL_NAME);
 	}
 
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1,
-			String arg2) throws SharkKBException {
+	public RDFSemanticTag getSemanticTag(String[] si) throws SharkKBException {
+		return this.getSemanticTag(si[0]);
+	}
+	
+	/************************************************* 
+	 *  Implemented and tested methods - END
+	 ************************************************/
+	
+	@Override
+	public void addListener(STSetListener arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public STSet contextualize(Enumeration<SemanticTag> arg0)
+			throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1,
-			String[] arg2) throws SharkKBException {
+	public STSet contextualize(STSet arg0) throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1,
-			String arg2) throws SharkKBException {
+	public STSet contextualize(Enumeration<SemanticTag> arg0,
+			FragmentationParameter arg1) throws SharkKBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public STSet contextualize(STSet arg0, FragmentationParameter arg1)
+			throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -86,10 +118,24 @@ public class RDFPeerSTSet implements PeerSTSet {
 	}
 
 	@Override
+	public STSet fragment(SemanticTag arg0) throws SharkKBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public STSet fragment(SemanticTag arg0, FragmentationParameter arg1)
+			throws SharkKBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public FragmentationParameter getDefaultFP() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 	@Override
 	public Iterator<SemanticTag> getSemanticTagByName(String arg0)
@@ -118,12 +164,6 @@ public class RDFPeerSTSet implements PeerSTSet {
 
 	@Override
 	public void removeListener(STSetListener arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void addListener(STSetListener arg0) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -165,50 +205,32 @@ public class RDFPeerSTSet implements PeerSTSet {
 	}
 
 	@Override
-	public PeerSTSet contextualize(Enumeration<SemanticTag> arg0)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PeerSTSet contextualize(STSet arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PeerSTSet contextualize(Enumeration<SemanticTag> arg0,
+	public SpatialSTSet contextualize(SpatialSTSet arg0,
 			FragmentationParameter arg1) throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+
+
 	@Override
-	public PeerSTSet contextualize(STSet arg0, FragmentationParameter arg1)
+	public double getDistance(SpatialSemanticTag arg0, SpatialSemanticTag arg1) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+
+	@Override
+	public boolean isInRange(SpatialSemanticTag arg0, SpatialSemanticTag arg1,
+			double arg2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Enumeration<SpatialSemanticTag> spatialTags()
 			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	@Override
-	public PeerSTSet fragment(SemanticTag arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PeerSTSet fragment(SemanticTag arg0, FragmentationParameter arg1)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public Enumeration<PeerSemanticTag> peerTags() {
 		// TODO Auto-generated method stub
 		return null;
 	}

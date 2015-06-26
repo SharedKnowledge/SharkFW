@@ -1,15 +1,7 @@
 package net.sharkfw.knowledgeBase.rdf;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
-
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
 
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.STSet;
@@ -17,18 +9,24 @@ import net.sharkfw.knowledgeBase.STSetListener;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.ReadWrite;
+
+/**
+ * 
+ * @author Barret dfe
+ *
+ */
 public class RDFSTSet implements STSet {
 
 	private RDFSharkKB kb;
-	
-	private Model model;
 	
 	public RDFSTSet(RDFSharkKB kb) {
 		
 		this.kb = kb;
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
-		model = dataset.getNamedModel("Topic");
+		dataset.getNamedModel("Topic");
 		dataset.end();		
 	}	
 

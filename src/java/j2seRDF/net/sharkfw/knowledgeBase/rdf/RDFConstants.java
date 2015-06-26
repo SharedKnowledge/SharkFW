@@ -1,5 +1,10 @@
-package knowledgeBase;
+package net.sharkfw.knowledgeBase.rdf;
 
+/**
+ * 
+ * @author Barret dfe
+ *
+ */
 public final class RDFConstants {
 	
 	/************************************************* 
@@ -19,17 +24,31 @@ public final class RDFConstants {
 	 *  Predicate names for tags
 	 ************************************************/
 	
-	public static final String SEMANTIC_TAG_PREDICATE = "describes";
+	public static final String SEMANTIC_TAG_PREDICATE = "http://www.dict.cc/?s=describe";
 	
-	public static final String PEER_TAG_PREDICATE = "contactableby";
+	public static final String PEER_TAG_PREDICATE = "http://www.dict.cc/?s=contactableby";
 	
-	public static final String PEER_TAG_ADDRESS_PREDICATE = "contacts";
+	public static final String PEER_TAG_ADDRESS_PREDICATE = "http://www.dict.cc/?s=contacts";
 	
+	public static final String SPATIAL_TAG_PREDICATE = "http://www.sharksystem.net/SharkGeometry";
 	
+	public static final String SPATIAL_TAG_EWKT = "http://www.sharksystem.net/SharkGeometry/ewkt";
+	
+	public static final String SPATIAL_TAG_SRS = "http://www.sharksystem.net/SharkGeometry/srs";
+	
+	public static final String SPATIAL_TAG_WKT = "http://www.sharksystem.net/SharkGeometry/wkt";
+	
+	public static final String TIME_TAG = "http://www.sharksystem.net/time";
+	
+	public static final String TIME_TAG_FROM = "http://www.sharksystem.net/time/from";
+	
+	public static final String TIME_TAG_DURATION = "http://www.sharksystem.net/time/duration";
 	
 	/************************************************* 
-	 *  Object names for PeerTags
+	 *  Object names for tags
 	 ************************************************/
 	
 	public static final String PEER_TAG_OBJECT_NAME_ADDRESS = "/address";
+	
+	public static final String SPATIAL_TAG_OBJECT_NAME_GEOMETRY = "/geometry";
 }

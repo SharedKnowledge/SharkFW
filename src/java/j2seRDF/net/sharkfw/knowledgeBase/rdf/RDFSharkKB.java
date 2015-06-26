@@ -1,4 +1,4 @@
-package knowledgeBase;
+package net.sharkfw.knowledgeBase.rdf;
 
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -9,7 +9,6 @@ import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
-import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTaxonomy;
@@ -19,16 +18,19 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
-import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.tdb.TDBFactory;
 
+/**
+ * 
+ * @author Barret dfe
+ *
+ */
 public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 
 	private String directory;
@@ -70,7 +72,6 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public SemanticTag createSemanticTag(String si, String name)
 			throws SharkKBException {
-		RDFSemanticTag tag = new RDFSemanticTag(this, si, name);
 		return null;
 	}
 	/** 
@@ -237,15 +238,13 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	}
 
 	@Override
-	public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFSpatialSTSet getSpatialSTSet() throws SharkKBException {
+		return new RDFSpatialSTSet(this);
 	}
 
 	@Override
-	public TimeSTSet getTimeSTSet() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFTimeSTSet getTimeSTSet() throws SharkKBException {
+		return new RDFTimeSTSet(this);
 	}
 
 	@Override
