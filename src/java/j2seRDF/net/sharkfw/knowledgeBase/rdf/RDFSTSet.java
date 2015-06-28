@@ -31,13 +31,13 @@ public class RDFSTSet implements STSet {
 	}	
 
 	@Override
-	public SemanticTag createSemanticTag(String name, String[] si)
+	public RDFSemanticTag createSemanticTag(String name, String[] si)
 			throws SharkKBException {
 		return new RDFSemanticTag(kb, si, name, RDFConstants.ST_MODEL_NAME);
 	}
 
 	@Override
-	public SemanticTag createSemanticTag(String si, String name)
+	public RDFSemanticTag createSemanticTag(String si, String name)
 			throws SharkKBException {
 		 return new RDFSemanticTag(kb, si, name, RDFConstants.ST_MODEL_NAME);
 	}
@@ -45,12 +45,12 @@ public class RDFSTSet implements STSet {
 
 
 	@Override
-	public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
+	public RDFSemanticTag getSemanticTag(String[] si) throws SharkKBException {
 		return new  RDFSemanticTag(kb, si[0], RDFConstants.ST_MODEL_NAME);
 	}
 
 	@Override
-	public SemanticTag getSemanticTag(String si) throws SharkKBException {
+	public RDFSemanticTag getSemanticTag(String si) throws SharkKBException {
 		return new RDFSemanticTag(kb, si, RDFConstants.ST_MODEL_NAME);
 	}
 	

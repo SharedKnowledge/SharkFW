@@ -1,14 +1,17 @@
 package net.sharkfw.knowledgeBase.rdf;
 
+import java.io.File;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
+import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PeerTaxonomy;
@@ -18,8 +21,10 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
+import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
@@ -45,6 +50,15 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 			throw new SharkKBException(
 					"Error while retrieving the RDFSharkKB from directory: "
 							+ directory);
+		}
+	}
+	
+	public void drop() {
+		File index = new File(directory);
+		String[] entries = index.list();
+		for (String s : entries) {
+			File currentFile = new File(index.getPath(), s);
+			currentFile.delete();
 		}
 	}
 	
@@ -103,33 +117,23 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 		return null;
 	}
 
-	@Override
-	public ContextCoordinates createContextCoordinates(SemanticTag arg0,
-			PeerSemanticTag arg1, PeerSemanticTag arg2, PeerSemanticTag arg3,
-			TimeSemanticTag arg4, SpatialSemanticTag arg5, int arg6)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
-	public ContextPoint createContextPoint(ContextCoordinates arg0)
+	public RDFContextPoint createContextPoint(ContextCoordinates coordinates)
 			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RDFContextPoint(this, coordinates);
 	}
 
 	@Override
 	public Interest createInterest() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.createInterest();
 	}
 
 	@Override
-	public Interest createInterest(ContextCoordinates arg0)
+	public Interest createInterest(ContextCoordinates coordinates)
 			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.createInterest(coordinates);
 	}
 
 	@Override
@@ -146,10 +150,9 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	}
 
 	@Override
-	public ContextPoint getContextPoint(ContextCoordinates arg0)
+	public RDFContextPoint getContextPoint(ContextCoordinates coordinates)
 			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RDFContextPoint(this, coordinates, 0);
 	}
 
 	@Override
@@ -531,6 +534,17 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public ContextCoordinates createContextCoordinates(SemanticTag arg0,
+			PeerSemanticTag arg1, PeerSemanticTag arg2, PeerSemanticTag arg3,
+			TimeSemanticTag arg4, SpatialSemanticTag arg5, int arg6)
+			throws SharkKBException {
+		throw new SharkKBException("Please use the createRDFContextCoordinates methid.");
+	}
+
+
+
 
 	
 

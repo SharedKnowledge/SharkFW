@@ -19,6 +19,8 @@ public final class RDFConstants {
 	
 	public static final String SPATIAL_MODEL_NAME = "Spatial";
 	
+	public static final String 	CONTEXT_POINT_MODEL_NAME = "Context Points";
+	
 	
 	/************************************************* 
 	 *  Predicate names for tags
@@ -43,6 +45,27 @@ public final class RDFConstants {
 	public static final String TIME_TAG_FROM = "http://www.sharksystem.net/time/from";
 	
 	public static final String TIME_TAG_DURATION = "http://www.sharksystem.net/time/duration";
+	
+	
+	/************************************************* 
+	 *  names for Context Point
+	 ************************************************/
+	
+	public static final String CONTEXT_POINT_SUBJECT = "http://www.sharksystem.net/ContextPoint";
+	
+	public static final String CONTEXT_POINT_PREDICATE_TOPIC = "http://www.sharksystem.net/ContextPoint/Topic";
+	
+	public static final String CONTEXT_POINT_PREDICATE_ORIGINATOR = "http://www.sharksystem.net/ContextPoint/Originator";
+	
+	public static final String CONTEXT_POINT_PREDICATE_PEER = "http://www.sharksystem.net/ContextPoint/Peer";
+	
+	public static final String CONTEXT_POINT_PREDICATE_REMOTE_PEER = "http://www.sharksystem.net/ContextPoint/RemotePeer";
+	
+	public static final String CONTEXT_POINT_PREDICATE_LOCATION = "http://www.sharksystem.net/ContextPoint/Location";
+	
+	public static final String CONTEXT_POINT_PREDICATE_TIME = "http://www.sharksystem.net/ContextPoint/Time";
+	
+	public static final String CONTEXT_POINT_PREDICATE_DIRECTION = "http://www.sharksystem.net/ContextPoint/Direction";
 	
 	/************************************************* 
 	 *  Object names for tags

@@ -23,7 +23,7 @@ public class RDFPeerSemanticTag extends RDFSemanticTag
 	private String[] address;
 
 	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
-	
+
 	public RDFPeerSemanticTag(RDFSharkKB kb, String[] si, String topic,
 			String[] addresses) {
 		super(si, topic);
@@ -60,20 +60,21 @@ public class RDFPeerSemanticTag extends RDFSemanticTag
 	}
 
 	/********** RDFKB-GET (read in db) CONSTRUCTOR **********/
-	
+
 	public RDFPeerSemanticTag(RDFSharkKB kb, String si) {
 		super(kb, si, RDFConstants.PEER_MODEL_NAME);
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
 		Model m = dataset.getNamedModel(RDFConstants.PEER_MODEL_NAME);
-		StmtIterator statementOfAddress = m.listStatements(m.getResource(si+ RDFConstants.PEER_TAG_OBJECT_NAME_ADDRESS),
+		StmtIterator statementOfAddress = m.listStatements(
+				m.getResource(si + RDFConstants.PEER_TAG_OBJECT_NAME_ADDRESS),
 				m.getProperty(RDFConstants.PEER_TAG_ADDRESS_PREDICATE),
 				(String) null);
 		List<String> addressesList = new ArrayList<String>();
 		while (statementOfAddress.hasNext()) {
 			addressesList.add(statementOfAddress.next().getObject().toString());
 		}
-		address = addressesList.toArray(new String [addressesList.size()]);		
+		address = addressesList.toArray(new String[addressesList.size()]);
 		dataset.end();
 
 	}

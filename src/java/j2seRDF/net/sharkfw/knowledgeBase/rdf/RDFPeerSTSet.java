@@ -65,10 +65,9 @@ public class RDFPeerSTSet implements PeerSTSet {
 	}
 
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1,
-			String arg2) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFPeerSemanticTag createPeerSemanticTag(String topic, String si,
+			String address) throws SharkKBException {
+		return new RDFPeerSemanticTag(kb, new String[] {si}, topic,new String[] {address});
 	}
 
 	@Override
