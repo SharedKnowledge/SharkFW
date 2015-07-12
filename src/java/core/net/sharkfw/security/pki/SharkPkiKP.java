@@ -49,8 +49,10 @@ public class SharkPkiKP extends KnowledgePort {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE)) {
                 //SharkPkiStorage needs and method to add directly a contextpoint to keep this slim
+                this.notifyKnowledgeAssimilated(this, cp);
             }
         }
+
         this.notifyKnowledgeReceived(knowledge); //TODO: Testen
     }
 
