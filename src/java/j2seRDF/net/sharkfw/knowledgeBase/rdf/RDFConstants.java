@@ -74,4 +74,12 @@ public final class RDFConstants {
 	public static final String PEER_TAG_OBJECT_NAME_ADDRESS = "/address";
 	
 	public static final String SPATIAL_TAG_OBJECT_NAME_GEOMETRY = "/geometry";
+	
+	/************************************************* 
+	 *  KB various tags
+	 ************************************************/
+	
+	public static final String KB_OWNER = "http://www.sharksystem.net/KnowledgeBase/Owner";
+	
+	public static final String KB_OWNER_PREDICATE = KB_OWNER + "/owns";
 }

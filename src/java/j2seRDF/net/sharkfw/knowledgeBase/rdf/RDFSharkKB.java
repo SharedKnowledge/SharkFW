@@ -4,6 +4,13 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import knowledgeBase.RDFConstants;
+import knowledgeBase.RDFContextPoint;
+import knowledgeBase.RDFPeerSTSet;
+import knowledgeBase.RDFPeerSemanticTag;
+import knowledgeBase.RDFSTSet;
+import knowledgeBase.RDFSpatialSTSet;
+import knowledgeBase.RDFTimeSTSet;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -29,6 +36,8 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.tdb.TDBFactory;
 
 /**
@@ -36,12 +45,12 @@ import com.hp.hpl.jena.tdb.TDBFactory;
  * @author Barret dfe
  *
  */
-public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
+public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 
 	private String directory;
 
 	private Dataset dataset;
-	
+
 	public RDFSharkKB(String directory) throws SharkKBException {
 
 		this.directory = directory;
@@ -52,7 +61,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 							+ directory);
 		}
 	}
-	
+
 	public void drop() {
 		File index = new File(directory);
 		String[] entries = index.list();
@@ -61,63 +70,67 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 			currentFile.delete();
 		}
 	}
-	
-	public Dataset getDataset()
-	{
+
+	public Dataset getDataset() {
 		return dataset;
 	}
-	
-	public String getDirectory()
-	{
+
+	public String getDirectory() {
 		return directory;
 	}
+	
 
-	/** 
-	 * @deprecated
-	 */
 	@Override
-	public SemanticTag createSemanticTag(String name, String[] si)
-			throws SharkKBException {
-		return null;
-	}
-	/** 
-	 * @deprecated
-	 */
-	@Override
-	public SemanticTag createSemanticTag(String si, String name)
-			throws SharkKBException {
-		return null;
-	}
-	/** 
-	 * @deprecated
-	 */
-	@Override
-	public SemanticTag getSemanticTag(String si) throws SharkKBException {
-		return null;
-	}
-	/** 
-	 * @deprecated
-	 */
-	@Override
-	public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
-		return null;
-	}
-
-	/** AbstractKb */
-	@Override
-	public Iterator<SemanticTag> getTags() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFSpatialSTSet getSpatialSTSet() throws SharkKBException {
+		return new RDFSpatialSTSet(this);
 	}
 
 	@Override
-	public Iterator<ContextPoint> contextPoints(SharkCS arg0, boolean arg1)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFTimeSTSet getTimeSTSet() throws SharkKBException {
+		return new RDFTimeSTSet(this);
 	}
 
+	@Override
+	public RDFSTSet getTopicSTSet() throws SharkKBException {
+		return new RDFSTSet(this);
+	}
+	
+	@Override
+	public RDFPeerSemanticTag getOwner() {
+		String si = null;		
+		dataset.begin(ReadWrite.READ);
+		Model m = dataset.getDefaultModel();
+		try {
+			si = m.listStatements(null,
+					m.getProperty(RDFConstants.KB_OWNER_PREDICATE),
+					(String) null).next().getSubject().getURI();
+		} finally {
+			dataset.end();
+		}
+		if (si != null) {
+			return new RDFPeerSemanticTag(this, si);
+		}
+		else {
+			return null;
+		}
+	}
 
+	@Override
+	public void setOwner(PeerSemanticTag owner) {
+		new RDFPeerSemanticTag(this, owner.getSI(), owner.getName(),
+				owner.getAddresses());		
+		dataset.begin(ReadWrite.WRITE);
+		Model m = dataset.getDefaultModel();
+		try {
+			m.createResource(owner.getSI()[0]).addProperty(
+					m.createProperty(RDFConstants.KB_OWNER_PREDICATE),
+					"SharkKB");
+			dataset.commit();
+		} finally {
+			dataset.end();
+		}
+	}
+	
 
 	@Override
 	public RDFContextPoint createContextPoint(ContextCoordinates coordinates)
@@ -137,128 +150,14 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	}
 
 	@Override
-	public Knowledge createKnowledge() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Enumeration<ContextPoint> getAllContextPoints()
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public RDFContextPoint getContextPoint(ContextCoordinates coordinates)
 			throws SharkKBException {
 		return new RDFContextPoint(this, coordinates, 0);
 	}
 
 	@Override
-	public PeerSemanticTag getOwner() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setOwner(PeerSemanticTag arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/** 
-	 * AbstractKB
-	 */
-	@Override
-	public Interest asInterest() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * Abstract
-	 */
-	@Override
-	public SharkCS asSharkCS() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * Abstract
-	 */
-	@Override
-	public Interest contextualize(SharkCS arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * Abstract
-	 */
-	@Override
-	public Interest contextualize(SharkCS arg0, FragmentationParameter[] arg1)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
 	public RDFPeerSTSet getPeerSTSet() throws SharkKBException {
 		return new RDFPeerSTSet(this);
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public PeerSemanticTag getPeerSemanticTag(String[] arg0)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public PeerSemanticTag getPeerSemanticTag(String arg0)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RDFSpatialSTSet getSpatialSTSet() throws SharkKBException {
-		return new RDFSpatialSTSet(this);
-	}
-
-	@Override
-	public RDFTimeSTSet getTimeSTSet() throws SharkKBException {
-		return new RDFTimeSTSet(this);
-	}
-
-	@Override
-	public RDFSTSet getTopicSTSet() throws SharkKBException {
-		return new RDFSTSet(this);
-	}
-
-	@Override
-	public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -266,110 +165,26 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
-	/**
-	 * Abstract
-	 */
 	@Override
-	public Enumeration<SemanticTag> tags() throws SharkKBException {
+	public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	/**
-	 * Abstract
-	 */
+	
 	@Override
-	public String getSystemProperty(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/**
-	 * Abstract
-	 */
-	@Override
-	public void setSystemProperty(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * Abstract
-	 */
-	@Override
-	public String getProperty(String arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/**
-	 * Abstract
-	 */
-	@Override
-	public Enumeration<String> propertyNames() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/**
-	 * Abstract
-	 */
-	@Override
-	public Enumeration<String> propertyNames(boolean arg0)
+	public Iterator<ContextPoint> contextPoints(SharkCS arg0, boolean arg1)
 			throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	/**
-	 * Abstract
-	 */
-	@Override
-	public void removeProperty(String arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * Abstract
-	 */
-	@Override
-	public void setProperty(String arg0, String arg1) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * Abstract
-	 */
-	@Override
-	public void setProperty(String arg0, String arg1, boolean arg2)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public void semanticTagChanged(SemanticTag arg0, STSet arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public void semanticTagCreated(SemanticTag arg0, STSet arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public void semanticTagRemoved(SemanticTag arg0, STSet arg1) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	@Override
 	public void addInterest(SharkCS arg0) throws SharkKBException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -381,31 +196,155 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public void removeInterest(SharkCS arg0) throws SharkKBException {
 		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * abstract
-	 */
-	@Override
-	public void addListener(KnowledgeBaseListener arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 
+	}
+	
+	@Override
+	public void removeContextPoint(ContextCoordinates arg0)
+			throws SharkKBException {
+		// TODO Auto-generated method stub
+
+	}
+	
 	@Override
 	public Iterator<ContextPoint> contextPoints(SharkCS arg0)
 			throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public Knowledge createKnowledge() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Enumeration<ContextPoint> getAllContextPoints()
+			throws SharkKBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public Iterator<SemanticTag> getTags() throws SharkKBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*******************************************************************************
+	 *  deprecated methods, will be removed in the next version of the interface
+	 ******************************************************************************/
+	
+	
+	
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public SemanticTag createSemanticTag(String name, String[] si)
+			throws SharkKBException {
+		throw new SharkKBException("Deprecated method");
+	}
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public SemanticTag createSemanticTag(String si, String name)
+			throws SharkKBException {
+		throw new SharkKBException("Deprecated method");
+	}
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public SemanticTag getSemanticTag(String si) throws SharkKBException {
+		throw new SharkKBException("Deprecated method");
+	}
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
+		throw new SharkKBException("Deprecated method");
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public void removeSemanticTag(String[] arg0) throws SharkKBException {		
+
+	}
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public void removeSemanticTag(SemanticTag arg0) throws SharkKBException {
+
+	}	
+
+	
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public void semanticTagChanged(SemanticTag arg0, STSet arg1) {
+	}
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public void semanticTagCreated(SemanticTag arg0, STSet arg1) {
+	}
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public void semanticTagRemoved(SemanticTag arg0, STSet arg1) {
+
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public PeerSemanticTag getPeerSemanticTag(String[] arg0)
+			throws SharkKBException {
+		throw new SharkKBException("Please use the TagSet for creating a tag");
+	}
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public PeerSemanticTag getPeerSemanticTag(String arg0)
+			throws SharkKBException {
+		throw new SharkKBException("Please use the TagSet for creating a tag");
+	}
+	
+
 	/**
 	 * @deprecated
 	 */
 	@Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1,
 			String[] arg2) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 	/**
 	 * @deprecated
@@ -413,8 +352,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1,
 			String arg2) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 	/**
 	 * @deprecated
@@ -422,8 +360,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1,
 			String arg2) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 	/**
 	 * @deprecated
@@ -431,8 +368,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1,
 			String[] arg2) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 	/**
 	 * @deprecated
@@ -440,8 +376,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public SpatialSemanticTag createSpatialSemanticTag(String arg0,
 			String[] arg1) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 	/**
 	 * @deprecated
@@ -449,8 +384,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public SpatialSemanticTag createSpatialSemanticTag(String arg0,
 			String[] arg1, SharkGeometry arg2) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 	/**
 	 * @deprecated
@@ -458,8 +392,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public TimeSemanticTag createTimeSemanticTag(long arg0, long arg1)
 			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 	/**
 	 * @deprecated
@@ -467,8 +400,7 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public Enumeration<ContextPoint> getContextPoints(SharkCS arg0)
 			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Deprecated method");
 	}
 	/**
 	 * @deprecated
@@ -476,76 +408,26 @@ public class RDFSharkKB /*extends AbstractSharkKB*/ implements SharkKB {
 	@Override
 	public Enumeration<ContextPoint> getContextPoints(SharkCS arg0, boolean arg1)
 			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SharkKBException("Deprecated method");
 	}
-	/**
-	 * abstract
-	 */
-	@Override
-	public FragmentationParameter[] getStandardFPSet() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/**
-	 * abstract
-	 */
-	@Override
-	public void persist() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeContextPoint(ContextCoordinates arg0)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * abstract
-	 */
-	@Override
-	public void removeListener(KnowledgeBaseListener arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public void removeSemanticTag(String[] arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public void removeSemanticTag(SemanticTag arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * abstract
-	 */
-	@Override
-	public void setStandardFPSet(FragmentationParameter[] arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	@Override
 	public ContextCoordinates createContextCoordinates(SemanticTag arg0,
 			PeerSemanticTag arg1, PeerSemanticTag arg2, PeerSemanticTag arg3,
 			TimeSemanticTag arg4, SpatialSemanticTag arg5, int arg6)
 			throws SharkKBException {
-		throw new SharkKBException("Please use the createRDFContextCoordinates methid.");
+		throw new SharkKBException(
+				"Please use the createRDFContextCoordinates method.");
 	}
 
 
+	@Override
+	public Interest createInterest(STSet arg0, PeerSemanticTag arg1,
+			PeerSTSet arg2, PeerSTSet arg3, TimeSTSet arg4, SpatialSTSet arg5,
+			int arg6) throws SharkKBException {
+		throw new SharkKBException("Deprecated method");
+	}
 
 
-	
 
 }

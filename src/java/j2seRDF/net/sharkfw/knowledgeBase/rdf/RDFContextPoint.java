@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import knowledgeBase.RDFConstants;
+import knowledgeBase.RDFSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
@@ -69,33 +71,24 @@ public class RDFContextPoint implements ContextPoint {
 		}
 	}
 	
+	
 	/********** RDFKB-GET (read in db) CONSTRUCTOR **********/
 	
 	public RDFContextPoint(RDFSharkKB kb, ContextCoordinates coordinates, int i)
 			throws SharkKBException {
+		if (coordinates == null || kb == null) {
+			throw new IllegalArgumentException();
+		}
 		this.kb = kb;
 		this.coordinates = coordinates;
 		Dataset dataset = kb.getDataset();
-
 		dataset.begin(ReadWrite.READ);
 		Model m = dataset.getNamedModel(RDFConstants.CONTEXT_POINT_MODEL_NAME);
-		ResIterator riBlankNodes = null;
-		ResIterator riTopic = null;
-		ResIterator riOriginator = null;
-		ResIterator riPeer = null;
-		ResIterator riRemotePeer = null;
-		ResIterator riLocation = null;
-		ResIterator riTime = null;
-		ResIterator riDirection = null;
-		Resource r = null;
+		boolean parametersMatched = false;
 		
 		try {
-			if (coordinates.getTopic() != null) {
-				riTopic = m.listResourcesWithProperty(m.getProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC), coordinates.getTopic().getName());
-				riBlankNodes = m.listSubjects();
-		//TODO: Proper implementation of getContextPoint		
-				
-			}
+			m.listResourcesWithProperty(m.getProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC));
+			
 			
 		} finally {
 			dataset.end();
@@ -237,3 +230,4 @@ public class RDFContextPoint implements ContextPoint {
 	}
 
 }
+
