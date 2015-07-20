@@ -4,8 +4,6 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import knowledgeBase.RDFConstants;
-import knowledgeBase.RDFSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;
@@ -17,6 +15,8 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 public class RDFContextPoint implements ContextPoint {
 
@@ -27,8 +27,7 @@ public class RDFContextPoint implements ContextPoint {
 
 	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
 
-	public RDFContextPoint(RDFSharkKB kb, ContextCoordinates coordinates)
-			throws SharkKBException {
+	public RDFContextPoint(RDFSharkKB kb, ContextCoordinates coordinates) throws SharkKBException {
 		this.kb = kb;
 		this.coordinates = coordinates;
 		Dataset dataset = kb.getDataset();
@@ -37,32 +36,20 @@ public class RDFContextPoint implements ContextPoint {
 		Model m = dataset.getNamedModel(RDFConstants.CONTEXT_POINT_MODEL_NAME);
 		try {
 			Resource anchor = m.createResource();
-			anchor.addProperty( 
-					m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC),
-					(coordinates.getTopic() != null) ? coordinates.getTopic()
-							.getSI()[0] : "null"); // set si as object if tag is not null (any), otherwise set object as "null"
-			anchor.addProperty( 
-					m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_ORIGINATOR),
-					(coordinates.getOriginator() != null) ? coordinates.getOriginator()
-							.getSI()[0] : "null");
-			anchor.addProperty( 
-					m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_PEER),
-					(coordinates.getPeer() != null) ? coordinates.getPeer()
-							.getSI()[0] : "null");
-			anchor.addProperty( 
-					m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_REMOTE_PEER),
-					(coordinates.getRemotePeer() != null) ? coordinates.getRemotePeer()
-							.getSI()[0] : "null");
-			anchor.addProperty( 
-					m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_LOCATION),
-					(coordinates.getLocation() != null) ? coordinates.getLocation()
-							.getSI()[0] : "null");
-			anchor.addProperty( 
-					m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TIME),
-					(coordinates.getTime() != null) ? coordinates.getTime()
-							.getSI()[0] : "null");
-			anchor.addProperty( 
-					m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_DIRECTION),
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC),
+					(coordinates.getTopic() != null) ? coordinates.getTopic().getSI()[0] : "null");
+
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_ORIGINATOR),
+					(coordinates.getOriginator() != null) ? coordinates.getOriginator().getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_PEER),
+					(coordinates.getPeer() != null) ? coordinates.getPeer().getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_REMOTE_PEER),
+					(coordinates.getRemotePeer() != null) ? coordinates.getRemotePeer().getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_LOCATION),
+					(coordinates.getLocation() != null) ? coordinates.getLocation().getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TIME),
+					(coordinates.getTime() != null) ? coordinates.getTime().getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_DIRECTION),
 					Integer.toString(coordinates.getDirection()));
 			dataset.commit();
 
@@ -70,30 +57,84 @@ public class RDFContextPoint implements ContextPoint {
 			dataset.end();
 		}
 	}
-	
-	
+
 	/********** RDFKB-GET (read in db) CONSTRUCTOR **********/
-	
-	public RDFContextPoint(RDFSharkKB kb, ContextCoordinates coordinates, int i)
-			throws SharkKBException {
+
+	public RDFContextPoint(RDFSharkKB kb, ContextCoordinates coordinates, int i) throws SharkKBException {
 		if (coordinates == null || kb == null) {
 			throw new IllegalArgumentException();
 		}
 		this.kb = kb;
-		this.coordinates = coordinates;
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
 		Model m = dataset.getNamedModel(RDFConstants.CONTEXT_POINT_MODEL_NAME);
-		boolean parametersMatched = false;
-		
+		boolean pointFound = false;
+		Resource anchor = null;
+		Statement propertyStmt = null;
+		ResIterator contextPoints = null;
+		StmtIterator propertiesOfPoint = null;
 		try {
-			m.listResourcesWithProperty(m.getProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC));
-			
-			
+			contextPoints = m.listResourcesWithProperty(m.getProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC));
+			while (contextPoints.hasNext() && !pointFound) {
+				anchor = contextPoints.next();
+				propertiesOfPoint = anchor.listProperties();
+				propertyStmt = propertiesOfPoint.next();
+				if (coordinates.getTopic() == null
+						|| coordinates.getTopic().getSI()[0].equals(propertyStmt.getObject().toString())) {
+					pointFound = true;
+				} else {
+					pointFound = false;
+
+				}
+				propertyStmt = propertiesOfPoint.next();
+				if (pointFound && coordinates.getOriginator() == null
+						|| coordinates.getOriginator().getSI()[0].equals(propertyStmt.getObject().toString())) {
+					pointFound = true;
+				} else {
+					pointFound = false;
+				}
+				propertyStmt = propertiesOfPoint.next();
+				if (pointFound && coordinates.getPeer() == null
+						|| coordinates.getPeer().getSI()[0].equals(propertyStmt.getObject().toString())) {
+					pointFound = true;
+				} else {
+					pointFound = false;
+				}
+				propertyStmt = propertiesOfPoint.next();
+				if (pointFound && coordinates.getRemotePeer() == null
+						|| coordinates.getRemotePeer().getSI()[0].equals(propertyStmt.getObject().toString())) {
+					pointFound = true;
+				} else {
+					pointFound = false;
+				}
+				propertyStmt = propertiesOfPoint.next();
+				if (pointFound && coordinates.getLocation() == null
+						|| coordinates.getLocation().getSI()[0].equals(propertyStmt.getObject().toString())) {
+					pointFound = true;
+				} else {
+					pointFound = false;
+				}
+				propertyStmt = propertiesOfPoint.next();
+				String gesucht = coordinates.getTime().getSI()[0];
+				if (pointFound && coordinates.getTime() == null
+						|| coordinates.getTime().getSI()[0].equals(propertyStmt.getObject().toString())) {
+					pointFound = true;
+				} else {
+					pointFound = false;
+				}
+				propertyStmt = propertiesOfPoint.next();
+			}
 		} finally {
 			dataset.end();
 		}
-		
+		if (pointFound) {
+			this.coordinates = coordinates;
+		} else {
+			throw new SharkKBException(
+					"No ContextPoint with this coordinates can be found in the RDF database with path: "
+							+ kb.getDirectory());
+		}
+
 	}
 
 	@Override
@@ -150,8 +191,7 @@ public class RDFContextPoint implements ContextPoint {
 	}
 
 	@Override
-	public Enumeration<String> propertyNames(boolean arg0)
-			throws SharkKBException {
+	public Enumeration<String> propertyNames(boolean arg0) throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -169,8 +209,7 @@ public class RDFContextPoint implements ContextPoint {
 	}
 
 	@Override
-	public void setProperty(String arg0, String arg1, boolean arg2)
-			throws SharkKBException {
+	public void setProperty(String arg0, String arg1, boolean arg2) throws SharkKBException {
 		// TODO Auto-generated method stub
 
 	}
@@ -230,4 +269,3 @@ public class RDFContextPoint implements ContextPoint {
 	}
 
 }
-
