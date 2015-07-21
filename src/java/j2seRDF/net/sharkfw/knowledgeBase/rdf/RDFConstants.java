@@ -21,6 +21,8 @@ public final class RDFConstants {
 	
 	public static final String 	CONTEXT_POINT_MODEL_NAME = "Context Points";
 	
+	public static final String 	INFORMATION_MODEL_NAME = "Information";
+	
 	
 	/************************************************* 
 	 *  Predicate names for tags
@@ -82,4 +84,13 @@ public final class RDFConstants {
 	public static final String KB_OWNER = "http://www.sharksystem.net/KnowledgeBase/Owner";
 	
 	public static final String KB_OWNER_PREDICATE = KB_OWNER + "/owns";
+	
+	
+	/************************************************* 
+	 *  KB names for Information
+	 ************************************************/
+	
+	public static final String INFORMATION_SUBJECT = "http://www.sharksystem.net/ContextPoint/Information";
+	
+	public static final String INFORMATION_PREDICATE = "http://www.sharksystem.net/ContextPoint/Information/located";
 }

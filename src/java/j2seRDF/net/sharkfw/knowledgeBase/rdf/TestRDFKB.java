@@ -20,6 +20,7 @@ import net.sharkfw.knowledgeBase.rdf.RDFSpatialSemanticTag;
 import net.sharkfw.knowledgeBase.rdf.RDFTimeSTSet;
 import net.sharkfw.knowledgeBase.rdf.RDFTimeSemanticTag;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -211,7 +212,14 @@ public class TestRDFKB {
 		assertNull(result.getContextCoordinates().getLocation());
 		assertEquals("Alice", result.getContextCoordinates().getPeer().getName());
 		assertEquals(TimeSemanticTag.FOREVER, result.getContextCoordinates().getTime().getDuration());
+		
+		byte[] content = {1, 0, 1, 0, 0, 1};
+		Information info = result.addInformation(content);
+		int j = 0;
+		
+		
 	}
+	
 	
 	
 

@@ -16,9 +16,8 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  * @author Barret dfe
  *
  */
-public class RDFPeerSemanticTag extends RDFSemanticTag
-		implements
-			PeerSemanticTag {
+public class RDFPeerSemanticTag extends RDFSemanticTag implements
+		PeerSemanticTag {
 
 	private String[] address;
 
