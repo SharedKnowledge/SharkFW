@@ -1,4 +1,4 @@
-package knowledgeBase;
+package net.sharkfw.knowledgeBase.rdf;
 
 import java.io.InputStream;
 import java.io.OutputStream;

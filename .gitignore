@@ -2,3 +2,4 @@
 .idea/
 *.classpath
 *.project
+bin/net/sharkfw/knowledgeBase/sync/TODO
