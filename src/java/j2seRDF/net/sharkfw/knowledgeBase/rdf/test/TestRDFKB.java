@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.rdf;
+package net.sharkfw.knowledgeBase.rdf.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -35,7 +35,8 @@ import com.hp.hpl.jena.query.ReadWrite;
 
 public class TestRDFKB {
 
-	private final String KBDIRECTORY = "C:\\Users\\Dustin\\workspace\\RDFSharkKB\\Databases\\Dataset1";
+	
+	private final String KBDIRECTORY = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFolderDataset";
 	
 	private ContextCoordinates cc;
 	
@@ -67,7 +68,7 @@ public class TestRDFKB {
 	}
 
 	@Test
-	public void testCreateRDFSemanticTag() throws SharkKBException {
+	public void testCreateAndGetRDFSemanticTag() throws SharkKBException {
 
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
 		RDFSTSet stSet = kb.getTopicSTSet();
