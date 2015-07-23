@@ -23,16 +23,18 @@ public final class RDFConstants {
 	
 	public static final String 	INFORMATION_MODEL_NAME = "Information";
 	
+	public static final String SEMANTIC_NET_MODEL_NAME = "Semantic Net";
+	
 	
 	/************************************************* 
 	 *  Predicate names for tags
 	 ************************************************/
 	
-	public static final String SEMANTIC_TAG_PREDICATE = "http://www.dict.cc/?s=describe";
+	public static final String SEMANTIC_TAG_PREDICATE = "http://www.sharksystem.net/Topic/describes";
 	
-	public static final String PEER_TAG_PREDICATE = "http://www.dict.cc/?s=contactableby";
+	public static final String PEER_TAG_PREDICATE = "http://www.sharksystem.net/Peer/contactableby";
 	
-	public static final String PEER_TAG_ADDRESS_PREDICATE = "http://www.dict.cc/?s=contacts";
+	public static final String PEER_TAG_ADDRESS_PREDICATE = "http://www.sharksystem.net/Peer/contacts";
 	
 	public static final String SPATIAL_TAG_PREDICATE = "http://www.sharksystem.net/SharkGeometry";
 	
@@ -93,4 +95,7 @@ public final class RDFConstants {
 	public static final String INFORMATION_SUBJECT = "http://www.sharksystem.net/ContextPoint/Information";
 	
 	public static final String INFORMATION_PREDICATE = "http://www.sharksystem.net/ContextPoint/Information/located";
+	
+	public static final String INFORMATION_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/information/";	
+
 }

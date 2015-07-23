@@ -1,29 +1,26 @@
 package net.sharkfw.knowledgeBase.rdf;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.rdf.model.Model;
 
 public class RDFInformation implements Information {
 
-	@SuppressWarnings("unused")
-	private RDFSharkKB kb;
-
 	private long creationTime;
 
-	private byte[] contentAsByte;
+	private byte[] content;
 
 	private String contentAsString;
 
@@ -31,33 +28,58 @@ public class RDFInformation implements Information {
 
 	private String contentType;
 
-	public RDFInformation(RDFSharkKB kb, AnonId contextPointID, byte[] content) throws SharkKBException {
+	private String path;
+
+	public RDFInformation(AnonId contextPointID, byte[] content) throws SharkKBException {
+		path = RDFConstants.INFORMATION_PATH + contextPointID.toString().replaceAll(":", "");
+		this.content = content;
 		FileOutputStream out = null;
-		this.kb = kb;
-		Dataset dataset = kb.getDataset();
-		dataset.begin(ReadWrite.WRITE);
-		Model m = dataset.getNamedModel(RDFConstants.INFORMATION_MODEL_NAME);
+		File contentFile = new File(path);
 		try {
-			File contentFile = new File(kb.getDirectory() + "\\" + contextPointID.toString());
+			out = new FileOutputStream(contentFile);
+			out.write(content);
+		} catch (FileNotFoundException e) {
+			throw new SharkKBException(e.getMessage());
+		} catch (IOException e) {
+			throw new SharkKBException(e.getMessage());
+		} finally {
 			try {
-				out = new FileOutputStream(contentFile);
-				out.write(content);
-			} catch (FileNotFoundException e) {
-				throw new SharkKBException(e.getMessage());
+				if (out != null) {
+					out.close();
+				}
 			} catch (IOException e) {
 				throw new SharkKBException(e.getMessage());
-			} finally {
+			}
+		}
+	}
+
+	public RDFInformation(AnonId contextPointID) throws SharkKBException {
+		path = RDFConstants.INFORMATION_PATH + contextPointID.toString().replaceAll(":", "");
+		File contentFile = new File(path);
+		FileInputStream fis = null;
+		List<Byte> list = new ArrayList<Byte>();
+		byte i = 0;
+		try {
+			fis = new FileInputStream(contentFile);
+			while ((i = (byte) fis.read()) != -1) {
+				list.add(i);
+			}
+		} catch (FileNotFoundException e) {
+			throw new SharkKBException(e.getMessage());
+		} catch (IOException e) {
+			throw new SharkKBException(e.getMessage());
+		} finally {
+			if (fis != null) {
 				try {
-					out.close();
+					fis.close();
 				} catch (IOException e) {
 					throw new SharkKBException(e.getMessage());
 				}
 			}
-			m.createStatement(m.createResource(RDFConstants.INFORMATION_SUBJECT + "/" + contextPointID.toString()),
-					m.createProperty(RDFConstants.INFORMATION_PREDICATE), contextPointID.toString());
-		} finally {
-			dataset.close();
-
+		}
+		content = new byte[list.size()];
+		for (int j = 0; j < content.length; j++) {
+			content[j] = list.get(j);
 		}
 	}
 
@@ -68,7 +90,7 @@ public class RDFInformation implements Information {
 
 	@Override
 	public byte[] getContentAsByte() {
-		return contentAsByte;
+		return content;
 	}
 
 	@Override

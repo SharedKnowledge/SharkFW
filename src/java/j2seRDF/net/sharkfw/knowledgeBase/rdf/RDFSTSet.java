@@ -26,7 +26,7 @@ public class RDFSTSet implements STSet {
 		this.kb = kb;
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
-		dataset.getNamedModel("Topic");
+		dataset.getNamedModel(RDFConstants.ST_MODEL_NAME);
 		dataset.end();		
 	}	
 

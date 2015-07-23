@@ -1,8 +1,10 @@
 package net.sharkfw.knowledgeBase.rdf;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -12,6 +14,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -24,6 +27,8 @@ public class RDFContextPoint implements ContextPoint {
 	private RDFSharkKB kb;
 
 	private ContextCoordinates coordinates = null;
+	
+	private AnonId contextPointID;
 
 	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
 
@@ -36,6 +41,7 @@ public class RDFContextPoint implements ContextPoint {
 		Model m = dataset.getNamedModel(RDFConstants.CONTEXT_POINT_MODEL_NAME);
 		try {
 			Resource anchor = m.createResource();
+			contextPointID = anchor.getId();
 			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC),
 					(coordinates.getTopic() != null) ? coordinates.getTopic().getSI()[0] : "null");
 
@@ -129,6 +135,7 @@ public class RDFContextPoint implements ContextPoint {
 		}
 		if (pointFound) {
 			this.coordinates = coordinates;
+			this.contextPointID = anchor.getId();
 		} else {
 			throw new SharkKBException(
 					"No ContextPoint with this coordinates can be found in the RDF database with path: "
@@ -221,9 +228,13 @@ public class RDFContextPoint implements ContextPoint {
 	}
 
 	@Override
-	public Information addInformation(byte[] arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFInformation addInformation(byte[] content) {
+		try {
+			return new RDFInformation(contextPointID, content);
+		} catch (SharkKBException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
@@ -240,8 +251,16 @@ public class RDFContextPoint implements ContextPoint {
 
 	@Override
 	public Iterator<Information> getInformation() {
-		// TODO Auto-generated method stub
-		return null;
+		RDFInformation info = null;
+		try {
+			info = new RDFInformation(contextPointID);
+		} catch (SharkKBException e) {			
+			e.printStackTrace();
+			return null;
+		}
+		List<Information> list = new ArrayList<Information>();
+		list.add(info);
+		return list.iterator();
 	}
 
 	@Override

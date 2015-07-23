@@ -161,17 +161,18 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	@Override
-	public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
+	public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 
 	@Override
-	public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
+	public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	
 	@Override
 	public Iterator<ContextPoint> contextPoints(SharkCS arg0, boolean arg1)
@@ -215,7 +216,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	
 	@Override
 	public Knowledge createKnowledge() {
-		// TODO Auto-generated method stub
+	// TODO Auto-generated method stub	
 		return null;
 	}
 
@@ -226,20 +227,6 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		return null;
 	}
 	
-	@Override
-	public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 
 	@Override
 	public Iterator<SemanticTag> getTags() throws SharkKBException {
