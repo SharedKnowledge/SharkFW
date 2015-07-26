@@ -8,7 +8,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Enumeration;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.Information;
@@ -18,13 +20,14 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
-import net.sharkfw.knowledgeBase.rdf.RDFConstants;
 import net.sharkfw.knowledgeBase.rdf.RDFContextCoordinates;
 import net.sharkfw.knowledgeBase.rdf.RDFContextPoint;
 import net.sharkfw.knowledgeBase.rdf.RDFInformation;
 import net.sharkfw.knowledgeBase.rdf.RDFPeerSTSet;
 import net.sharkfw.knowledgeBase.rdf.RDFPeerSemanticTag;
+import net.sharkfw.knowledgeBase.rdf.RDFSNSemanticTag;
 import net.sharkfw.knowledgeBase.rdf.RDFSTSet;
+import net.sharkfw.knowledgeBase.rdf.RDFSemanticNet;
 import net.sharkfw.knowledgeBase.rdf.RDFSemanticTag;
 import net.sharkfw.knowledgeBase.rdf.RDFSharkKB;
 import net.sharkfw.knowledgeBase.rdf.RDFSpatialSTSet;
@@ -36,36 +39,34 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestRDFKB {
-
 	
 	private static final String KBDIRECTORY = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFolderDataset";
+	
+	private static final String TEST_FILE_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFileRDF.rdf";
 	
 	private ContextCoordinates cc;
 	
 	private Long time = new Long("1437400837574");
 
 	@Before
-	public void clearDatasetAndCreateDefaultCC() throws SharkKBException {
-		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
-		kb.getDataset().begin(ReadWrite.WRITE);
-		kb.getDataset().getNamedModel(RDFConstants.ST_MODEL_NAME).removeAll();
-		kb.getDataset().getNamedModel(RDFConstants.PEER_MODEL_NAME).removeAll();
-		kb.getDataset().getNamedModel(RDFConstants.TIME_MODEL_NAME).removeAll();
-		kb.getDataset().getNamedModel(RDFConstants.SPATIAL_MODEL_NAME).removeAll();
-		kb.getDataset().getNamedModel(RDFConstants.CONTEXT_POINT_MODEL_NAME).removeAll();
-		kb.getDataset().getNamedModel(RDFConstants.INFORMATION_MODEL_NAME).removeAll();
-		kb.getDataset().end();
+	public void clearDatasetC() throws SharkKBException, IOException {		
+		File index = new File(KBDIRECTORY);
+		TestUtils.delete(index);
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);		
 		RDFSTSet topics = kb.getTopicSTSet();
 		RDFSemanticTag sharkTag = topics.createSemanticTag("http://sharksystem.net", "Shark");
 		RDFPeerSTSet peers = kb.getPeerSTSet();
-		RDFPeerSemanticTag alice = peers.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html",
-				"alice@sharksystem.net");
+		RDFPeerSemanticTag daniel = peers.createPeerSemanticTag("Daniel", "http://www.sharksystem.net/daniel.html",
+				"daniel@sharksystem.net");
 		RDFPeerSemanticTag bob = peers.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html",
 				"bob@sharksystem.net");
 		RDFPeerSemanticTag clara = peers.createPeerSemanticTag("Clara", "http://www.sharksystem.net/clara.html",
@@ -73,14 +74,14 @@ public class TestRDFKB {
 		RDFTimeSemanticTag tst = kb.getTimeSTSet().createTimeSemanticTag(time,
 				TimeSemanticTag.FOREVER);
 		RDFSpatialSemanticTag sst = null;
-		this.cc = new RDFContextCoordinates(sharkTag, clara, alice, bob, tst, sst,
+		this.cc = new RDFContextCoordinates(sharkTag, clara, daniel, bob, tst, sst,
 				SharkCS.DIRECTION_INOUT);
 	}
 	
 	@AfterClass
 	public static void writeTestResultsInRDFFile() throws SharkKBException {
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
-		File file = new File("src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFileRDF");
+		File file = new File(TEST_FILE_PATH);
 		Dataset dataset = kb.getDataset();		
 		FileOutputStream fos = null;
 		try {
@@ -90,23 +91,23 @@ public class TestRDFKB {
 		}		
 		dataset.begin(ReadWrite.READ);
 		RDFDataMgr.write(fos, dataset, RDFFormat.NQUADS);	
-		//dataset.getNamedModel(RDFConstants.PEER_MODEL_NAME).write(fos);
 		dataset.end();
 	}
-
+	
 	@Test
-	public void testCreateAndGetRDFSemanticTag() throws SharkKBException {
+	public void testACreateRDFSemanticTag() throws SharkKBException {
 
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
 		RDFSTSet stSet = kb.getTopicSTSet();
 		SemanticTag tag = stSet.createSemanticTag("https://jena.apache.org/documentation/tdb", "Jena - TDB");
 		assertNotNull(tag);
 		assertTrue(Arrays.asList(tag.getSI()).contains("https://jena.apache.org/documentation/tdb"));
+		assertEquals("Jena - TDB", tag.getName());
 	}
 
 
 	@Test
-	public void testCreateRDFSemanticTagWithMultipleSIs() throws SharkKBException {
+	public void testBCreateRDFSemanticTagWithMultipleSIs() throws SharkKBException {
 
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
 		RDFSTSet stSet = kb.getTopicSTSet();
@@ -119,7 +120,7 @@ public class TestRDFKB {
 	}
 
 	@Test
-	public void testCreateRDFPeerSemanticTag() throws SharkKBException {
+	public void testCCreateRDFPeerSemanticTag() throws SharkKBException {
 
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
 		RDFPeerSTSet peerSet = kb.getPeerSTSet();
@@ -131,12 +132,11 @@ public class TestRDFKB {
 		assertEquals(3, tag.getSI().length);
 		assertEquals(3, tag.getAddresses().length);
 		assertEquals("https://de.wikipedia.org/wiki/Gamma", tag.getSI()[2]);
-
 	}
 
 
 	@Test
-	public void testCreateRDFSpatialSemanticTag() throws SharkKBException {
+	public void testDCreateRDFSpatialSemanticTag() throws SharkKBException {
 		String[] si = new String[] { "https://de.wikipedia.org/wiki/Alpha", "https://de.wikipedia.org/wiki/Beta",
 				"https://de.wikipedia.org/wiki/Gamma" };
 		String topic = "SharkGeometry";
@@ -151,7 +151,44 @@ public class TestRDFKB {
 	}
 
 	@Test
-	public void testGetRDFSpatialSemanticTag() throws SharkKBException {
+	public void testECreateRDFTimeSemanticTag() throws SharkKBException {
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFTimeSTSet timeSet = kb.getTimeSTSet();
+		RDFTimeSemanticTag tag = timeSet.createTimeSemanticTag(time, 0);
+		assertNotNull(tag);
+	}
+	
+
+	@Test
+	public void testFCreateRDFContextPoint() throws SharkKBException {
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFContextPoint cp = kb.createContextPoint(cc);
+		assertNotNull(cp);
+		assertEquals("bob@sharksystem.net", cp.getContextCoordinates().getRemotePeer().getAddresses()[0]);
+		assertNull(cp.getContextCoordinates().getLocation());
+		assertEquals("Daniel", cp.getContextCoordinates().getPeer().getName());
+		assertEquals(TimeSemanticTag.FOREVER, cp.getContextCoordinates().getTime().getDuration());
+	}
+
+	@Test
+	public void testGSetKBOwner() throws SharkKBException {
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFPeerSTSet peerSet = kb.getPeerSTSet();
+		String aliceSI = "http://www.sharksystem.net/alice.html";
+		String[] aliceAddr = new String[] {"mail://alice@wonderland.net", "tcp://shark.wonderland.net:7070"};
+		RDFPeerSemanticTag aliceTag = peerSet.createPeerSemanticTag("Alice", aliceSI, aliceAddr);
+		kb.setOwner(aliceTag);
+		
+		RDFPeerSemanticTag ownerTag = kb.getOwner();
+		assertTrue(Arrays.asList(ownerTag.getSI()).contains("http://www.sharksystem.net/alice.html"));
+		assertEquals(2, ownerTag.getAddresses().length);
+		assertEquals("Alice", ownerTag.getTopic());
+		assertTrue(Arrays.asList(ownerTag.getAddresses()).contains("mail://alice@wonderland.net"));
+		assertTrue(Arrays.asList(ownerTag.getAddresses()).contains("tcp://shark.wonderland.net:7070"));		
+	}
+	
+	@Test
+	public void testHGetRDFSpatialSemanticTag() throws SharkKBException {
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
 		RDFSpatialSTSet spatialSet = kb.getSpatialSTSet();
 		RDFSpatialSemanticTag tag = spatialSet.getSpatialSemanticTag("https://de.wikipedia.org/wiki/Alpha");
@@ -161,79 +198,23 @@ public class TestRDFKB {
 		assertTrue(Arrays.asList(tag.getSI()).contains("https://de.wikipedia.org/wiki/Beta"));
 		assertTrue(Arrays.asList(tag.getSI()).contains("https://de.wikipedia.org/wiki/Gamma"));
 		assertEquals("POINT (30 10)", tag.getGeometry().getWKT());
-	}
-
-	@Test
-	public void testCreateRDFTimeSemanticTag() throws SharkKBException {
-		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
-		RDFTimeSTSet timeSet = kb.getTimeSTSet();
-		RDFTimeSemanticTag tag = timeSet.createTimeSemanticTag(time, 0);
-		assertNotNull(tag);
-	}
-
-	@Test
-	public void testSetKBOwner() throws SharkKBException {
-		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
-		RDFPeerSTSet peerSet = kb.getPeerSTSet();
-		String[] aliceSIs = new String[] { "http://www.sharksystem.net/alice.html" };
-		String[] aliceAddr = new String[] { "mail://alice@wonderland.net", "tcp://shark.wonderland.net:7070",
-				"alice@sharksystem.net" };
-		RDFPeerSemanticTag aliceTag = peerSet.createPeerSemanticTag("Alice", aliceSIs, aliceAddr);
-		kb.setOwner(aliceTag);
-
-		RDFPeerSemanticTag ownerTag = kb.getOwner();
-		assertEquals("http://www.sharksystem.net/alice.html", ownerTag.getSi()[0]);
-		assertEquals(3, ownerTag.getAddresses().length);
-		assertEquals("Alice", ownerTag.getTopic());
-		assertTrue(Arrays.asList(ownerTag.getAddresses()).contains("mail://alice@wonderland.net"));
-		assertTrue(Arrays.asList(ownerTag.getAddresses()).contains("tcp://shark.wonderland.net:7070"));
-
-	}
-
-
-	@Test
-	public void testCreateRDFContextPoint() throws SharkKBException {
-		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
-		RDFContextPoint cp = kb.createContextPoint(cc);
-		assertNotNull(cp);
-		assertEquals("bob@sharksystem.net", cp.getContextCoordinates().getRemotePeer().getAddresses()[0]);
-		assertNull(cp.getContextCoordinates().getLocation());
-		assertEquals("Alice", cp.getContextCoordinates().getPeer().getName());
-		assertEquals(TimeSemanticTag.FOREVER, cp.getContextCoordinates().getTime().getDuration());
-		
-		testGetRDFContextPoint();
-	}
+	}	
+	
 	
 
-	public void testGetRDFContextPoint() throws SharkKBException {
-		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
-		RDFContextPoint result = kb.getContextPoint(cc);
-		assertNotNull(result);
-		assertEquals("bob@sharksystem.net", result.getContextCoordinates().getRemotePeer().getAddresses()[0]);
-		assertNull(result.getContextCoordinates().getLocation());
-		assertEquals("Alice", result.getContextCoordinates().getPeer().getName());
-		assertEquals(TimeSemanticTag.FOREVER, result.getContextCoordinates().getTime().getDuration());
-		
-		byte[] content = {1, 0, 1, 0, 0, 1};
-		RDFInformation info1 = result.addInformation(content);
-			
-		Information info2 = result.getInformation().next();		
-
-	}	
-
 	@Test
-	public void testGetRDFSemanticTag() throws SharkKBException {
-
+	public void testIGetRDFSemanticTag() throws SharkKBException {
+		
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
 		RDFSTSet stSet = kb.getTopicSTSet();
 		SemanticTag tag = stSet.getSemanticTag("https://jena.apache.org/documentation/tdb");
 		assertNotNull(tag);
 		assertTrue(Arrays.asList(tag.getSI()).contains("https://jena.apache.org/documentation/tdb"));
-
+		assertEquals("Jena - TDB", tag.getName());
 	}	
 
 	@Test
-	public void testGetRDFPeerSemanticTag() throws SharkKBException {
+	public void testJGetRDFPeerSemanticTag() throws SharkKBException {
 
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
 		RDFPeerSTSet peerSet = kb.getPeerSTSet();
@@ -248,5 +229,98 @@ public class TestRDFKB {
 		assertTrue(Arrays.asList(tag.getAddresses()).contains("47487271"));
 		assertTrue(Arrays.asList(tag.getAddresses()).contains("Aristotelessteig 6"));
 	}
+	
+	@Test
+	public void testKGetKBOwner() throws SharkKBException {
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFPeerSemanticTag ownerTag = kb.getOwner();
+		assertTrue(Arrays.asList(ownerTag.getSI()).contains("http://www.sharksystem.net/alice.html"));
+		assertEquals(2, ownerTag.getAddresses().length);
+		assertEquals("Alice", ownerTag.getTopic());
+		assertTrue(Arrays.asList(ownerTag.getAddresses()).contains("mail://alice@wonderland.net"));
+		assertTrue(Arrays.asList(ownerTag.getAddresses()).contains("tcp://shark.wonderland.net:7070"));
+	}
+	
+	@Test
+	public void testLGetRDFContextPoint() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFContextPoint cp = kb.getContextPoint(cc);
+		assertNotNull(cp);
+		assertEquals("bob@sharksystem.net", cp.getContextCoordinates().getRemotePeer().getAddresses()[0]);
+		assertNull(cp.getContextCoordinates().getLocation());
+		assertEquals("Daniel", cp.getContextCoordinates().getPeer().getName());
+		assertEquals(TimeSemanticTag.FOREVER, cp.getContextCoordinates().getTime().getDuration());
+	}	
+	
+	@Test
+	public void testMAddInformation() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFContextPoint cp = kb.getContextPoint(cc);		
+		byte[] content = {1, 0, 1, 0, 1};
+		RDFInformation info = cp.addInformation(content);			
+		assertNotNull(info);
+		assertEquals(1, info.getContentAsByte()[0]);
+		assertEquals(0, info.getContentAsByte()[1]);
+		assertEquals(1, info.getContentAsByte()[2]);
+		assertEquals(0, info.getContentAsByte()[3]);
+		assertEquals(1, info.getContentAsByte()[4]);
+	}
+	
+	@Test
+	public void testNGetInformation() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFContextPoint cp = kb.getContextPoint(cc);	
+		Information info = cp.getInformation().next();
+		assertNotNull(info);
+		assertEquals(1, info.getContentAsByte()[0]);
+		assertEquals(0, info.getContentAsByte()[1]);
+		assertEquals(1, info.getContentAsByte()[2]);
+		assertEquals(0, info.getContentAsByte()[3]);
+		assertEquals(1, info.getContentAsByte()[4]);		
+	}
+	
+	@Test
+	public void testOCreateSNSemanticTag() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFSemanticNet semanticNet = new RDFSemanticNet(kb);
+		RDFSNSemanticTag tag = semanticNet.createSemanticTag("Germany", "https://en.wikipedia.org/wiki/Germany");
+		assertNotNull(tag);
+		assertTrue(Arrays.asList(tag.getSI()).contains("https://en.wikipedia.org/wiki/Germany"));
+		assertEquals("Germany", tag.getName());
+	}
+	
+	@Test
+	public void testPGetSNSemanticTag() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFSemanticNet semanticNet = new RDFSemanticNet(kb);
+		RDFSNSemanticTag tag = semanticNet.getSemanticTag("https://en.wikipedia.org/wiki/Germany");
+		assertNotNull(tag);
+		assertTrue(Arrays.asList(tag.getSI()).contains("https://en.wikipedia.org/wiki/Germany"));
+		assertEquals("Germany", tag.getName());
+	}
+	
+	@Test 
+	public void testQSetAndGetPredicatesSemanticNet() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFSemanticNet semanticNet = new RDFSemanticNet(kb);
+		RDFSNSemanticTag tagBerlin = semanticNet.createSemanticTag("Berlin", "https://en.wikipedia.org/wiki/Berlin");
+		RDFSNSemanticTag tagGermany = semanticNet.getSemanticTag("https://en.wikipedia.org/wiki/Germany");
+		tagGermany.setPredicate("capital", tagBerlin);
+		
+		Enumeration<String> predicates = tagGermany.predicateNames();
+		String result = predicates.nextElement();
+		assertNotNull(result);
+		assertEquals("http://www.sharksystem.net/SemanticNet/capital", result);		
+	}
+	
+	
+	
+
 	
 }

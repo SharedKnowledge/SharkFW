@@ -1,55 +1,92 @@
 package net.sharkfw.knowledgeBase.rdf;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
 import net.sharkfw.knowledgeBase.SNSemanticTag;
-import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
-public class RDFSNSemanticTag implements SNSemanticTag {
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-	private RDFSemanticTag tag;
-	
-	public RDFSNSemanticTag(RDFSemanticTag tag) throws SharkKBException {
-		if (tag != null) {
-			this.tag = tag;
-		}
-		else {
-			throw new SharkKBException("Invalid parameter was given for RDFSNSemanticTag()");
-		}
+public class RDFSNSemanticTag extends RDFSemanticTag implements SNSemanticTag {
+
+	/**
+	 * CREATE (write in db) constructor
+	 * 
+	 * @param kb
+	 * @param sis
+	 * @param topic
+	 * @param MODEL
+	 * @throws SharkKBException
+	 */
+	public RDFSNSemanticTag(RDFSharkKB kb, String[] sis, String topic, String MODEL) throws SharkKBException {
+
+		super(kb, sis, topic, MODEL);
 	}
 	
-	public RDFSemanticTag getTag() {
-		return tag;
-	}
+	/**
+	 * GET (read in db) constructor
+	 * 
+	 * @param kb
+	 * @param sis
+	 * @param topic
+	 * @param MODEL
+	 * @throws SharkKBException
+	 */
+	public RDFSNSemanticTag(RDFSharkKB kb, String si, String MODEL) throws SharkKBException {
 
-	public void setTag(RDFSemanticTag tag) {
-		this.tag = tag;
+		super(kb, si, MODEL);
 	}
 
 	@Override
-	public String getName() {
-		return tag.getName();
+	public void setPredicate(String type, SNSemanticTag target) {
+		Dataset dataset = this.getKb().getDataset();
+		dataset.begin(ReadWrite.WRITE);
+		Model m = dataset.getNamedModel(RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG_P);
+		try {
+			Statement s = m.createStatement(m.createResource(this.getSI()[0]),
+					m.createProperty(RDFConstants.SEMANTIC_NET_PREDICATE + type), target.getSI()[0]);
+			m.add(s);
+			dataset.commit();
+		}
+		catch (Exception e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		finally {
+			dataset.end();
+		}
 	}
-
-	@Override
-	public String[] getSI() {
-		return tag.getSi();
-	}
-	
 
 	@Override
 	public Enumeration<String> predicateNames() {
+		Dataset dataset = this.getKb().getDataset();
+		dataset.begin(ReadWrite.READ);
+		Model m = dataset.getNamedModel(RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG_P);
+		StmtIterator result = null;
+		List<String> predicates = new ArrayList<String>();
+		try {
+			result = m.listStatements(m.getResource(this.getSi()[0]), null, (String) null);
+			while (result.hasNext()) {
+				predicates.add(result.next().getPredicate().toString());
+			}
+		}
+		catch (Exception e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		finally {
+			dataset.end();
+		}
+		return Collections.enumeration(predicates);
+	}
 	
-		return null;
-	}
-
-	@Override
-	public Enumeration<String> targetPredicateNames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public Enumeration<SNSemanticTag> targetTags(String predicateName) {
 		// TODO Auto-generated method stub
@@ -62,106 +99,23 @@ public class RDFSNSemanticTag implements SNSemanticTag {
 		return null;
 	}
 
+
 	@Override
-	public void setPredicate(String type, SNSemanticTag target) {
+	public Enumeration<String> targetPredicateNames() {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 	@Override
 	public void removePredicate(String type, SNSemanticTag target) {
 		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void removeSI(String si) throws SharkKBException {
-		tag.removeSI(si);
-		
 	}
-
-	@Override
-	public void addSI(String si) throws SharkKBException {
-		tag.addSI(si);
-		
-	}
-
-	@Override
-	public void setName(String newName) {
-		tag.setName(newName);
-	}
-
-	@Override
-	public void merge(SemanticTag st) {
-		tag.merge(st);
-		
-	}
-
-	@Override
-	public void setHidden(boolean isHidden) {
-		tag.setHidden(isHidden);
-	}
-
-	@Override
-	public boolean hidden() {
-		return tag.hidden();
-	}
-
-	@Override
-	public boolean isAny() {
-		return tag.isAny();
-	}
-
-	@Override
-	public boolean identical(SemanticTag other) {
-		return tag.identical(other);
-	}
-
-	@Override
-	public void setSystemProperty(String name, String value) {
-		tag.setSystemProperty(name, value);
-	}
-
-	@Override
-	public String getSystemProperty(String name) {
-		return tag.getSystemProperty(name);
-	}
-
-	@Override
-	public void setProperty(String name, String value) throws SharkKBException {
-		tag.setProperty(name, value);
-	}
-
-	@Override
-	public String getProperty(String name) throws SharkKBException {
-		return tag.getProperty(name);
-	}
-
-	@Override
-	public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-		tag.setProperty(name, value, transfer);
-	}
-
-	@Override
-	public void removeProperty(String name) throws SharkKBException {
-		tag.removeProperty(name);
-	}
-
-	@Override
-	public Enumeration<String> propertyNames() throws SharkKBException {
-		return tag.propertyNames();
-	}
-
-	@Override
-	public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-		return tag.propertyNames(all);
-	}
-
 
 	@Override
 	public void merge(SNSemanticTag toMerge) {
-		throw new UnsupportedOperationException("This method is not supported yet.");
-		
+		// TODO Auto-generated method stub
+
 	}
 
 }

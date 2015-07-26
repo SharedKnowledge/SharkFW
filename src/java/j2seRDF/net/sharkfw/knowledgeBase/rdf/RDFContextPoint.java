@@ -144,10 +144,21 @@ public class RDFContextPoint implements ContextPoint {
 
 	}
 
+
+	@Override
+	public RDFInformation addInformation(byte[] content) {
+		try {
+			return new RDFInformation(contextPointID, content);
+		} catch (SharkKBException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
 	@Override
 	public void setContextCoordinates(ContextCoordinates arg0) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Just create a new RDFContextPoint with the new CC and delete the old one.");
 	}
 
 	@Override
@@ -155,6 +166,20 @@ public class RDFContextPoint implements ContextPoint {
 		return coordinates;
 	}
 
+	@Override
+	public Iterator<Information> getInformation() {
+		RDFInformation info = null;
+		try {
+			info = new RDFInformation(contextPointID);
+		} catch (SharkKBException e) {			
+			e.printStackTrace();
+			return null;
+		}
+		List<Information> list = new ArrayList<Information>();
+		list.add(info);
+		return list.iterator();
+	}
+	
 	@Override
 	public Information addInformation(String arg0) {
 		// TODO Auto-generated method stub
@@ -227,15 +252,6 @@ public class RDFContextPoint implements ContextPoint {
 		return null;
 	}
 
-	@Override
-	public RDFInformation addInformation(byte[] content) {
-		try {
-			return new RDFInformation(contextPointID, content);
-		} catch (SharkKBException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
 	@Override
 	public Information addInformation(InputStream arg0, long arg1) {
@@ -249,19 +265,6 @@ public class RDFContextPoint implements ContextPoint {
 		return null;
 	}
 
-	@Override
-	public Iterator<Information> getInformation() {
-		RDFInformation info = null;
-		try {
-			info = new RDFInformation(contextPointID);
-		} catch (SharkKBException e) {			
-			e.printStackTrace();
-			return null;
-		}
-		List<Information> list = new ArrayList<Information>();
-		list.add(info);
-		return list.iterator();
-	}
 
 	@Override
 	public Iterator<Information> getInformation(String arg0) {
