@@ -11,6 +11,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.rdf.model.Model;
 
 /**
  * 
@@ -21,12 +22,14 @@ public class RDFSTSet implements STSet {
 
 	private RDFSharkKB kb;
 	
+	private Model model;
+	
 	public RDFSTSet(RDFSharkKB kb) {
 		
 		this.kb = kb;
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
-		dataset.getNamedModel(RDFConstants.ST_MODEL_NAME);
+		model = dataset.getNamedModel(RDFConstants.ST_MODEL_NAME);
 		dataset.end();		
 	}	
 
@@ -53,7 +56,11 @@ public class RDFSTSet implements STSet {
 	public RDFSemanticTag getSemanticTag(String si) throws SharkKBException {
 		return new RDFSemanticTag(kb, si, RDFConstants.ST_MODEL_NAME);
 	}
-	
+
+	public Model getModel() {
+		return model;
+	}
+
 
 	@Override
 	public Iterator<SemanticTag> getSemanticTagByName(String arg0)

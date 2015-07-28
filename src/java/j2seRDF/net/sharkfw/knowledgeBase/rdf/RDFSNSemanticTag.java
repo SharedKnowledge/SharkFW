@@ -1,11 +1,9 @@
 package net.sharkfw.knowledgeBase.rdf;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
 
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -31,7 +29,7 @@ public class RDFSNSemanticTag extends RDFSemanticTag implements SNSemanticTag {
 
 		super(kb, sis, topic, MODEL);
 	}
-	
+
 	/**
 	 * GET (read in db) constructor
 	 * 
@@ -56,11 +54,9 @@ public class RDFSNSemanticTag extends RDFSemanticTag implements SNSemanticTag {
 					m.createProperty(RDFConstants.SEMANTIC_NET_PREDICATE + type), target.getSI()[0]);
 			m.add(s);
 			dataset.commit();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getMessage());
-		}
-		finally {
+		} finally {
 			dataset.end();
 		}
 	}
@@ -77,28 +73,63 @@ public class RDFSNSemanticTag extends RDFSemanticTag implements SNSemanticTag {
 			while (result.hasNext()) {
 				predicates.add(result.next().getPredicate().toString());
 			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e.getMessage());
+		} finally {
+			dataset.end();
+		}
+		return Collections.enumeration(predicates);
+	}
+
+	@Override
+	public Enumeration<SNSemanticTag> targetTags(String predicateName) {
+		Dataset dataset = this.getKb().getDataset();
+		dataset.begin(ReadWrite.READ);
+		Model mP = dataset.getNamedModel(RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG_P);
+		String si = null;
+		StmtIterator result = null;
+		List<SNSemanticTag> targetTags = new ArrayList<SNSemanticTag>();
+		try {
+			result = mP.listStatements(mP.getResource(this.getSi()[0]), mP.getProperty(RDFConstants.SEMANTIC_NET_PREDICATE + predicateName), (String) null);
+			dataset.end();
+			while (result.hasNext()) {
+				si = result.next().getObject().toString();
+				targetTags.add(new RDFSNSemanticTag(this.getKb(), si, RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG));
+			}
 		}
 		catch (Exception e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 		finally {
 			dataset.end();
-		}
-		return Collections.enumeration(predicates);
-	}
-	
-	@Override
-	public Enumeration<SNSemanticTag> targetTags(String predicateName) {
-		// TODO Auto-generated method stub
-		return null;
+		}		
+		return Collections.enumeration(targetTags);
 	}
 
 	@Override
 	public Enumeration<SNSemanticTag> sourceTags(String predicateName) {
-		// TODO Auto-generated method stub
-		return null;
+		Dataset dataset = this.getKb().getDataset();
+		dataset.begin(ReadWrite.READ);
+		Model mP = dataset.getNamedModel(RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG_P);
+		String si = null;
+		StmtIterator result = null;
+		List<SNSemanticTag> targetTags = new ArrayList<SNSemanticTag>();
+		try {
+			result = mP.listStatements(null, mP.getProperty(RDFConstants.SEMANTIC_NET_PREDICATE + predicateName), this.getSi()[0]);
+			dataset.end();
+			while (result.hasNext()) {
+				si = result.next().getSubject().toString();
+				targetTags.add(new RDFSNSemanticTag(this.getKb(), si, RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG));
+			}
+		}
+		catch (Exception e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+		finally {
+			dataset.end();
+		}		
+		return Collections.enumeration(targetTags);
 	}
-
 
 	@Override
 	public Enumeration<String> targetPredicateNames() {

@@ -121,7 +121,6 @@ public class RDFContextPoint implements ContextPoint {
 					pointFound = false;
 				}
 				propertyStmt = propertiesOfPoint.next();
-				String gesucht = coordinates.getTime().getSI()[0];
 				if (pointFound && coordinates.getTime() == null
 						|| coordinates.getTime().getSI()[0].equals(propertyStmt.getObject().toString())) {
 					pointFound = true;

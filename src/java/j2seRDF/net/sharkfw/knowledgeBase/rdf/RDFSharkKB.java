@@ -1,27 +1,21 @@
 package net.sharkfw.knowledgeBase.rdf;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import net.sharkfw.knowledgeBase.rdf.RDFConstants;
-import net.sharkfw.knowledgeBase.rdf.RDFContextPoint;
-import net.sharkfw.knowledgeBase.rdf.RDFPeerSTSet;
-import net.sharkfw.knowledgeBase.rdf.RDFPeerSemanticTag;
-import net.sharkfw.knowledgeBase.rdf.RDFSTSet;
-import net.sharkfw.knowledgeBase.rdf.RDFSpatialSTSet;
-import net.sharkfw.knowledgeBase.rdf.RDFTimeSTSet;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.PeerTaxonomy;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
@@ -30,10 +24,13 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.riot.RDFLanguages;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
@@ -45,6 +42,7 @@ import com.hp.hpl.jena.tdb.TDBFactory;
  * @author Barret dfe
  *
  */
+@SuppressWarnings("unchecked")
 public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 
 	private String directory;
@@ -61,15 +59,23 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 							+ directory);
 		}
 	}
-
-	public void drop() {
-		File index = new File(directory);
-		String[] entries = index.list();
-		for (String s : entries) {
-			File currentFile = new File(index.getPath(), s);
-			currentFile.delete();
+	
+	public RDFSharkKB(String directory, File file) throws SharkKBException {
+		
+		this(directory);
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
+		dataset.begin(ReadWrite.WRITE);
+		RDFDataMgr.read(dataset, fis, RDFLanguages.NQUADS);		
+		dataset.commit();
+		dataset.end();
+
 	}
+
 
 	public Dataset getDataset() {
 		return dataset;
@@ -158,6 +164,31 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	@Override
 	public RDFPeerSTSet getPeerSTSet() throws SharkKBException {
 		return new RDFPeerSTSet(this);
+	}
+	
+	
+	public void exportRDFSharkKB(String filePath) throws IOException {
+		
+		File file = new File(filePath);
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		dataset.begin(ReadWrite.READ);
+		RDFDataMgr.write(fos, dataset, RDFFormat.NQUADS);
+		dataset.end();
+		fos.close();
+	}
+
+	public void drop() {
+		File index = new File(directory);
+		String[] entries = index.list();
+		for (String s : entries) {
+			File currentFile = new File(index.getPath(), s);
+			currentFile.delete();
+		}
 	}
 
 	@Override

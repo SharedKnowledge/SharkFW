@@ -3,9 +3,6 @@ package net.sharkfw.knowledgeBase.rdf;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ReadWrite;
-
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
