@@ -1,0 +1,9 @@
+.idea
+Manifest.java
+*.iml
+BuildConfig.java
+R.java
+out
+lib
+gen
+BuildConfig.java
