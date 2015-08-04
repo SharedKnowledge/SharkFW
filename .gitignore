@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 .idea
 Manifest.java
 *.iml
@@ -8,10 +7,8 @@ out
 lib
 gen
 BuildConfig.java
-=======
 *.class
 .idea/
 *.classpath
 *.project
 bin/net/sharkfw/knowledgeBase/sync/TODO
->>>>>>> origin/master
