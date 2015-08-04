@@ -24,6 +24,8 @@ public class RDFSemanticTag implements SemanticTag {
 
 	private String topic;
 	
+	private RDFSharkKB kb;
+	
 	public RDFSemanticTag() {
 		si = null;
 		topic = null;		
@@ -38,6 +40,7 @@ public class RDFSemanticTag implements SemanticTag {
 
 	public RDFSemanticTag(RDFSharkKB kb, String si, String MODEL) {
 
+		this.kb = kb;
 		List<String> list = new ArrayList<String>();
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
@@ -66,6 +69,7 @@ public class RDFSemanticTag implements SemanticTag {
 	public RDFSemanticTag(RDFSharkKB kb, String[] si, String topic, String MODEL) {
 		
 		Dataset dataset = kb.getDataset();
+		this.kb = kb;
 		this.si = si;
 		this.topic = topic;
 		for (int i = 0; i < si.length; i++) {
@@ -147,6 +151,10 @@ public class RDFSemanticTag implements SemanticTag {
 	@Override
 	public String[] getSI() {
 		return si;
+	}	
+
+	public RDFSharkKB getKb() {
+		return kb;
 	}
 
 	@Override

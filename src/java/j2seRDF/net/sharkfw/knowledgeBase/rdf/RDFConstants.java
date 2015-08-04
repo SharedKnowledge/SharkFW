@@ -19,18 +19,19 @@ public final class RDFConstants {
 	
 	public static final String SPATIAL_MODEL_NAME = "Spatial";
 	
-	public static final String 	CONTEXT_POINT_MODEL_NAME = "Context Points";
+	public static final String 	CONTEXT_POINT_MODEL_NAME = "Context Points";	
+
 	
 	
 	/************************************************* 
 	 *  Predicate names for tags
 	 ************************************************/
 	
-	public static final String SEMANTIC_TAG_PREDICATE = "http://www.dict.cc/?s=describe";
+	public static final String SEMANTIC_TAG_PREDICATE = "http://www.sharksystem.net/Topic/describes";
 	
-	public static final String PEER_TAG_PREDICATE = "http://www.dict.cc/?s=contactableby";
+	public static final String PEER_TAG_PREDICATE = "http://www.sharksystem.net/Peer/contactableby";
 	
-	public static final String PEER_TAG_ADDRESS_PREDICATE = "http://www.dict.cc/?s=contacts";
+	public static final String PEER_TAG_ADDRESS_PREDICATE = "http://www.sharksystem.net/Peer/contacts";
 	
 	public static final String SPATIAL_TAG_PREDICATE = "http://www.sharksystem.net/SharkGeometry";
 	
@@ -74,4 +75,42 @@ public final class RDFConstants {
 	public static final String PEER_TAG_OBJECT_NAME_ADDRESS = "/address";
 	
 	public static final String SPATIAL_TAG_OBJECT_NAME_GEOMETRY = "/geometry";
+	
+	
+	/************************************************* 
+	 *  KB various tags
+	 ************************************************/
+	
+	public static final String KB_OWNER = "http://www.sharksystem.net/KnowledgeBase/Owner";
+	
+	public static final String KB_OWNER_PREDICATE = KB_OWNER + "/owns";
+	
+	
+	/************************************************* 
+	 *  KB names for Information
+	 ************************************************/
+	
+	public static final String INFORMATION_SUBJECT = "http://www.sharksystem.net/ContextPoint/Information";
+	
+	public static final String INFORMATION_PREDICATE = "http://www.sharksystem.net/ContextPoint/Information/located";
+	
+	public static final String INFORMATION_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/information/";	
+	
+	
+	/************************************************* 
+	 *  Predicate Name Semantic Name
+	 ************************************************/
+	
+	public static final String SEMANTIC_NET_PREDICATE = "http://www.sharksystem.net/SemanticNet/";
+	
+	
+	/************************************************* 
+	 *  Model (set) names for Semantic Net
+	 ************************************************/	
+	
+	public static final String SEMANTIC_NET_MODEL_SEMANTIC_TAG = "Semantic Net SemanticTags";
+	
+	public static final String SEMANTIC_NET_MODEL_SEMANTIC_TAG_P = "Semantic Net SemanticTags Predicates";
+		
+
 }
