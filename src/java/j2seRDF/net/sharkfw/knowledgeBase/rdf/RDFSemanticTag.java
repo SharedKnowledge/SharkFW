@@ -23,19 +23,19 @@ public class RDFSemanticTag implements SemanticTag {
 	private String[] si;
 
 	private String topic;
-	
+
 	private RDFSharkKB kb;
-	
+
 	public RDFSemanticTag() {
 		si = null;
-		topic = null;		
+		topic = null;
 	}
-	
+
 	public RDFSemanticTag(String[] si, String topic) {
 		this.si = si;
 		this.topic = topic;
 	}
-	
+
 	/********** RDFKB-GET (read in db) CONSTRUCTOR **********/
 
 	public RDFSemanticTag(RDFSharkKB kb, String si, String MODEL) {
@@ -45,29 +45,25 @@ public class RDFSemanticTag implements SemanticTag {
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);
 		Model m = dataset.getNamedModel(MODEL);
-		StmtIterator statementOfSi = m.listStatements(m.getResource(si),
-				m.getProperty(RDFConstants.SEMANTIC_TAG_PREDICATE),
-				(String) null); 
+		StmtIterator statementOfSi = m.listStatements(m.getResource(si), m.getProperty(RDFConstants.SEMANTIC_TAG_PREDICATE), (String) null);
 		String topic = statementOfSi.next().getObject().toString();
 		this.setTopic(topic);
-		StmtIterator sisOfTag = m.listStatements(null,
-				m.getProperty(RDFConstants.SEMANTIC_TAG_PREDICATE),
-				topic);
+		StmtIterator sisOfTag = m.listStatements(null, m.getProperty(RDFConstants.SEMANTIC_TAG_PREDICATE), topic);
 		while (sisOfTag.hasNext()) {
 			list.add(sisOfTag.next().getSubject().getURI());
 		}
-		this.setSi(list.toArray(new String [list.size()]));
+		this.setSi(list.toArray(new String[list.size()]));
 		dataset.end();
-	}	
-	
+	}
+
 	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
-	
+
 	public RDFSemanticTag(RDFSharkKB kb, String si, String topic, String MODEL) {
-		this(kb, new String [] {si}, topic, MODEL);		
-	}	
-	
+		this(kb, new String[] { si }, topic, MODEL);
+	}
+
 	public RDFSemanticTag(RDFSharkKB kb, String[] si, String topic, String MODEL) {
-		
+
 		Dataset dataset = kb.getDataset();
 		this.kb = kb;
 		this.si = si;
@@ -76,16 +72,14 @@ public class RDFSemanticTag implements SemanticTag {
 			dataset.begin(ReadWrite.WRITE);
 			Model m = dataset.getNamedModel(MODEL);
 			try {
-				Statement s = m.createStatement(m.createResource(si[i]),
-						m.createProperty(RDFConstants.SEMANTIC_TAG_PREDICATE), topic);
-				m.add(s);				
+				Statement s = m.createStatement(m.createResource(si[i]), m.createProperty(RDFConstants.SEMANTIC_TAG_PREDICATE), topic);
+				m.add(s);
 				dataset.commit();
 			} finally {
 				dataset.end();
 			}
 		}
 	}
-
 
 	@Override
 	public String getSystemProperty(String arg0) {
@@ -112,8 +106,7 @@ public class RDFSemanticTag implements SemanticTag {
 	}
 
 	@Override
-	public Enumeration<String> propertyNames(boolean arg0)
-			throws SharkKBException {
+	public Enumeration<String> propertyNames(boolean arg0) throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -131,8 +124,7 @@ public class RDFSemanticTag implements SemanticTag {
 	}
 
 	@Override
-	public void setProperty(String arg0, String arg1, boolean arg2)
-			throws SharkKBException {
+	public void setProperty(String arg0, String arg1, boolean arg2) throws SharkKBException {
 		// TODO Auto-generated method stub
 
 	}
@@ -151,7 +143,7 @@ public class RDFSemanticTag implements SemanticTag {
 	@Override
 	public String[] getSI() {
 		return si;
-	}	
+	}
 
 	public RDFSharkKB getKb() {
 		return kb;
@@ -212,7 +204,5 @@ public class RDFSemanticTag implements SemanticTag {
 	public void setTopic(String topic) {
 		this.topic = topic;
 	}
-	
-	
 
 }

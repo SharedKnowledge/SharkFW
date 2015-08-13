@@ -44,7 +44,6 @@ public class RDFContextPoint implements ContextPoint {
 			contextPointID = anchor.getId();
 			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC),
 					(coordinates.getTopic() != null) ? coordinates.getTopic().getSI()[0] : "null");
-
 			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_ORIGINATOR),
 					(coordinates.getOriginator() != null) ? coordinates.getOriginator().getSI()[0] : "null");
 			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_PEER),
