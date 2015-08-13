@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import static org.junit.Assert.*;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
@@ -67,6 +68,26 @@ public class TestRDFKBSparql {
 		assertEquals("https://jena.apache.org/documentation/tdb", model.getResource("https://jena.apache.org/documentation/tdb").getURI());				
 	}
 	
+	@Test
+	public void testCCheckSemanticTagWithASK() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		Query query = QueryFactory.create("ASK WHERE { <https://jena.apache.org/documentation/tdb> ?p \"Jena - TDB\" . }");
+		QueryExecution qexec = QueryExecutionFactory.create(query, kb.getTopicSTSet().getModel());
+		kb.getDataset().begin(ReadWrite.READ);
+		assertTrue(qexec.execAsk()); //Abfrage ausführen + überprüfen
+	}
+	
+	@Test
+	public void testDCreateTripleWithCONSTRUCT() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		Query query = QueryFactory.create("CONSTRUCT { <https://jena.apache.org> ?p ?o } " + "WHERE { <https://jena.apache.org/documentation/tdb> ?p ?o . }"); //Abfrage erzeugen
+		QueryExecution qexec = QueryExecutionFactory.create(query, kb.getTopicSTSet().getModel()); //Model zuweisen
+		kb.getDataset().begin(ReadWrite.WRITE);
+		qexec.execConstruct(kb.getDataset().getDefaultModel()); //Abfrage ausführen
+		kb.getDataset().end();
+	}
 
 	
 	

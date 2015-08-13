@@ -24,7 +24,7 @@ public class RDFPeerSemanticTag extends RDFSemanticTag implements
 	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
 
 	public RDFPeerSemanticTag(RDFSharkKB kb, String[] si, String topic,
-			String[] addresses) {
+			String[] addresses, String MODEL) {
 		super(si, topic);
 		this.address = addresses;
 		Dataset dataset = kb.getDataset();
@@ -60,7 +60,7 @@ public class RDFPeerSemanticTag extends RDFSemanticTag implements
 
 	/********** RDFKB-GET (read in db) CONSTRUCTOR **********/
 
-	public RDFPeerSemanticTag(RDFSharkKB kb, String si) {
+	public RDFPeerSemanticTag(RDFSharkKB kb, String si, String MODEL) {
 		super(kb, si, RDFConstants.PEER_MODEL_NAME);
 		Dataset dataset = kb.getDataset();
 		dataset.begin(ReadWrite.READ);

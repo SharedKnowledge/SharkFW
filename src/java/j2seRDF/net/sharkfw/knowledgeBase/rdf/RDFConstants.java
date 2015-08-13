@@ -111,6 +111,10 @@ public final class RDFConstants {
 	public static final String SEMANTIC_NET_MODEL_SEMANTIC_TAG = "Semantic Net SemanticTags";
 	
 	public static final String SEMANTIC_NET_MODEL_SEMANTIC_TAG_P = "Semantic Net SemanticTags Predicates";
+	
+	public static final String SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG = "Semantic Net PeerSemanticTags";
+	
+	public static final String SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG_P = "Semantic Net PeerSemanticTags Predicates";
 		
 
 }

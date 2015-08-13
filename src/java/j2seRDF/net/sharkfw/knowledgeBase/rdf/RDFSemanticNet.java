@@ -22,7 +22,6 @@ public class RDFSemanticNet implements SemanticNet {
 	@Override
 	public RDFSNSemanticTag createSemanticTag(String topic, String[] sis) throws SharkKBException {
 		return new RDFSNSemanticTag(kb, sis, topic, RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG);
-
 	}
 
 	@Override

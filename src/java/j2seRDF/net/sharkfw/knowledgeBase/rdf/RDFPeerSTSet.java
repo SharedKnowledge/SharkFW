@@ -41,31 +41,31 @@ public class RDFPeerSTSet implements PeerSTSet {
 
 	@Override
 	public RDFPeerSemanticTag getSemanticTag(String si) throws SharkKBException {
-		return new RDFPeerSemanticTag(kb, si);
+		return new RDFPeerSemanticTag(kb, si, RDFConstants.PEER_MODEL_NAME);
 	}
 	
 	@Override
 	public RDFPeerSemanticTag createPeerSemanticTag(String topic, String[] si,
 			String[] addresses) throws SharkKBException {
-		return new RDFPeerSemanticTag(kb, si, topic, addresses);
+		return new RDFPeerSemanticTag(kb, si, topic, addresses, RDFConstants.PEER_MODEL_NAME);
 	}
 
 	@Override
 	public RDFPeerSemanticTag createPeerSemanticTag(String topic, String[] si,
 			String address) throws SharkKBException {
-		return new RDFPeerSemanticTag(kb, si, topic, new String[] {address});
+		return new RDFPeerSemanticTag(kb, si, topic, new String[] {address}, RDFConstants.PEER_MODEL_NAME);
 	}
 	
 	@Override
 	public RDFPeerSemanticTag createPeerSemanticTag(String topic, String si,
 			String[] addresses) throws SharkKBException {
-		return new RDFPeerSemanticTag(kb, new String[] {si}, topic, addresses);
+		return new RDFPeerSemanticTag(kb, new String[] {si}, topic, addresses,RDFConstants.PEER_MODEL_NAME);
 	}
 	
 	@Override
 	public RDFPeerSemanticTag createPeerSemanticTag(String topic, String si,
 			String address) throws SharkKBException {
-		return new RDFPeerSemanticTag(kb, new String[] {si}, topic,new String[] {address});
+		return new RDFPeerSemanticTag(kb, new String[] {si}, topic,new String[] {address}, RDFConstants.PEER_MODEL_NAME);
 	}
 
 	@Override

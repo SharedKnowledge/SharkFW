@@ -17,7 +17,6 @@ import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
@@ -137,7 +136,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 			dataset.end();
 		}
 		if (si != null) {
-			return new RDFPeerSemanticTag(this, si);
+			return new RDFPeerSemanticTag(this, si, RDFConstants.PEER_MODEL_NAME);
 		} else {
 			return null;
 		}
@@ -146,7 +145,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	@Override
 	public void setOwner(PeerSemanticTag owner) {
 		new RDFPeerSemanticTag(this, owner.getSI(), owner.getName(),
-				owner.getAddresses());
+				owner.getAddresses(), RDFConstants.PEER_MODEL_NAME);
 		dataset.begin(ReadWrite.WRITE);
 		Model m = dataset.getDefaultModel();
 		try {
@@ -218,9 +217,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	@Override
-	public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFSemanticNet getTopicsAsSemanticNet() throws SharkKBException {
+		return new RDFSemanticNet(this);
 	}
 
 	@Override
