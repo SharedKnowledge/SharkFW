@@ -334,5 +334,42 @@ public class TestRDFKB {
 		assertNotNull(sourceTags);
 		assertEquals("Germany", sourceTags.nextElement().getName());
 	}
+	
+	@Test
+	public void testTaddSI() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFSemanticNet semanticNet = new RDFSemanticNet(kb);
+		RDFSNSemanticTag tagGermany = semanticNet.getSemanticTag("https://en.wikipedia.org/wiki/Germany");
+		assertEquals(1, tagGermany.getSI().length);
+		tagGermany.addSI("https://de.wikipedia.org/wiki/Deutschland");
+		assertEquals(2, tagGermany.getSI().length);
+		assertEquals("https://en.wikipedia.org/wiki/Germany", tagGermany.getSi()[0]);
+		assertEquals("https://de.wikipedia.org/wiki/Deutschland", tagGermany.getSi()[1]);		
+		
+		tagGermany = semanticNet.getSemanticTag("https://en.wikipedia.org/wiki/Germany"); //Tag neu aus der Wissensbasis holen, erneuter Test der Attribute
+		assertEquals(2, tagGermany.getSI().length);
+		assertEquals("https://en.wikipedia.org/wiki/Germany", tagGermany.getSI()[0]);
+		assertEquals("https://de.wikipedia.org/wiki/Deutschland", tagGermany.getSI()[1]);	
+	}
+	
+	@Test
+	public void testURemoveSI() throws SharkKBException {
+		
+		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);
+		RDFSemanticNet semanticNet = new RDFSemanticNet(kb);
+		RDFSNSemanticTag tagGermany = semanticNet.getSemanticTag("https://en.wikipedia.org/wiki/Germany");
+		assertEquals(2, tagGermany.getSI().length);
+
+		tagGermany.removeSI("https://de.wikipedia.org/wiki/Deutschland");
+		assertEquals(1, tagGermany.getSI().length);
+		assertEquals("https://en.wikipedia.org/wiki/Germany", tagGermany.getSI()[0]);
+		
+		tagGermany = semanticNet.getSemanticTag("https://en.wikipedia.org/wiki/Germany"); //Tag neu aus der Wissensbasis holen, erneuter Test der Attribute
+		assertEquals(1, tagGermany.getSI().length);
+		assertEquals("https://en.wikipedia.org/wiki/Germany", tagGermany.getSI()[0]);		
+	}
+	
+	
 
 }

@@ -130,6 +130,18 @@ public class RDFSNSemanticTag extends RDFSemanticTag implements SNSemanticTag {
 		}		
 		return Collections.enumeration(targetTags);
 	}
+	
+	@Override
+	public void addSI(String si) throws SharkKBException {
+
+		addSIModelIndependenent(si, RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG);
+	}
+	
+	@Override
+	public void removeSI(String si) throws SharkKBException {
+		
+		this.removeSIModelIndependenent(si, RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG);
+	}
 
 	@Override
 	public Enumeration<String> targetPredicateNames() {

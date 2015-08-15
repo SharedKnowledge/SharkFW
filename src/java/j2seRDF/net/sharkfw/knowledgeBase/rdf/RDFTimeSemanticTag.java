@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.rdf;
 
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 
 import com.hp.hpl.jena.query.Dataset;
@@ -45,6 +46,18 @@ public class RDFTimeSemanticTag extends RDFSemanticTag implements TimeSemanticTa
 	@Override
 	public long getFrom() {
 		return from;
+	}
+	
+	@Override
+	public void addSI(String si) throws SharkKBException {
+
+		addSIModelIndependenent(si, RDFConstants.TIME_MODEL_NAME);
+	}
+	
+	@Override
+	public void removeSI(String si) throws SharkKBException {
+		
+		this.removeSIModelIndependenent(si, RDFConstants.TIME_MODEL_NAME);
 	}
 
 }

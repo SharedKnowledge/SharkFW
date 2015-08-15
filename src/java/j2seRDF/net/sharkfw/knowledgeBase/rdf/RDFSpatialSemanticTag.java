@@ -71,5 +71,17 @@ public class RDFSpatialSemanticTag extends RDFSemanticTag implements SpatialSema
 	public SharkGeometry getGeometry() {
 		return sg;
 	}
+	
+	@Override
+	public void addSI(String si) throws SharkKBException {
+
+		addSIModelIndependenent(si, RDFConstants.SPATIAL_MODEL_NAME);
+	}
+	
+	@Override
+	public void removeSI(String si) throws SharkKBException {
+		
+		this.removeSIModelIndependenent(si, RDFConstants.SPATIAL_MODEL_NAME);
+	}
 
 }

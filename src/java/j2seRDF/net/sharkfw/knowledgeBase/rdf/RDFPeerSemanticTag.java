@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SharkKBException;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
@@ -77,7 +78,19 @@ public class RDFPeerSemanticTag extends RDFSemanticTag implements
 		dataset.end();
 
 	}
+	
+	@Override
+	public void addSI(String si) throws SharkKBException {
 
+		addSIModelIndependenent(si, RDFConstants.PEER_MODEL_NAME);
+	}
+
+	@Override
+	public void removeSI(String si) throws SharkKBException {
+		
+		this.removeSIModelIndependenent(si, RDFConstants.PEER_MODEL_NAME);
+	}
+	
 	@Override
 	public void addAddress(String arg0) {
 		// TODO Auto-generated method stub

@@ -60,6 +60,11 @@ public class RDFSTSet implements STSet {
 	public Model getModel() {
 		return model;
 	}
+	
+	@Override
+	public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
+				
+	}
 
 
 	@Override
@@ -73,13 +78,8 @@ public class RDFSTSet implements STSet {
 	public boolean isEmpty() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-	
-	@Override
-	public void removeSemanticTag(SemanticTag arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
+	}	
+
 	
 	@Override
 	public Iterator<SemanticTag> stTags() throws SharkKBException {
