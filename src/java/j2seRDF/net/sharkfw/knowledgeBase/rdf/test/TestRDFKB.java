@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
-import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
@@ -54,7 +53,7 @@ public class TestRDFKB {
 
 	private static final String TEST_FILE_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFileRDF.nq";
 
-	private ContextCoordinates cc;
+	private RDFContextCoordinates cc;
 
 	private Long time = new Long("1437400837574");
 

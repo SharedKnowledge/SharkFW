@@ -65,6 +65,12 @@ public class RDFPeerSemanticNet implements PeerSemanticNet {
 		return null;
 	}
 
+	
+	
+	public RDFSharkKB getKb() {
+		return kb;
+	}
+
 	@Override
 	public PeerSNSemanticTag getSemanticTag(String si) throws SharkKBException {
 		// TODO Auto-generated method stub

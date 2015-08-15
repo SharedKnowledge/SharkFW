@@ -14,7 +14,6 @@ import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticNet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
@@ -59,7 +58,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	 * Creates a new RDFSharkKB with the given directory
 	 * 
 	 * @param directory
-	 *            The directory, which will be the place of the new database
+	 *          The directory, which will be the place of the new database
 	 * @throws SharkKBException
 	 */
 	public RDFSharkKB(String directory) throws SharkKBException {
@@ -67,21 +66,19 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		this.directory = directory;
 		dataset = TDBFactory.createDataset(directory);
 		if (dataset == null) {
-			throw new SharkKBException(
-					"Error while retrieving the RDFSharkKB from directory: "
-							+ directory);
+			throw new SharkKBException("Error while retrieving the RDFSharkKB from directory: " + directory);
 		}
 	}
 
 	/**
-	 * Creates a new RDFSharkKB and initialize the database with the data from
-	 * the RDF File
+	 * Creates a new RDFSharkKB and initialize the database with the data from the
+	 * RDF File.
 	 * 
 	 * @param directory
-	 *            The directory, which will be the place of the new database
+	 *          The directory, which will be the place of the new database
 	 * @param file
-	 *            The RDF File, which triples/quadruples will be imported into
-	 *            the database
+	 *          The RDF File, which triples/quadruples will be imported into the
+	 *          database
 	 * @throws SharkKBException
 	 */
 	public RDFSharkKB(String directory, File file) throws SharkKBException {
@@ -122,16 +119,17 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	public RDFSTSet getTopicSTSet() throws SharkKBException {
 		return new RDFSTSet(this);
 	}
-
+	
+	/**
+	 * Returns the peer, which was set as the owner of the knowledge base
+	 */
 	@Override
 	public RDFPeerSemanticTag getOwner() {
 		String si = null;
 		dataset.begin(ReadWrite.READ);
 		Model m = dataset.getDefaultModel();
 		try {
-			si = m.listStatements(null,
-					m.getProperty(RDFConstants.KB_OWNER_PREDICATE),
-					(String) null).next().getSubject().getURI();
+			si = m.listStatements(null, m.getProperty(RDFConstants.KB_OWNER_PREDICATE), (String) null).next().getSubject().getURI();
 		} finally {
 			dataset.end();
 		}
@@ -142,16 +140,16 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		}
 	}
 
+	/**
+	 * Set the owner of the knowledge base
+	 */
 	@Override
 	public void setOwner(PeerSemanticTag owner) {
-		new RDFPeerSemanticTag(this, owner.getSI(), owner.getName(),
-				owner.getAddresses(), RDFConstants.PEER_MODEL_NAME);
+		new RDFPeerSemanticTag(this, owner.getSI(), owner.getName(), owner.getAddresses(), RDFConstants.PEER_MODEL_NAME);
 		dataset.begin(ReadWrite.WRITE);
 		Model m = dataset.getDefaultModel();
 		try {
-			m.createResource(owner.getSI()[0]).addProperty(
-					m.createProperty(RDFConstants.KB_OWNER_PREDICATE),
-					"SharkKB");
+			m.createResource(owner.getSI()[0]).addProperty(m.createProperty(RDFConstants.KB_OWNER_PREDICATE), "SharkKB");
 			dataset.commit();
 		} finally {
 			dataset.end();
@@ -159,25 +157,12 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	@Override
-	public RDFContextPoint createContextPoint(ContextCoordinates coordinates)
-			throws SharkKBException {
+	public RDFContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
 		return new RDFContextPoint(this, coordinates);
 	}
 
 	@Override
-	public Interest createInterest() throws SharkKBException {
-		return this.createInterest();
-	}
-
-	@Override
-	public Interest createInterest(ContextCoordinates coordinates)
-			throws SharkKBException {
-		return this.createInterest(coordinates);
-	}
-
-	@Override
-	public RDFContextPoint getContextPoint(ContextCoordinates coordinates)
-			throws SharkKBException {
+	public RDFContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
 		return new RDFContextPoint(this, coordinates, 0);
 	}
 
@@ -186,6 +171,12 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		return new RDFPeerSTSet(this);
 	}
 
+	/**
+	 * Export the content of the RDF knowledge base into a simple file with the RDF syntax NQUADS.
+	 * 
+	 * @param filePath the location of the file
+	 * @throws IOException
+	 */
 	public void exportRDFSharkKB(String filePath) throws IOException {
 
 		File file = new File(filePath);
@@ -201,6 +192,10 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		fos.close();
 	}
 
+	/**
+	 * Delete the whole content of the knowledge base. Everything including tags, owner and CPs
+	 * will be deleted.
+	 */
 	public void drop() {
 		File index = new File(directory);
 		String[] entries = index.list();
@@ -211,72 +206,35 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	@Override
-	public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
+	public void removeContextPoint(ContextCoordinates cc) throws SharkKBException {
+		RDFContextPoint cp = new RDFContextPoint(this, cc, 0);
+		cp.removeContextPoint();
+	}
+
+	@Override
+	public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public RDFSemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-		return new RDFSemanticNet(this);
+	public Interest createInterest() throws SharkKBException {
+		return this.createInterest();
 	}
 
 	@Override
-	public Iterator<ContextPoint> contextPoints(SharkCS arg0, boolean arg1)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public Interest createInterest(ContextCoordinates coordinates) throws SharkKBException {
+		return this.createInterest(coordinates);
 	}
 
 	@Override
-	public void addInterest(SharkCS arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Iterator<SharkCS> interests() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void removeInterest(SharkCS arg0) throws SharkKBException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeContextPoint(ContextCoordinates arg0)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Iterator<ContextPoint> contextPoints(SharkCS arg0)
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterator<ContextPoint> contextPoints(SharkCS arg0, boolean arg1) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public Knowledge createKnowledge() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Enumeration<ContextPoint> getAllContextPoints()
-			throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Iterator<SemanticTag> getTags() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/*******************************************************************************
@@ -287,18 +245,18 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	 * @deprecated
 	 */
 	@Override
-	public SemanticTag createSemanticTag(String name, String[] si)
-			throws SharkKBException {
+	public SemanticTag createSemanticTag(String name, String[] si) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public SemanticTag createSemanticTag(String si, String name)
-			throws SharkKBException {
+	public SemanticTag createSemanticTag(String si, String name) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
+
 	/**
 	 * @deprecated
 	 */
@@ -306,6 +264,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	public SemanticTag getSemanticTag(String si) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
+
 	/**
 	 * @deprecated
 	 */
@@ -321,6 +280,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	public void removeSemanticTag(String[] arg0) throws SharkKBException {
 
 	}
+
 	/**
 	 * @deprecated
 	 */
@@ -335,12 +295,14 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	@Override
 	public void semanticTagChanged(SemanticTag arg0, STSet arg1) {
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
 	public void semanticTagCreated(SemanticTag arg0, STSet arg1) {
 	}
+
 	/**
 	 * @deprecated
 	 */
@@ -353,16 +315,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	 * @deprecated
 	 */
 	@Override
-	public PeerSemanticTag getPeerSemanticTag(String[] arg0)
-			throws SharkKBException {
-		throw new SharkKBException("Please use the TagSet for creating a tag");
-	}
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public PeerSemanticTag getPeerSemanticTag(String arg0)
-			throws SharkKBException {
+	public PeerSemanticTag getPeerSemanticTag(String[] arg0) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
 
@@ -370,88 +323,91 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	 * @deprecated
 	 */
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1,
-			String[] arg2) throws SharkKBException {
+	public PeerSemanticTag getPeerSemanticTag(String arg0) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1,
-			String arg2) throws SharkKBException {
+	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1, String[] arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1,
-			String arg2) throws SharkKBException {
+	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1, String arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1,
-			String[] arg2) throws SharkKBException {
+	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1, String arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public SpatialSemanticTag createSpatialSemanticTag(String arg0,
-			String[] arg1) throws SharkKBException {
+	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1, String[] arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public SpatialSemanticTag createSpatialSemanticTag(String arg0,
-			String[] arg1, SharkGeometry arg2) throws SharkKBException {
+	public SpatialSemanticTag createSpatialSemanticTag(String arg0, String[] arg1) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public TimeSemanticTag createTimeSemanticTag(long arg0, long arg1)
-			throws SharkKBException {
+	public SpatialSemanticTag createSpatialSemanticTag(String arg0, String[] arg1, SharkGeometry arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public Enumeration<ContextPoint> getContextPoints(SharkCS arg0)
-			throws SharkKBException {
-		throw new SharkKBException("Deprecated method");
+	public TimeSemanticTag createTimeSemanticTag(long arg0, long arg1) throws SharkKBException {
+		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
+
 	/**
 	 * @deprecated
 	 */
 	@Override
-	public Enumeration<ContextPoint> getContextPoints(SharkCS arg0, boolean arg1)
-			throws SharkKBException {
+	public Enumeration<ContextPoint> getContextPoints(SharkCS arg0) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
 
+	/**
+	 * @deprecated
+	 */
 	@Override
-	public ContextCoordinates createContextCoordinates(SemanticTag arg0,
-			PeerSemanticTag arg1, PeerSemanticTag arg2, PeerSemanticTag arg3,
-			TimeSemanticTag arg4, SpatialSemanticTag arg5, int arg6)
-			throws SharkKBException {
-		throw new SharkKBException(
-				"Please use the createRDFContextCoordinates method.");
+	public Enumeration<ContextPoint> getContextPoints(SharkCS arg0, boolean arg1) throws SharkKBException {
+		throw new SharkKBException("Deprecated method");
 	}
 
 	@Override
-	public Interest createInterest(STSet arg0, PeerSemanticTag arg1,
-			PeerSTSet arg2, PeerSTSet arg3, TimeSTSet arg4, SpatialSTSet arg5,
-			int arg6) throws SharkKBException {
+	public ContextCoordinates createContextCoordinates(SemanticTag arg0, PeerSemanticTag arg1, PeerSemanticTag arg2, PeerSemanticTag arg3, TimeSemanticTag arg4,
+			SpatialSemanticTag arg5, int arg6) throws SharkKBException {
+		throw new SharkKBException("Please use the createRDFContextCoordinates method.");
+	}
+
+	@Override
+	public Interest createInterest(STSet arg0, PeerSemanticTag arg1, PeerSTSet arg2, PeerSTSet arg3, TimeSTSet arg4, SpatialSTSet arg5, int arg6)
+			throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
 

@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.rdf;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -23,11 +25,10 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 public class RDFContextPoint implements ContextPoint {
 
-	@SuppressWarnings("unused")
 	private RDFSharkKB kb;
 
 	private ContextCoordinates coordinates = null;
-	
+
 	private AnonId contextPointID;
 
 	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
@@ -42,20 +43,19 @@ public class RDFContextPoint implements ContextPoint {
 		try {
 			Resource anchor = m.createResource();
 			contextPointID = anchor.getId();
-			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC),
-					(coordinates.getTopic() != null) ? coordinates.getTopic().getSI()[0] : "null");
-			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_ORIGINATOR),
-					(coordinates.getOriginator() != null) ? coordinates.getOriginator().getSI()[0] : "null");
-			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_PEER),
-					(coordinates.getPeer() != null) ? coordinates.getPeer().getSI()[0] : "null");
-			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_REMOTE_PEER),
-					(coordinates.getRemotePeer() != null) ? coordinates.getRemotePeer().getSI()[0] : "null");
-			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_LOCATION),
-					(coordinates.getLocation() != null) ? coordinates.getLocation().getSI()[0] : "null");
-			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TIME),
-					(coordinates.getTime() != null) ? coordinates.getTime().getSI()[0] : "null");
-			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_DIRECTION),
-					Integer.toString(coordinates.getDirection()));
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC), (coordinates.getTopic() != null) ? coordinates.getTopic().getSI()[0]
+					: "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_ORIGINATOR), (coordinates.getOriginator() != null) ? coordinates.getOriginator()
+					.getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_PEER), (coordinates.getPeer() != null) ? coordinates.getPeer().getSI()[0]
+					: "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_REMOTE_PEER), (coordinates.getRemotePeer() != null) ? coordinates
+					.getRemotePeer().getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_LOCATION), (coordinates.getLocation() != null) ? coordinates.getLocation()
+					.getSI()[0] : "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TIME), (coordinates.getTime() != null) ? coordinates.getTime().getSI()[0]
+					: "null");
+			anchor.addProperty(m.createProperty(RDFConstants.CONTEXT_POINT_PREDICATE_DIRECTION), Integer.toString(coordinates.getDirection()));
 			dataset.commit();
 
 		} finally {
@@ -84,44 +84,38 @@ public class RDFContextPoint implements ContextPoint {
 				anchor = contextPoints.next();
 				propertiesOfPoint = anchor.listProperties();
 				propertyStmt = propertiesOfPoint.next();
-				if (coordinates.getTopic() == null
-						|| coordinates.getTopic().getSI()[0].equals(propertyStmt.getObject().toString())) {
+				if (coordinates.getTopic() == null || coordinates.getTopic().getSI()[0].equals(propertyStmt.getObject().toString())) {
 					pointFound = true;
 				} else {
 					pointFound = false;
 
 				}
 				propertyStmt = propertiesOfPoint.next();
-				if (pointFound && coordinates.getOriginator() == null
-						|| coordinates.getOriginator().getSI()[0].equals(propertyStmt.getObject().toString())) {
+				if (pointFound && coordinates.getOriginator() == null || coordinates.getOriginator().getSI()[0].equals(propertyStmt.getObject().toString())) {
 					pointFound = true;
 				} else {
 					pointFound = false;
 				}
 				propertyStmt = propertiesOfPoint.next();
-				if (pointFound && coordinates.getPeer() == null
-						|| coordinates.getPeer().getSI()[0].equals(propertyStmt.getObject().toString())) {
+				if (pointFound && coordinates.getPeer() == null || coordinates.getPeer().getSI()[0].equals(propertyStmt.getObject().toString())) {
 					pointFound = true;
 				} else {
 					pointFound = false;
 				}
 				propertyStmt = propertiesOfPoint.next();
-				if (pointFound && coordinates.getRemotePeer() == null
-						|| coordinates.getRemotePeer().getSI()[0].equals(propertyStmt.getObject().toString())) {
+				if (pointFound && coordinates.getRemotePeer() == null || coordinates.getRemotePeer().getSI()[0].equals(propertyStmt.getObject().toString())) {
 					pointFound = true;
 				} else {
 					pointFound = false;
 				}
 				propertyStmt = propertiesOfPoint.next();
-				if (pointFound && coordinates.getLocation() == null
-						|| coordinates.getLocation().getSI()[0].equals(propertyStmt.getObject().toString())) {
+				if (pointFound && coordinates.getLocation() == null || coordinates.getLocation().getSI()[0].equals(propertyStmt.getObject().toString())) {
 					pointFound = true;
 				} else {
 					pointFound = false;
 				}
 				propertyStmt = propertiesOfPoint.next();
-				if (pointFound && coordinates.getTime() == null
-						|| coordinates.getTime().getSI()[0].equals(propertyStmt.getObject().toString())) {
+				if (pointFound && coordinates.getTime() == null || coordinates.getTime().getSI()[0].equals(propertyStmt.getObject().toString())) {
 					pointFound = true;
 				} else {
 					pointFound = false;
@@ -135,13 +129,10 @@ public class RDFContextPoint implements ContextPoint {
 			this.coordinates = coordinates;
 			this.contextPointID = anchor.getId();
 		} else {
-			throw new SharkKBException(
-					"No ContextPoint with this coordinates can be found in the RDF database with path: "
-							+ kb.getDirectory());
+			throw new SharkKBException("No ContextPoint with this coordinates can be found in the RDF database with path: " + kb.getDirectory());
 		}
 
 	}
-
 
 	@Override
 	public RDFInformation addInformation(byte[] content) {
@@ -151,12 +142,6 @@ public class RDFContextPoint implements ContextPoint {
 			e.printStackTrace();
 			return null;
 		}
-	}
-	
-	
-	@Override
-	public void setContextCoordinates(ContextCoordinates arg0) {
-		throw new UnsupportedOperationException("Just create a new RDFContextPoint with the new CC and delete the old one.");
 	}
 
 	@Override
@@ -169,7 +154,7 @@ public class RDFContextPoint implements ContextPoint {
 		RDFInformation info = null;
 		try {
 			info = new RDFInformation(contextPointID);
-		} catch (SharkKBException e) {			
+		} catch (SharkKBException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -177,11 +162,37 @@ public class RDFContextPoint implements ContextPoint {
 		list.add(info);
 		return list.iterator();
 	}
-	
+
 	@Override
-	public Information addInformation(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Information addInformation(String string) {
+
+		byte[] content = string.getBytes(Charset.forName("UTF-8"));
+		try {
+			return new RDFInformation(contextPointID, content);
+		} catch (SharkKBException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void removeContextPoint() {
+
+		Dataset dataset = kb.getDataset();
+		dataset.begin(ReadWrite.WRITE);
+		Model m = dataset.getNamedModel(RDFConstants.CONTEXT_POINT_MODEL_NAME);
+		try {
+			StmtIterator cpStatements = m.listStatements(m.createResource(contextPointID), (Property) null, (String) null);
+			m.remove(cpStatements);
+			dataset.commit();
+		} finally {
+			dataset.end();
+		}
+
+	}
+
+	@Override
+	public void setContextCoordinates(ContextCoordinates arg0) {
+		throw new UnsupportedOperationException("Just create a new RDFContextPoint with the new CC and delete the old one.");
 	}
 
 	@Override
@@ -250,7 +261,6 @@ public class RDFContextPoint implements ContextPoint {
 		return null;
 	}
 
-
 	@Override
 	public Information addInformation(InputStream arg0, long arg1) {
 		// TODO Auto-generated method stub
@@ -262,7 +272,6 @@ public class RDFContextPoint implements ContextPoint {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	@Override
 	public Iterator<Information> getInformation(String arg0) {

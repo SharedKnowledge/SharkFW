@@ -63,6 +63,10 @@ public class RDFContextCoordinates implements ContextCoordinates {
 	public RDFSemanticTag getTopic() {
 		return topic;
 	}
+	
+	public void setTopic(RDFSemanticTag tag) {
+		topic = tag;
+	}
 
 	@Override
 	public SpatialSTSet getLocations() {
