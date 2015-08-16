@@ -46,17 +46,38 @@ import org.junit.runners.MethodSorters;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 
+/**
+ * This class tests multiple methods of the RDFSharkKB. After all tests passed, the 
+ * content of the KB will be exported into a file. 
+ * After that you can run the TestImportRDFKB, which imports the generated RDF file into a 
+ * new RDfSharkKB and tests the content of the new RDFSharkKB * 
+
+ * IF (some) TESTS ARE FAILING: Add the junit-4.12.jar from the RDFlib folder to your used libraries AND remove
+ * the older junit.jar from the lib folder from your used libraries. 
+ * 
+ * @author Barret dfe
+ *
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestRDFKB {
 
+	/** The path in which the database will be stored */
 	private static final String KBDIRECTORY = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFolderDataset";
 
+	/** The path in which the exported RDF file will be exported*/
 	private static final String TEST_FILE_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFileRDF.nq";
 
+	/** RDFCCs for testing purposes */
 	private RDFContextCoordinates cc;
 
 	private Long time = new Long("1437400837574");
 
+	/**
+	 * Delete the old knowledge base and initialize a new knowledge base with some tags and ContextCoordinates.
+	 * 
+	 * @throws SharkKBException
+	 * @throws IOException
+	 */
 	@Before
 	public void clearDatasetC() throws SharkKBException, IOException {
 		File index = new File(KBDIRECTORY);
@@ -76,6 +97,12 @@ public class TestRDFKB {
 		this.cc = new RDFContextCoordinates(sharkTag, clara, daniel, bob, tst, sst, SharkCS.DIRECTION_INOUT);
 	}
 
+	/**
+	 * After all tests passed, this method exports the content of the knowledge base into a RDF file.
+	 * 
+	 * @throws SharkKBException
+	 * @throws IOException
+	 */
 	@AfterClass
 	public static void writeTestResultsInRDFFile() throws SharkKBException, IOException {
 		RDFSharkKB kb = new RDFSharkKB(KBDIRECTORY);

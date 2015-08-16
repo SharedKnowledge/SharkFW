@@ -31,11 +31,20 @@ import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 
+/**
+ * This class tests the functionality of the RDFSharkKB with the four main types 
+ * of SPARQL.
+ * 
+ * @author Barret dfe
+ *
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestRDFKBSparql {
 
+	/** The path in which the database will be stored */
 	private static final String KBDIRECTORY = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFolderDataset";
 	
+	/** The path in which the exported RDF file will be exported*/
 	private static final String TEST_FILE_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFileRDF.nq";
 	
 	@Test 

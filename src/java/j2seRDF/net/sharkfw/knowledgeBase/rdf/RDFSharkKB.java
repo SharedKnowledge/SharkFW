@@ -105,23 +105,32 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		return directory;
 	}
 
+	/**
+	 * Returns the Spatial Model as a SpatialStSet of the knowledge base.
+	 */
 	@Override
 	public RDFSpatialSTSet getSpatialSTSet() throws SharkKBException {
 		return new RDFSpatialSTSet(this);
 	}
 
+	/**
+	 * Returns the Time Model as a TimeSTSet of the knowledge base.
+	 */
 	@Override
 	public RDFTimeSTSet getTimeSTSet() throws SharkKBException {
 		return new RDFTimeSTSet(this);
 	}
 
+	/**
+	 * Returns the Topic Model as a STSet of the knowledge base.
+	 */
 	@Override
 	public RDFSTSet getTopicSTSet() throws SharkKBException {
 		return new RDFSTSet(this);
 	}
 	
 	/**
-	 * Returns the peer, which was set as the owner of the knowledge base
+	 * Returns the peer which was set as the owner of the knowledge base
 	 */
 	@Override
 	public RDFPeerSemanticTag getOwner() {
@@ -166,6 +175,9 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		return new RDFContextPoint(this, coordinates, 0);
 	}
 
+	/**
+	 * Returns the Peer Model as a PeerSTSet of the knowledge base.
+	 */
 	@Override
 	public RDFPeerSTSet getPeerSTSet() throws SharkKBException {
 		return new RDFPeerSTSet(this);

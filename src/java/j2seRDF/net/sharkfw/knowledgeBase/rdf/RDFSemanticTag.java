@@ -14,6 +14,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 /**
+ * Implements the Semantic Tag with RDF Jena. The tag will be stored in form of one or
+ * multiple RDF triples within the RDFSharkKB.
  * 
  * @author Barret dfe
  *
@@ -37,7 +39,13 @@ public class RDFSemanticTag implements SemanticTag {
 	}
 
 	/********** RDFKB-GET (read in db) CONSTRUCTOR **********/
-
+	/**
+	 * Search and retrieve a Semantic Tag which has been previously stored in a RDFSharkKB.
+	 * 
+	 * @param kb the knowledge base from which the tag will be retrieved
+	 * @param si one of the SIs from the tag
+	 * @param MODEL the model from which the tag will be retrieved
+	 */
 	public RDFSemanticTag(RDFSharkKB kb, String si, String MODEL) {
 
 		this.kb = kb;
@@ -57,11 +65,26 @@ public class RDFSemanticTag implements SemanticTag {
 	}
 
 	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
-
+	/**
+	 * Create a Semantic Tag in a RDFSharkKB in the form of one or multiple RDF triples.
+	 * 
+	 * @param kb the knowledge base in which the tag will be stored
+	 * @param the SI of the tag
+	 * @param the topic of the new tag
+	 * @param MODEL the model in which the tag will be stored
+	 */
 	public RDFSemanticTag(RDFSharkKB kb, String si, String topic, String MODEL) {
 		this(kb, new String[] { si }, topic, MODEL);
 	}
 
+	/********** RDFKB-CREATE (write in db) CONSTRUCTOR **********/
+	/**
+	 * Create a Semantic Tag in a RDFSharkKB in the form of one or multiple RDF triples.
+	 * 
+	 * @param kb the knowledge base from which the tag will be retrieved
+	 * @param si one of the SIs from the tag
+	 * @param MODEL the model from which the tag will be retrieved
+	 */
 	public RDFSemanticTag(RDFSharkKB kb, String[] si, String topic, String MODEL) {
 
 		this.kb = kb;
@@ -87,6 +110,14 @@ public class RDFSemanticTag implements SemanticTag {
 		this.addSIModelIndependenent(si, RDFConstants.ST_MODEL_NAME);
 	}
 
+	/**
+	 * This method can be used from different kinds (deriving tags) of Semantic Tags for adding a new SI 
+	 * to the tag. 
+	 * 
+	 * @param newSI the new SI which will be added to the tag
+	 * @param MODEL the model (and thus kind of semantic tag) in which the existing tag shall be changed
+	 * @throws SharkKBException
+	 */
 	public void addSIModelIndependenent(String newSI, String MODEL) throws SharkKBException {
 
 		Dataset dataset = this.kb.getDataset();

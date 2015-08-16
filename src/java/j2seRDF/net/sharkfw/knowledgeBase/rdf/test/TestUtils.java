@@ -3,8 +3,20 @@ package net.sharkfw.knowledgeBase.rdf.test;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * This class provides some Utilities for the testing of the RDFSharkKB
+ * 
+ * @author Barret dfe
+ *
+ */
 public class TestUtils {
 
+	/**
+	 * Deletes the given file or content of directory.
+	 * 
+	 * @param file The file or the content of the directory which shall be deleted
+	 * @throws IOException
+	 */
 	public static void delete(File file) throws IOException {
 
 		if (file.isDirectory()) {

@@ -1,6 +1,9 @@
 package net.sharkfw.knowledgeBase.rdf;
 
 /**
+ * This class contains the names of the models and predicates  which will be used by
+ * the RDFSharkKB. It also stores the names of the subjects for ContextPoints and 
+ * Information.
  * 
  * @author Barret dfe
  *

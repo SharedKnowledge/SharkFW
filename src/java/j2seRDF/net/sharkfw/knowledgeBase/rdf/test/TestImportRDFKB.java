@@ -26,12 +26,25 @@ import net.sharkfw.knowledgeBase.rdf.RDFTimeSemanticTag;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * This class imports a RDF file into a new knowledge base. After the import, the content
+ * of the knowledge base will be tested. 
+ * 
+ * IF tests are failing: Run the TestRDFKB BEFORE the TestImportRDFKB. This class expects the
+ * content within the RDF File which was previously generated and exported by the TestRDFKB
+ * 
+ * @author Barret dfe
+ *
+ */
 public class TestImportRDFKB {
 
+	/** The path in which the database will be stored */
 	private static final String KBDIRECTORY = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFolderDataset";
 
+	/** The path in which the exported RDF file will be exported*/
 	private static final String TEST_FILE_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFileRDF.nq";
 	
+	/** The file which will be used for initializing the new RDFSharkKB */
 	private File importFile;
 
 
