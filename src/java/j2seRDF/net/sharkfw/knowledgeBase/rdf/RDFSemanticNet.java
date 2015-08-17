@@ -44,11 +44,6 @@ public class RDFSemanticNet implements SemanticNet {
 		source.setPredicate(type, target);
 	}
 
-	@Override
-	public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void setEnumerateHiddenTags(boolean hide) {
@@ -78,6 +73,13 @@ public class RDFSemanticNet implements SemanticNet {
 	public FragmentationParameter getDefaultFP() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+
+	@Override
+	public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

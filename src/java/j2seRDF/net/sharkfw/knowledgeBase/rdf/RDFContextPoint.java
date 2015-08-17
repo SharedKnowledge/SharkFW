@@ -134,6 +134,65 @@ public class RDFContextPoint implements ContextPoint {
 
 	}
 
+	/**
+	 * RDFKB-GET (read in db) CONSTRUCTOR Get CP with anchor Resource (not tested yet)
+	 * @throws SharkKBException 
+	 */
+	public RDFContextPoint(RDFSharkKB kb, Resource anchorP) throws SharkKBException {
+		this.kb = kb;
+		this.contextPointID = anchorP.getId();
+		Dataset dataset = kb.getDataset();
+		dataset.begin(ReadWrite.READ);
+		RDFContextCoordinates CCs = new RDFContextCoordinates(null, null, null, null, null, null, 1);
+		Resource anchor = null;
+		Statement propertyStmt = null;
+		StmtIterator propertiesOfPoint = null;
+		try {
+			anchor = anchorP;
+			propertiesOfPoint = anchor.listProperties();
+			propertyStmt = propertiesOfPoint.next();
+			if ((propertyStmt.getObject().toString().equals("null"))) {
+				CCs.setTopic(null);
+			} else {
+				CCs.setTopic(new RDFSemanticTag(kb, propertyStmt.getObject().toString(), RDFConstants.ST_MODEL_NAME));
+			}
+			propertyStmt = propertiesOfPoint.next();
+			if ((propertyStmt.getObject().toString().equals("null"))) {
+				CCs.setOriginator(null);
+			} else {
+				CCs.setOriginator(new RDFPeerSemanticTag(kb, propertyStmt.getObject().toString(), RDFConstants.PEER_MODEL_NAME));
+			}
+			propertyStmt = propertiesOfPoint.next();
+			if ((propertyStmt.getObject().toString().equals("null"))) {
+				CCs.setPeer(null);
+			} else {
+				CCs.setPeer(new RDFPeerSemanticTag(kb, propertyStmt.getObject().toString(), RDFConstants.PEER_MODEL_NAME));
+			}
+			propertyStmt = propertiesOfPoint.next();
+			if ((propertyStmt.getObject().toString().equals("null"))) {
+				CCs.setRemotePeer(null);
+			} else {
+				CCs.setRemotePeer(new RDFPeerSemanticTag(kb, propertyStmt.getObject().toString(), RDFConstants.PEER_MODEL_NAME));
+			}
+			propertyStmt = propertiesOfPoint.next();
+			if ((propertyStmt.getObject().toString().equals("null"))) {
+				CCs.setLocation(null);
+			} else {
+				CCs.setLocation(new RDFSpatialSemanticTag(kb, propertyStmt.getObject().toString()));
+			}
+			propertyStmt = propertiesOfPoint.next();
+			if ((propertyStmt.getObject().toString().equals("null"))) {
+				CCs.setTime(null);
+			} else {
+				CCs.setTime(null); //TODO: second constructor for TimeSemanticTag
+			}
+			propertyStmt = propertiesOfPoint.next();
+		} finally {
+			dataset.end();
+		}
+		this.coordinates = CCs;
+	}
+
 	@Override
 	public RDFInformation addInformation(byte[] content) {
 		try {

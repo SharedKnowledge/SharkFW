@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
@@ -33,6 +36,7 @@ import org.apache.jena.riot.RDFLanguages;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.tdb.TDBFactory;
 
 /**
@@ -128,7 +132,7 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	public RDFSTSet getTopicSTSet() throws SharkKBException {
 		return new RDFSTSet(this);
 	}
-	
+
 	/**
 	 * Returns the peer which was set as the owner of the knowledge base
 	 */
@@ -184,9 +188,11 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	/**
-	 * Export the content of the RDF knowledge base into a simple file with the RDF syntax NQUADS.
+	 * Export the content of the RDF knowledge base into a simple file with the
+	 * RDF syntax NQUADS.
 	 * 
-	 * @param filePath the location of the file
+	 * @param filePath
+	 *          the location of the file
 	 * @throws IOException
 	 */
 	public void exportRDFSharkKB(String filePath) throws IOException {
@@ -205,8 +211,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	/**
-	 * Delete the whole content of the knowledge base. Everything including tags, owner and CPs
-	 * will be deleted.
+	 * Delete the whole content of the knowledge base. Everything including tags,
+	 * owner and CPs will be deleted.
 	 */
 	public void drop() {
 		File index = new File(directory);
@@ -224,11 +230,23 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	@Override
-	public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException { //not tested yet
+		Dataset dataset = this.getDataset();
+		dataset.begin(ReadWrite.READ);
+		Model m = dataset.getNamedModel(RDFConstants.CONTEXT_POINT_MODEL_NAME);
+		ResIterator anchors = null;		
+		List<ContextPoint> CPs = new ArrayList<ContextPoint>();
+		anchors = m.listResourcesWithProperty(m.getProperty(RDFConstants.CONTEXT_POINT_PREDICATE_TOPIC));
+		dataset.end();
+		while (anchors.hasNext()) {
+			CPs.add(new RDFContextPoint(this, anchors.next()));
+		}
+		Enumeration<ContextPoint> results = Collections.enumeration(CPs);
+		return results;	
 	}
 
+			
+		
 	@Override
 	public Interest createInterest() throws SharkKBException {
 		return this.createInterest();

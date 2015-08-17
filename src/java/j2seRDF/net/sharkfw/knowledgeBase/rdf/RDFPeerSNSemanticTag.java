@@ -16,7 +16,11 @@ import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TXSemanticTag;
-
+/**
+ * 
+ * @author Barret dfe
+ *
+ */
 public class RDFPeerSNSemanticTag extends RDFPeerSemanticTag implements PeerSNSemanticTag  {
 	
 	/**

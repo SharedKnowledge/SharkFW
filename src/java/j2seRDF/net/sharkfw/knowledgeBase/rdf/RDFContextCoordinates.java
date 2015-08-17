@@ -67,6 +67,32 @@ public class RDFContextCoordinates implements ContextCoordinates {
 	public void setTopic(RDFSemanticTag tag) {
 		topic = tag;
 	}
+	
+	
+
+	public void setOriginator(RDFPeerSemanticTag originator) {
+		this.originator = originator;
+	}
+
+	public void setPeer(RDFPeerSemanticTag peer) {
+		this.peer = peer;
+	}
+
+	public void setRemotePeer(RDFPeerSemanticTag remotePeer) {
+		this.remotePeer = remotePeer;
+	}
+
+	public void setLocation(RDFSpatialSemanticTag location) {
+		this.location = location;
+	}
+
+	public void setTime(RDFTimeSemanticTag time) {
+		this.time = time;
+	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
+	}
 
 	@Override
 	public SpatialSTSet getLocations() {

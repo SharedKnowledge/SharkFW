@@ -24,76 +24,55 @@ public class RDFPeerSemanticNet implements PeerSemanticNet {
 	}
 
 	@Override
-	public SNSemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFSNSemanticTag createSemanticTag(String topic, String[] sis) throws SharkKBException {
+		return new RDFSNSemanticTag(kb, sis, topic, RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG);
 	}
 
 	@Override
-	public SNSemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+	public RDFSNSemanticTag createSemanticTag(String topic, String si) throws SharkKBException {
+		return new RDFSNSemanticTag(kb, new String[] { si }, topic, RDFConstants.SEMANTIC_NET_MODEL_SEMANTIC_TAG);
 	}
 	
 	@Override
 	public PeerSNSemanticTag createSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RDFPeerSNSemanticTag(kb, sis, name, addresses, RDFConstants.SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG);
 	}
 
 	@Override
 	public PeerSNSemanticTag createSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RDFPeerSNSemanticTag(kb, new String[] {si}, name, addresses, RDFConstants.SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG);
 	}
 
 	@Override
 	public PeerSNSemanticTag createSemanticTag(String name, String si, String address) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RDFPeerSNSemanticTag(kb, new String[] {si}, name, new String[] {address}, RDFConstants.SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG);
 	}
 
 	@Override
 	public PeerSNSemanticTag createSemanticTag(String name, String[] sis, String address) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RDFPeerSNSemanticTag(kb, sis, name, new String[] {address}, RDFConstants.SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG);
 	}
 
 	@Override
 	public PeerSNSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RDFPeerSNSemanticTag(kb, sis[0], RDFConstants.SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG);
 	}
 
+	@Override
+	public void setPredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
+		source.setPredicate(type, target);		
+	}
 	
+	@Override
+	public PeerSNSemanticTag getSemanticTag(String si) throws SharkKBException {
+		return new RDFPeerSNSemanticTag(kb, si, RDFConstants.SEMANTIC_NET_MODEL_PEER_SEMANTIC_TAG);
+	}
 	
 	public RDFSharkKB getKb() {
 		return kb;
 	}
 
-	@Override
-	public PeerSNSemanticTag getSemanticTag(String si) throws SharkKBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public void removeSemanticTag(SNSemanticTag tag) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setPredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removePredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public SemanticNet fragment(SemanticTag anchor) throws SharkKBException {
@@ -131,6 +110,18 @@ public class RDFPeerSemanticNet implements PeerSemanticNet {
 		
 	}
 
+	@Override
+	public void removeSemanticTag(SNSemanticTag tag) throws SharkKBException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removePredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	public SNSemanticTag merge(SemanticTag source) throws SharkKBException {
 		// TODO Auto-generated method stub

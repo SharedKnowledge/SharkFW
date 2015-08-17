@@ -48,10 +48,10 @@ import com.hp.hpl.jena.query.ReadWrite;
 
 /**
  * This class tests multiple methods of the RDFSharkKB. After all tests passed, the 
- * content of the KB will be exported into a file. 
+ * content of the KB will be exported into a RDF file. 
  * After that you can run the TestImportRDFKB, which imports the generated RDF file into a 
- * new RDfSharkKB and tests the content of the new RDFSharkKB * 
-
+ * new RDfSharkKB and tests the content of the new RDFSharkKB  
+ *
  * IF (some) TESTS ARE FAILING: Add the junit-4.12.jar from the RDFlib folder to your used libraries AND remove
  * the older junit.jar from the lib folder from your used libraries. 
  * 
@@ -64,7 +64,7 @@ public class TestRDFKB {
 	/** The path in which the database will be stored */
 	private static final String KBDIRECTORY = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFolderDataset";
 
-	/** The path in which the exported RDF file will be exported*/
+	/** The path in which the RDF file will be exported*/
 	private static final String TEST_FILE_PATH = "src/java/j2seRDF/net/sharkfw/knowledgeBase/rdf/test/testFileRDF.nq";
 
 	/** RDFCCs for testing purposes */
