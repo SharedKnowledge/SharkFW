@@ -2,6 +2,7 @@ package net.sharkfw.security.pki.storage;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.security.pki.Certificate;
@@ -63,9 +64,21 @@ public class SharkPkiStorageTest {
         assertEquals(this.sharkCertificate, sharkCertificate);
     }
 
+    @Test(expected = SharkKBException.class)
+    public void testExceptionGetSharkCertificateWithPeerSiAndPublicKey() throws Exception {
+        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(alice, publicKey);
+        assertEquals(this.sharkCertificate, sharkCertificate);
+    }
+
     @Test
     public void testGetSharkCertificateWithPeerSi() throws Exception {
         SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob);
+        assertEquals(this.sharkCertificate, sharkCertificate);
+    }
+
+    @Test(expected = SharkKBException.class)
+    public void testExceptionGetSharkCertificateWithPeerSi() throws Exception {
+        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(alice);
         assertEquals(this.sharkCertificate, sharkCertificate);
     }
 
@@ -75,6 +88,13 @@ public class SharkPkiStorageTest {
         sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, publicKey, date));
         assertNotNull(sharkPkiStorage);
         assertEquals(1, sharkPkiStorage.getSharkCertificateList().size());
+    }
+
+    @Test
+    public void testAddSharkCertificateIfCertificateAlreadyExist() throws Exception {
+        SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
+        sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, publicKey, date));
+        assertEquals(sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, publicKey, date)), false);
     }
 
     @Test

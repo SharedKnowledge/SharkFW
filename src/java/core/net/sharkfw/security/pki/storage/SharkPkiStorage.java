@@ -64,8 +64,14 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public void addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException {
+    public boolean addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException, InvalidKeySpecException {
         TimeSemanticTag time = InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, sharkCertificate.getValidity().getTime());
+
+        if(isCertificateInKb(sharkCertificate)) {
+            //TODO: what if a certificate is already in the KB (e.g. update if expire
+            return false;
+        }
+
         ContextCoordinates contextCoordinates = sharkPkiStorageKB.createContextCoordinates(
                 PKI_CONTEXT_COORDINATE,             //Topic
                 sharkPkiStorageOwner,               //Originator
@@ -86,19 +92,22 @@ public class SharkPkiStorage implements PkiStorage {
 
         //contextPoint.addInformation(publicKey);
         //contextPoint.addInformation(transmitterList);
+        return true;
     }
 
     @Override
-    public void addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException {
+    public boolean addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException {
         //TODO add ContextPoint
         SharkCSAlgebra.merge(sharkPkiStorageKB, null, sharkCertificate, false);
+        return true;
     }
 
     @Override
-    public void addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException {
+    public boolean addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException, InvalidKeySpecException {
         for (SharkCertificate sharkCertificate : sharkCertificateHashSet) {
             addSharkCertificate(sharkCertificate);
         }
+        return true;
     }
 
     @Override
@@ -129,12 +138,12 @@ public class SharkPkiStorage implements PkiStorage {
             if (cp.getContextCoordinates().getRemotePeer().getName().equals(subject.getName())) {
                 if(sharkCertificate == null) {
                     Information transmitterList = extractInformation(cp, PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
-                    Information publicKeyArray = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
+                    Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
                     sharkCertificate = new SharkCertificate(
                             cp.getContextCoordinates().getPeer(),
                             cp.getContextCoordinates().getRemotePeer(),
                             getLinkedListFromByteArray(transmitterList.getContentAsByte()),
-                            keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyArray.getContentAsByte())),
+                            keyFactory.generatePublic(new X509EncodedKeySpec(publicKey.getContentAsByte())),
                             new Date(cp.getContextCoordinates().getTime().getDuration()));
                 } else {
                     throw new SharkKBException("More than one certificate with the same subject: " + subject.getName() + " aborting.");
@@ -202,6 +211,21 @@ public class SharkPkiStorage implements PkiStorage {
         }
 
         return String.valueOf(s).getBytes();
+    }
+
+    private boolean isCertificateInKb(SharkCertificate sharkCertificate) throws SharkKBException, InvalidKeySpecException {
+        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        if(knowledge != null) {
+            for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
+                Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
+                if(sharkCertificate.getSubjectPublicKey().equals(keyFactory.generatePublic(new X509EncodedKeySpec(publicKey.getContentAsByte())))) {
+                    return true;
+                }
+            }
+        } else {
+            return false;
+        }
+        return false;
     }
 
     private LinkedList<PeerSemanticTag> getLinkedListFromByteArray(byte[] transmitterList) {

@@ -34,19 +34,19 @@ public interface PkiStorage {
      * @param sharkCertificate
      * @throws SharkKBException
      */
-    void addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException;
+    boolean addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException, InvalidKeySpecException;
 
     /**
      * @param sharkCertificate
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    void addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException;
+    boolean addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException;
 
     /**
      * @param sharkCertificateHashSet
      * @throws SharkKBException
      */
-    void addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException;
+    boolean addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException, InvalidKeySpecException;
 
     /**
      * @return All stored SharkCertificates
