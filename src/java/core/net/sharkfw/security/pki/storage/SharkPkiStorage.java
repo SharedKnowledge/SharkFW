@@ -11,8 +11,6 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -120,9 +118,35 @@ public class SharkPkiStorage implements PkiStorage {
                         new Date(cp.getContextCoordinates().getTime().getDuration()));
             }
         }
+        throw new SharkKBException("Certificate with the subject: " + subject.getName() + "and public key: " + publicKey.toString() + " not found.");
+    }
 
-        //TODO: SharkSecurityException definieren /ShakrKBException
-        return null;
+    @Override
+    public SharkCertificate getSharkCertificate(PeerSemanticTag subject) throws SharkKBException, InvalidKeySpecException {
+        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        SharkCertificate sharkCertificate = null;
+        for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
+            if (cp.getContextCoordinates().getRemotePeer().getName().equals(subject.getName())) {
+                if(sharkCertificate == null) {
+                    Information transmitterList = extractInformation(cp, PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
+                    Information publicKeyArray = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
+                    sharkCertificate = new SharkCertificate(
+                            cp.getContextCoordinates().getPeer(),
+                            cp.getContextCoordinates().getRemotePeer(),
+                            getLinkedListFromByteArray(transmitterList.getContentAsByte()),
+                            keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyArray.getContentAsByte())),
+                            new Date(cp.getContextCoordinates().getTime().getDuration()));
+                } else {
+                    throw new SharkKBException("More than one certificate with the same subject: " + subject.getName() + " aborting.");
+                }
+            }
+        }
+
+        if(sharkCertificate != null) {
+            return sharkCertificate;
+        } else {
+            throw new SharkKBException("Certificate with the subject: " + subject.getName() + " not found.");
+        }
     }
 
     @Override

@@ -58,8 +58,14 @@ public class SharkPkiStorageTest {
     }
 
     @Test
-    public void testGetSharkCertificate() throws Exception {
+    public void testGetSharkCertificateWithPeerSiAndPublicKey() throws Exception {
         SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob, publicKey);
+        assertEquals(this.sharkCertificate, sharkCertificate);
+    }
+
+    @Test
+    public void testGetSharkCertificateWithPeerSi() throws Exception {
+        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob);
         assertEquals(this.sharkCertificate, sharkCertificate);
     }
 
