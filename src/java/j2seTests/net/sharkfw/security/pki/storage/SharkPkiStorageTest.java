@@ -54,7 +54,7 @@ public class SharkPkiStorageTest {
         peerList = new LinkedList<>();
         peerList.addFirst(bob);
 
-        sharkCertificate = new SharkCertificate(alice, bob, peerList, publicKey, date);
+        sharkCertificate = new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
         sharkPkiStorage.addSharkCertificate(sharkCertificate);
     }
 
@@ -62,6 +62,12 @@ public class SharkPkiStorageTest {
     public void testGetSharkCertificateWithPeerSiAndPublicKey() throws Exception {
         SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob, publicKey);
         assertEquals(this.sharkCertificate, sharkCertificate);
+    }
+
+    @Test
+    public void testGetSharkCertificateTrustLevelWithPeerSiAndPublicKey() throws Exception {
+        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob, publicKey);
+        assertEquals(this.sharkCertificate.getTrustLevel(), sharkCertificate.getTrustLevel());
     }
 
     @Test(expected = SharkKBException.class)
@@ -76,6 +82,12 @@ public class SharkPkiStorageTest {
         assertEquals(this.sharkCertificate, sharkCertificate);
     }
 
+    @Test
+    public void testGetSharkCertificateTrustLevelWithPeerSi() throws Exception {
+        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob);
+        assertEquals(this.sharkCertificate.getTrustLevel(), sharkCertificate.getTrustLevel());
+    }
+
     @Test(expected = SharkKBException.class)
     public void testExceptionGetSharkCertificateWithPeerSi() throws Exception {
         SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(alice);
@@ -85,7 +97,7 @@ public class SharkPkiStorageTest {
     @Test
     public void testAddSharkCertificate() throws Exception {
         SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
-        sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, publicKey, date));
+        sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date));
         assertNotNull(sharkPkiStorage);
         assertEquals(1, sharkPkiStorage.getSharkCertificateList().size());
     }
@@ -93,8 +105,8 @@ public class SharkPkiStorageTest {
     @Test
     public void testAddSharkCertificateIfCertificateAlreadyExist() throws Exception {
         SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
-        sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, publicKey, date));
-        assertEquals(sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, publicKey, date)), false);
+        sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date));
+        assertEquals(sharkPkiStorage.addSharkCertificate(new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date)), false);
     }
 
     @Test

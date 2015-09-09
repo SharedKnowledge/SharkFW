@@ -15,21 +15,25 @@ public class SharkCertificate implements Certificate {
     private PeerSemanticTag issuer;
     private LinkedList<PeerSemanticTag> transmitterList;
     private PublicKey subjectPublicKey;
+    private TrustLevel trustLevel;
     private Date validity;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param subject
      * @param issuer
+     * @param transmitterList
+     * @param trustLevel
      * @param subjectPublicKey
      * @param validity
      */
-    public SharkCertificate(PeerSemanticTag subject, PeerSemanticTag issuer, LinkedList<PeerSemanticTag> transmitterList, PublicKey subjectPublicKey, Date validity) {
+    public SharkCertificate(PeerSemanticTag subject, PeerSemanticTag issuer, LinkedList<PeerSemanticTag> transmitterList, TrustLevel trustLevel, PublicKey subjectPublicKey, Date validity) {
         this.subject = subject;
         this.issuer = issuer;
         this.transmitterList = transmitterList;
         this.subjectPublicKey = subjectPublicKey;
+        this.trustLevel = trustLevel;
         this.validity = validity;
     }
 
@@ -46,6 +50,16 @@ public class SharkCertificate implements Certificate {
     @Override
     public PeerSemanticTag getIssuer() {
         return issuer;
+    }
+
+    @Override
+    public void setTrustLevel(TrustLevel trustLevel) {
+        this.trustLevel = trustLevel;
+    }
+
+    @Override
+    public TrustLevel getTrustLevel() {
+        return this.trustLevel;
     }
 
     @Override

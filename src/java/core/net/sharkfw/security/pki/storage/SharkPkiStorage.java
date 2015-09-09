@@ -3,8 +3,10 @@ package net.sharkfw.security.pki.storage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.security.key.SharkKeyPairAlgorithm;
+import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
 
+import javax.sound.midi.MidiDevice;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -28,7 +30,8 @@ public class SharkPkiStorage implements PkiStorage {
     public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_NAME = "certificate";
     public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_SI = "cc:certificate";
     public final static String PKI_INFORMATION_PUBLIC_KEY_NAME = "public_key";
-    public final static String PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME = "transmitter_list";
+    public final static String PKI_INFORMATION_TRANSMITTER_LIST_NAME = "transmitter_list";
+    public final static String PKI_INFORMATION_TRUST_LEVEL = "trust_level";
     public final static SemanticTag PKI_CONTEXT_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(PKI_CONTEXT_POINT_SEMANTIC_TAG_NAME, new String[]{PKI_CONTEXT_POINT_SEMANTIC_TAG_SI});
     public final static Interest PKI_INTEREST = InMemoSharkKB.createInMemoInterest(
             InMemoSharkKB.createInMemoSTSet(),
@@ -87,8 +90,12 @@ public class SharkPkiStorage implements PkiStorage {
         publicKey.setContent(sharkCertificate.getSubjectPublicKey().getEncoded());
 
         Information transmitterList = contextPoint.addInformation();
-        transmitterList.setName(PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
+        transmitterList.setName(PKI_INFORMATION_TRANSMITTER_LIST_NAME);
         transmitterList.setContent(getByteArrayFromLinkedList(sharkCertificate.getTransmitterList()));
+
+        Information trustLevel = contextPoint.addInformation();
+        trustLevel.setName(PKI_INFORMATION_TRUST_LEVEL);
+        trustLevel.setContent(sharkCertificate.getTrustLevel().name());
 
         //contextPoint.addInformation(publicKey);
         //contextPoint.addInformation(transmitterList);
@@ -117,12 +124,14 @@ public class SharkPkiStorage implements PkiStorage {
             if (cp.getContextCoordinates().getRemotePeer().getName().equals(subject.getName())
                     && Arrays.equals(cp.getInformation(PKI_INFORMATION_PUBLIC_KEY_NAME).next().getContentAsByte(), publicKey.getEncoded())) {
 
-                Information transmitterList = extractInformation(cp, PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
+                Information transmitterList = extractInformation(cp, PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+                Information trustLevel = extractInformation(cp, PKI_INFORMATION_TRUST_LEVEL);
 
                 return new SharkCertificate(
                         cp.getContextCoordinates().getPeer(),
                         cp.getContextCoordinates().getRemotePeer(),
                         getLinkedListFromByteArray(transmitterList.getContentAsByte()),
+                        Certificate.TrustLevel.valueOf(trustLevel.getContentAsString()),
                         publicKey,
                         new Date(cp.getContextCoordinates().getTime().getDuration()));
             }
@@ -137,12 +146,14 @@ public class SharkPkiStorage implements PkiStorage {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             if (cp.getContextCoordinates().getRemotePeer().getName().equals(subject.getName())) {
                 if(sharkCertificate == null) {
-                    Information transmitterList = extractInformation(cp, PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
+                    Information transmitterList = extractInformation(cp, PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+                    Information trustLevel = extractInformation(cp, PKI_INFORMATION_TRUST_LEVEL);
                     Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
                     sharkCertificate = new SharkCertificate(
                             cp.getContextCoordinates().getPeer(),
                             cp.getContextCoordinates().getRemotePeer(),
                             getLinkedListFromByteArray(transmitterList.getContentAsByte()),
+                            Certificate.TrustLevel.valueOf(trustLevel.getContentAsString()),
                             keyFactory.generatePublic(new X509EncodedKeySpec(publicKey.getContentAsByte())),
                             new Date(cp.getContextCoordinates().getTime().getDuration()));
                 } else {
@@ -164,12 +175,14 @@ public class SharkPkiStorage implements PkiStorage {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
 
             Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
-            Information transmitterList = extractInformation(cp, PKI_INFORMATION_PUBLIC_TRANSMITTER_LIST_NAME);
+            Information trustLevel = extractInformation(cp, PKI_INFORMATION_TRUST_LEVEL);
+            Information transmitterList = extractInformation(cp, PKI_INFORMATION_TRANSMITTER_LIST_NAME);
 
             sharkCertificateList.add(new SharkCertificate(
                     cp.getContextCoordinates().getPeer(),
                     cp.getContextCoordinates().getRemotePeer(),
                     getLinkedListFromByteArray(transmitterList.getContentAsByte()),
+                    Certificate.TrustLevel.valueOf(trustLevel.getContentAsString()),
                     keyFactory.generatePublic(new X509EncodedKeySpec(publicKey.getContentAsByte())),
                     new Date(cp.getContextCoordinates().getTime().getDuration())
             ));

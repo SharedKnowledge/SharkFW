@@ -11,6 +11,13 @@ import java.util.LinkedList;
  */
 public interface Certificate {
 
+    public enum TrustLevel {
+        FULL,
+        MARGINAL,
+        NONE,
+        UNKNOWN
+    }
+
     /**
      * @return PublicKey of the subject.
      */
@@ -27,6 +34,16 @@ public interface Certificate {
     PeerSemanticTag getIssuer();
 
     /**
+     * @param trustLevel
+     */
+    void setTrustLevel(TrustLevel trustLevel);
+
+    /**
+     * @return TrustLevel
+     */
+    TrustLevel getTrustLevel();
+
+    /**
      *
      */
     void addTransmitter(PeerSemanticTag peerSemanticTag);
@@ -40,4 +57,5 @@ public interface Certificate {
      * @return Validity of the certificate.
      */
     Date getValidity();
+
 }

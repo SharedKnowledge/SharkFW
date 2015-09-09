@@ -62,7 +62,7 @@ public class SharkPkiKPTest implements KPListener {
         LinkedList<PeerSemanticTag> peerList = new LinkedList<>();
         peerList.addFirst(bob);
 
-        sharkCertificate = new SharkCertificate(alice, bob, peerList, publicKey, date);
+        sharkCertificate = new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
 
         aliceSe = new J2SEAndroidSharkEngine();
         aliceSe.setConnectionTimeOut(1000);
@@ -73,12 +73,12 @@ public class SharkPkiKPTest implements KPListener {
         aliceKb = new InMemoSharkKB();
         aliceKb.setOwner(alice);
         alicePkiStorage = new SharkPkiStorage(aliceKb, alice);
-        alicePkiKP = new SharkPkiKP(bobSe, bobPkiStorage, SharkPkiKP.TrustLevel.UNKNOWN, SharkPkiKP.TrustedIssuer.ALL);
+        alicePkiKP = new SharkPkiKP(bobSe, bobPkiStorage, Certificate.TrustLevel.UNKNOWN, SharkPkiKP.TrustedIssuer.ALL);
 
         bobKb = new InMemoSharkKB();
         bobKb.setOwner(bob);
         bobPkiStorage = new SharkPkiStorage(bobKb, bob);
-        bobPkiKP = new SharkPkiKP(bobSe, bobPkiStorage, SharkPkiKP.TrustLevel.UNKNOWN, SharkPkiKP.TrustedIssuer.ALL);
+        bobPkiKP = new SharkPkiKP(bobSe, bobPkiStorage, Certificate.TrustLevel.UNKNOWN, SharkPkiKP.TrustedIssuer.ALL);
 
         /********************/
         //L.setLogLevel(L.LOGLEVEL_ALL);

@@ -33,11 +33,11 @@ public class SharkPkiKP extends KnowledgePort {
 
     private SharkPkiStorage sharkPkiStorage;
     private Interest interest;
-    private TrustLevel trustLevel;
+    private Certificate.TrustLevel trustLevel;
     private TrustedIssuer trustedIssuer;
 
-    //PeerSTSet (for truesdedIssuere)
-    public SharkPkiKP(SharkEngine se, SharkPkiStorage sharkPkiStorage, TrustLevel trustLevel, TrustedIssuer trustedIssuer) {
+    //PeerSTSet (for trustedIssuere)
+    public SharkPkiKP(SharkEngine se, SharkPkiStorage sharkPkiStorage, Certificate.TrustLevel trustLevel, TrustedIssuer trustedIssuer) {
         super(se);
         this.sharkPkiStorage = sharkPkiStorage;
         this.trustLevel = trustLevel;
@@ -64,13 +64,6 @@ public class SharkPkiKP extends KnowledgePort {
     private SharkCertificate extractSharkCertificate(ContextPoint contextPoint) {
 
         return null;
-    }
-
-    public enum TrustLevel {
-        NONE,
-        UNKNOWN,
-        MARGINAL,
-        FULL
     }
 
     public enum TrustedIssuer {
