@@ -6,7 +6,6 @@ import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
 
-import javax.sound.midi.MidiDevice;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -71,7 +70,7 @@ public class SharkPkiStorage implements PkiStorage {
         TimeSemanticTag time = InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, sharkCertificate.getValidity().getTime());
 
         if(isCertificateInKb(sharkCertificate)) {
-            //TODO: what if a certificate is already in the KB (e.g. update if expire
+            //TODO: what if a certificate is already in the KB (e.g. update if expired)
             return false;
         }
 
@@ -105,7 +104,40 @@ public class SharkPkiStorage implements PkiStorage {
     @Override
     public boolean addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException {
         //TODO add ContextPoint
-        SharkCSAlgebra.merge(sharkPkiStorageKB, null, sharkCertificate, false);
+
+        //SharkCS (2nd parameter) can't be null -> exception
+        //SharkCSAlgebra.merge(sharkPkiStorageKB, null, sharkCertificate, false);
+
+        //CC still empty no entry was made
+        //SharkCSAlgebra.merge(sharkPkiStorageKB, sharkPkiStorageKB.asSharkCS(), sharkCertificate, false);
+
+        TimeSemanticTag time = InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, sharkCertificate.getContextCoordinates().getTime().getDuration());
+
+        ContextCoordinates contextCoordinates = sharkPkiStorageKB.createContextCoordinates(
+                PKI_CONTEXT_COORDINATE,                                   //Topic
+                sharkPkiStorageOwner,                                     //Originator
+                sharkCertificate.getContextCoordinates().getPeer(),       //Peer
+                sharkCertificate.getContextCoordinates().getRemotePeer(), //Remote peer -> if null any
+                time,                                                     //Time -> if null any
+                null,                                                     //Location -> if null any
+                SharkCS.DIRECTION_INOUT);                                 //Direction
+        ContextPoint contextPoint = sharkPkiStorageKB.createContextPoint(contextCoordinates);
+
+        try {
+            Information publicKey = contextPoint.addInformation();
+            publicKey.setName(PKI_INFORMATION_PUBLIC_KEY_NAME);
+            publicKey.setContent(extractInformation(sharkCertificate, PKI_INFORMATION_PUBLIC_KEY_NAME).getContentAsByte());
+
+            Information transmitterList = contextPoint.addInformation();
+            transmitterList.setName(PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+            transmitterList.setContent(extractInformation(sharkCertificate, PKI_INFORMATION_TRANSMITTER_LIST_NAME).getContentAsByte());
+
+            Information trustLevel = contextPoint.addInformation();
+            trustLevel.setName(PKI_INFORMATION_TRUST_LEVEL);
+            trustLevel.setContent(extractInformation(sharkCertificate, PKI_INFORMATION_TRUST_LEVEL).getContentAsString());
+        } catch (Exception ex) {
+            new SharkKBException(ex.getMessage());
+        }
         return true;
     }
 
@@ -136,7 +168,7 @@ public class SharkPkiStorage implements PkiStorage {
                         new Date(cp.getContextCoordinates().getTime().getDuration()));
             }
         }
-        throw new SharkKBException("Certificate with the subject: " + subject.getName() + "and public key: " + publicKey.toString() + " not found.");
+        throw new SharkKBException("Certificate with the subject " + subject.getName() + "and public key: " + publicKey.toString() + " not found.");
     }
 
     @Override
@@ -187,11 +219,9 @@ public class SharkPkiStorage implements PkiStorage {
                     new Date(cp.getContextCoordinates().getTime().getDuration())
             ));
         }
-        return sharkCertificateList; //TODO: Iterator evaluieren,
+        return sharkCertificateList; //TODO: Evaluate iterator
     }
 
-
-    //TODO entfernen
     @Override
     public SharkKB getSharkPkiStorageKB() {
         return this.sharkPkiStorageKB;

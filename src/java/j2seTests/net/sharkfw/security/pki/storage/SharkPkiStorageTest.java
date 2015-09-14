@@ -1,9 +1,6 @@
 package net.sharkfw.security.pki.storage;
 
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SharkKB;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
@@ -14,10 +11,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,6 +32,8 @@ public class SharkPkiStorageTest {
     private TimeSemanticTag time;
     private Date date;
     private PublicKey publicKey;
+    private ContextCoordinates contextCoordinatesFilter;
+
 
     @Before
     public void setUp() throws Exception {
@@ -46,6 +42,7 @@ public class SharkPkiStorageTest {
         bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", new String[]{"http://www.bob.de", "http://www.bob.net", "http://www.bob.com"}, new String[]{"192.168.0.2", "192.168.0.3", "192.168.0.4"});
         time = InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, System.currentTimeMillis());
         sharkPkiStorage = new SharkPkiStorage(testKB, alice);
+
         date = new Date();
         date.setTime(new SimpleDateFormat("dd.MM.yyyy").parse(DATE_TIME).getTime());
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -56,6 +53,28 @@ public class SharkPkiStorageTest {
 
         sharkCertificate = new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
         sharkPkiStorage.addSharkCertificate(sharkCertificate);
+
+        contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
+                SharkPkiStorage.PKI_CONTEXT_COORDINATE,
+                alice,
+                null,
+                null,
+                null,
+                null,
+                SharkCS.DIRECTION_INOUT);
+    }
+
+    @Test
+    public void testAddContextPoint() throws Exception {
+        SharkKB testKB = new InMemoSharkKB();
+        SharkPkiStorage testStorage = new SharkPkiStorage(testKB, alice);
+
+        Knowledge knowledge = SharkCSAlgebra.extract(this.sharkPkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
+        ContextPoint cp = Collections.list(knowledge.contextPoints()).get(0);
+
+        testStorage.addSharkCertificate(cp);
+
+        assertEquals(testStorage.getSharkCertificate(bob), sharkCertificate);
     }
 
     @Test
