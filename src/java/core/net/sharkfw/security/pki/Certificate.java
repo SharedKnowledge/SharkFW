@@ -2,6 +2,7 @@ package net.sharkfw.security.pki;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.LinkedList;
@@ -58,4 +59,9 @@ public interface Certificate {
      */
     Date getValidity();
 
+    /**
+     *
+     * @return Fingerprint byte array
+     */
+    byte[] getFingerprint() throws NoSuchAlgorithmException;
 }

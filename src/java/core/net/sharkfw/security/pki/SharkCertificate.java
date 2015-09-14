@@ -2,6 +2,8 @@ package net.sharkfw.security.pki;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.LinkedList;
@@ -75,6 +77,18 @@ public class SharkCertificate implements Certificate {
     @Override
     public Date getValidity() {
         return validity;
+    }
+
+    /***
+     * Calculates the fingerprint of the certificate
+     * @return SHA-256 fingerprint based of a string from the concatenated fields of the certificate
+     * @throws NoSuchAlgorithmException
+     */
+    @Override
+    public byte[] getFingerprint() throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+        String concatenatedDataSet = this.subject.getName() + this.issuer.getName() + this.subjectPublicKey.toString() + this.validity.toString();
+        return messageDigest.digest(concatenatedDataSet.getBytes());
     }
 
     @Override
