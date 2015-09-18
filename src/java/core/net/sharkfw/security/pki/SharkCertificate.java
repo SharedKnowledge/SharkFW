@@ -1,6 +1,7 @@
 package net.sharkfw.security.pki;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.system.SharkException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -85,8 +86,13 @@ public class SharkCertificate implements Certificate {
      * @throws NoSuchAlgorithmException
      */
     @Override
-    public byte[] getFingerprint() throws NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+    public byte[] getFingerprint() {
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            new SharkException(e.getMessage());
+        }
         String concatenatedDataSet = this.subject.getName() + this.issuer.getName() + this.subjectPublicKey.toString() + this.validity.toString();
         return messageDigest.digest(concatenatedDataSet.getBytes());
     }

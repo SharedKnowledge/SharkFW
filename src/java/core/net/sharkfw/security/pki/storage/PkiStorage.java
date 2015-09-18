@@ -21,14 +21,14 @@ public interface PkiStorage {
      * @return SharkCertificate
      * @throws SharkKBException
      */
-    SharkCertificate getSharkCertificate(PeerSemanticTag peerSemanticTag, PublicKey publicKey) throws SharkKBException;
+    SharkCertificate getSharkCertificate(PeerSemanticTag subject, PublicKey publicKey) throws SharkKBException;
 
     /**
      * @param peerSemanticTag
      * @return SharkCertificate
      * @throws SharkKBException
      */
-    SharkCertificate getSharkCertificate(PeerSemanticTag peerSemanticTag) throws  SharkKBException, InvalidKeySpecException;
+    SharkCertificate getSharkCertificate(PeerSemanticTag issuer, PeerSemanticTag subject) throws  SharkKBException, InvalidKeySpecException;
 
     /**
      * @param sharkCertificate

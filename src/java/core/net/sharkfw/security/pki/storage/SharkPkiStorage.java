@@ -5,6 +5,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
+import net.sharkfw.system.L;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -47,13 +48,11 @@ public class SharkPkiStorage implements PkiStorage {
     private final String LINKED_LIST_SEPARATOR_END = "<end>";
     ContextCoordinates contextCoordinatesFilter;
     KeyFactory keyFactory;
-    private HashSet<SharkCertificate> sharkCertificateList;
     private SharkKB sharkPkiStorageKB;
     private PeerSemanticTag sharkPkiStorageOwner;
     public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner) throws SharkKBException, NoSuchAlgorithmException {
         sharkPkiStorageKB = sharkKB;
         sharkPkiStorageOwner = owner;
-        sharkCertificateList = new HashSet<>();
         contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                 PKI_CONTEXT_COORDINATE,
                 sharkPkiStorageOwner,
@@ -103,8 +102,6 @@ public class SharkPkiStorage implements PkiStorage {
 
     @Override
     public boolean addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException {
-        //TODO add ContextPoint
-
         //SharkCS (2nd parameter) can't be null -> exception
         //SharkCSAlgebra.merge(sharkPkiStorageKB, null, sharkCertificate, false);
 
@@ -168,15 +165,18 @@ public class SharkPkiStorage implements PkiStorage {
                         new Date(cp.getContextCoordinates().getTime().getDuration()));
             }
         }
-        throw new SharkKBException("Certificate with the subject " + subject.getName() + "and public key: " + publicKey.toString() + " not found.");
+
+        L.d("Certificate with the subject " + subject.getName() + "and public key: " + publicKey.toString() + " not found.");
+
+        return null;
     }
 
     @Override
-    public SharkCertificate getSharkCertificate(PeerSemanticTag subject) throws SharkKBException, InvalidKeySpecException {
+    public SharkCertificate getSharkCertificate(PeerSemanticTag issuer, PeerSemanticTag subject) throws SharkKBException, InvalidKeySpecException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         SharkCertificate sharkCertificate = null;
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
-            if (cp.getContextCoordinates().getRemotePeer().getName().equals(subject.getName())) {
+            if (cp.getContextCoordinates().getRemotePeer().getName().equals(issuer.getName()) && cp.getContextCoordinates().getPeer().getName().equals(subject.getName())) {
                 if(sharkCertificate == null) {
                     Information transmitterList = extractInformation(cp, PKI_INFORMATION_TRANSMITTER_LIST_NAME);
                     Information trustLevel = extractInformation(cp, PKI_INFORMATION_TRUST_LEVEL);
@@ -189,7 +189,7 @@ public class SharkPkiStorage implements PkiStorage {
                             keyFactory.generatePublic(new X509EncodedKeySpec(publicKey.getContentAsByte())),
                             new Date(cp.getContextCoordinates().getTime().getDuration()));
                 } else {
-                    throw new SharkKBException("More than one certificate with the same subject: " + subject.getName() + " aborting.");
+                    throw new SharkKBException("More than one certificate found, aborting. (KB valid?)");
                 }
             }
         }
@@ -197,13 +197,15 @@ public class SharkPkiStorage implements PkiStorage {
         if(sharkCertificate != null) {
             return sharkCertificate;
         } else {
-            throw new SharkKBException("Certificate with the subject: " + subject.getName() + " not found.");
+            L.d("Certificate with the subject: " + subject.getName() + " and issuer : " + issuer.getName() + " not found.");
+            return null;
         }
     }
 
     @Override
     public HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        HashSet<SharkCertificate> sharkCertificateList = new HashSet<>();
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
 
             Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
@@ -219,7 +221,13 @@ public class SharkPkiStorage implements PkiStorage {
                     new Date(cp.getContextCoordinates().getTime().getDuration())
             ));
         }
-        return sharkCertificateList; //TODO: Evaluate iterator
+
+        if(sharkCertificateList.size() > 0) {
+            return sharkCertificateList;
+        } else {
+            L.d("SharkPkiStorage is empty.");
+            return null;
+        }
     }
 
     @Override

@@ -1,14 +1,15 @@
 package net.sharkfw.security.pki;
 
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoPeerSTSet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
-import net.sharkfw.system.L;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -23,12 +24,14 @@ import java.util.LinkedList;
 public class SharkPkiKPTest implements KPListener {
 
     private final String DATE_TIME = "01.01.2100";
+    private Date date;
     private final byte[] publicKeyArray = {48, -126, 1, 34, 48, 13, 6, 9, 42, -122, 72, -122, -9, 13, 1, 1, 1, 5, 0, 3, -126, 1, 15, 0, 48, -126, 1, 10, 2, -126, 1, 1, 0, -74, 14, 32, 73, 41, 127, -19, -18, 115, 121, -97, -82, 26, -87, 63, 26, 94, -27, 59, -10, 31, -66, 107, -92, -19, 84, -37, -111, -60, -87, 45, -87, 111, -41, -63, -7, -45, -47, 15, 18, -111, -30, 37, 14, 125, 87, 93, -106, -68, 23, 122, -60, 102, -17, 52, 60, 91, -115, 68, -9, 85, -20, -26, 50, 1, -65, 13, 4, 93, 47, -43, -31, -6, 75, 47, 43, -93, 78, 67, 35, 73, 62, -103, 9, -69, -78, -19, -107, -15, 20, 115, 88, 4, -36, 13, 115, 71, 91, -94, 25, -38, 74, -57, 22, -86, -27, 12, 40, -25, 73, -95, -115, -59, -106, 56, -62, 48, -40, 89, -63, -22, -65, -128, -71, -91, 47, -5, 46, -14, -107, -8, -46, 72, 55, 92, -27, 24, -117, 95, -98, 49, 16, 102, 97, -23, 82, 71, 98, 58, 52, -60, 110, -26, -21, -52, -11, -3, 114, -40, -108, -66, -110, 122, 31, 6, 50, 120, 114, -121, -74, -72, 100, -25, -32, -40, -93, -67, -49, 30, 91, 56, 65, -86, -7, 21, -21, 113, -51, 26, 85, 127, -71, 30, 47, 70, -115, -125, 0, -76, -45, 123, 76, 95, -128, -43, -22, 58, 115, 45, 71, 73, 81, -88, -75, -86, 31, 0, 58, -28, 56, -101, -58, 58, -95, -63, -68, 61, 105, -3, 93, -5, -67, 123, 78, 60, -14, 110, -69, 65, -78, 126, 82, -28, 27, 5, -77, 49, 55, -100, -56, -126, 19, -24, 26, 59, -19, 2, 3, 1, 0, 1};
     J2SEAndroidSharkEngine aliceSe;
     J2SEAndroidSharkEngine bobSe;
     ContextCoordinates contextCoordinatesFilter;
     SharkCertificate sharkCertificate;
     SharkKB aliceKb;
+    PeerSTSet peerSTSet;
     SharkPkiStorage alicePkiStorage;
     SharkKB bobKb;
     SharkPkiStorage bobPkiStorage;
@@ -37,32 +40,36 @@ public class SharkPkiKPTest implements KPListener {
     private PublicKey publicKey;
     private PeerSemanticTag alice;
     private PeerSemanticTag bob;
+    private LinkedList<PeerSemanticTag> peerList;
 
     @Before
     public void setUp() throws Exception {
 
         alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "http://www.alice.de", "tcp://localhost:7080");
         bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "http://www.bob.de", "tcp://localhost:7081");
+        peerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+        peerSTSet.merge(alice);
+        peerSTSet.merge(bob);
 
         contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                 SharkPkiStorage.PKI_CONTEXT_COORDINATE,
-                null,
+                alice,
                 null,
                 null,
                 null,
                 null,
                 SharkCS.DIRECTION_INOUT);
 
-        Date date = new Date();
+        date = new Date();
         date.setTime(new SimpleDateFormat("dd.MM.yyyy").parse(DATE_TIME).getTime());
 
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyArray));
 
-        LinkedList<PeerSemanticTag> peerList = new LinkedList<>();
+        peerList = new LinkedList<>();
         peerList.addFirst(bob);
 
-        sharkCertificate = new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
+        sharkCertificate = new SharkCertificate(bob, alice, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
 
         aliceSe = new J2SEAndroidSharkEngine();
         aliceSe.setConnectionTimeOut(1000);
@@ -73,12 +80,12 @@ public class SharkPkiKPTest implements KPListener {
         aliceKb = new InMemoSharkKB();
         aliceKb.setOwner(alice);
         alicePkiStorage = new SharkPkiStorage(aliceKb, alice);
-        alicePkiKP = new SharkPkiKP(bobSe, bobPkiStorage, Certificate.TrustLevel.UNKNOWN, SharkPkiKP.TrustedIssuer.ALL);
+        alicePkiKP = new SharkPkiKP(aliceSe, alicePkiStorage, Certificate.TrustLevel.UNKNOWN, peerSTSet);
 
         bobKb = new InMemoSharkKB();
         bobKb.setOwner(bob);
         bobPkiStorage = new SharkPkiStorage(bobKb, bob);
-        bobPkiKP = new SharkPkiKP(bobSe, bobPkiStorage, Certificate.TrustLevel.UNKNOWN, SharkPkiKP.TrustedIssuer.ALL);
+        bobPkiKP = new SharkPkiKP(bobSe, bobPkiStorage, Certificate.TrustLevel.UNKNOWN, peerSTSet);
 
         /********************/
         //L.setLogLevel(L.LOGLEVEL_ALL);
@@ -94,6 +101,88 @@ public class SharkPkiKPTest implements KPListener {
         bobSe.startTCP(7081);
         aliceSe.startTCP(7080);
         aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
+
+        Thread.sleep(1000);
+
+        aliceSe.stopTCP();
+        bobSe.stopTCP();
+
+        assertEquals(sharkCertificate, bobPkiStorage.getSharkCertificate(alice, bob));
+    }
+
+    @Test
+    public void testDoExposeCertificate() throws Exception {
+
+        SharkCertificate sc = new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
+        bobPkiStorage.addSharkCertificate(sc);
+
+        bobSe.startTCP(7081);
+        aliceSe.startTCP(7080);
+
+        //Prepare interest
+        STSet stSetInterest = InMemoSharkKB.createInMemoSTSet();
+        stSetInterest.createSemanticTag(Certificate.CERTIFICATE_SEMANTIC_TAG_NAME, Certificate.CERTIFICATE_SEMANTIC_TAG_SI);
+
+        //Prepare Issuer
+        PeerSTSet peerStSetIssuer = InMemoSharkKB.createInMemoPeerSTSet();
+        peerStSetIssuer.merge(bob);
+
+        //Prepare Subject
+        PeerSTSet peerStSetSubject = InMemoSharkKB.createInMemoPeerSTSet();
+        peerStSetSubject.merge(alice);
+
+        Interest interest = InMemoSharkKB.createInMemoInterest(
+            stSetInterest,              //List of Topics        -> Certificate identifier
+            alice,                      //Originator
+            peerStSetSubject,           //List of Peers         -> Subject
+            peerStSetIssuer,            //List of RemotePeers   -> Issuer
+            null,                       //List of Times
+            null,                       //List of Locations
+            SharkCS.DIRECTION_OUT       //Direction
+        );
+
+        aliceSe.sendInterest(interest, bob, alicePkiKP);
+
+        Thread.sleep(1000);
+
+        aliceSe.stopTCP();
+        bobSe.stopTCP();
+
+        assertEquals(sc, alicePkiStorage.getSharkCertificate(bob, alice));
+    }
+
+    @Test
+    public void testDoExposeCertificateValidation() throws Exception {
+
+        alicePkiStorage.addSharkCertificate(sharkCertificate);
+        bobPkiStorage.addSharkCertificate(sharkCertificate);
+
+        bobSe.startTCP(7081);
+        aliceSe.startTCP(7080);
+
+        //Prepare interest
+        STSet stSet = InMemoSharkKB.createInMemoSTSet();
+        stSet.createSemanticTag(SharkPkiKP.KP_CERTIFICATE_VALIDATION_TAG_NAME, SharkPkiKP.KP_CERTIFICATE_VALIDATION_TAG_SI);
+
+        //Prepare Issuer
+        PeerSTSet peerStSetIssuer = InMemoSharkKB.createInMemoPeerSTSet();
+        peerStSetIssuer.merge(alice);
+
+        //Prepare Subject
+        PeerSTSet peerStSetSubject = InMemoSharkKB.createInMemoPeerSTSet();
+        peerStSetSubject.merge(bob);
+
+        Interest interest = InMemoSharkKB.createInMemoInterest(
+                stSet,                      //List of Topics        -> Certificate validation identifier
+                alice,                      //Originator
+                peerStSetSubject,           //List of Peers         -> Subjects
+                peerStSetIssuer,            //List of RemotePeers   -> Issuer
+                null,                       //List of Times
+                null,                       //List of Locations
+                SharkCS.DIRECTION_OUT       //Direction
+        );
+
+        aliceSe.sendInterest(interest, bob, alicePkiKP);
 
         Thread.sleep(1000);
 
