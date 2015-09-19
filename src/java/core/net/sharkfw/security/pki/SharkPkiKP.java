@@ -1,6 +1,5 @@
 package net.sharkfw.security.pki;
 
-import com.sun.deploy.security.CertType;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
@@ -11,42 +10,24 @@ import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collections;
-
-/*
-    TODO: Incoming knowledge
-        - check if incoming knowledge contains one or several certificate
-            - compare semantic tag with the attached information to the context point
-        - extract one or several certificate
-        - add certificate to the sharkPkiStorage (this assumed the filtering**)
-            - question: should the storage or the kp uses filter like trust level or issuer lists?
-            - question: should the filtering be fixed or adjustable
-
-            **progress
-                - check if owner and issuer already exist in the sharkPkiStorage
-                - check if the trust level matches (after it has been updated)
-                - check if the issuer list matches (limited or open for all peers)
-                - check validity of the certificate
-    TODO: Outgoing knowledge
-        - process interest for a certificate to the given peer or peers
- */
 
 /**
  * @author ac
  */
 public class SharkPkiKP extends KnowledgePort {
 
+    public final static String KP_CERTIFICATE_VALIDATION_TAG_NAME = "validation";
+    public final static String KP_CERTIFICATE_VALIDATION_TAG_SI = "validate:certificate";
+    public final static SemanticTag KP_CERTIFICATE_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(KP_CERTIFICATE_VALIDATION_TAG_NAME, new String[]{KP_CERTIFICATE_VALIDATION_TAG_SI});
     private SharkPkiStorage sharkPkiStorage;
     private Interest interest;
     private Certificate.TrustLevel trustLevel;
     private TrustedIssuer trustedIssuer;
     private PeerSTSet peerSTSet;
-
-    public final static String KP_CERTIFICATE_VALIDATION_TAG_NAME = "validation";
-    public final static String KP_CERTIFICATE_VALIDATION_TAG_SI = "validate:certificate";
-    public final static SemanticTag KP_CERTIFICATE_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(KP_CERTIFICATE_VALIDATION_TAG_NAME, new String[]{KP_CERTIFICATE_VALIDATION_TAG_SI});
 
     public SharkPkiKP(SharkEngine se, SharkPkiStorage sharkPkiStorage, Certificate.TrustLevel trustLevel, PeerSTSet trustedIssuer) {
         super(se);
@@ -61,20 +42,28 @@ public class SharkPkiKP extends KnowledgePort {
             if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE) &&
                     Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer())) {
                 try {
-                    if(sharkPkiStorage.addSharkCertificate(cp)) {
+                    cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
+                    Information trustLevel = cp.addInformation();
+                    trustLevel.setName(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL);
+                    trustLevel.setContent(evaluateTrustLevelByIssuer(cp).name());
+                    if (sharkPkiStorage.addSharkCertificate(cp)) {
                         this.notifyKnowledgeAssimilated(this, cp);
                     } else {
                         L.d("Certificate already in SharkPkiStorage.");
                     }
                 } catch (SharkKBException e) {
-                   new SharkKBException(e.getMessage());
+                    new SharkKBException(e.getMessage());
+                } catch (InvalidKeySpecException e) {
+                    new SharkKBException(e.getMessage());
+                } catch (NoSuchAlgorithmException e) {
+                    new SharkKBException(e.getMessage());
                 }
             }
 
-            if(SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) &&
+            if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) &&
                     Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer())) {
                 System.out.println("Received fingerprint: " + cp.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte());
-                //TODO: Compare fingerprint
+                this.notifyKnowledgeAssimilated(this, cp);
             }
         }
     }
@@ -83,13 +72,13 @@ public class SharkPkiKP extends KnowledgePort {
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
         try {
             ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
-            for(int i = 0; i < listOfTopics.size(); i++) {
+            for (int i = 0; i < listOfTopics.size(); i++) {
                 //Certificate validation
-                if(SharkCSAlgebra.identical(listOfTopics.get(i), KP_CERTIFICATE_COORDINATE)) {
-                    if(Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
-                        for(int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
+                if (SharkCSAlgebra.identical(listOfTopics.get(i), KP_CERTIFICATE_COORDINATE)) {
+                    if (Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
+                        for (int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
                             SharkCertificate sc = sharkPkiStorage.getSharkCertificate((PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(j), (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(j));
-                            if(sc != null) {
+                            if (sc != null) {
                                 ContextCoordinates contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                                         Certificate.FINGERPRINT_COORDINATE,
                                         null,
@@ -118,11 +107,11 @@ public class SharkPkiKP extends KnowledgePort {
                 }
 
                 //Certificate extraction
-                if(SharkCSAlgebra.identical(listOfTopics.get(i), Certificate.CERTIFICATE_COORDINATE)) {
-                    if(Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
-                        for(int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
+                if (SharkCSAlgebra.identical(listOfTopics.get(i), Certificate.CERTIFICATE_COORDINATE)) {
+                    if (Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
+                        for (int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
                             SharkCertificate sc = sharkPkiStorage.getSharkCertificate((PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(j), (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(j));
-                            if(sc != null) {
+                            if (sc != null) {
                                 ContextCoordinates contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                                         SharkPkiStorage.PKI_CONTEXT_COORDINATE,
                                         null,
@@ -148,6 +137,42 @@ public class SharkPkiKP extends KnowledgePort {
             new SharkKBException(e.getMessage());
         } catch (IOException e) {
             new SharkKBException(e.getMessage());
+        }
+    }
+
+    private Certificate.TrustLevel evaluateTrustLevelByIssuer(ContextPoint contextPoint) throws NoSuchAlgorithmException, InvalidKeySpecException, SharkKBException {
+        int trustValue = 0;
+        if(sharkPkiStorage.getSharkCertificateList() != null) {
+            for (SharkCertificate sc : sharkPkiStorage.getSharkCertificateList()) {
+                if (contextPoint.getContextCoordinates().getRemotePeer().equals(sc.getSubject())) {
+                    switch (sc.getTrustLevel()) {
+                        case FULL:
+                            trustValue += 1;
+                            break;
+                        case MARGINAL:
+                            trustValue += 0.5;
+                            break;
+                        case NONE:
+                            trustValue += -0.7;
+                            break;
+                        case UNKNOWN:
+                            trustValue += -0.3;
+                            break;
+                    }
+                }
+            }
+
+            if (trustValue == 0) {
+                return Certificate.TrustLevel.UNKNOWN;
+            }
+
+            if (trustValue > 0) {
+                return Certificate.TrustLevel.MARGINAL;
+            } else {
+                return Certificate.TrustLevel.NONE;
+            }
+        } else {
+            return Certificate.TrustLevel.UNKNOWN;
         }
     }
 

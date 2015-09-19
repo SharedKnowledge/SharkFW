@@ -4,6 +4,7 @@ import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
 
 import java.security.NoSuchAlgorithmException;
@@ -52,6 +53,22 @@ public interface PkiStorage {
      * @return All stored SharkCertificates
      */
     HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException;
+
+    /***
+     *
+     * @param sharkCertificate
+     * @param trustLevel
+     * @return
+     */
+    boolean updateSharkCertificateTrustLevel(SharkCertificate sharkCertificate, Certificate.TrustLevel trustLevel) throws SharkKBException;
+
+    /***
+     *
+     * @param sharkCertificate
+     * @return
+     * @throws SharkKBException
+     */
+    boolean deleteSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException;
 
     /**
      * @return Knowledgebase containing the SharkPkiStorage

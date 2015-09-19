@@ -15,6 +15,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -41,6 +42,7 @@ public class SharkPkiKPTest implements KPListener {
     private PeerSemanticTag alice;
     private PeerSemanticTag bob;
     private LinkedList<PeerSemanticTag> peerList;
+    private boolean fingerprintIsValid;
 
     @Before
     public void setUp() throws Exception {
@@ -50,6 +52,7 @@ public class SharkPkiKPTest implements KPListener {
         peerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         peerSTSet.merge(alice);
         peerSTSet.merge(bob);
+        fingerprintIsValid = true;
 
         contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                 SharkPkiStorage.PKI_CONTEXT_COORDINATE,
@@ -92,6 +95,7 @@ public class SharkPkiKPTest implements KPListener {
         //L.setLogfile("log.txt");
 
         bobPkiKP.addListener(this);
+        alicePkiKP.addListener(this);
     }
 
     @Test
@@ -108,6 +112,23 @@ public class SharkPkiKPTest implements KPListener {
         bobSe.stopTCP();
 
         assertEquals(sharkCertificate, bobPkiStorage.getSharkCertificate(alice, bob));
+    }
+
+    @Test
+    public void testTrustLevelChanged() throws Exception {
+        sharkCertificate = new SharkCertificate(bob, alice, peerList, Certificate.TrustLevel.FULL, publicKey, date);
+        alicePkiStorage.addSharkCertificate(sharkCertificate);
+        Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
+        bobSe.startTCP(7081);
+        aliceSe.startTCP(7080);
+        aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
+
+        Thread.sleep(1000);
+
+        aliceSe.stopTCP();
+        bobSe.stopTCP();
+
+        assertEquals(Certificate.TrustLevel.UNKNOWN, bobPkiStorage.getSharkCertificate(alice, bob).getTrustLevel());
     }
 
     @Test
@@ -188,6 +209,8 @@ public class SharkPkiKPTest implements KPListener {
 
         aliceSe.stopTCP();
         bobSe.stopTCP();
+
+        assertEquals(fingerprintIsValid, true);
     }
 
     @Override
@@ -202,8 +225,25 @@ public class SharkPkiKPTest implements KPListener {
 
     @Override
     public void knowledgeAssimilated(KnowledgePort kp, ContextPoint newCP) {
-        System.out.println("SharkPkiKPTest: knowledgeAssimilated");
-        System.out.println("Peer: " + newCP.getContextCoordinates().getPeer().getName());
-        System.out.println("Remote Peer: " + newCP.getContextCoordinates().getRemotePeer().getName());
+        if (SharkCSAlgebra.identical(newCP.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE)) {
+            System.out.println("SharkPkiKPTest: knowledgeAssimilated");
+            System.out.println("Peer: " + newCP.getContextCoordinates().getPeer().getName());
+            System.out.println("Remote Peer: " + newCP.getContextCoordinates().getRemotePeer().getName());
+        }
+
+        if (SharkCSAlgebra.identical(newCP.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE)) {
+            if(Arrays.equals(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte(), sharkCertificate.getFingerprint())) {
+                System.out.println("Fingerprints are equal:");
+                System.out.println(Arrays.toString(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
+                System.out.println(Arrays.toString(sharkCertificate.getFingerprint()));
+                fingerprintIsValid = true;
+            }
+            else {
+                System.out.println("Fingerprints are different:");
+                System.out.println(Arrays.toString(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
+                System.out.println(Arrays.toString(sharkCertificate.getFingerprint()));
+                fingerprintIsValid = false;
+            }
+        }
     }
 }

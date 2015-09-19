@@ -15,6 +15,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 
 /**
  * @author ac
@@ -79,13 +80,13 @@ public class SharkPkiStorageTest {
 
     @Test
     public void testGetSharkCertificateWithPeerSiAndPublicKey() throws Exception {
-        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob, publicKey);
+        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(alice, publicKey);
         assertEquals(this.sharkCertificate, sharkCertificate);
     }
 
     @Test
     public void testGetSharkCertificateTrustLevelWithPeerSiAndPublicKey() throws Exception {
-        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(bob, publicKey);
+        SharkCertificate sharkCertificate = sharkPkiStorage.getSharkCertificate(alice, publicKey);
         assertEquals(this.sharkCertificate.getTrustLevel(), sharkCertificate.getTrustLevel());
     }
 
@@ -133,5 +134,33 @@ public class SharkPkiStorageTest {
         HashSet<SharkCertificate> certificateList = sharkPkiStorage.getSharkCertificateList();
         assertNotNull(certificateList);
         assertEquals(1, certificateList.size());
+    }
+
+    @Test
+    public void testUpdateSharkCertificateTrustLevel() throws Exception {
+        Certificate.TrustLevel originalTrustLevel = sharkCertificate.getTrustLevel();
+        System.out.println("Old SharkCertificates Trustlevel: " + originalTrustLevel.name());
+        sharkPkiStorage.updateSharkCertificateTrustLevel(sharkCertificate, Certificate.TrustLevel.FULL);
+        Certificate.TrustLevel newTrustLevel = sharkCertificate.getTrustLevel();
+        System.out.println("New SharkCertificates Trustlevel: " + newTrustLevel.name());
+        assertNotSame(originalTrustLevel, newTrustLevel);
+    }
+
+    @Test
+    public void testDeleteSharkCertificate() throws Exception {
+        SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
+        SharkCertificate sharkCertificate = new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
+        sharkPkiStorage.addSharkCertificate(sharkCertificate);
+        System.out.println("(Added 1) Certificates in KB: " + sharkPkiStorage.getSharkCertificateList().size());
+        sharkPkiStorage.deleteSharkCertificate(sharkCertificate);
+        int count;
+        if(sharkPkiStorage.getSharkCertificateList() == null) {
+            count = 0;
+            System.out.println("(Delete 1) Certificates in KB: 0");
+        } else {
+            count = sharkPkiStorage.getSharkCertificateList().size();
+            System.out.println("(Delete 1) Certificates in KB: " + count);
+        }
+        assertEquals(0, count);
     }
 }

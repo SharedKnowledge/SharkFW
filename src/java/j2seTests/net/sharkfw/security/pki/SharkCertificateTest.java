@@ -53,4 +53,11 @@ public class SharkCertificateTest {
         byte[] modifiedFingerprint = modifiedSharkCertificate.getFingerprint();
         assertNotSame(fingerprint, modifiedFingerprint);
     }
+
+    @Test
+    public void testChangeTrustLevel() throws Exception {
+        Certificate.TrustLevel trustLevelOld = sharkCertificate.getTrustLevel();
+        sharkCertificate.setTrustLevel(Certificate.TrustLevel.FULL);
+        assertNotSame(trustLevelOld, sharkCertificate.getTrustLevel());
+    }
 }

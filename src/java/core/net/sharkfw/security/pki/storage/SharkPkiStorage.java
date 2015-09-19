@@ -16,12 +16,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/* TODO addCertificate
-    - Estimate the trustlevel of the certificate issuer
-    - Estimate if the issuer is in the known peers list
- */
-
-
 /**
  * @author ac
  */
@@ -150,7 +144,7 @@ public class SharkPkiStorage implements PkiStorage {
     public SharkCertificate getSharkCertificate(PeerSemanticTag subject, PublicKey publicKey) throws SharkKBException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
-            if (cp.getContextCoordinates().getRemotePeer().getName().equals(subject.getName())
+            if (cp.getContextCoordinates().getPeer().getName().equals(subject.getName())
                     && Arrays.equals(cp.getInformation(PKI_INFORMATION_PUBLIC_KEY_NAME).next().getContentAsByte(), publicKey.getEncoded())) {
 
                 Information transmitterList = extractInformation(cp, PKI_INFORMATION_TRANSMITTER_LIST_NAME);
@@ -206,20 +200,22 @@ public class SharkPkiStorage implements PkiStorage {
     public HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         HashSet<SharkCertificate> sharkCertificateList = new HashSet<>();
-        for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
+        if(knowledge != null) {
+            for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
 
-            Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
-            Information trustLevel = extractInformation(cp, PKI_INFORMATION_TRUST_LEVEL);
-            Information transmitterList = extractInformation(cp, PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+                Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);
+                Information trustLevel = extractInformation(cp, PKI_INFORMATION_TRUST_LEVEL);
+                Information transmitterList = extractInformation(cp, PKI_INFORMATION_TRANSMITTER_LIST_NAME);
 
-            sharkCertificateList.add(new SharkCertificate(
-                    cp.getContextCoordinates().getPeer(),
-                    cp.getContextCoordinates().getRemotePeer(),
-                    getLinkedListFromByteArray(transmitterList.getContentAsByte()),
-                    Certificate.TrustLevel.valueOf(trustLevel.getContentAsString()),
-                    keyFactory.generatePublic(new X509EncodedKeySpec(publicKey.getContentAsByte())),
-                    new Date(cp.getContextCoordinates().getTime().getDuration())
-            ));
+                sharkCertificateList.add(new SharkCertificate(
+                        cp.getContextCoordinates().getPeer(),
+                        cp.getContextCoordinates().getRemotePeer(),
+                        getLinkedListFromByteArray(transmitterList.getContentAsByte()),
+                        Certificate.TrustLevel.valueOf(trustLevel.getContentAsString()),
+                        keyFactory.generatePublic(new X509EncodedKeySpec(publicKey.getContentAsByte())),
+                        new Date(cp.getContextCoordinates().getTime().getDuration())
+                ));
+            }
         }
 
         if(sharkCertificateList.size() > 0) {
@@ -228,6 +224,37 @@ public class SharkPkiStorage implements PkiStorage {
             L.d("SharkPkiStorage is empty.");
             return null;
         }
+    }
+
+    @Override
+    public boolean updateSharkCertificateTrustLevel(SharkCertificate sharkCertificate, Certificate.TrustLevel trustLevel) throws SharkKBException{
+        if(getSharkCertificate(sharkCertificate.getSubject(), sharkCertificate.getSubjectPublicKey()) != null) {
+            deleteSharkCertificate(sharkCertificate);
+            sharkCertificate.setTrustLevel(trustLevel);
+            try {
+                addSharkCertificate(sharkCertificate);
+            } catch (InvalidKeySpecException e) {
+                new SharkKBException(e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    @Override public boolean deleteSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException {
+        if(getSharkCertificate(sharkCertificate.getSubject(), sharkCertificate.getSubjectPublicKey()) != null) {
+            this.sharkPkiStorageKB.removeContextPoint(
+                    new InMemoSharkKB().createContextCoordinates(
+                        PKI_CONTEXT_COORDINATE,                                   //Topic
+                        sharkPkiStorageOwner,                                     //Originator
+                        sharkCertificate.getSubject(),                            //Peer
+                        sharkCertificate.getIssuer(),                             //Remote peer -> if null any
+                        InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, sharkCertificate.getValidity().getTime()), //Time -> if null any
+                        null,                                                     //Location -> if null any
+                        SharkCS.DIRECTION_INOUT)                                  //Direction
+            );
+            return true;
+        }
+        return false;
     }
 
     @Override
