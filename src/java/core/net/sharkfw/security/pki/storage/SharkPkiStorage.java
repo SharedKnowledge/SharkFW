@@ -13,8 +13,8 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static net.sharkfw.security.utility.SharkCertificateHelper.*;
 
 /**
  * @author ac
@@ -36,10 +36,6 @@ public class SharkPkiStorage implements PkiStorage {
             null,
             SharkCS.DIRECTION_INOUT
     );
-    private final String LINKED_LIST_SEPARATOR_NAME = "<name>";
-    private final String LINKED_LIST_SEPARATOR_SIS = "<sis>";
-    private final String LINKED_LIST_SEPARATOR_ADR = "<adr>";
-    private final String LINKED_LIST_SEPARATOR_END = "<end>";
     ContextCoordinates contextCoordinatesFilter;
     KeyFactory keyFactory;
     private SharkKB sharkPkiStorageKB;
@@ -262,35 +258,6 @@ public class SharkPkiStorage implements PkiStorage {
         return this.sharkPkiStorageKB;
     }
 
-    private byte[] getByteArrayFromLinkedList(LinkedList<PeerSemanticTag> transmitterList) {
-
-        StringBuilder s = new StringBuilder();
-
-        for (PeerSemanticTag p : transmitterList) {
-            s.append(LINKED_LIST_SEPARATOR_NAME);
-            s.append(p.getName());
-            s.append(LINKED_LIST_SEPARATOR_SIS);
-            for (int i = 0; i < p.getSI().length; i++) {
-                s.append(p.getSI()[i]);
-                if (i < p.getSI().length - 1) {
-                    s.append(",");
-                }
-            }
-
-            s.append(LINKED_LIST_SEPARATOR_ADR);
-            for (int i = 0; i < p.getAddresses().length; i++) {
-                s.append(p.getAddresses()[i]);
-                if (i < p.getAddresses().length - 1) {
-                    s.append(",");
-                }
-            }
-
-            s.append(LINKED_LIST_SEPARATOR_END);
-        }
-
-        return String.valueOf(s).getBytes();
-    }
-
     private boolean isCertificateInKb(SharkCertificate sharkCertificate) throws SharkKBException, InvalidKeySpecException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         if(knowledge != null) {
@@ -306,41 +273,11 @@ public class SharkPkiStorage implements PkiStorage {
         return false;
     }
 
-    private LinkedList<PeerSemanticTag> getLinkedListFromByteArray(byte[] transmitterList) {
-
-        LinkedList<PeerSemanticTag> linkedList = new LinkedList<>();
-        String listAsString = new String(transmitterList);
-
-        List<String> listOfNames = extractStringByRegEx(listAsString, "(?<=" + LINKED_LIST_SEPARATOR_NAME + ")(.*?)(?=" + LINKED_LIST_SEPARATOR_SIS + ")");
-        List<String> listOfSis = extractStringByRegEx(listAsString, "(?<=" + LINKED_LIST_SEPARATOR_SIS + ")(.*?)(?=" + LINKED_LIST_SEPARATOR_ADR + ")");
-        List<String> listOfAdr = extractStringByRegEx(listAsString, "(?<=" + LINKED_LIST_SEPARATOR_ADR + ")(.*?)(?=" + LINKED_LIST_SEPARATOR_END + ")");
-
-        for (int i = 0; i < listOfNames.size(); i++) {
-            PeerSemanticTag peerSemanticTag = InMemoSharkKB.createInMemoPeerSemanticTag(listOfNames.get(i), listOfSis.get(i).split(","), listOfAdr.get(i).split(","));
-            linkedList.add(peerSemanticTag);
-        }
-
-        return linkedList;
-    }
-
     private Information extractInformation(ContextPoint cp, String name) {
         Information information;
         while (cp.getInformation(name).hasNext()) {
             return cp.getInformation(name).next();
         }
         return null;
-    }
-
-    private List<String> extractStringByRegEx(String text, String expression) {
-        List<String> matchList = new ArrayList<>();
-        Matcher matcher = Pattern.compile(expression).matcher(text);
-
-        if (matcher.find()) {
-            for (int i = 0; i < matcher.groupCount(); i++) {
-                matchList.add(matcher.group(i));
-            }
-        }
-
-        return matchList;
     }
 }

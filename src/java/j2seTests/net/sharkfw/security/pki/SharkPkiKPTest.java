@@ -70,7 +70,7 @@ public class SharkPkiKPTest implements KPListener {
         publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyArray));
 
         peerList = new LinkedList<>();
-        peerList.addFirst(bob);
+        peerList.addFirst(alice);
 
         sharkCertificate = new SharkCertificate(bob, alice, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
 
@@ -89,10 +89,6 @@ public class SharkPkiKPTest implements KPListener {
         bobKb.setOwner(bob);
         bobPkiStorage = new SharkPkiStorage(bobKb, bob);
         bobPkiKP = new SharkPkiKP(bobSe, bobPkiStorage, Certificate.TrustLevel.UNKNOWN, peerSTSet);
-
-        /********************/
-        //L.setLogLevel(L.LOGLEVEL_ALL);
-        //L.setLogfile("log.txt");
 
         bobPkiKP.addListener(this);
         alicePkiKP.addListener(this);
@@ -129,6 +125,25 @@ public class SharkPkiKPTest implements KPListener {
         bobSe.stopTCP();
 
         assertEquals(Certificate.TrustLevel.UNKNOWN, bobPkiStorage.getSharkCertificate(alice, bob).getTrustLevel());
+    }
+
+    @Test
+    public void testTransmitterListChanged() throws Exception {
+        sharkCertificate = new SharkCertificate(bob, alice, peerList, Certificate.TrustLevel.FULL, publicKey, date);
+        alicePkiStorage.addSharkCertificate(sharkCertificate);
+
+        Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
+
+        bobSe.startTCP(7081);
+        aliceSe.startTCP(7080);
+        aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
+
+        Thread.sleep(1000);
+
+        aliceSe.stopTCP();
+        bobSe.stopTCP();
+
+        assertEquals(2, bobPkiStorage.getSharkCertificate(alice, bob).getTransmitterList().size());
     }
 
     @Test
@@ -226,9 +241,9 @@ public class SharkPkiKPTest implements KPListener {
     @Override
     public void knowledgeAssimilated(KnowledgePort kp, ContextPoint newCP) {
         if (SharkCSAlgebra.identical(newCP.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE)) {
-            System.out.println("SharkPkiKPTest: knowledgeAssimilated");
-            System.out.println("Peer: " + newCP.getContextCoordinates().getPeer().getName());
-            System.out.println("Remote Peer: " + newCP.getContextCoordinates().getRemotePeer().getName());
+            System.out.println("knowledgeAssimilated(KnowledgePort kp, ContextPoint newCP)");
+            System.out.println("Subject: " + newCP.getContextCoordinates().getPeer().getName());
+            System.out.println("Issuer: " + newCP.getContextCoordinates().getRemotePeer().getName());
         }
 
         if (SharkCSAlgebra.identical(newCP.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE)) {

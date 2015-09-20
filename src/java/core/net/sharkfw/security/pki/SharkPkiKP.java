@@ -14,6 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
+
+import static net.sharkfw.security.utility.SharkCertificateHelper.getByteArrayFromLinkedList;
+import static net.sharkfw.security.utility.SharkCertificateHelper.getLinkedListFromByteArray;
 
 /**
  * @author ac
@@ -42,10 +46,21 @@ public class SharkPkiKP extends KnowledgePort {
             if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE) &&
                     Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer())) {
                 try {
+
+                    //Remove old trustlevel and replace it whit the new calculated
                     cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
                     Information trustLevel = cp.addInformation();
                     trustLevel.setName(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL);
                     trustLevel.setContent(evaluateTrustLevelByIssuer(cp).name());
+
+                    //Attach sender to the transmitterList
+                    LinkedList<PeerSemanticTag> pstList = getLinkedListFromByteArray(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next().getContentAsByte());
+                    pstList.add(kepConnection.getSender());
+                    cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next());
+                    Information transmitterList = cp.addInformation();
+                    transmitterList.setName(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+                    transmitterList.setContent(getByteArrayFromLinkedList(pstList));
+
                     if (sharkPkiStorage.addSharkCertificate(cp)) {
                         this.notifyKnowledgeAssimilated(this, cp);
                     } else {
