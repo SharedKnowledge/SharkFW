@@ -9,8 +9,10 @@ import net.sharkfw.system.L;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 
@@ -23,26 +25,34 @@ public class SharkPkiStorage implements PkiStorage {
 
     public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_NAME = "certificate";
     public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_SI = "cc:certificate";
+    public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_OWNER_PRIVATE_KEY_NAME = "private_key";
+    public final static String PKI_CONTEXT_POINT_SEMANTIC_TAG_OWNER_PRIVATE_KEY_SI = "cc:private_key";
+    public final static String PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME = "private_key";
     public final static String PKI_INFORMATION_PUBLIC_KEY_NAME = "public_key";
     public final static String PKI_INFORMATION_TRANSMITTER_LIST_NAME = "transmitter_list";
     public final static String PKI_INFORMATION_TRUST_LEVEL = "trust_level";
     public final static SemanticTag PKI_CONTEXT_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(PKI_CONTEXT_POINT_SEMANTIC_TAG_NAME, new String[]{PKI_CONTEXT_POINT_SEMANTIC_TAG_SI});
-    public final static Interest PKI_INTEREST = InMemoSharkKB.createInMemoInterest(
-            InMemoSharkKB.createInMemoSTSet(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            SharkCS.DIRECTION_INOUT
-    );
-    ContextCoordinates contextCoordinatesFilter;
-    KeyFactory keyFactory;
+    public final static SemanticTag PKI_OWNER_PRIVATE_KEY_CONTEXT_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(PKI_CONTEXT_POINT_SEMANTIC_TAG_OWNER_PRIVATE_KEY_NAME, new String[]{PKI_CONTEXT_POINT_SEMANTIC_TAG_OWNER_PRIVATE_KEY_SI});
+
+    private ContextCoordinates contextCoordinatesFilter;
+    private ContextCoordinates ownerPrivateKeyContextCoordinatesFilter;
+    private KeyFactory keyFactory;
     private SharkKB sharkPkiStorageKB;
     private PeerSemanticTag sharkPkiStorageOwner;
-    public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner) throws SharkKBException, NoSuchAlgorithmException {
+
+    public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner, PrivateKey privateKey) throws SharkKBException, NoSuchAlgorithmException {
+        initialize(sharkKB, owner);
+        storePrivateKey(ownerPrivateKeyContextCoordinatesFilter, privateKey);
+    }
+
+    public SharkPkiStorage(SharkKB sharkKBWithStoredPrivateKey, PeerSemanticTag owner) throws SharkKBException, NoSuchAlgorithmException {
+        initialize(sharkKBWithStoredPrivateKey, owner);
+    }
+
+    private void initialize(SharkKB sharkKB, PeerSemanticTag owner) throws NoSuchAlgorithmException {
         sharkPkiStorageKB = sharkKB;
         sharkPkiStorageOwner = owner;
+
         contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                 PKI_CONTEXT_COORDINATE,
                 sharkPkiStorageOwner,
@@ -51,7 +61,51 @@ public class SharkPkiStorage implements PkiStorage {
                 null,
                 null,
                 SharkCS.DIRECTION_INOUT);
-        keyFactory = KeyFactory.getInstance(SharkKeyPairAlgorithm.RSA.name()); //TODO: determine dynamically
+
+        ownerPrivateKeyContextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
+                PKI_OWNER_PRIVATE_KEY_CONTEXT_COORDINATE,
+                sharkPkiStorageOwner,
+                null,
+                null,
+                null,
+                null,
+                SharkCS.DIRECTION_NOTHING
+        );
+        keyFactory = KeyFactory.getInstance(SharkKeyPairAlgorithm.RSA.name());
+    }
+
+    @Override
+    public PrivateKey getOwnerPrivateKey() throws SharkKBException {
+        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
+        if(knowledge != null) {
+            ContextPoint cp = knowledge.contextPoints().nextElement();
+            if(cp != null) {
+                try {
+                    Information information = cp.getInformation(PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME).next();
+                    return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(information.getContentAsByte()));
+                } catch (InvalidKeySpecException e) {
+                    new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
+                }
+            }
+        }
+        new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
+        return null;
+    }
+
+    @Override
+    public void replaceOwnerPrivateKey(PrivateKey newPrivateKey) throws SharkKBException {
+        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
+        if(knowledge != null) {
+            ContextPoint cp = knowledge.contextPoints().nextElement();
+            if(cp != null) {
+                //Remove old private key and replace it whit the new one
+                cp.removeInformation(cp.getInformation(PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME).next());
+                Information private_key = cp.addInformation();
+                private_key.setName(PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME);
+                private_key.setContent(newPrivateKey.getEncoded());
+            }
+        }
+        new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
     }
 
     @Override
@@ -59,7 +113,6 @@ public class SharkPkiStorage implements PkiStorage {
         TimeSemanticTag time = InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, sharkCertificate.getValidity().getTime());
 
         if(isCertificateInKb(sharkCertificate)) {
-            //TODO: what if a certificate is already in the KB (e.g. update if expired)
             return false;
         }
 
@@ -85,8 +138,6 @@ public class SharkPkiStorage implements PkiStorage {
         trustLevel.setName(PKI_INFORMATION_TRUST_LEVEL);
         trustLevel.setContent(sharkCertificate.getTrustLevel().name());
 
-        //contextPoint.addInformation(publicKey);
-        //contextPoint.addInformation(transmitterList);
         return true;
     }
 
@@ -279,5 +330,16 @@ public class SharkPkiStorage implements PkiStorage {
             return cp.getInformation(name).next();
         }
         return null;
+    }
+
+    private void storePrivateKey(ContextCoordinates contextCoordinates, PrivateKey privateKey) throws SharkKBException {
+        try {
+            ContextPoint contextPoint = sharkPkiStorageKB.createContextPoint(contextCoordinates);
+            Information private_key = contextPoint.addInformation();
+            private_key.setName(PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME);
+            private_key.setContent(privateKey.getEncoded());
+        } catch (SharkKBException e) {
+            new SharkKBException(e.getMessage());
+        }
     }
 }

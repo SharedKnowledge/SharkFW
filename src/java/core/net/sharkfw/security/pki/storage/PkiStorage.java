@@ -8,6 +8,7 @@ import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashSet;
@@ -16,6 +17,18 @@ import java.util.HashSet;
  * @author ac
  */
 public interface PkiStorage {
+
+    /**
+     * @return PrivateKey of the KB Owner
+     * @throws SharkKBException
+     */
+    PrivateKey getOwnerPrivateKey() throws SharkKBException;
+
+    /**
+     * @param newPrivateKey
+     * @throws SharkKBException
+     */
+    void replaceOwnerPrivateKey(PrivateKey newPrivateKey) throws SharkKBException;
 
     /**
      * @param peerSemanticTag
