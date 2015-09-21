@@ -17,8 +17,8 @@ public interface Certificate {
     public enum TrustLevel {
         FULL,
         MARGINAL,
-        NONE,
-        UNKNOWN
+        UNKNOWN,
+        NONE
     }
 
     public final static String CERTIFICATE_SEMANTIC_TAG_NAME = "certificate";
