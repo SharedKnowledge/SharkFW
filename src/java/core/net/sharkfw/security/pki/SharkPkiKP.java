@@ -28,49 +28,52 @@ public class SharkPkiKP extends KnowledgePort {
     public final static String KP_CERTIFICATE_VALIDATION_TAG_SI = "validate:certificate";
     public final static SemanticTag KP_CERTIFICATE_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(KP_CERTIFICATE_VALIDATION_TAG_NAME, new String[]{KP_CERTIFICATE_VALIDATION_TAG_SI});
     private SharkPkiStorage sharkPkiStorage;
-    private Certificate.TrustLevel trustLevel;
+    private Certificate.TrustLevel lowestTrustLevel;
     private PeerSTSet peerSTSet;
 
-    public SharkPkiKP(SharkEngine se, SharkPkiStorage sharkPkiStorage, Certificate.TrustLevel trustLevel, PeerSTSet trustedIssuer) {
+    public SharkPkiKP(SharkEngine se, SharkPkiStorage sharkPkiStorage, Certificate.TrustLevel lowestTrustLevel, PeerSTSet trustedIssuer) {
         super(se);
         this.sharkPkiStorage = sharkPkiStorage;
-        this.trustLevel = trustLevel;
+        this.lowestTrustLevel = lowestTrustLevel;
         this.peerSTSet = trustedIssuer;
     }
 
     @Override //incoming knowledge
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
-            if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE) &&
-                    Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer())) {
-                try {
+            try {
+                if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE) &&
+                        Certificate.TrustLevel.valueOf(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next().getContentAsString()).ordinal() <= lowestTrustLevel.ordinal() &&
+                        Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer())) {
 
-                    //Remove old trustlevel and replace it whit the new calculated
-                    cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
-                    Information trustLevel = cp.addInformation();
-                    trustLevel.setName(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL);
-                    trustLevel.setContent(evaluateTrustLevelByIssuer(cp).name());
+                        //Remove old trustlevel and replace it whit the new calculated
+                        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
+                        Information trustLevel = cp.addInformation();
+                        trustLevel.setName(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL);
+                        trustLevel.setContent(evaluateTrustLevelByIssuer(cp).name());
 
-                    //Attach sender to the transmitterList
-                    LinkedList<PeerSemanticTag> pstList = getLinkedListFromByteArray(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next().getContentAsByte());
-                    pstList.add(kepConnection.getSender());
-                    cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next());
-                    Information transmitterList = cp.addInformation();
-                    transmitterList.setName(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME);
-                    transmitterList.setContent(getByteArrayFromLinkedList(pstList));
+                        //Attach sender to the transmitterList
+                        LinkedList<PeerSemanticTag> pstList = getLinkedListFromByteArray(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next().getContentAsByte());
+                        pstList.add(kepConnection.getSender());
+                        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next());
+                        Information transmitterList = cp.addInformation();
+                        transmitterList.setName(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+                        transmitterList.setContent(getByteArrayFromLinkedList(pstList));
 
-                    if (sharkPkiStorage.addSharkCertificate(cp)) {
-                        this.notifyKnowledgeAssimilated(this, cp);
-                    } else {
-                        L.d("Certificate already in SharkPkiStorage.");
-                    }
-                } catch (SharkKBException e) {
-                    L.e(e.getMessage());
-                } catch (InvalidKeySpecException e) {
-                    L.e(e.getMessage());
-                } catch (NoSuchAlgorithmException e) {
-                    L.e(e.getMessage());
+                        if (sharkPkiStorage.addSharkCertificate(cp)) {
+                            this.notifyKnowledgeAssimilated(this, cp);
+                        } else {
+                            L.d("Certificate already in SharkPkiStorage.");
+                        }
+
                 }
+
+            } catch (SharkKBException e) {
+                L.e(e.getMessage());
+            } catch (InvalidKeySpecException e) {
+                L.e(e.getMessage());
+            } catch (NoSuchAlgorithmException e) {
+                L.e(e.getMessage());
             }
 
             if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) &&
