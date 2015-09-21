@@ -44,7 +44,7 @@ public class SharkPkiKP extends KnowledgePort {
             try {
                 if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE) &&
                         Certificate.TrustLevel.valueOf(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next().getContentAsString()).ordinal() <= lowestTrustLevel.ordinal() &&
-                        Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer())) {
+                        (peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer()))){
 
                         //Remove old trustlevel and replace it whit the new calculated
                         cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
@@ -77,7 +77,7 @@ public class SharkPkiKP extends KnowledgePort {
             }
 
             if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) &&
-                    Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer())) {
+                    (peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer()))) {
                 System.out.println("Received fingerprint: " + cp.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte());
                 this.notifyKnowledgeAssimilated(this, cp);
             }
