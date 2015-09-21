@@ -71,6 +71,14 @@ public class SharkPkiStorageTest {
                 SharkCS.DIRECTION_INOUT);
     }
 
+    @Test(expected = SharkKBException.class)
+    public void testConstructorInitiatedWithAnEmptyKBWithoutAPrivateKey() throws Exception {
+        SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
+        if(sharkPkiStorage == null) {
+            System.out.println();
+        }
+    }
+
     @Test
     public void testGetOwnerPrivateKey() throws Exception {
         assertEquals(privateKey, this.sharkPkiStorage.getOwnerPrivateKey());

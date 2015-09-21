@@ -47,6 +47,7 @@ public class SharkPkiStorage implements PkiStorage {
 
     public SharkPkiStorage(SharkKB sharkKBWithStoredPrivateKey, PeerSemanticTag owner) throws SharkKBException, NoSuchAlgorithmException {
         initialize(sharkKBWithStoredPrivateKey, owner);
+        getOwnerPrivateKey();
     }
 
     private void initialize(SharkKB sharkKB, PeerSemanticTag owner) throws NoSuchAlgorithmException {
@@ -84,12 +85,11 @@ public class SharkPkiStorage implements PkiStorage {
                     Information information = cp.getInformation(PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME).next();
                     return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(information.getContentAsByte()));
                 } catch (InvalidKeySpecException e) {
-                    new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
+                    throw new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
                 }
             }
         }
-        new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
-        return null;
+        throw new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
     }
 
     @Override
@@ -104,8 +104,9 @@ public class SharkPkiStorage implements PkiStorage {
                 private_key.setName(PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME);
                 private_key.setContent(newPrivateKey.getEncoded());
             }
+        } else {
+            throw new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
         }
-        new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
     }
 
     @Override
@@ -174,7 +175,7 @@ public class SharkPkiStorage implements PkiStorage {
             trustLevel.setName(PKI_INFORMATION_TRUST_LEVEL);
             trustLevel.setContent(extractInformation(sharkCertificate, PKI_INFORMATION_TRUST_LEVEL).getContentAsString());
         } catch (Exception ex) {
-            new SharkKBException(ex.getMessage());
+            throw new SharkKBException(ex.getMessage());
         }
         return true;
     }
@@ -281,7 +282,7 @@ public class SharkPkiStorage implements PkiStorage {
             try {
                 addSharkCertificate(sharkCertificate);
             } catch (InvalidKeySpecException e) {
-                new SharkKBException(e.getMessage());
+                throw new SharkKBException(e.getMessage());
             }
         }
         return false;
@@ -339,7 +340,7 @@ public class SharkPkiStorage implements PkiStorage {
             private_key.setName(PKI_INFORMATION_OWNER_PRIVATE_KEY_NAME);
             private_key.setContent(privateKey.getEncoded());
         } catch (SharkKBException e) {
-            new SharkKBException(e.getMessage());
+            throw new SharkKBException(e.getMessage());
         }
     }
 }

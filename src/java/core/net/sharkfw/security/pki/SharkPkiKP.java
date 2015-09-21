@@ -28,9 +28,7 @@ public class SharkPkiKP extends KnowledgePort {
     public final static String KP_CERTIFICATE_VALIDATION_TAG_SI = "validate:certificate";
     public final static SemanticTag KP_CERTIFICATE_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(KP_CERTIFICATE_VALIDATION_TAG_NAME, new String[]{KP_CERTIFICATE_VALIDATION_TAG_SI});
     private SharkPkiStorage sharkPkiStorage;
-    private Interest interest;
     private Certificate.TrustLevel trustLevel;
-    private TrustedIssuer trustedIssuer;
     private PeerSTSet peerSTSet;
 
     public SharkPkiKP(SharkEngine se, SharkPkiStorage sharkPkiStorage, Certificate.TrustLevel trustLevel, PeerSTSet trustedIssuer) {
@@ -67,11 +65,11 @@ public class SharkPkiKP extends KnowledgePort {
                         L.d("Certificate already in SharkPkiStorage.");
                     }
                 } catch (SharkKBException e) {
-                    new SharkKBException(e.getMessage());
+                    L.e(e.getMessage());
                 } catch (InvalidKeySpecException e) {
-                    new SharkKBException(e.getMessage());
+                    L.e(e.getMessage());
                 } catch (NoSuchAlgorithmException e) {
-                    new SharkKBException(e.getMessage());
+                    L.e(e.getMessage());
                 }
             }
 
@@ -145,13 +143,13 @@ public class SharkPkiKP extends KnowledgePort {
                 }
             }
         } catch (SharkKBException e) {
-            new SharkKBException(e.getMessage());
+            L.e(e.getMessage());
         } catch (InvalidKeySpecException e) {
-            new SharkKBException(e.getMessage());
+            L.e(e.getMessage());
         } catch (SharkSecurityException e) {
-            new SharkKBException(e.getMessage());
+            L.e(e.getMessage());
         } catch (IOException e) {
-            new SharkKBException(e.getMessage());
+            L.e(e.getMessage());
         }
     }
 
@@ -189,10 +187,5 @@ public class SharkPkiKP extends KnowledgePort {
         } else {
             return Certificate.TrustLevel.UNKNOWN;
         }
-    }
-
-    public enum TrustedIssuer {
-        ALL,
-        KNOWN
     }
 }
