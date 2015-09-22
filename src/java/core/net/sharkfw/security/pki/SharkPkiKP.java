@@ -26,7 +26,7 @@ public class SharkPkiKP extends KnowledgePort {
 
     public final static String KP_CERTIFICATE_VALIDATION_TAG_NAME = "validation";
     public final static String KP_CERTIFICATE_VALIDATION_TAG_SI = "validate:certificate";
-    public final static SemanticTag KP_CERTIFICATE_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(KP_CERTIFICATE_VALIDATION_TAG_NAME, new String[]{KP_CERTIFICATE_VALIDATION_TAG_SI});
+    public final static SemanticTag KP_CERTIFICATE_VALIDATION_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(KP_CERTIFICATE_VALIDATION_TAG_NAME, new String[]{KP_CERTIFICATE_VALIDATION_TAG_SI});
     private SharkPkiStorage sharkPkiStorage;
     private Certificate.TrustLevel lowestTrustLevel;
     private PeerSTSet peerSTSet;
@@ -90,7 +90,7 @@ public class SharkPkiKP extends KnowledgePort {
             ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
             for (int i = 0; i < listOfTopics.size(); i++) {
                 //Certificate validation
-                if (SharkCSAlgebra.identical(listOfTopics.get(i), KP_CERTIFICATE_COORDINATE)) {
+                if (SharkCSAlgebra.identical(listOfTopics.get(i), KP_CERTIFICATE_VALIDATION_COORDINATE)) {
                     if (Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
                         for (int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
                             SharkCertificate sc = sharkPkiStorage.getSharkCertificate((PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(j), (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(j));
