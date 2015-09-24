@@ -4,7 +4,6 @@ Manifest.java
 BuildConfig.java
 R.java
 out
-lib
 gen
 BuildConfig.java
 *.class
@@ -12,3 +11,4 @@ BuildConfig.java
 *.classpath
 *.project
 bin/net/sharkfw/knowledgeBase/sync/TODO
+bin/
