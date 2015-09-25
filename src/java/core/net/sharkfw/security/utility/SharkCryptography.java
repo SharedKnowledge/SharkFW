@@ -16,16 +16,14 @@ import java.security.*;
  * @author ac
  */
 
-//TODO: the process of encoding and decoding should run in a separate thread with an event notifier
-
 public class SharkCryptography {
 
     private static Cipher cipher;
 
     /**
      * Encode byte-array.
-     * @param data
-     * @param privateKey
+     * @param data byte-array
+     * @param privateKey {@link PrivateKey}
      * @return Base64 encoded string
      */
     public static String encodeSessionKey(byte[] data, PrivateKey privateKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {
@@ -48,9 +46,9 @@ public class SharkCryptography {
 
     /**
      * Decode Base64 string.
-     * @param base64String
-     * @param publicKey
-     * @param sharkKeyPairAlgorithm
+     * @param base64String {@link String}
+     * @param publicKey {@link PublicKey}
+     * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
      * @return byte-array
      */
     public static byte[] decodeSessionKey(String base64String, PublicKey publicKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {
@@ -76,9 +74,9 @@ public class SharkCryptography {
 
     /**
      * Encode data stored in a byte-array.
-     * @param data
-     * @param sessionKey
-     * @param sharkKeyAlgorithm
+     * @param data byte-array
+     * @param sessionKey byte-array
+     * @param sharkKeyAlgorithm {@link SharkKeyAlgorithm}
      * @return Base64 encoded string
      */
     public static String encodeData(byte[] data, byte[] sessionKey, SharkKeyAlgorithm sharkKeyAlgorithm) {
@@ -102,10 +100,10 @@ public class SharkCryptography {
 
     /**
      * Encode data stored in a byte-array.
-     * @param data
-     * @param publicKey
-     * @param sharkKeyPairAlgorithm
-     * @return
+     * @param data byte-array
+     * @param publicKey {@link PublicKey}
+     * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
+     * @return Encoded data as a {@link String}
      */
     public static String encodeData(byte[] data, PublicKey publicKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {
         try {
@@ -127,9 +125,9 @@ public class SharkCryptography {
 
     /**
      * Decode Base64 data.
-     * @param base64String
-     * @param sessionKey
-     * @param sharkKeyAlgorithm
+     * @param base64String {@link String}
+     * @param sessionKey byte-array
+     * @param sharkKeyAlgorithm {@link SharkKeyAlgorithm}
      * @return byte-array
      */
     public static byte[] decodeData(String base64String, byte[] sessionKey, SharkKeyAlgorithm sharkKeyAlgorithm) {
@@ -156,9 +154,9 @@ public class SharkCryptography {
 
     /**
      * Decode Base64 data.
-     * @param base64String
-     * @param privateKey
-     * @param sharkKeyPairAlgorithm
+     * @param base64String {@link String}
+     * @param privateKey {@link PrivateKey}
+     * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
      * @return byte-array
      */
     public static byte[] decodeData(String base64String, PrivateKey privateKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {

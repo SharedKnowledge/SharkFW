@@ -9,11 +9,11 @@ import java.io.*;
  */
 public class FSSharkKeyStorage {
 
-    private String filePath;
+    private final String filePath;
 
     /**
      * Constructor.
-     * @param filePath
+     * @param filePath Filepath to store or load the object.
      */
     public FSSharkKeyStorage(final String filePath) {
         this.filePath = filePath;
@@ -21,8 +21,8 @@ public class FSSharkKeyStorage {
 
     /**
      * Serialize the given object and saved it to the given path.
-     * @param sharkKeyStorage
-     * @return
+     * @param sharkKeyStorage {@link SharkKeyStorage}
+     * @return True or false
      */
     public boolean save(SharkKeyStorage sharkKeyStorage) {
         try {
@@ -45,7 +45,7 @@ public class FSSharkKeyStorage {
      */
     public SharkKeyStorage load() {
 
-        SharkKeyStorage sharkKeyStorage = null;
+        SharkKeyStorage sharkKeyStorage;
 
         try {
             FileInputStream fileInputStream = new FileInputStream(filePath);

@@ -11,38 +11,38 @@ import java.security.PublicKey;
 public interface KeyStorage  {
 
     /**
-     *
-     * @return PublicKey
+     * Returns {@link PublicKey}
+     * @return {@link PublicKey}
      */
     PublicKey getPublicKey();
 
     /**
-     * Stores PublicKeys.
-     * @param publicKey
+     * Stores {@link PublicKey}.
+     * @param publicKey {@link PublicKey}
      */
     void setPublicKey(PublicKey publicKey);
 
     /**
-     *
-     * @return PrivateKey
+     * Returns {@link PrivateKey}
+     * @return PrivateKey {@link PrivateKey}
      */
     PrivateKey getPrivateKey();
 
     /**
-     * Stores PrivateKey.
-     * @param privateKey
+     * Stores {@link PrivateKey}.
+     * @param privateKey {@link PrivateKey}
      */
     void setPrivateKey(PrivateKey privateKey);
 
     /**
-     *
-     * @return SharkKeyPairAlgorithm
+     * Returns {@link SharkKeyPairAlgorithm}
+     * @return SharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
      */
     SharkKeyPairAlgorithm getSharkKeyPairAlgorithm();
 
     /**
-     * Stores SharkKeyPairAlgorithm.
-     * @param sharkKeyPairAlgorithm
+     * Stores {@link SharkKeyPairAlgorithm}.
+     * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
      */
     void setSharkKeyPairAlgorithm(SharkKeyPairAlgorithm sharkKeyPairAlgorithm);
 }

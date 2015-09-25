@@ -6,6 +6,7 @@ import net.sharkfw.kp.KPListener;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
+import net.sharkfw.system.SharkException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -293,17 +294,21 @@ public class SharkPkiKPTest implements KPListener {
         }
 
         if (SharkCSAlgebra.identical(newCP.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE)) {
-            if(Arrays.equals(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte(), sharkCertificate.getFingerprint())) {
-                System.out.println("Fingerprints are equal:");
-                System.out.println(Arrays.toString(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
-                System.out.println(Arrays.toString(sharkCertificate.getFingerprint()));
-                fingerprintIsValid = true;
-            }
-            else {
-                System.out.println("Fingerprints are different:");
-                System.out.println(Arrays.toString(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
-                System.out.println(Arrays.toString(sharkCertificate.getFingerprint()));
-                fingerprintIsValid = false;
+            try {
+                if(Arrays.equals(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte(), sharkCertificate.getFingerprint())) {
+                    System.out.println("Fingerprints are equal:");
+                    System.out.println(Arrays.toString(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
+                    System.out.println(Arrays.toString(sharkCertificate.getFingerprint()));
+                    fingerprintIsValid = true;
+                }
+                else {
+                    System.out.println("Fingerprints are different:");
+                    System.out.println(Arrays.toString(newCP.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
+                    System.out.println(Arrays.toString(sharkCertificate.getFingerprint()));
+                    fingerprintIsValid = false;
+                }
+            } catch (SharkException e) {
+                e.printStackTrace();
             }
         }
     }

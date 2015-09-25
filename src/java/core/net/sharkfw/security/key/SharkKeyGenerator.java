@@ -10,13 +10,13 @@ import java.security.*;
 public class SharkKeyGenerator {
 
     private String cipherAlgorithm;
-    private int keySize;
+    private final int keySize;
     private KeyPair keyPair;
 
     /**
      * Constructor.
-     * @param sharkKeyPairAlgorithm
-     * @param keySize
+     * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
+     * @param keySize {@link Integer}
      */
     public SharkKeyGenerator(final SharkKeyPairAlgorithm sharkKeyPairAlgorithm, final int keySize) {
         this.cipherAlgorithm = sharkKeyPairAlgorithm.name();
@@ -25,16 +25,16 @@ public class SharkKeyGenerator {
     }
 
     /**
-     *
-     * @return PublicKey
+     * Returns {@link PublicKey}
+     * @return PublicKey {@link PublicKey}
      */
     public PublicKey getPublicKey() {
         return keyPair.getPublic();
     }
 
     /**
-     *
-     * @return PrivateKey
+     * Returns {@link PrivateKey}
+     * @return PrivateKey {@link PrivateKey}
      */
     public PrivateKey getPrivateKey() {
         return keyPair.getPrivate();
@@ -42,8 +42,8 @@ public class SharkKeyGenerator {
 
     /**
      * Method overloading.
-     * @param sharkKeyAlgorithm
-     * @return SessionKey
+     * @param sharkKeyAlgorithm {@link SharkKeyAlgorithm}
+     * @return SessionKey byte-array
      */
     public byte[] getRandomSessionKey(SharkKeyAlgorithm sharkKeyAlgorithm) {
         return generateRandomSessionKey(sharkKeyAlgorithm);
@@ -51,8 +51,8 @@ public class SharkKeyGenerator {
 
     /**
      * Generates a random session key using the given algorithm and keysize.
-     * @param sharkKeyAlgorithm
-     * @return SessionKey
+     * @param sharkKeyAlgorithm {@link SharkKeyAlgorithm}
+     * @return SessionKey byte-array
      */
     private byte[] generateRandomSessionKey(SharkKeyAlgorithm sharkKeyAlgorithm) {
         try {
@@ -66,8 +66,8 @@ public class SharkKeyGenerator {
     }
 
     /**
-     * Generates an new public- and privatekey pair.
-     * @return KeyPair
+     * Generates an new public- and private-key pair.
+     * @return KeyPair {@link KeyPair}
      */
     private KeyPair generateKeyPair() {
         try {

@@ -21,11 +21,11 @@ public class SharkCertificateHelper {
     private static final String LINKED_LIST_SEPARATOR_END = "<end>";
 
     /**
-     * Converts a LinkedList with PeerSemanticTags into a byte array to store them as information.
+     * Converts a LinkedList with PeerSemanticTags into a byte-array to store them as information.
      * The LinkedList is preferred to a PeerSTSet because of the ability to remove easily elements
      * from the list.
-     * @param transmitterList
-     * @return
+     * @param transmitterList {@link LinkedList}
+     * @return byte-array of the {@link LinkedList}
      */
     public static byte[] getByteArrayFromLinkedList(LinkedList<PeerSemanticTag> transmitterList) {
 
@@ -57,10 +57,10 @@ public class SharkCertificateHelper {
     }
 
     /**
-     * Converts a valid byte array to a LinkeList of PeerSemanticTags. The advantages of the LinkedList
+     * Converts a valid byte-array to a {@link LinkedList} of PeerSemanticTags. The advantages of the {@link LinkedList}
      * are explain in the method getByteArrayFromLinkedList.
-     * @param transmitterList
-     * @return
+     * @param transmitterList Byte array
+     * @return {@link LinkedList} of {@link PeerSemanticTag}
      */
     public static LinkedList<PeerSemanticTag> getLinkedListFromByteArray(byte[] transmitterList) {
 
@@ -81,9 +81,9 @@ public class SharkCertificateHelper {
 
     /**
      * Simplification for the regex matching.
-     * @param text
-     * @param expression
-     * @return
+     * @param text {@link String}
+     * @param expression {@link String}
+     * @return {@link List} of matched {@link String}'s
      */
     private static List<String> extractStringByRegEx(String text, String expression) {
         List<String> matchList = new ArrayList<>();

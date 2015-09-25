@@ -3,8 +3,8 @@ package net.sharkfw.security.pki;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.SharkException;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.LinkedList;
@@ -14,21 +14,21 @@ import java.util.LinkedList;
  */
 public interface Certificate {
 
-    public enum TrustLevel {
+    enum TrustLevel {
         FULL,
         MARGINAL,
         UNKNOWN,
         NONE
     }
 
-    public final static String CERTIFICATE_SEMANTIC_TAG_NAME = "certificate";
-    public final static String CERTIFICATE_SEMANTIC_TAG_SI = "st:certificate";
-    public final static SemanticTag CERTIFICATE_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(CERTIFICATE_SEMANTIC_TAG_NAME, new String[]{CERTIFICATE_SEMANTIC_TAG_SI});
+    String CERTIFICATE_SEMANTIC_TAG_NAME = "certificate";
+    String CERTIFICATE_SEMANTIC_TAG_SI = "st:certificate";
+    SemanticTag CERTIFICATE_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(CERTIFICATE_SEMANTIC_TAG_NAME, new String[]{CERTIFICATE_SEMANTIC_TAG_SI});
 
-    public final static String FINGERPRINT_INFORMATION_NAME = "fingerprint";
-    public final static String FINGERPRINT_SEMANTIC_TAG_NAME = "fingerprint";
-    public final static String FINGERPRINT_SEMANTIC_TAG_SI = "st:fingerprint";
-    public final static SemanticTag FINGERPRINT_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(FINGERPRINT_SEMANTIC_TAG_NAME, new String[]{FINGERPRINT_SEMANTIC_TAG_SI});
+    String FINGERPRINT_INFORMATION_NAME = "fingerprint";
+    String FINGERPRINT_SEMANTIC_TAG_NAME = "fingerprint";
+    String FINGERPRINT_SEMANTIC_TAG_SI = "st:fingerprint";
+    SemanticTag FINGERPRINT_COORDINATE = InMemoSharkKB.createInMemoSemanticTag(FINGERPRINT_SEMANTIC_TAG_NAME, new String[]{FINGERPRINT_SEMANTIC_TAG_SI});
 
     /**
      * @return PublicKey of the subject.
@@ -46,7 +46,7 @@ public interface Certificate {
     PeerSemanticTag getIssuer();
 
     /**
-     * @param trustLevel
+     * @param trustLevel New {@link net.sharkfw.security.pki.Certificate.TrustLevel}
      */
     void setTrustLevel(TrustLevel trustLevel);
 
@@ -71,8 +71,7 @@ public interface Certificate {
     Date getValidity();
 
     /**
-     *
-     * @return Fingerprint byte array
+     * @return Fingerprint byte-array
      */
-    byte[] getFingerprint();
+    byte[] getFingerprint() throws SharkException;
 }

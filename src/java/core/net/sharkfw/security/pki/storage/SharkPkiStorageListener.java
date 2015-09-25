@@ -4,31 +4,35 @@ import net.sharkfw.pki.SharkCertificate;
 
 /**
  * Interface describing a listener for SharkPkiStorage events
+ *
+ * Currently not used. The provided methods of the {@link net.sharkfw.kp.KPListener} used in the
+ * {@link net.sharkfw.security.pki.SharkPkiKP} covers the current demands.
+ *
  * @author ac
  */
 public interface SharkPkiStorageListener {
 
     /**
      * Called when certificate added
-     * @param sharkCertificate
+     * @param sharkCertificate {@link SharkCertificate}
      */
-    public void certificateAdded(SharkCertificate sharkCertificate);
+    void certificateAdded(SharkCertificate sharkCertificate);
 
     /**
      * Called when certificate updated
-     * @param sharkCertificate
+     * @param sharkCertificate  {@link SharkCertificate}
      */
-    public void certificateUpdated(SharkCertificate sharkCertificate);
+    void certificateUpdated(SharkCertificate sharkCertificate);
 
     /**
      * Called when certificate expired
-     * @param sharkCertificate
+     * @param sharkCertificate  {@link SharkCertificate}
      */
-    public void certificateExpired(SharkCertificate sharkCertificate);
+    void certificateExpired(SharkCertificate sharkCertificate);
 
     /**
      * Called when certificate deleted
-     * @param sharkCertificate
+     * @param sharkCertificate  {@link SharkCertificate}
      */
-    public void certificateDeleted(SharkCertificate sharkCertificate);
+    void certificateDeleted(SharkCertificate sharkCertificate);
 }

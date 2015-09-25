@@ -24,12 +24,12 @@ public class SharkCertificate implements Certificate {
     /**
      * Constructor
      *
-     * @param subject
-     * @param issuer
-     * @param transmitterList
-     * @param trustLevel
-     * @param subjectPublicKey
-     * @param validity
+     * @param subject {@link PeerSemanticTag}
+     * @param issuer {@link PeerSemanticTag}
+     * @param transmitterList {@link LinkedList}
+     * @param trustLevel {@link net.sharkfw.security.pki.Certificate.TrustLevel}
+     * @param subjectPublicKey {@link PublicKey}
+     * @param validity {@link Date}
      */
     public SharkCertificate(PeerSemanticTag subject, PeerSemanticTag issuer, LinkedList<PeerSemanticTag> transmitterList, TrustLevel trustLevel, PublicKey subjectPublicKey, Date validity) {
         this.subject = subject;
@@ -83,15 +83,15 @@ public class SharkCertificate implements Certificate {
     /***
      * Calculates the fingerprint of the certificate
      * @return SHA-256 fingerprint based of a string from the concatenated fields of the certificate
-     * @throws NoSuchAlgorithmException
+     * @throws SharkException
      */
     @Override
-    public byte[] getFingerprint() {
-        MessageDigest messageDigest = null;
+    public byte[] getFingerprint() throws SharkException {
+        MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            new SharkException(e.getMessage());
+            throw new SharkException(e.getMessage());
         }
         String concatenatedDataSet = this.subject.getName() + this.issuer.getName() + this.subjectPublicKey.toString() + this.validity.toString();
         return messageDigest.digest(concatenatedDataSet.getBytes());

@@ -19,6 +19,9 @@ import java.util.*;
 import static net.sharkfw.security.utility.SharkCertificateHelper.*;
 
 /**
+ * The SharkPkiStorage takes over the administration of the certificates {@link SharkCertificate}.
+ * The necessary actions are executed transparent in the {@link SharkKB} . This allows an easy development
+ * and reduces potential sources of error.
  * @author ac
  */
 public class SharkPkiStorage implements PkiStorage {
@@ -40,16 +43,37 @@ public class SharkPkiStorage implements PkiStorage {
     private SharkKB sharkPkiStorageKB;
     private PeerSemanticTag sharkPkiStorageOwner;
 
+    /**
+     * Initializes the {@link SharkPkiStorage} with the given parameters.
+     * @param sharkKB {@link SharkKB}
+     * @param owner {@link PeerSemanticTag}
+     * @param privateKey {@link PrivateKey}
+     * @throws SharkKBException
+     * @throws NoSuchAlgorithmException
+     */
     public SharkPkiStorage(SharkKB sharkKB, PeerSemanticTag owner, PrivateKey privateKey) throws SharkKBException, NoSuchAlgorithmException {
         initialize(sharkKB, owner);
         storePrivateKey(ownerPrivateKeyContextCoordinatesFilter, privateKey);
     }
 
+    /**
+     * Initializes the {@link SharkPkiStorage} with the given parameters.
+     * @param sharkKBWithStoredPrivateKey {@link SharkKB}
+     * @param owner {@link PeerSemanticTag}
+     * @throws SharkKBException
+     * @throws NoSuchAlgorithmException
+     */
     public SharkPkiStorage(SharkKB sharkKBWithStoredPrivateKey, PeerSemanticTag owner) throws SharkKBException, NoSuchAlgorithmException {
         initialize(sharkKBWithStoredPrivateKey, owner);
         getOwnerPrivateKey();
     }
 
+    /**
+     * Handles the assigning of the parameters and generates the used {@link ContextCoordinates} for later usage.
+     * @param sharkKB {@link SharkKB}
+     * @param owner {@link PeerSemanticTag}
+     * @throws NoSuchAlgorithmException
+     */
     private void initialize(SharkKB sharkKB, PeerSemanticTag owner) throws NoSuchAlgorithmException {
         sharkPkiStorageKB = sharkKB;
         sharkPkiStorageOwner = owner;
@@ -75,6 +99,11 @@ public class SharkPkiStorage implements PkiStorage {
         keyFactory = KeyFactory.getInstance(SharkKeyPairAlgorithm.RSA.name());
     }
 
+    /**
+     * Returns the {@link PrivateKey} of the {@link SharkKB}
+     * @return The {@link PrivateKey} of the {@link SharkKB} owner.
+     * @throws SharkKBException
+     */
     @Override
     public PrivateKey getOwnerPrivateKey() throws SharkKBException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
@@ -92,6 +121,11 @@ public class SharkPkiStorage implements PkiStorage {
         throw new SharkKBException("No private key stored in the knowledge base. Wrong KB?");
     }
 
+    /**
+     * Replaces the stored {@link PrivateKey} of the owner.
+     * @param newPrivateKey {@link PrivateKey}
+     * @throws SharkKBException
+     */
     @Override
     public void replaceOwnerPrivateKey(PrivateKey newPrivateKey) throws SharkKBException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
@@ -109,6 +143,13 @@ public class SharkPkiStorage implements PkiStorage {
         }
     }
 
+    /**
+     * Adds a SharkCertificate to the {@link PkiStorage}.
+     * @param sharkCertificate {@link SharkCertificate}
+     * @return True or false
+     * @throws SharkKBException
+     * @throws InvalidKeySpecException
+     */
     @Override
     public boolean addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException, InvalidKeySpecException {
         TimeSemanticTag time = InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, sharkCertificate.getValidity().getTime());
@@ -142,6 +183,12 @@ public class SharkPkiStorage implements PkiStorage {
         return true;
     }
 
+    /**
+     * Adds a {@link ContextPoint} containing the certificate information's to the {@link PkiStorage}.
+     * @param sharkCertificate {@link SharkCertificate}
+     * @return True or false
+     * @throws SharkKBException
+     */
     @Override
     public boolean addSharkCertificate(ContextPoint sharkCertificate) throws SharkKBException {
         //SharkCS (2nd parameter) can't be null -> exception
@@ -180,6 +227,13 @@ public class SharkPkiStorage implements PkiStorage {
         return true;
     }
 
+    /**
+     * Adds a HashSet of SharkCertificates to the {@link PkiStorage}.
+     * @param sharkCertificateHashSet {@link HashSet}
+     * @return True or false
+     * @throws SharkKBException
+     * @throws InvalidKeySpecException
+     */
     @Override
     public boolean addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException, InvalidKeySpecException {
         for (SharkCertificate sharkCertificate : sharkCertificateHashSet) {
@@ -188,6 +242,13 @@ public class SharkPkiStorage implements PkiStorage {
         return true;
     }
 
+    /**
+     * Returns a {@link SharkCertificate} via the {@link PeerSemanticTag} of the subject and his {@link PublicKey}.
+     * @param subject {@link PeerSemanticTag}
+     * @param publicKey {@link PublicKey}
+     * @return {@link SharkCertificate}
+     * @throws SharkKBException
+     */
     @Override
     public SharkCertificate getSharkCertificate(PeerSemanticTag subject, PublicKey publicKey) throws SharkKBException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
@@ -213,6 +274,14 @@ public class SharkPkiStorage implements PkiStorage {
         return null;
     }
 
+    /**
+     * Returns a {@link SharkCertificate} via {@link PeerSemanticTag} for subject and issuer.
+     * @param issuer {@link PeerSemanticTag}
+     * @param subject {@link PeerSemanticTag}
+     * @return {@link SharkCertificate}
+     * @throws SharkKBException
+     * @throws InvalidKeySpecException
+     */
     @Override
     public SharkCertificate getSharkCertificate(PeerSemanticTag issuer, PeerSemanticTag subject) throws SharkKBException, InvalidKeySpecException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
@@ -244,8 +313,15 @@ public class SharkPkiStorage implements PkiStorage {
         }
     }
 
+    /**
+     * Returns a {@link HashSet} of all stored SharkCertificates.
+     * @return {@link SharkCertificate}'s in a {@link HashSet}
+     * @throws SharkKBException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Override
-    public HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException, InvalidKeySpecException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         HashSet<SharkCertificate> sharkCertificateList = new HashSet<>();
         if(knowledge != null) {
@@ -274,6 +350,13 @@ public class SharkPkiStorage implements PkiStorage {
         }
     }
 
+    /**
+     * Updates the {@link net.sharkfw.security.pki.Certificate.TrustLevel} of a {@link SharkCertificate}
+     * @param sharkCertificate {@link SharkCertificate}
+     * @param trustLevel {@link net.sharkfw.security.pki.Certificate.TrustLevel}
+     * @return True or false
+     * @throws SharkKBException
+     */
     @Override
     public boolean updateSharkCertificateTrustLevel(SharkCertificate sharkCertificate, Certificate.TrustLevel trustLevel) throws SharkKBException{
         if(getSharkCertificate(sharkCertificate.getSubject(), sharkCertificate.getSubjectPublicKey()) != null) {
@@ -288,6 +371,12 @@ public class SharkPkiStorage implements PkiStorage {
         return false;
     }
 
+    /**
+     * Deletes a {@link SharkCertificate} from the {@link SharkPkiStorage}
+     * @param sharkCertificate {@link SharkCertificate}
+     * @return True or false
+     * @throws SharkKBException
+     */
     @Override public boolean deleteSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException {
         if(getSharkCertificate(sharkCertificate.getSubject(), sharkCertificate.getSubjectPublicKey()) != null) {
             this.sharkPkiStorageKB.removeContextPoint(
@@ -305,11 +394,22 @@ public class SharkPkiStorage implements PkiStorage {
         return false;
     }
 
+    /**
+     * Returns the used {@link SharkKB} reflecting the {@link PkiStorage}
+     * @return {@link SharkKB}
+     */
     @Override
     public SharkKB getSharkPkiStorageKB() {
         return this.sharkPkiStorageKB;
     }
 
+    /**
+     * Checks the existence of a {@link SharkCertificate} within the {@link SharkPkiStorage}.
+     * @param sharkCertificate {@link SharkCertificate}
+     * @return True (is in) or false (did not exists)
+     * @throws SharkKBException
+     * @throws InvalidKeySpecException
+     */
     private boolean isCertificateInKb(SharkCertificate sharkCertificate) throws SharkKBException, InvalidKeySpecException {
         Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         if(knowledge != null) {
@@ -325,14 +425,26 @@ public class SharkPkiStorage implements PkiStorage {
         return false;
     }
 
+    /**
+     * Returns an {@link Information} via the {@link ContextPoint} and string identifier.
+     * @param cp {@link ContextPoint}
+     * @param name {@link String}
+     * @return {@link Information}
+     */
     private Information extractInformation(ContextPoint cp, String name) {
-        Information information;
+        //noinspection LoopStatementThatDoesntLoop
         while (cp.getInformation(name).hasNext()) {
             return cp.getInformation(name).next();
         }
         return null;
     }
 
+    /**
+     * Stores the {@link PrivateKey} in the {@link SharkPkiStorage}
+     * @param contextCoordinates {@link ContextCoordinates}
+     * @param privateKey {@link PrivateKey}
+     * @throws SharkKBException
+     */
     private void storePrivateKey(ContextCoordinates contextCoordinates, PrivateKey privateKey) throws SharkKBException {
         try {
             ContextPoint contextPoint = sharkPkiStorageKB.createContextPoint(contextCoordinates);

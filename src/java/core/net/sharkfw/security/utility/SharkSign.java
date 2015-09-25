@@ -17,9 +17,9 @@ public class SharkSign {
 
     /**
      * Calculates the signature of a given bytearray.
-     * @param data
-     * @param privateKey
-     * @param sharkSignatureAlgorithm
+     * @param data byte-array
+     * @param privateKey {@link PrivateKey}
+     * @param sharkSignatureAlgorithm {@link net.sharkfw.security.utility.SharkSign.SharkSignatureAlgorithm}
      * @return Signature
      */
     public static byte[] sign(byte[] data, PrivateKey privateKey, SharkSignatureAlgorithm sharkSignatureAlgorithm) {
@@ -39,10 +39,10 @@ public class SharkSign {
 
     /**
      * Validates signature and data.
-     * @param data
-     * @param signature
-     * @param publicKey
-     * @param sharkSignatureAlgorithm
+     * @param data byte-array
+     * @param signature byte-array
+     * @param publicKey {@link PublicKey}
+     * @param sharkSignatureAlgorithm {@link net.sharkfw.security.utility.SharkSign.SharkSignatureAlgorithm}
      * @return true or false
      */
     public static boolean verify(byte[] data, byte[] signature, PublicKey publicKey, SharkSignatureAlgorithm sharkSignatureAlgorithm) {

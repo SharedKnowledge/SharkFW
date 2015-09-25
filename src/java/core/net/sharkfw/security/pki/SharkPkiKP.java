@@ -7,12 +7,14 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;
+import net.sharkfw.system.SharkException;
 import net.sharkfw.system.SharkSecurityException;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -68,17 +70,13 @@ public class SharkPkiKP extends KnowledgePort {
 
                 }
 
-            } catch (SharkKBException e) {
-                L.e(e.getMessage());
-            } catch (InvalidKeySpecException e) {
-                L.e(e.getMessage());
-            } catch (NoSuchAlgorithmException e) {
+            } catch (SharkKBException | InvalidKeySpecException | NoSuchAlgorithmException e) {
                 L.e(e.getMessage());
             }
 
             if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) &&
                     (peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer()))) {
-                System.out.println("Received fingerprint: " + cp.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte());
+                System.out.println("Received fingerprint: " + Arrays.toString(cp.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
                 this.notifyKnowledgeAssimilated(this, cp);
             }
         }
@@ -145,13 +143,7 @@ public class SharkPkiKP extends KnowledgePort {
                     }
                 }
             }
-        } catch (SharkKBException e) {
-            L.e(e.getMessage());
-        } catch (InvalidKeySpecException e) {
-            L.e(e.getMessage());
-        } catch (SharkSecurityException e) {
-            L.e(e.getMessage());
-        } catch (IOException e) {
+        } catch (InvalidKeySpecException | IOException | SharkException e) {
             L.e(e.getMessage());
         }
     }
