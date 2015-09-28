@@ -8,7 +8,6 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
-import net.sharkfw.system.SharkSecurityException;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -48,7 +47,7 @@ public class SharkPkiKP extends KnowledgePort {
                         Certificate.TrustLevel.valueOf(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next().getContentAsString()).ordinal() <= lowestTrustLevel.ordinal() &&
                         (peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer()))){
 
-                        //Remove old trustlevel and replace it whit the new calculated
+                        //Remove old rustlevel and replace it whit the new calculated
                         cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
                         Information trustLevel = cp.addInformation();
                         trustLevel.setName(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL);
@@ -86,9 +85,9 @@ public class SharkPkiKP extends KnowledgePort {
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
         try {
             ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
-            for (int i = 0; i < listOfTopics.size(); i++) {
+            for (SemanticTag listOfTopic : listOfTopics) {
                 //Certificate validation
-                if (SharkCSAlgebra.identical(listOfTopics.get(i), KP_CERTIFICATE_VALIDATION_COORDINATE)) {
+                if (SharkCSAlgebra.identical(listOfTopic, KP_CERTIFICATE_VALIDATION_COORDINATE)) {
                     if (Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
                         for (int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
                             SharkCertificate sc = sharkPkiStorage.getSharkCertificate((PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(j), (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(j));
@@ -121,7 +120,7 @@ public class SharkPkiKP extends KnowledgePort {
                 }
 
                 //Certificate extraction
-                if (SharkCSAlgebra.identical(listOfTopics.get(i), Certificate.CERTIFICATE_COORDINATE)) {
+                if (SharkCSAlgebra.identical(listOfTopic, Certificate.CERTIFICATE_COORDINATE)) {
                     if (Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
                         for (int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
                             SharkCertificate sc = sharkPkiStorage.getSharkCertificate((PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(j), (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(j));
@@ -143,7 +142,7 @@ public class SharkPkiKP extends KnowledgePort {
                     }
                 }
             }
-        } catch (InvalidKeySpecException | IOException | SharkException e) {
+        } catch (IOException | SharkException e) {
             L.e(e.getMessage());
         }
     }
@@ -152,7 +151,7 @@ public class SharkPkiKP extends KnowledgePort {
         int trustValue = 0;
         if(sharkPkiStorage.getSharkCertificateList() != null) {
             for (SharkCertificate sc : sharkPkiStorage.getSharkCertificateList()) {
-                if (contextPoint.getContextCoordinates().getRemotePeer().equals(sc.getSubject())) {
+                if (SharkCSAlgebra.identical(sc.getSubject(), contextPoint.getContextCoordinates().getPeer())) {
                     switch (sc.getTrustLevel()) {
                         case FULL:
                             trustValue += 1;

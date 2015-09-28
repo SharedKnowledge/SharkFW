@@ -7,10 +7,8 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashSet;
 
 /**
@@ -34,6 +32,14 @@ public interface PkiStorage {
     void replaceOwnerPrivateKey(PrivateKey newPrivateKey) throws SharkKBException;
 
     /**
+     * Returns a {@link SharkCertificate} via the {@link PeerSemanticTag} of the subject.
+     * @param subject {@link PeerSemanticTag}
+     * @return SharkCertificate
+     * @throws SharkKBException
+     */
+    SharkCertificate getSharkCertificate(PeerSemanticTag subject) throws SharkKBException;
+
+    /**
      * Returns a {@link SharkCertificate} via the {@link PeerSemanticTag} of the subject and his {@link PublicKey}.
      * @param subject {@link PeerSemanticTag}
      * @param publicKey {@link PeerSemanticTag}
@@ -48,16 +54,15 @@ public interface PkiStorage {
      * @param subject {@link PeerSemanticTag}
      * @return SharkCertificate
      * @throws SharkKBException
-     * @throws InvalidKeySpecException
      */
-    SharkCertificate getSharkCertificate(PeerSemanticTag issuer, PeerSemanticTag subject) throws  SharkKBException, InvalidKeySpecException;
+    SharkCertificate getSharkCertificate(PeerSemanticTag issuer, PeerSemanticTag subject) throws  SharkKBException;
 
     /**
      * Adds a SharkCertificate to the {@link PkiStorage}.
      * @param sharkCertificate {@link SharkCertificate}
      * @throws SharkKBException
      */
-    boolean addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException, InvalidKeySpecException;
+    boolean addSharkCertificate(SharkCertificate sharkCertificate) throws SharkKBException;
 
     /**
      * Adds a {@link ContextPoint} containing the certificate information's to the {@link PkiStorage}.
@@ -71,13 +76,13 @@ public interface PkiStorage {
      * @param sharkCertificateHashSet {@link SharkCertificate}
      * @throws SharkKBException
      */
-    boolean addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException, InvalidKeySpecException;
+    boolean addSharkCertificate(HashSet<SharkCertificate> sharkCertificateHashSet) throws SharkKBException;
 
     /**
      * Returns a {@link HashSet} of all stored SharkCertificates.
      * @return HashSet of all stored SharkCertificates
      */
-    HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException, InvalidKeySpecException;
+    HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException;
 
     /***
      * Changes a ShakCertificate TrustLevel.
