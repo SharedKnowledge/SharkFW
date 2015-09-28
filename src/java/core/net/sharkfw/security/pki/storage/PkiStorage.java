@@ -40,6 +40,14 @@ public interface PkiStorage {
     SharkCertificate getSharkCertificate(PeerSemanticTag subject) throws SharkKBException;
 
     /**
+     * Returns a {@link SharkCertificate} via the subjectIdentifier of the subject.
+     * @param subjectIdentifier
+     * @return SharkCertificate
+     * @throws SharkKBException
+     */
+    SharkCertificate getSharkCertificate(String[] subjectIdentifier) throws SharkKBException;
+
+    /**
      * Returns a {@link SharkCertificate} via the {@link PeerSemanticTag} of the subject and his {@link PublicKey}.
      * @param subject {@link PeerSemanticTag}
      * @param publicKey {@link PeerSemanticTag}
