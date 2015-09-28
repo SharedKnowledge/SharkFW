@@ -11,6 +11,7 @@ import net.sharkfw.peer.SharkEngine.SecurityLevel;
 import net.sharkfw.peer.SharkEngine.SecurityReplyPolicy;
 import net.sharkfw.pki.SharkPublicKeyStorage;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkNotSupportedException;
 import net.sharkfw.system.SharkSecurityException;
@@ -32,7 +33,8 @@ public class KEPSession extends Thread {
     private KEPStub kepStub;
     private StreamConnection con;
     private SharkEngine se;
-    private SharkPublicKeyStorage publicKeyStorage;
+    //private SharkPublicKeyStorage publicKeyStorage;
+    private SharkPkiStorage sharkPkiStorage;
     private SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
 
@@ -55,7 +57,7 @@ public class KEPSession extends Thread {
     		try { 
     			L.d("Creating KEPRequest from connection replyaddress: " + this.con.getReplyAddressString(), this);
     			KEPInMessage inMsg = new KEPInMessage(this.se, this.con);
-    			inMsg.initSecurity(this.privateKey, this.publicKeyStorage,
+    			inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                                 this.encryptionLevel, this.signatureLevel,
                                 this.replyPolicy, this.refuseUnverifiably);
     			inMsg.parse();
@@ -126,12 +128,13 @@ public class KEPSession extends Thread {
     private PublicKey publicKeyRemotePeer;
     private PrivateKey privateKey;
 
-    public void initSecurity(PrivateKey privateKey, SharkPublicKeyStorage publicKeyStorage, 
+    public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
             SecurityLevel encryptionLevel, SecurityLevel signatureLevel, 
             SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
         
         this.privateKey = privateKey;
-        this.publicKeyStorage = publicKeyStorage;
+        //this.publicKeyStorage = publicKeyStorage;
+        this.sharkPkiStorage = sharkPkiStorage;
         this.signatureLevel = signatureLevel;
         this.encryptionLevel = encryptionLevel;
         this.replyPolicy = replyPolicy;

@@ -17,6 +17,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.pki.SharkPublicKeyStorage;
 import net.sharkfw.protocols.*;
+import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
@@ -47,7 +48,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     // security settings
     private PrivateKey privateKey = null;
     private PeerSemanticTag engineOwnerPeer;
-    private SharkPublicKeyStorage publicKeyStorage;
+    //private SharkPublicKeyStorage publicKeyStorage;
+    private SharkPkiStorage sharkPkiStorage;
     private SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
     private SecurityLevel encryptionLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
@@ -1056,8 +1058,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             else if(this.encryptionLevel == SecurityLevel.MUST) {
                 if(useThisPublicKey == null && remotePeerSI != null) {
                     // there is no public key - maybe we have it on oki store
-                    useThisPublicKey = this.publicKeyStorage.getPublicKey(
-                                                            remotePeerSI);
+                    //useThisPublicKey = this.publicKeyStorage.getPublicKey(remotePeerSI);
+                    useThisPublicKey = this.sharkPkiStorage.getSharkCertificate(remotePeerSI).getSubjectPublicKey();
                 }
                 
                 if(useThisPublicKey == null) {
@@ -1094,8 +1096,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     // we must encrypt
                     if(useThisPublicKey == null && remotePeerSI != null) {
                         // there is no public key - maybe we have it on oki store
-                        useThisPublicKey = this.publicKeyStorage.getPublicKey(
-                                                                remotePeerSI);
+                        //useThisPublicKey = this.publicKeyStorage.getPublicKey(remotePeerSI);
+                        useThisPublicKey = this.sharkPkiStorage.getSharkCertificate(remotePeerSI).getSubjectPublicKey();
                     }
                     if(useThisPublicKey == null) {
                         throw new SharkSecurityException("security policy is SAME AS MESSAGE and message was encrypted but cannot find public key - fatal - message not sent");
@@ -1155,8 +1157,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
         PrivateKey useThisPrivateKey = this.privateKey;
         
-        if(this.encryptionLevel != SharkEngine.SecurityLevel.NO 
-                && this.publicKeyStorage != null) {
+        if(this.encryptionLevel != SharkEngine.SecurityLevel.NO && /*this.publicKeyStorage != null*/ this.sharkPkiStorage != null) {
 
             // try to find recipient public key
             if (recipientSIs == null) {
@@ -1164,7 +1165,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     throw new SharkSecurityException("encryption level is MUST but no recipient defined which is required to find its public key");
                 }
             } else {
-                publicKey = this.publicKeyStorage.getPublicKey(recipientSIs);
+                //publicKey = this.publicKeyStorage.getPublicKey(recipientSIs);
+                publicKey = this.sharkPkiStorage.getSharkCertificate(recipientSIs).getSubjectPublicKey();
                 
                 if(sendingPeerSIString == null) {
                     throw new SharkSecurityException("encryption level is MUST - engine owner is not set but it is required to allowed communication partner find its public key");
@@ -1328,7 +1330,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     @SuppressWarnings("unused")
     public void initSecurity(PeerSemanticTag engineOwnerPeer, 
-            SharkPublicKeyStorage publicKeyStorage,
+            /*SharkPublicKeyStorage publicKeyStorage,*/
+            SharkPkiStorage sharkPkiStorage,
             SecurityLevel encryptionLevel, SecurityLevel signatureLevel,
             SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) 
             throws SharkSecurityException {
@@ -1336,8 +1339,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         PrivateKey useThisPrivateKey;
         
         try {
-            if(publicKeyStorage != null) {
-                this.privateKey = publicKeyStorage.getPrivateKey();
+            if(/*publicKeyStorage*/ sharkPkiStorage != null) {
+                //this.privateKey = publicKeyStorage.getPrivateKey();
+                this.privateKey = sharkPkiStorage.getOwnerPrivateKey();
             }
         }
         catch(SharkKBException e) {
@@ -1345,10 +1349,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
         
         // keep pki store at least for the next few lines of code
-        this.publicKeyStorage = publicKeyStorage;
+        //this.publicKeyStorage = publicKeyStorage;
+        this.sharkPkiStorage = sharkPkiStorage;
         
         if(encryptionLevel == SharkEngine.SecurityLevel.MUST) {
-            if(publicKeyStorage == null) {
+            if(/*publicKeyStorage == null*/sharkPkiStorage == null) {
                 throw new SharkSecurityException("encryption level is MUST but no public key storage available");
             }
 
@@ -1358,7 +1363,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         } 
         else if(encryptionLevel == SharkEngine.SecurityLevel.NO) {
             // encryption is not allowed - forget PKI storage, if set
-            publicKeyStorage = null;
+            //publicKeyStorage = null;
+            sharkPkiStorage = null;
         }
         
         if(signatureLevel == SharkEngine.SecurityLevel.MUST 
@@ -1379,18 +1385,19 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.refuseUnverifiably = refuseUnverifiably;
         
         // propagate to KEPStub the handles Requests.
-        this.kepStub.initSecurity(this.privateKey, this.publicKeyStorage,
+        this.kepStub.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                 this.encryptionLevel, this.signatureLevel, this.replyPolicy, 
                 this.refuseUnverifiably);
     }
     
     void initSecurity(KEPInMessage msg) {
-        msg.initSecurity(privateKey, publicKeyStorage, encryptionLevel, 
+        msg.initSecurity(privateKey, /*publicKeyStorage*/ this.sharkPkiStorage, encryptionLevel,
                 signatureLevel, replyPolicy, refuseUnverifiably);
     }
     
-    public SharkPublicKeyStorage getPublicKeyStorage() {
-        return this.publicKeyStorage;
+    public /*SharkPublicKeyStorage*/ SharkPkiStorage /*getPublicKeyStorage()*/ getSharkPkiStorage() {
+        //return this.publicKeyStorage;
+        return this.sharkPkiStorage;
     }
     
     ////////////////////////////////////////////////////////////////////////

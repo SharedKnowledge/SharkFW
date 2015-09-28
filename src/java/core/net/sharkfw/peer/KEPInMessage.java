@@ -19,6 +19,7 @@ import net.sharkfw.peer.SharkEngine.SecurityLevel;
 import net.sharkfw.peer.SharkEngine.SecurityReplyPolicy;
 import net.sharkfw.pki.SharkPublicKeyStorage;
 import net.sharkfw.protocols.*;
+import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.*;
 
 
@@ -42,7 +43,6 @@ import net.sharkfw.system.*;
  * @author thsc
  * @author mfi
  */
-
 
 public class KEPInMessage extends KEPMessage implements KEPConnection {
     public static String SENDER_SI_STRING_PROPERTY = "sharkfw_senderSIString";
@@ -95,7 +95,8 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
     private PublicKey publicKeyRemotePeer;
     private PrivateKey privateKey;
     private InputStream underSigningInputStream;
-    private SharkPublicKeyStorage publicKeyStorage;
+    //private SharkPublicKeyStorage publicKeyStorage;
+    private SharkPkiStorage sharkPkiStorage;
     private SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
     
@@ -350,12 +351,12 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
             
             // this code can throw an runtime shark security exception
             try {
-                if(this.publicKeyStorage == null) {
+                if(/*this.publicKeyStorage == null*/ this.sharkPkiStorage == null) {
                     throw new SharkSecurityException("no public key storage found");
                 }
                 
-                this.publicKeyRemotePeer = 
-                        this.publicKeyStorage.getPublicKey(this.remotePeerSI);
+                //this.publicKeyRemotePeer = this.publicKeyStorage.getPublicKey(this.remotePeerSI);
+                this.publicKeyRemotePeer = this.sharkPkiStorage.getSharkCertificate(this.remotePeerSI).getSubjectPublicKey();
                 
                 // we have a key
                 this.sin = new VerifyingInputStream(this.is.getInputStream(), 
@@ -425,12 +426,12 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
 
                 // this code can throw an runtime shark security exception
                 try {
-                    if(this.publicKeyStorage == null) {
+                    if(/*this.publicKeyStorage == null*/ this.sharkPkiStorage == null) {
                         throw new SharkSecurityException("no public key storage found");
                     }
 
-                    this.publicKeyRemotePeer = 
-                            this.publicKeyStorage.getPublicKey(this.remotePeerSI);
+                    //this.publicKeyRemotePeer = this.publicKeyStorage.getPublicKey(this.remotePeerSI);
+                    this.publicKeyRemotePeer = this.sharkPkiStorage.getSharkCertificate(this.remotePeerSI).getSubjectPublicKey();
 
                     // we have a key
                     this.sin = new VerifyingInputStream(this.is.getInputStream(), 
@@ -1130,12 +1131,13 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
      * @param replyPolicy
      * @param refuseUnverifiably 
      */
-    public void initSecurity(PrivateKey privateKey, SharkPublicKeyStorage publicKeyStorage, 
+    public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
             SecurityLevel encryptionLevel, SecurityLevel signatureLevel, 
             SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
         
         this.privateKey = privateKey;
-        this.publicKeyStorage = publicKeyStorage;
+        //this.publicKeyStorage = publicKeyStorage;
+        this.sharkPkiStorage = sharkPkiStorage;
         this.signatureLevel = signatureLevel;
         this.encryptionLevel = encryptionLevel;
         this.replyPolicy = replyPolicy;

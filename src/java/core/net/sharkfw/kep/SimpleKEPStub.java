@@ -77,7 +77,7 @@ public class SimpleKEPStub extends KEPStub {
     @Override
 	public final void handleStream(StreamConnection con) {
 		KEPSession session = new KEPSession(this.se, con, this);
-                session.initSecurity(this.privateKey, this.publicKeyStorage,
+                session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                                 this.encryptionLevel, this.signatureLevel,
                                 this.replyPolicy, this.refuseUnverifiably);
                 session.start();
@@ -106,7 +106,7 @@ public class SimpleKEPStub extends KEPStub {
 		L.d("KEPStub: message received: " + msg, this);
 		try {
 			KEPInMessage inMsg = new KEPInMessage(this.se, msg, stub);
-                        inMsg.initSecurity(this.privateKey, this.publicKeyStorage,
+                        inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                                 this.encryptionLevel, this.signatureLevel,
                                 this.replyPolicy, this.refuseUnverifiably);
                         inMsg.parse();

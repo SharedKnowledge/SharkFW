@@ -14,6 +14,7 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.peer.SharkEngine.SecurityLevel;
 import net.sharkfw.peer.SharkEngine.SecurityReplyPolicy;
 import net.sharkfw.protocols.RequestHandler;
+import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.InterestStore;
 import net.sharkfw.system.KnowledgeStore;
 
@@ -37,7 +38,8 @@ public abstract class KEPStub implements RequestHandler, KEPConnectionPool, KEPM
     protected int silentPeriod = SharkEngine.DEFAULT_SILTENT_PERIOD;
 
     // security stuff
-    protected SharkPublicKeyStorage publicKeyStorage;
+    //protected SharkPublicKeyStorage publicKeyStorage;
+    protected SharkPkiStorage sharkPkiStorage;
     protected SecurityReplyPolicy replyPolicy;
     protected boolean refuseUnverifiably;
     protected SecurityLevel signatureLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
@@ -85,12 +87,13 @@ public abstract class KEPStub implements RequestHandler, KEPConnectionPool, KEPM
      */
     abstract protected boolean callListener(KEPInMessage inMsg);
 
-    public void initSecurity(PrivateKey privateKey, SharkPublicKeyStorage publicKeyStorage, 
+    public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
             SecurityLevel encryptionLevel, SecurityLevel signatureLevel, 
             SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
         
         this.privateKey = privateKey;
-        this.publicKeyStorage = publicKeyStorage;
+        //this.publicKeyStorage = publicKeyStorage;
+        this.sharkPkiStorage = sharkPkiStorage;
         this.signatureLevel = signatureLevel;
         this.encryptionLevel = encryptionLevel;
         this.replyPolicy = replyPolicy;
