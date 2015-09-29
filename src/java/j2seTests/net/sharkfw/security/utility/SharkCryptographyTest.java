@@ -1,11 +1,9 @@
 package net.sharkfw.security.utility;
 
-import jdk.nashorn.internal.runtime.ECMAException;
 import net.sharkfw.security.key.SharkKeyAlgorithm;
 import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
-import sun.security.provider.SHA;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
