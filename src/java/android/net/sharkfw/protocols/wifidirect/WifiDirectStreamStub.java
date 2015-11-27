@@ -193,7 +193,8 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 	private boolean _isWifiP2pEnabled = false;
 	/** true, if the BroadcastReceiver was registered, false otherwise. */
 	private boolean _receiverRegistered = false;
-	/** Server-side used request handler. Sets the connection string and calls the standard handler. */
+	/** Server-side used request handler. Sets the connection string and calls the standard handler. To be removed.*/
+	
 	private RequestHandler _internHandler = new RequestHandler() {
 		public void handleMessage(byte[] msg, MessageStub stub) {
 			WifiDirectStreamStub.this._handler.handleMessage(msg, stub);
@@ -286,6 +287,7 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 			_controlThread = new WifiDirectControlThread(this);
 			_controlThread.start();
 		}
+		//not necessary
 		if (_tcpStreamStub == null) {
 			try {
 				log("controll stub == null");
