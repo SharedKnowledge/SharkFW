@@ -22,19 +22,22 @@ public abstract class Protocols {
   public static final int TCP = 0;
 
   /**
-   * Constant value representing Mail (namely POP3 and IMAP
+   * Constant value representing Mail (namely POP3 and IMAP)
    */
   public static final int MAIL = 1;
 
   public static final int WIFI_DIRECT = 2;
-        
+  public static final int NFC = 3;
+  public static final int BLUETOOTH = 4;
+
   /**
    * Constant value number of supported protocols
    */
-  public static final int NUMBERPROTOCOLS = 3;
+  public static final int NUMBERPROTOCOLS = 5;
   
   public static final String WIFI_DIRECT_CONNECTION_TOPIC = "http://Idon't know";
 
+//  old legacy constants - not in use anymore
 //  public static final int UDP = 1;
 //  public static final int BT_L2CAP = 2;
 //  public static final int BT_RFCOMM = 3;

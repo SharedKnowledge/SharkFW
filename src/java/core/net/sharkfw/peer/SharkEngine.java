@@ -269,6 +269,14 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public void startWifiDirect() throws SharkProtocolNotSupportedException, IOException {
         throw new SharkProtocolNotSupportedException("device does not support wifi direct");
     }
+
+    public void startNfc() throws SharkProtocolNotSupportedException, IOException {
+        throw new SharkProtocolNotSupportedException("device does not support nfc");
+    }
+
+    public void startBluetooth() throws SharkProtocolNotSupportedException, IOException {
+        throw new SharkProtocolNotSupportedException("device does not support bluetooth");
+    }
     
     public void startTCP(int port) throws SharkProtocolNotSupportedException, IOException {
         throw new SharkProtocolNotSupportedException("device does not support tcp");
@@ -326,6 +334,14 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public void stopWifiDirect() throws SharkProtocolNotSupportedException {
         this.stopProtocol(Protocols.WIFI_DIRECT);
+    }
+
+    public void stopNfc() throws SharkProtocolNotSupportedException {
+        this.stopProtocol(Protocols.NFC);
+    }
+
+    public void stopBluetooth() throws SharkProtocolNotSupportedException {
+        this.stopProtocol(Protocols.BLUETOOTH);
     }
 
     public void stopMail() throws SharkProtocolNotSupportedException {
@@ -642,6 +658,14 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     protected Stub createWifiDirectStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Wifi not supported in that version");
+    }
+
+    protected Stub createNfcStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
+        throw new SharkProtocolNotSupportedException("Nfc not supported in that version");
+    }
+
+    protected Stub createBluetoothStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
+        throw new SharkProtocolNotSupportedException("Bluetooth not supported in that version");
     }
     
     /********************************************************************
