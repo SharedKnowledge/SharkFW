@@ -1,14 +1,13 @@
 package net.sharkfw.security.key;
 
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * @author ac
  */
-public class SharkKeyGeneratorTest {
+public class SharkKeyGeneratorTest extends TestCase {
 
     private SharkKeyGenerator sharkKeyGenerator = null;
 

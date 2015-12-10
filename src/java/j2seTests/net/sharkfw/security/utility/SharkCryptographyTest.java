@@ -1,5 +1,6 @@
 package net.sharkfw.security.utility;
 
+import junit.framework.TestCase;
 import net.sharkfw.security.key.SharkKeyAlgorithm;
 import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import org.junit.Before;
@@ -11,13 +12,13 @@ import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * @author ac
  *
  */
-public class SharkCryptographyTest {
+public class SharkCryptographyTest extends TestCase {
 
     //region VARIABLES
     private final byte[] decodedSessionKey = {103, 56, -29, 60, 117, -25, -96, 105, -71, -43, -15, 17, 24, -55, -28, 7, -63, 3, 15, 58, 33, -126, 50, -97, -29, -28, 14, -91, -120, 11, 77, -118};

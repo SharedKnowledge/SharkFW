@@ -1,5 +1,6 @@
 package net.sharkfw.security.key.storage.filesystem;
 
+import junit.framework.TestCase;
 import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import net.sharkfw.security.key.storage.SharkKeyStorage;
 import org.junit.AfterClass;
@@ -8,20 +9,17 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author ac
  */
-public class FSSharkKeyStorageTest {
+public class FSSharkKeyStorageTest extends TestCase {
 
     private static String filePath;
     private static FSSharkKeyStorage fsSharkKeyStorage;
     private static SharkKeyStorage sharkKeyStorage;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public void setUp() throws Exception {
         filePath = "KeyStorage.shark";
         fsSharkKeyStorage = new FSSharkKeyStorage(filePath);
         sharkKeyStorage = new SharkKeyStorage();
@@ -31,7 +29,7 @@ public class FSSharkKeyStorageTest {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         new File(filePath).delete();
     }
 

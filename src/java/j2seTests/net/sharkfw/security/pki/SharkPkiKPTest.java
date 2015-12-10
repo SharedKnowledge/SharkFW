@@ -1,5 +1,6 @@
 package net.sharkfw.security.pki;
 
+import junit.framework.TestCase;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
@@ -9,7 +10,6 @@ import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.SharkException;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -24,7 +24,7 @@ import java.util.LinkedList;
 /**
  * @author ac
  */
-public class SharkPkiKPTest implements KPListener {
+public class SharkPkiKPTest extends TestCase implements KPListener {
 
     private final String DATE_TIME = "01.01.2100";
     private Date date;
