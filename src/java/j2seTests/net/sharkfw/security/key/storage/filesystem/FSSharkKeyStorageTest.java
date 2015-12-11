@@ -35,11 +35,17 @@ public class FSSharkKeyStorageTest extends TestCase {
 
     @Test
     public void testSave() throws Exception {
+        if(System.getProperty("java.vm.name").equalsIgnoreCase("Dalvik")) {
+            return;
+        }
         assertTrue(fsSharkKeyStorage.save(sharkKeyStorage));
     }
 
     @Test
     public void testLoad() throws Exception {
+        if(System.getProperty("java.vm.name").equalsIgnoreCase("Dalvik")) {
+            return;
+        }
 
         boolean isEqual = false;
         SharkKeyStorage sks = fsSharkKeyStorage.load();
