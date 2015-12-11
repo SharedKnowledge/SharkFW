@@ -8,7 +8,6 @@ import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.SharkException;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.security.KeyFactory;
@@ -53,12 +52,11 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
     private LinkedList<PeerSemanticTag> peerList;
     private boolean fingerprintIsValid;
 
-    @Before
-    public void setUp() throws Exception {
+    public void setUp(int alicePort, int bobPort, int maloryPort) throws Exception {
 
-        alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "http://www.alice.de", "tcp://localhost:7080");
-        bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "http://www.bob.de", "tcp://localhost:7081");
-        malory = InMemoSharkKB.createInMemoPeerSemanticTag("malory", "http://www.malory.de", "tcp://localhost:7082");
+        alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "http://www.alice.de", "tcp://localhost:"+alicePort);
+        bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "http://www.bob.de", "tcp://localhost:"+bobPort);
+        malory = InMemoSharkKB.createInMemoPeerSemanticTag("malory", "http://www.malory.de", "tcp://localhost:"+maloryPort);
 
         peerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         peerSTSet.merge(alice);
@@ -117,10 +115,14 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
 
     @Test
     public void testDoInsert() throws Exception {
+        int alicePort = 7010;
+        int bobPort = 7011;
+        setUp(alicePort, bobPort, 7012);
+
         alicePkiStorage.addSharkCertificate(sharkCertificate);
         Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
-        bobSe.startTCP(7081);
-        aliceSe.startTCP(7080);
+        bobSe.startTCP(bobPort);
+        aliceSe.startTCP(alicePort);
         aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
 
         Thread.sleep(1000);
@@ -136,11 +138,15 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
 
     @Test
     public void testDoInsertWithPeerSTSetNull() throws Exception {
+        int alicePort = 7090;
+        int maloryPort = 7092;
+        setUp(alicePort, 7091, maloryPort);
+
         sharkCertificate = new SharkCertificate(malory, alice, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
         alicePkiStorage.addSharkCertificate(sharkCertificate);
         Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
-        aliceSe.startTCP(7080);
-        malorySe.startTCP(7082);
+        aliceSe.startTCP(alicePort);
+        malorySe.startTCP(maloryPort);
         aliceSe.sendKnowledge(knowledge, malory, alicePkiKP);
 
         Thread.sleep(1000);
@@ -156,11 +162,15 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
 
     @Test
     public void testTrustLevelChanged() throws Exception {
+        int alicePort = 7070;
+        int bobPort = 7071;
+        setUp(alicePort, bobPort, 7072);
+
         sharkCertificate = new SharkCertificate(bob, alice, peerList, Certificate.TrustLevel.FULL, publicKey, date);
         alicePkiStorage.addSharkCertificate(sharkCertificate);
         Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
-        bobSe.startTCP(7081);
-        aliceSe.startTCP(7080);
+        bobSe.startTCP(bobPort);
+        aliceSe.startTCP(alicePort);
         aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
 
         Thread.sleep(1000);
@@ -173,13 +183,17 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
 
     @Test
     public void testTransmitterListChanged() throws Exception {
+        int alicePort = 7060;
+        int bobPort = 7061;
+        setUp(alicePort, bobPort, 7062);
+
         sharkCertificate = new SharkCertificate(bob, alice, peerList, Certificate.TrustLevel.FULL, publicKey, date);
         alicePkiStorage.addSharkCertificate(sharkCertificate);
 
         Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
 
-        bobSe.startTCP(7081);
-        aliceSe.startTCP(7080);
+        bobSe.startTCP(bobPort);
+        aliceSe.startTCP(alicePort);
         aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
 
         Thread.sleep(1000);
@@ -192,12 +206,15 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
 
     @Test
     public void testDoExposeCertificate() throws Exception {
+        int alicePort = 7050;
+        int bobPort = 7051;
+        setUp(alicePort, bobPort, 7052);
 
         SharkCertificate sc = new SharkCertificate(alice, bob, peerList, Certificate.TrustLevel.UNKNOWN, publicKey, date);
         bobPkiStorage.addSharkCertificate(sc);
 
-        bobSe.startTCP(7081);
-        aliceSe.startTCP(7080);
+        bobSe.startTCP(bobPort);
+        aliceSe.startTCP(alicePort);
 
         //Prepare interest
         STSet stSetInterest = InMemoSharkKB.createInMemoSTSet();
@@ -236,12 +253,15 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
 
     @Test
     public void testDoExposeCertificateValidation() throws Exception {
+        int alicePort = 7040;
+        int bobPort = 7041;
+        setUp(alicePort, bobPort, 7042);
 
         alicePkiStorage.addSharkCertificate(sharkCertificate);
         bobPkiStorage.addSharkCertificate(sharkCertificate);
 
-        bobSe.startTCP(7081);
-        aliceSe.startTCP(7080);
+        bobSe.startTCP(bobPort);
+        aliceSe.startTCP(alicePort);
 
         //Prepare interest
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
