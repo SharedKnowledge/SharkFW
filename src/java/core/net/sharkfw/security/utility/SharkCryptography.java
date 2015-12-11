@@ -10,7 +10,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * @author ac
@@ -28,7 +31,7 @@ public class SharkCryptography {
      */
     public static String encodeSessionKey(byte[] data, PrivateKey privateKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {
         try {
-            cipher = Cipher.getInstance(sharkKeyPairAlgorithm.name());
+            cipher = Cipher.getInstance(sharkKeyPairAlgorithm.getSpec());
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
             return Base64.encodeBytes(cipher.doFinal(data));
         } catch (InvalidKeyException e) {
@@ -54,7 +57,7 @@ public class SharkCryptography {
     public static byte[] decodeSessionKey(String base64String, PublicKey publicKey, SharkKeyPairAlgorithm sharkKeyPairAlgorithm) {
         try {
             byte[] buffer = Base64.decode(base64String);
-            cipher = Cipher.getInstance(sharkKeyPairAlgorithm.name());
+            cipher = Cipher.getInstance(sharkKeyPairAlgorithm.getSpec());
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
             return cipher.doFinal(buffer);
         } catch (NoSuchAlgorithmException e) {

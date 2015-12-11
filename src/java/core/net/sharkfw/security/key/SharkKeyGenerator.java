@@ -9,7 +9,7 @@ import java.security.*;
  */
 public class SharkKeyGenerator {
 
-    private String cipherAlgorithm;
+    private SharkKeyPairAlgorithm cipherAlgorithm;
     private final int keySize;
     private KeyPair keyPair;
 
@@ -19,7 +19,7 @@ public class SharkKeyGenerator {
      * @param keySize {@link Integer}
      */
     public SharkKeyGenerator(final SharkKeyPairAlgorithm sharkKeyPairAlgorithm, final int keySize) {
-        this.cipherAlgorithm = sharkKeyPairAlgorithm.name();
+        this.cipherAlgorithm = sharkKeyPairAlgorithm;
         this.keySize = keySize;
         this.keyPair = generateKeyPair();
     }
@@ -71,7 +71,7 @@ public class SharkKeyGenerator {
      */
     private KeyPair generateKeyPair() {
         try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(cipherAlgorithm);
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(cipherAlgorithm.name());
             keyPairGenerator.initialize(keySize);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {

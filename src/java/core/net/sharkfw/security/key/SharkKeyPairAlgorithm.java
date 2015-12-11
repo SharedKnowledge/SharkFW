@@ -10,5 +10,15 @@ package net.sharkfw.security.key;
  * for additional algorithms
  */
 public enum SharkKeyPairAlgorithm {
-    RSA
+    RSA("RSA/ECB/PKCS1Padding");
+
+    private String spec;
+
+    SharkKeyPairAlgorithm(String spec) {
+        this.spec = spec;
+    }
+
+    public String getSpec() {
+        return spec;
+    }
 }
