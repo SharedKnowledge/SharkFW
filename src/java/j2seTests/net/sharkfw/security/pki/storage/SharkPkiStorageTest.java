@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -74,11 +75,16 @@ public class SharkPkiStorageTest extends TestCase {
                 SharkCS.DIRECTION_INOUT);
     }
 
-    @Test(expected = SharkKBException.class)
+    @Test()
     public void testConstructorInitiatedWithAnEmptyKBWithoutAPrivateKey() throws Exception {
-        SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
-        if(sharkPkiStorage == null) {
-            System.out.println();
+        try {
+            SharkPkiStorage sharkPkiStorage = new SharkPkiStorage(new InMemoSharkKB(), alice);
+            System.out.println(sharkPkiStorage);
+            fail("Exception should be thrown.");
+        } catch (SharkKBException e) {
+            assertEquals("No private key stored in the knowledge base. Wrong KB?", e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            throw e;
         }
     }
 
