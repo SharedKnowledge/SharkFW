@@ -105,11 +105,11 @@ public class SharkPkiKP extends KnowledgePort {
             ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
             for (SemanticTag topic : listOfTopics) {
                 if(isValidTopicAndSameSize(interest, topic, KP_CERTIFICATE_VALIDATION_COORDINATE)) {
-                    validateCertificateAndSend(interest);
+                    validateCertificateByFingerprintAndNotify(interest);
                 }
 
                 if(isValidTopicAndSameSize(interest, topic, Certificate.CERTIFICATE_COORDINATE)) {
-                    extractCertificateAndSend(interest);
+                    lookForCertificateAndNotifyIfFound(interest);
                 }
             }
         } catch (IOException | SharkException e) {
@@ -117,7 +117,21 @@ public class SharkPkiKP extends KnowledgePort {
         }
     }
 
-    private void validateCertificateAndSend(SharkCS interest) throws SharkException, IOException {
+    private boolean isValidTopicAndSameSize(SharkCS interest, SemanticTag listOfTopic, SemanticTag certificateCoordinate) throws SharkKBException {
+        if (!SharkCSAlgebra.identical(listOfTopic, certificateCoordinate)) {
+            return false;
+        }
+
+        int numberOfPeerTags = Collections.list(interest.getPeers().peerTags()).size();
+        if (numberOfPeerTags != Collections.list(interest.getRemotePeers().tags()).size()) {
+            L.e("Certificate extraction: Number of issuer and subjects are not equal.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void validateCertificateByFingerprintAndNotify(SharkCS interest) throws SharkException, IOException {
         int numberOfPeerTags = Collections.list(interest.getPeers().peerTags()).size();
         for (int i = 0; i < numberOfPeerTags; i++) {
             PeerSemanticTag issuer = (PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(i);
@@ -151,7 +165,7 @@ public class SharkPkiKP extends KnowledgePort {
         }
     }
 
-    private void extractCertificateAndSend(SharkCS interest) throws SharkKBException, SharkSecurityException, IOException {
+    private void lookForCertificateAndNotifyIfFound(SharkCS interest) throws SharkKBException, SharkSecurityException, IOException {
         int numberOfPeerTags = Collections.list(interest.getPeers().peerTags()).size();
         for (int i = 0; i < numberOfPeerTags; i++) {
             PeerSemanticTag issuer = (PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(i);
@@ -171,23 +185,10 @@ public class SharkPkiKP extends KnowledgePort {
                     null,
                     SharkCS.DIRECTION_INOUT);
 
-            this.sendKnowledge(SharkCSAlgebra.extract(sharkPkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter), interest.getOriginator());
+            Knowledge extractedCertificate = SharkCSAlgebra.extract(sharkPkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
+            this.sendKnowledge(extractedCertificate, interest.getOriginator());
             this.notifyExposeSent(this, interest);
         }
-    }
-
-    private boolean isValidTopicAndSameSize(SharkCS interest, SemanticTag listOfTopic, SemanticTag certificateCoordinate) throws SharkKBException {
-        if (!SharkCSAlgebra.identical(listOfTopic, certificateCoordinate)) {
-            return false;
-        }
-
-        int numberOfPeerTags = Collections.list(interest.getPeers().peerTags()).size();
-        if (numberOfPeerTags != Collections.list(interest.getRemotePeers().tags()).size()) {
-            L.e("Certificate extraction: Number of issuer and subjects are not equal.");
-            return false;
-        }
-
-        return true;
     }
 
     private Certificate.TrustLevel evaluateTrustLevelByIssuer(ContextPoint contextPoint) throws NoSuchAlgorithmException, InvalidKeySpecException, SharkKBException {
