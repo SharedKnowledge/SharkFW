@@ -52,9 +52,9 @@ public class SharkPkiKP extends KnowledgePort {
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             try {
-                if (isValid(cp)){
+                if (isValidPKIContextCoordinateAndTrustLevel(cp) && isFromTrustedIssuerIfAny(cp)){
                     updateRecalculatedTrustLevel(cp);
-                    attachSenderToTransmitterList(kepConnection, cp);
+                    attachSenderToTransmitterList(cp, kepConnection.getSender());
 
                     if (sharkPkiStorage.addSharkCertificate(cp)) {
                         this.notifyKnowledgeAssimilated(this, cp);
@@ -66,20 +66,12 @@ public class SharkPkiKP extends KnowledgePort {
                 L.e(e.getMessage());
             }
 
-            if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) && isFromTrustedIssuerIfAny(cp)) {
+            boolean isValidFingerprint = SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE);
+            if (isValidFingerprint && isFromTrustedIssuerIfAny(cp)) {
                 System.out.println("Received fingerprint: " + Arrays.toString(cp.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
                 this.notifyKnowledgeAssimilated(this, cp);
             }
         }
-    }
-
-    private void attachSenderToTransmitterList(KEPConnection kepConnection, ContextPoint cp) throws SharkKBException {
-        LinkedList<PeerSemanticTag> pstList = getLinkedListFromByteArray(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next().getContentAsByte());
-        pstList.add(kepConnection.getSender());
-        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next());
-        Information transmitterList = cp.addInformation();
-        transmitterList.setName(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME);
-        transmitterList.setContent(getByteArrayFromLinkedList(pstList));
     }
 
     private void updateRecalculatedTrustLevel(ContextPoint cp) throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -89,7 +81,17 @@ public class SharkPkiKP extends KnowledgePort {
         trustLevel.setContent(evaluateTrustLevelByIssuer(cp).name());
     }
 
-    private boolean isValid(ContextPoint cp) throws SharkKBException {
+    private void attachSenderToTransmitterList(ContextPoint cp, PeerSemanticTag sender) throws SharkKBException {
+        LinkedList<PeerSemanticTag> pstList = getLinkedListFromByteArray(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next().getContentAsByte());
+
+        pstList.add(sender);
+        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next());
+        Information transmitterList = cp.addInformation();
+        transmitterList.setName(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+        transmitterList.setContent(getByteArrayFromLinkedList(pstList));
+    }
+
+    private boolean isValidPKIContextCoordinateAndTrustLevel(ContextPoint cp) throws SharkKBException {
         boolean isTopicIdentical = SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE);
         if(!isTopicIdentical)  {
             return false;
@@ -97,11 +99,7 @@ public class SharkPkiKP extends KnowledgePort {
 
         Certificate.TrustLevel cpTrustLevel = Certificate.TrustLevel.valueOf(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next().getContentAsString());
         boolean isTrustLevelValid = cpTrustLevel.ordinal() <= lowestTrustLevel.ordinal();
-        if(!isTrustLevelValid)  {
-            return false;
-        }
-
-        return isFromTrustedIssuerIfAny(cp);
+        return isTrustLevelValid;
     }
 
 
@@ -176,38 +174,38 @@ public class SharkPkiKP extends KnowledgePort {
     }
 
     private Certificate.TrustLevel evaluateTrustLevelByIssuer(ContextPoint contextPoint) throws NoSuchAlgorithmException, InvalidKeySpecException, SharkKBException {
-        int trustValue = 0;
-        if(sharkPkiStorage.getSharkCertificateList() != null) {
-            for (SharkCertificate sc : sharkPkiStorage.getSharkCertificateList()) {
-                if (SharkCSAlgebra.identical(sc.getSubject(), contextPoint.getContextCoordinates().getPeer())) {
-                    switch (sc.getTrustLevel()) {
-                        case FULL:
-                            trustValue += 1;
-                            break;
-                        case MARGINAL:
-                            trustValue += 0.5;
-                            break;
-                        case NONE:
-                            trustValue += -0.7;
-                            break;
-                        case UNKNOWN:
-                            trustValue += -0.3;
-                            break;
-                    }
-                }
-            }
-
-            if (trustValue == 0) {
-                return Certificate.TrustLevel.UNKNOWN;
-            }
-
-            if (trustValue > 0) {
-                return Certificate.TrustLevel.MARGINAL;
-            } else {
-                return Certificate.TrustLevel.NONE;
-            }
-        } else {
+        if (sharkPkiStorage.getSharkCertificateList() == null) {
             return Certificate.TrustLevel.UNKNOWN;
         }
+
+        int trustValue = 0;
+        for (SharkCertificate sc : sharkPkiStorage.getSharkCertificateList()) {
+            boolean isCpPeerIdenticalToCertSubject = SharkCSAlgebra.identical(sc.getSubject(), contextPoint.getContextCoordinates().getPeer());
+            if (isCpPeerIdenticalToCertSubject) {
+                switch (sc.getTrustLevel()) {
+                    case FULL:
+                        trustValue += 1;
+                        break;
+                    case MARGINAL:
+                        trustValue += 0.5;
+                        break;
+                    case NONE:
+                        trustValue += -0.7;
+                        break;
+                    case UNKNOWN:
+                        trustValue += -0.3;
+                        break;
+                }
+            }
+        }
+
+        if (trustValue == 0) {
+            return Certificate.TrustLevel.UNKNOWN;
+        }
+        if (trustValue > 0) {
+            return Certificate.TrustLevel.MARGINAL;
+        }
+
+        return Certificate.TrustLevel.NONE;
     }
 }
