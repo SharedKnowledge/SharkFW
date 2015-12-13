@@ -1,15 +1,6 @@
 package net.sharkfw.security.pki;
 
-import net.sharkfw.knowledgeBase.ContextCoordinates;
-import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkCSAlgebra;
-import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
@@ -17,6 +8,7 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
+import net.sharkfw.system.SharkSecurityException;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -111,66 +103,91 @@ public class SharkPkiKP extends KnowledgePort {
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
         try {
             ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
-            for (SemanticTag listOfTopic : listOfTopics) {
-                //Certificate validation
-                if (SharkCSAlgebra.identical(listOfTopic, KP_CERTIFICATE_VALIDATION_COORDINATE)) {
-                    if (Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
-                        for (int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
-                            SharkCertificate sc = sharkPkiStorage.getSharkCertificate((PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(j), (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(j));
-                            if (sc != null) {
-                                ContextCoordinates contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
-                                        Certificate.FINGERPRINT_COORDINATE,
-                                        null,
-                                        sc.getSubject(),
-                                        sc.getIssuer(),
-                                        null,
-                                        null,
-                                        SharkCS.DIRECTION_INOUT);
-
-                                Knowledge knowledge = InMemoSharkKB.createInMemoKnowledge();
-                                ContextPoint contextPoint = InMemoSharkKB.createInMemoContextPoint(contextCoordinatesFilter);
-
-                                Information publicKey = contextPoint.addInformation();
-                                publicKey.setName(Certificate.FINGERPRINT_INFORMATION_NAME);
-                                publicKey.setContent(sc.getFingerprint());
-
-                                knowledge.addContextPoint(contextPoint);
-
-                                this.sendKnowledge(knowledge, interest.getOriginator());
-                                this.notifyExposeSent(this, interest);
-                            }
-                        }
-                    } else {
-                        L.e("Certificate validation: Number of issuer and subjects are not equal.");
-                    }
+            for (SemanticTag topic : listOfTopics) {
+                if(isValidTopicAndSameSize(interest, topic, KP_CERTIFICATE_VALIDATION_COORDINATE)) {
+                    validateCertificateAndSend(interest);
                 }
 
-                //Certificate extraction
-                if (SharkCSAlgebra.identical(listOfTopic, Certificate.CERTIFICATE_COORDINATE)) {
-                    if (Collections.list(interest.getPeers().peerTags()).size() == Collections.list(interest.getRemotePeers().tags()).size()) {
-                        for (int j = 0; j < Collections.list(interest.getPeers().peerTags()).size(); j++) {
-                            SharkCertificate sc = sharkPkiStorage.getSharkCertificate((PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(j), (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(j));
-                            if (sc != null) {
-                                ContextCoordinates contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
-                                        SharkPkiStorage.PKI_CONTEXT_COORDINATE,
-                                        null,
-                                        sc.getSubject(),
-                                        sc.getIssuer(),
-                                        null,
-                                        null,
-                                        SharkCS.DIRECTION_INOUT);
-                                this.sendKnowledge(SharkCSAlgebra.extract(sharkPkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter), interest.getOriginator());
-                                this.notifyExposeSent(this, interest);
-                            }
-                        }
-                    } else {
-                        L.e("Certificate extraction: Number of issuer and subjects are not equal.");
-                    }
+                if(isValidTopicAndSameSize(interest, topic, Certificate.CERTIFICATE_COORDINATE)) {
+                    extractCertificateAndSend(interest);
                 }
             }
         } catch (IOException | SharkException e) {
             L.e(e.getMessage());
         }
+    }
+
+    private void validateCertificateAndSend(SharkCS interest) throws SharkException, IOException {
+        int numberOfPeerTags = Collections.list(interest.getPeers().peerTags()).size();
+        for (int i = 0; i < numberOfPeerTags; i++) {
+            PeerSemanticTag issuer = (PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(i);
+            PeerSemanticTag subject = (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(i);
+
+            SharkCertificate sc = sharkPkiStorage.getSharkCertificate(issuer, subject);
+            if (sc == null) {
+                continue;
+            }
+
+            ContextCoordinates contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
+                    Certificate.FINGERPRINT_COORDINATE,
+                    null,
+                    sc.getSubject(),
+                    sc.getIssuer(),
+                    null,
+                    null,
+                    SharkCS.DIRECTION_INOUT);
+
+            Knowledge knowledge = InMemoSharkKB.createInMemoKnowledge();
+            ContextPoint contextPoint = InMemoSharkKB.createInMemoContextPoint(contextCoordinatesFilter);
+
+            Information publicKey = contextPoint.addInformation();
+            publicKey.setName(Certificate.FINGERPRINT_INFORMATION_NAME);
+            publicKey.setContent(sc.getFingerprint());
+
+            knowledge.addContextPoint(contextPoint);
+
+            this.sendKnowledge(knowledge, interest.getOriginator());
+            this.notifyExposeSent(this, interest);
+        }
+    }
+
+    private void extractCertificateAndSend(SharkCS interest) throws SharkKBException, SharkSecurityException, IOException {
+        int numberOfPeerTags = Collections.list(interest.getPeers().peerTags()).size();
+        for (int i = 0; i < numberOfPeerTags; i++) {
+            PeerSemanticTag issuer = (PeerSemanticTag) Collections.list(interest.getRemotePeers().tags()).get(i);
+            PeerSemanticTag subject = (PeerSemanticTag) Collections.list(interest.getPeers().tags()).get(i);
+
+            SharkCertificate sc = sharkPkiStorage.getSharkCertificate(issuer, subject);
+            if (sc == null) {
+                continue;
+            }
+
+            ContextCoordinates contextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
+                    SharkPkiStorage.PKI_CONTEXT_COORDINATE,
+                    null,
+                    sc.getSubject(),
+                    sc.getIssuer(),
+                    null,
+                    null,
+                    SharkCS.DIRECTION_INOUT);
+
+            this.sendKnowledge(SharkCSAlgebra.extract(sharkPkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter), interest.getOriginator());
+            this.notifyExposeSent(this, interest);
+        }
+    }
+
+    private boolean isValidTopicAndSameSize(SharkCS interest, SemanticTag listOfTopic, SemanticTag certificateCoordinate) throws SharkKBException {
+        if (!SharkCSAlgebra.identical(listOfTopic, certificateCoordinate)) {
+            return false;
+        }
+
+        int numberOfPeerTags = Collections.list(interest.getPeers().peerTags()).size();
+        if (numberOfPeerTags != Collections.list(interest.getRemotePeers().tags()).size()) {
+            L.e("Certificate extraction: Number of issuer and subjects are not equal.");
+            return false;
+        }
+
+        return true;
     }
 
     private Certificate.TrustLevel evaluateTrustLevelByIssuer(ContextPoint contextPoint) throws NoSuchAlgorithmException, InvalidKeySpecException, SharkKBException {
