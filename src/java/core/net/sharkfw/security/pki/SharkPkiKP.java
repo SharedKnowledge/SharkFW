@@ -1,6 +1,15 @@
 package net.sharkfw.security.pki;
 
-import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.ContextCoordinates;
+import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.PeerSTSet;
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
@@ -43,42 +52,61 @@ public class SharkPkiKP extends KnowledgePort {
     protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             try {
-                if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE) &&
-                        Certificate.TrustLevel.valueOf(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next().getContentAsString()).ordinal() <= lowestTrustLevel.ordinal() &&
-                        (peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer()))){
+                if (isValid(cp)){
+                    updateRecalculatedTrustLevel(cp);
+                    attachSenderToTransmitterList(kepConnection, cp);
 
-                        //Remove old rustlevel and replace it whit the new calculated
-                        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
-                        Information trustLevel = cp.addInformation();
-                        trustLevel.setName(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL);
-                        trustLevel.setContent(evaluateTrustLevelByIssuer(cp).name());
-
-                        //Attach sender to the transmitterList
-                        LinkedList<PeerSemanticTag> pstList = getLinkedListFromByteArray(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next().getContentAsByte());
-                        pstList.add(kepConnection.getSender());
-                        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next());
-                        Information transmitterList = cp.addInformation();
-                        transmitterList.setName(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME);
-                        transmitterList.setContent(getByteArrayFromLinkedList(pstList));
-
-                        if (sharkPkiStorage.addSharkCertificate(cp)) {
-                            this.notifyKnowledgeAssimilated(this, cp);
-                        } else {
-                            L.d("Certificate already in SharkPkiStorage.");
-                        }
-
+                    if (sharkPkiStorage.addSharkCertificate(cp)) {
+                        this.notifyKnowledgeAssimilated(this, cp);
+                    } else {
+                        L.d("Certificate already in SharkPkiStorage.");
+                    }
                 }
-
             } catch (SharkKBException | InvalidKeySpecException | NoSuchAlgorithmException e) {
                 L.e(e.getMessage());
             }
 
-            if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) &&
-                    (peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer()))) {
+            if (SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE) && isFromTrustedIssuerIfAny(cp)) {
                 System.out.println("Received fingerprint: " + Arrays.toString(cp.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
                 this.notifyKnowledgeAssimilated(this, cp);
             }
         }
+    }
+
+    private void attachSenderToTransmitterList(KEPConnection kepConnection, ContextPoint cp) throws SharkKBException {
+        LinkedList<PeerSemanticTag> pstList = getLinkedListFromByteArray(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next().getContentAsByte());
+        pstList.add(kepConnection.getSender());
+        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME).next());
+        Information transmitterList = cp.addInformation();
+        transmitterList.setName(SharkPkiStorage.PKI_INFORMATION_TRANSMITTER_LIST_NAME);
+        transmitterList.setContent(getByteArrayFromLinkedList(pstList));
+    }
+
+    private void updateRecalculatedTrustLevel(ContextPoint cp) throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException {
+        cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
+        Information trustLevel = cp.addInformation();
+        trustLevel.setName(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL);
+        trustLevel.setContent(evaluateTrustLevelByIssuer(cp).name());
+    }
+
+    private boolean isValid(ContextPoint cp) throws SharkKBException {
+        boolean isTopicIdentical = SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), SharkPkiStorage.PKI_CONTEXT_COORDINATE);
+        if(!isTopicIdentical)  {
+            return false;
+        }
+
+        Certificate.TrustLevel cpTrustLevel = Certificate.TrustLevel.valueOf(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next().getContentAsString());
+        boolean isTrustLevelValid = cpTrustLevel.ordinal() <= lowestTrustLevel.ordinal();
+        if(!isTrustLevelValid)  {
+            return false;
+        }
+
+        return isFromTrustedIssuerIfAny(cp);
+    }
+
+
+    private boolean isFromTrustedIssuerIfAny(ContextPoint cp) {
+        return peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer());
     }
 
     @Override //outgoing knowledge
