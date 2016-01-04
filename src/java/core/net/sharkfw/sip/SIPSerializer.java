@@ -6,6 +6,7 @@
 package net.sharkfw.sip;
 
 import java.util.Enumeration;
+import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -36,15 +37,15 @@ public class SIPSerializer {
         return new JSONObject();
     }
     
-    public static JSONObject serializeHeader(SIPHeader sipHeader){
+    public static JSONObject serializeHeader(SIPHeader header){
         return new JSONObject()
-            .put("encrypted", sipHeader.isEncrypted())
-            .put("encryptedSessionKey", sipHeader.getEncyptedSessionKey())
-            .put("version", sipHeader.getVersion())
-            .put("format", sipHeader.getFormat())
-            .put("command", sipHeader.getCommand())
-            .put("senderInfo", sipHeader.getSenderInfo())
-            .put("signature", sipHeader.getSignature());
+            .put("encrypted", header.isEncrypted())
+            .put("encryptedSessionKey", header.getEncyptedSessionKey())
+            .put("version", header.getVersion())
+            .put("format", header.getFormat())
+            .put("command", header.getCommand())
+            .put("senderInfo", header.getSenderInfo())
+            .put("signature", header.getSignature());
     }
     
     
@@ -143,5 +144,37 @@ public class SIPSerializer {
         
     public static JSONObject serializeSharkCS(SharkCS sharkCS) throws SharkKBException {
         return new JSONObject();
+    }
+    
+    public static SIPHeader deserializeHeader(String header){
+        return null;
+    }
+    
+    public static Interest deserializeInterest(String interest) {
+        return null;
+    }
+    
+    public static Knowledge deserializeKnowledge(String knowledge){
+        return null;
+    }
+    
+    public static SemanticTag deserializeTag(String tag) {
+        return null;
+    }
+    
+    public static STSet deserializeSTSet(String stset){
+        return null;
+    }
+    
+    public static SystemPropertyHolder deserializeProperties(String properties){
+        return null;
+    }
+    
+    public static Enumeration<SemanticTag> deserializeRelations(String relations){
+        return null;
+    }
+        
+    public static SharkCS deserializeSharkCS(String sharkCS){
+        return null;
     }
 }
