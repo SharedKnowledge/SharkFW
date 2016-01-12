@@ -9,6 +9,6 @@ package net.sharkfw.sip;
  *
  * @author micha
  */
-public interface SIPKnowledge {
+public class Vocabulary {
     
 }

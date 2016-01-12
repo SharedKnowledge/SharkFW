@@ -9,7 +9,7 @@ package net.sharkfw.sip;
  *
  * @author micha
  */
-public class SIPHeader {
+public class Header {
     
     private boolean encrypted;
     private String encyptedSessionKey;
@@ -19,9 +19,9 @@ public class SIPHeader {
     private String senderInfo;
     private String signature;
     
-    public SIPHeader(){ }
+    public Header(){ }
 
-    public SIPHeader(boolean encrypted, String encyptedSessionKey, String version, String format, String command, String senderInfo, String signature) {
+    public Header(boolean encrypted, String encyptedSessionKey, String version, String format, String command, String senderInfo, String signature) {
         this.encrypted = encrypted;
         this.encyptedSessionKey = encyptedSessionKey;
         this.version = version;

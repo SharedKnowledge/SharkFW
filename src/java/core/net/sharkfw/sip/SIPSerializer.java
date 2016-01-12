@@ -24,7 +24,7 @@ import org.json.JSONObject;
  */
 public class SIPSerializer {
     
-    public static JSONObject serializeExpose(SIPHeader header, SharkCS interest) 
+    public static JSONObject serializeExpose(Header header, SharkCS interest) 
             throws SharkKBException {
         
         JSONObject object = new JSONObject();
@@ -33,11 +33,11 @@ public class SIPSerializer {
         return object;
     }
     
-    public static JSONObject serializeInsert(SIPHeader header, Knowledge knowledge){
+    public static JSONObject serializeInsert(Header header, Knowledge knowledge){
         return new JSONObject();
     }
     
-    public static JSONObject serializeHeader(SIPHeader header){
+    public static JSONObject serializeHeader(Header header){
         return new JSONObject()
             .put("encrypted", header.isEncrypted())
             .put("encryptedSessionKey", header.getEncyptedSessionKey())
@@ -146,7 +146,7 @@ public class SIPSerializer {
         return new JSONObject();
     }
     
-    public static SIPHeader deserializeHeader(String header){
+    public static Header deserializeHeader(String header){
         return null;
     }
     

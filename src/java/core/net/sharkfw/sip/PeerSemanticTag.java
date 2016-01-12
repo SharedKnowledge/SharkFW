@@ -9,6 +9,6 @@ package net.sharkfw.sip;
  *
  * @author micha
  */
-public interface SIPContextPoint {
+public class PeerSemanticTag {
     
 }
