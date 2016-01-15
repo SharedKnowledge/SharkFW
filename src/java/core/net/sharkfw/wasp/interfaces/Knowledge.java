@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.sharkfw.sip;
+package net.sharkfw.wasp.interfaces;
 
 /**
  *
  * @author micha
  */
-public interface ContextSpace {
+public interface Knowledge {
     
 }

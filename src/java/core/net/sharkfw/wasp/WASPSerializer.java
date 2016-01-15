@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.sharkfw.sip;
+package net.sharkfw.wasp;
 
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.Interest;
@@ -22,7 +22,7 @@ import org.json.JSONObject;
  *
  * @author micha
  */
-public class SIPSerializer {
+public class WASPSerializer {
     
     public static JSONObject serializeExpose(Header header, SharkCS interest) 
             throws SharkKBException {
@@ -61,12 +61,12 @@ public class SIPSerializer {
         STSet times = sharkCS.getTimes();
         int direction = sharkCS.getDirection();
         
-        object.put("topics", SIPSerializer.serializeSTSet(topics));
-        object.put("approvers", SIPSerializer.serializeSTSet(approvers));
-        object.put("peers", SIPSerializer.serializeSTSet(peers));
-        object.put("originator", SIPSerializer.serializeTag(originator));
-        object.put("locations", SIPSerializer.serializeSTSet(locations));
-        object.put("times", SIPSerializer.serializeSTSet(times));
+        object.put("topics", WASPSerializer.serializeSTSet(topics));
+        object.put("approvers", WASPSerializer.serializeSTSet(approvers));
+        object.put("peers", WASPSerializer.serializeSTSet(peers));
+        object.put("originator", WASPSerializer.serializeTag(originator));
+        object.put("locations", WASPSerializer.serializeSTSet(locations));
+        object.put("times", WASPSerializer.serializeSTSet(times));
         object.put("direction", direction);
         
         return object;
@@ -128,7 +128,7 @@ public class SIPSerializer {
         Enumeration<SemanticTag> tags = stset.tags();
         
         while(tags.hasMoreElements()) {
-            set.put(SIPSerializer.serializeTag(tags.nextElement()));
+            set.put(WASPSerializer.serializeTag(tags.nextElement()));
         }
         
         return set;

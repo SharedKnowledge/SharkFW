@@ -20,7 +20,7 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.sip.SIPSerializer;
+import net.sharkfw.wasp.WASPSerializer;
 import net.sharkfw.system.SharkNotSupportedException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -97,7 +97,7 @@ public class SIPSerializerTest {
 //        ContextPoint cp1 = kb.createContextPoint(co1);
 //        cp1.addInformation("ContextPoint1");
         
-        System.out.println(SIPSerializer.serializeInterest(co1).toString(2) );
+        System.out.println(WASPSerializer.serializeInterest(co1).toString(2) );
         
         Assert.assertTrue(true);
     }
