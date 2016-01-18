@@ -9,6 +9,13 @@ package net.sharkfw.wasp;
  *
  * @author micha
  */
-public interface ContextPoint {
-    
+public enum Dimension {
+    TOPIC,
+    TYPE,
+    APPROVER,
+    SENDER,
+    RECIPIENT,
+    LOCATION,
+    TIME,
+    DIRECTION
 }

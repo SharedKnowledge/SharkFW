@@ -9,6 +9,6 @@ package net.sharkfw.wasp;
  *
  * @author micha
  */
-public class PeerSemanticTag {
+public class PeerSemanticTag extends BaseSemanticTag{
     
 }

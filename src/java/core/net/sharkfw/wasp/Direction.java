@@ -9,6 +9,14 @@ package net.sharkfw.wasp;
  *
  * @author micha
  */
-public class SubjectIdentifier {
-    
+public enum Direction {
+    IN,
+    OUT,
+    INOUT,
+    NO;
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }

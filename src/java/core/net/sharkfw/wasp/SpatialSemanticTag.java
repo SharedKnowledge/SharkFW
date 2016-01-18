@@ -9,6 +9,6 @@ package net.sharkfw.wasp;
  *
  * @author micha
  */
-public class SpatialSemanticTag {
+public class SpatialSemanticTag  extends BaseSemanticTag{
     
 }

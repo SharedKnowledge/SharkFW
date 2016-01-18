@@ -9,6 +9,6 @@ package net.sharkfw.wasp;
  *
  * @author micha
  */
-public class TimeSemanticTag {
+public class TimeSemanticTag extends BaseSemanticTag{
     
 }

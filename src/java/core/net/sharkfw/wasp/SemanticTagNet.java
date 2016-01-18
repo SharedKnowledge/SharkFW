@@ -20,7 +20,7 @@ public class SemanticTagNet {
         TARGET
     }
     
-    private HashMap<Long, SemanticTag> tagList;
+    private HashMap<Long, BaseSemanticTag> tagList;
     private LinkedList<PropertyHolder> propertyList;
     private long tagId = 0;
 
@@ -29,15 +29,15 @@ public class SemanticTagNet {
         this.propertyList = new LinkedList<>();
     }
     
-    public void add(SemanticTag tag){
+    public void add(BaseSemanticTag tag){
         if(!tagList.containsValue(tag)){
             tagList.put(tagId++, tag);
         }
     }
     
-    public long getSemanticTagId(SemanticTag tag){
+    public long getSemanticTagId(BaseSemanticTag tag){
         if(tagList.containsValue(tag)){
-            for(Entry<Long, SemanticTag> entry : tagList.entrySet()){
+            for(Entry<Long, BaseSemanticTag> entry : tagList.entrySet()){
                 if(entry.getValue() == tag){
                     return entry.getKey();
                 }
@@ -46,7 +46,7 @@ public class SemanticTagNet {
         return -1;
     }
     
-    public void addProperty(String propertyName, SemanticTag source, SemanticTag target) {
+    public void addProperty(String propertyName, BaseSemanticTag source, BaseSemanticTag target) {
         long sourceId;
         long targetId;
         
@@ -77,7 +77,7 @@ public class SemanticTagNet {
         }
     }
     
-    public void removeProperty(String propertyName, SemanticTag source, SemanticTag target){
+    public void removeProperty(String propertyName, BaseSemanticTag source, BaseSemanticTag target){
 
         if(propertyName == null || source == null || target == null)
             return;
@@ -94,7 +94,7 @@ public class SemanticTagNet {
         }
     }
     
-    public void removeSemanticTag(SemanticTag tag){
+    public void removeSemanticTag(BaseSemanticTag tag){
         
         if(!tagList.containsValue(tag))
             return;
@@ -112,7 +112,7 @@ public class SemanticTagNet {
         tagList.remove(id);
     }
     
-    public LinkedList<PropertyHolder> getAllProperties(SemanticTag source, SemanticTag target){
+    public LinkedList<PropertyHolder> getAllProperties(BaseSemanticTag source, BaseSemanticTag target){
         LinkedList<PropertyHolder> list = new LinkedList<>();
         
         if(source == null && target == null)
@@ -124,7 +124,7 @@ public class SemanticTagNet {
         return list;
     }
     
-    public LinkedList<PropertyHolder> getPropertiesAsPropertyEnum(Enum<Property> propertyType, SemanticTag tag){
+    public LinkedList<PropertyHolder> getPropertiesAsPropertyEnum(Enum<Property> propertyType, BaseSemanticTag tag){
         
         if(!tagList.containsValue(tag))
             return null;

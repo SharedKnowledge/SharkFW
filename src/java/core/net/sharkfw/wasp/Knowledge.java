@@ -9,6 +9,6 @@ package net.sharkfw.wasp;
  *
  * @author micha
  */
-public interface Knowledge {
+public class Knowledge {
     
 }

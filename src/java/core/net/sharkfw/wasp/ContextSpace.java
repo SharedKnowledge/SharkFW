@@ -9,6 +9,6 @@ package net.sharkfw.wasp;
  *
  * @author micha
  */
-public interface ContextSpace {
+public class ContextSpace {
     
 }
