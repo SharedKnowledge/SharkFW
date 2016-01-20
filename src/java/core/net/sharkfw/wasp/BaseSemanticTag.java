@@ -14,10 +14,10 @@ import net.sharkfw.wasp.interfaces.SemanticTag;
  *
  * @author micha
  */
-public class BaseSemanticTag implements SemanticTag{
+public class BaseSemanticTag implements SemanticTag {
     
     public static final String NAME = "NAME";
-    public static final String SI = "SI";
+    public static final String SIS = "SIS";
     private String name = "";
     private LinkedList<String> sis = null;
     private boolean isHidden = false;
@@ -25,9 +25,6 @@ public class BaseSemanticTag implements SemanticTag{
     public BaseSemanticTag(String name) {
         this.name = name;
         this.sis = new LinkedList<>();
-    }
-
-    public BaseSemanticTag() {
     }
     
     @Override
