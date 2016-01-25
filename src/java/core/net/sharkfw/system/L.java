@@ -292,6 +292,13 @@ public class L {
                     buf.append(contentType);
                     buf.append("; size: ");
                     buf.append(len);
+                    buf.append("; content: ");
+                    try {
+                        buf.append(info.getContentAsString());
+                    } catch (SharkKBException e) {
+                        buf.append("No string representation");
+
+                    }
                     buf.append("\n");
                 }
             }

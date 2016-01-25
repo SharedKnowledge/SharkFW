@@ -14,12 +14,12 @@ public interface Stub {
     /**
      * Stop listening for incoming messages.
      */
-    public void stop();
+    void stop();
 
     /**
      * Start listening for incoming messages.
      */
-    public void start() throws IOException;
+    void start() throws IOException;
     
-    public boolean started();
+    boolean started();
 }
