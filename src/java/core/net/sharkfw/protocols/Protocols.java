@@ -19,6 +19,9 @@ public abstract class Protocols {
   /**
    * Constant value representing TCP
    */
+  //TODO: don't asign default int value to constant unless
+  //TODO: your are sure if no type is set it will use 0 be default
+  //TODO: (and therefore it assumes it is this constant here)
   public static final int TCP = 0;
 
   /**

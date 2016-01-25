@@ -47,6 +47,11 @@ public class L {
             // 
         }
     }
+
+    public static void setLogStreams(PrintStream out, PrintStream err) {
+        L.out = out;
+        L.err = err;
+    }
     
     private static void doLog(Object o, String msg, int level) {
         String loglevelString = "LOG";

@@ -9,7 +9,7 @@ import java.io.IOException;
  * @author mfi
  */
 public interface Stub {
-    public void setHandler(RequestHandler handler);
+    void setHandler(RequestHandler handler);
 
     /**
      * Stop listening for incoming messages.
