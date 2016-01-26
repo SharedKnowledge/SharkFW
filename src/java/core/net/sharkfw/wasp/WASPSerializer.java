@@ -12,6 +12,7 @@ import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
@@ -159,7 +160,7 @@ public class WASPSerializer {
         return null;
     }
     
-    public static SemanticTag deserializeTag(STSet targetSet, String tag) throws SharkKBException {
+    public SemanticTag deserializeTag(STSet targetSet, String tag) throws SharkKBException {
         // deserialize something 
         String name = "exampleName";
         String[] sis = new String[] {"http://exampleSI.org"}; 
@@ -168,13 +169,14 @@ public class WASPSerializer {
         return targetSet.createSemanticTag(name, sis);
     }
     
-    public static SemanticTag deserializeTag(String tag) throws SharkKBException {
+    public SemanticTag deserializeTag(String tag) throws SharkKBException {
         // there is no specific set - create one
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
-        return WASPSerializer.deserializeTag(stSet, tag);
+        return this.deserializeTag(stSet, tag);
+        
     }
     
-    public static STSet deserializeSTSet(String stset){
+    public STSet deserializeSTSet(STSet target, String stset){
         return null;
     }
     
@@ -186,7 +188,28 @@ public class WASPSerializer {
         return null;
     }
         
-    public static SharkCS deserializeSharkCS(String sharkCS){
-        return null;
+    public SharkCS deserializeSharkCS(SharkKB kb, String sharkCS) throws SharkKBException {
+        Interest interest = kb.createInterest();
+
+        // read topics dimension
+        String topicsSerialized = "topics dim as JSON String"; // muss man aus dem sharkCSString füllen
+
+        // create objects: topics dimension already set in empty interest??
+        this.deserializeSTSet(interest.getTopics(), topicsSerialized);
+        
+        // read type dimension
+        // read approver dimension
+        // etc. pp.
+        return interest;
+    }
+    
+    /**
+     *
+     * @param sharkCS
+     * @return
+     * @throws SharkKBException
+     */
+    public SharkCS deserializeSharkCS(String sharkCS) throws SharkKBException {
+        return this.deserializeSharkCS(new InMemoSharkKB(), sharkCS);
     }
 }
