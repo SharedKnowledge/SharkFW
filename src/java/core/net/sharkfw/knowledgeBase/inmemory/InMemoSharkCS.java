@@ -3,10 +3,26 @@ package net.sharkfw.knowledgeBase.inmemory;
 import net.sharkfw.knowledgeBase.*;
 
 /**
- *
+ * That class implements both, SharkCS and WASP_CS
  * @author thsc
  */
 public abstract class InMemoSharkCS implements SharkCS, WASP_CS {
+
+    // TODO
+    /* That's a technical mapping not a semantical. E.g.
+    approver is actually an originator from a semantically
+    perspective. Cardinality of approvers fits to peer, though.
+    
+    WASP        KEP
+    topic       topic
+    type        --
+    approver    peer
+    sender      originator
+    receiver    remotePeer
+    location    location
+    time        time
+    direction   direction
+    */
     
     protected InMemoSharkCS() {
         
@@ -21,25 +37,23 @@ public abstract class InMemoSharkCS implements SharkCS, WASP_CS {
             case WASP_CS.DIM_TYPE : 
                 return this.getTypes();
                 
-            case SharkCS.DIM_ORIGINATOR : 
+            // see comments
+            case SharkCS.DIM_ORIGINATOR: 
                 return this.getOriginators();
-                
-//            case WASP_CS.DIM_SENDER : 
-//                return this.getSenders();
-                        
-            case SharkCS.DIM_PEER | WASP_CS.DIM_APPROVERS : 
+                                        
+            case SharkCS.DIM_PEER: 
                 return this.getPeers();
                 
-            case SharkCS.DIM_REMOTEPEER | WASP_CS.DIM_RECEIVER : 
+            case SharkCS.DIM_REMOTEPEER:
                 return this.getRemotePeers();
                 
-            case SharkCS.DIM_TIME :
+            case SharkCS.DIM_TIME:
                 return this.getTimes();
                 
-            case SharkCS.DIM_LOCATION : 
+            case SharkCS.DIM_LOCATION: 
                 return this.getLocations();
                 
-            case SharkCS.DIM_DIRECTION : 
+            case SharkCS.DIM_DIRECTION: 
                 return this.getDirections();
         }
         
