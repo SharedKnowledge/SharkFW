@@ -15,6 +15,7 @@ import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -158,8 +159,19 @@ public class WASPSerializer {
         return null;
     }
     
-    public static SemanticTag deserializeTag(String tag) {
-        return null;
+    public static SemanticTag deserializeTag(STSet targetSet, String tag) throws SharkKBException {
+        // deserialize something 
+        String name = "exampleName";
+        String[] sis = new String[] {"http://exampleSI.org"}; 
+        
+        // if success - create a tag with targetSet
+        return targetSet.createSemanticTag(name, sis);
+    }
+    
+    public static SemanticTag deserializeTag(String tag) throws SharkKBException {
+        // there is no specific set - create one
+        STSet stSet = InMemoSharkKB.createInMemoSTSet();
+        return WASPSerializer.deserializeTag(stSet, tag);
     }
     
     public static STSet deserializeSTSet(String stset){
