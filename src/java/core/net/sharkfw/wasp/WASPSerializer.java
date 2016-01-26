@@ -169,11 +169,17 @@ public class WASPSerializer {
         return targetSet.createSemanticTag(name, sis);
     }
     
-    public SemanticTag deserializeTag(String tag) throws SharkKBException {
+    /**
+     * static variant - not to be used in protocol parser
+     * @param tag
+     * @return
+     * @throws SharkKBException 
+     */
+    public static SemanticTag deserializeTag(String tag) throws SharkKBException {
+        WASPSerializer wS = new WASPSerializer();
         // there is no specific set - create one
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
-        return this.deserializeTag(stSet, tag);
-        
+        return wS.deserializeTag(stSet, tag);
     }
     
     public STSet deserializeSTSet(STSet target, String stset){
@@ -209,7 +215,9 @@ public class WASPSerializer {
      * @return
      * @throws SharkKBException
      */
-    public SharkCS deserializeSharkCS(String sharkCS) throws SharkKBException {
-        return this.deserializeSharkCS(new InMemoSharkKB(), sharkCS);
+    public static SharkCS deserializeSharkCS(String sharkCS) throws SharkKBException {
+        WASPSerializer wS = new WASPSerializer();
+        
+        return wS.deserializeSharkCS(new InMemoSharkKB(), sharkCS);
     }
 }
