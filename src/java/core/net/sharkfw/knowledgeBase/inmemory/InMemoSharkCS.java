@@ -6,7 +6,7 @@ import net.sharkfw.knowledgeBase.*;
  *
  * @author thsc
  */
-public abstract class InMemoSharkCS implements SharkCS {
+public abstract class InMemoSharkCS implements SharkCS, WASP_CS {
     
     protected InMemoSharkCS() {
         
@@ -15,16 +15,22 @@ public abstract class InMemoSharkCS implements SharkCS {
     @Override
     public STSet getSTSet(int dim) throws SharkKBException {
         switch(dim) {
-            case SharkCS.DIM_TOPIC : 
+            case SharkCS.DIM_TOPIC | WASP_CS.DIM_TOPIC:
                 return this.getTopics();
+                
+            case WASP_CS.DIM_TYPE : 
+                return this.getTypes();
                 
             case SharkCS.DIM_ORIGINATOR : 
                 return this.getOriginators();
+                
+//            case WASP_CS.DIM_SENDER : 
+//                return this.getSenders();
                         
-            case SharkCS.DIM_PEER : 
+            case SharkCS.DIM_PEER | WASP_CS.DIM_APPROVERS : 
                 return this.getPeers();
                 
-            case SharkCS.DIM_REMOTEPEER : 
+            case SharkCS.DIM_REMOTEPEER | WASP_CS.DIM_RECEIVER : 
                 return this.getRemotePeers();
                 
             case SharkCS.DIM_TIME :
@@ -56,7 +62,7 @@ public abstract class InMemoSharkCS implements SharkCS {
         
         return this.originators;
     }
-    
+        
     private InMemoSTSet directions = null;
     private STSet getDirections() {
         if(this.directions != null) return this.directions;

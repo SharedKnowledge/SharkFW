@@ -182,4 +182,24 @@ class InMemoContextCoordinates extends InMemoSharkCS implements ContextCoordinat
     public boolean equals(Object obj) {
         return SharkCSAlgebra.identical(this, (ContextCoordinates) obj);
     }
+
+    @Override
+    public STSet getTypes() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSemanticTag getSender() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSTSet getReceivers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSTSet getApprovers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

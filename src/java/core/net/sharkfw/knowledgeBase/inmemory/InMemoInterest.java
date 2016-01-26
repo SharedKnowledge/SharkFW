@@ -189,4 +189,26 @@ class InMemoInterest extends InMemoSharkCS implements Interest {
             return null;
         }
     }
+
+    
+    ////////////////// TODO TODO TODO //////////////////////////////
+    @Override
+    public STSet getTypes() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSemanticTag getSender() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSTSet getReceivers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSTSet getApprovers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
