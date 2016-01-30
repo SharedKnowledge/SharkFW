@@ -113,6 +113,13 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 //        return null;
     }
     
+    @Override
+    public ContextPoint createContextSpace(LASP_CS space) 
+            throws SharkKBException {
+        throw new SharkKBException("not yet implemented");
+    }
+    
+    
     /**
      * Create an interest with given parameter. There is no need to
      * copy each dimension.

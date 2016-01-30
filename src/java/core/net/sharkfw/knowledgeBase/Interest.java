@@ -37,7 +37,7 @@ package net.sharkfw.knowledgeBase;
  * 
  * @author mfi, thsc
  */
-public interface Interest extends SharkCS {
+public interface Interest extends SharkCS, LASP_CS {
 
   /**
    * Topics are stored in semantic tag set. Most implementations will choose
@@ -46,6 +46,7 @@ public interface Interest extends SharkCS {
    * 
    * Derived classes of STset can be used of course. It can be check with
    * instanceof if the STSet is actually a Taxonomy or a SemanticNet.
+     * @param topics
    */
   public void setTopics(STSet topics);
   
@@ -111,5 +112,15 @@ public interface Interest extends SharkCS {
    */
   public Interest contextualize(SharkCS context, FragmentationParameter[] fp)
           throws SharkKBException;
+  
+  
+  ////////////////////////////////////////////////////////////////
+  //                       LASP setter                          // 
+  ////////////////////////////////////////////////////////////////
+  
+    public void setTypes(STSet types);
+    public void setApprovers(PeerSTSet approvers);
+    public void setSender(PeerSemanticTag sender);
+    public void setReceivers(PeerSTSet receivers);
   
 }

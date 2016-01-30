@@ -1,20 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sharkfw.wasp;
 
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
+import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import org.json.JSONArray;
@@ -195,17 +193,51 @@ public class WASPSerializer {
     }
         
     public SharkCS deserializeSharkCS(SharkKB kb, String sharkCS) throws SharkKBException {
-        Interest interest = null; //kb.createInterest();
+        Interest interest = InMemoSharkKB.createInMemoInterest();
 
         // read topics dimension
         String topicsSerialized = "topics dim as JSON String"; // muss man aus dem sharkCSString füllen
 
         // create objects: topics dimension already set in empty interest??
-        this.deserializeSTSet(interest.getTopics(), topicsSerialized);
+        STSet topics = this.deserializeSTSet(interest.getTopics(), topicsSerialized);
         
-        // read type dimension
-        // read approver dimension
-        // etc. pp.
+        interest.setTopics(topics);
+        
+        // types
+        STSet types = null;
+        // deserialize.. and set
+        interest.setTypes(types);
+        
+        // sender
+        PeerSemanticTag sender = null;
+        // deserialize.. and set
+        interest.setSender(sender);
+        
+        // approvers
+        PeerSTSet approvers = null;
+        // deserialize.. and set
+        interest.setApprovers(approvers);
+        
+        // receivers
+        PeerSTSet receivers = null;
+        // deserialize.. and set
+        interest.setReceivers(receivers);
+        
+        // times
+        TimeSTSet times = null;
+        // deserialize.. and set
+        interest.setTimes(times);
+        
+        // locations
+        SpatialSTSet locations = null;
+        // deserialize.. and set
+        interest.setLocations(locations);
+        
+        // direction
+        int direction = 0;
+        // deserialize.. and set
+        interest.setDirection(direction);
+        
         return interest;
     }
     

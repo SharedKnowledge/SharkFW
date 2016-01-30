@@ -412,4 +412,9 @@ public class SyncKB implements SharkKB {
     public void semanticTagChanged(SemanticTag tag, STSet stset) {
         this._localKB.semanticTagChanged(tag, stset);
     }
+
+    @Override
+    public ContextPoint createContextSpace(LASP_CS space) throws SharkKBException {
+        return this._localKB.createContextSpace(space);
+    }
 }

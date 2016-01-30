@@ -256,4 +256,24 @@ public class InMemoInterest extends InMemoSharkCS implements Interest {
     public PeerSTSet getApprovers() {
         return this.getPeers();
     }
+
+    @Override
+    public void setTypes(STSet types) {
+        this.types = types;
+    }
+
+    @Override
+    public void setApprovers(PeerSTSet approvers) {
+        this.peers = approvers;
+    }
+
+    @Override
+    public void setSender(PeerSemanticTag sender) {
+        this.originator = sender;
+    }
+
+    @Override
+    public void setReceivers(PeerSTSet receivers) {
+        this.remotePeers = receivers;
+    }
 }

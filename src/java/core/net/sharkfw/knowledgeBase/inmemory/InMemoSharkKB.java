@@ -375,13 +375,33 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     public static PeerSTSet createInMemoPeerSTSet() {
         return new InMemoPeerSTSet();
     }
-    
+
+    /**
+     * 
+     * @param topics
+     * @param originator
+     * @param peers
+     * @param remotePeers
+     * @param times
+     * @param locations
+     * @param direction
+     * @return 
+     * @deprecated 
+     */
     public static Interest createInMemoInterest(STSet topics, 
             PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, 
             TimeSTSet times, SpatialSTSet locations, int direction) {
         
         return new InMemoInterest(topics, originator, peers, remotePeers, 
                 times, locations, direction);
+    }
+    
+    public static Interest createInMemoInterest(STSet topics, STSet types, 
+            PeerSemanticTag sender, PeerSTSet approvers, PeerSTSet receivers, 
+            TimeSTSet times, SpatialSTSet locations, int direction) {
+        
+        return new InMemoInterest(topics, types, sender, approvers, 
+                receivers, times, locations, direction);
     }
     
     public static TimeSTSet createInMemoTimeSTSet() {
