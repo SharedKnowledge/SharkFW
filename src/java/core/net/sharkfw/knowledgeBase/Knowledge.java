@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * <p>Knowledge is a set of {@link ContextPoint}s including attached information.
@@ -41,6 +42,8 @@ public interface Knowledge {
    * @param cp The context point to be removed
    */
   public void removeContextPoint(ContextPoint cp);
+  
+  public void removeInformationSpace(LASP_CS cp);
 
   /**
    * An enumeration of all contained context points.
@@ -48,6 +51,8 @@ public interface Knowledge {
    * @return An Enumeration containing all contextpoints from this knowledge object
    */
   public Enumeration <ContextPoint> contextPoints();
+  
+  Iterator<InformationSpace> informationSpaces();
 
   /**
    * Return a ContextSapce containing Tag for the different coordinates of the
@@ -68,6 +73,8 @@ public interface Knowledge {
    * @return An int value representing the number of contextpoints in this knowledge object
    */
   public int getNumberOfContextPoints();
+  
+  public int getNumberOfInformationSpaces();
 
   // ===========================================================================
   // These methods are a left-over from the internal Knowledge interface
@@ -81,6 +88,8 @@ public interface Knowledge {
      * @return A contextpoint
      */
     public ContextPoint getCP(int i);
+    
+    public InformationSpace getInformationSpace(int i);
     
     public void addListener(KnowledgeListener kListener);
     

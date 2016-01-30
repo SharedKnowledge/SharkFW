@@ -388,7 +388,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * @return 
      * @deprecated 
      */
-    public static Interest createInMemoInterest(STSet topics, 
+    public static Interest createInMemoInterest(
+            STSet topics, 
             PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, 
             TimeSTSet times, SpatialSTSet locations, int direction) {
         

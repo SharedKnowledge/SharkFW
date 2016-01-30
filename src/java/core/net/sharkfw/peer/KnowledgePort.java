@@ -1,6 +1,7 @@
 package net.sharkfw.peer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.PrivateKey;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -10,6 +11,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
+import net.sharkfw.wasp.LASPConnection;
 
 /**
  * This is the abstract superclass of all implementations of Knowledge Ports.
@@ -294,6 +296,51 @@ abstract public class KnowledgePort {
      * @see net.sharkfw.peer.KEPRequest
      */
     protected abstract void doExpose(SharkCS interest, KEPConnection kepConnection);
+    
+    /**
+     * standard behaviour: map to doExpose variant of KEP to provide backward
+     * compatibility 
+     * @param interest
+     * @param laspConnection 
+     */
+    protected void doExpose(LASP_CS interest, LASPConnection laspConnection) throws SharkKBException {
+        // produce a KEP interest based on LASP-interest
+        
+        STSet topics = interest.getTopics();
+        
+        // we take the first approver - rest is lost..
+        PeerSemanticTag originator = null;
+        PeerSTSet approvers = interest.getApprovers();
+        if(approvers != null) {
+            originator = approvers.peerTags().nextElement();
+        }
+        
+        PeerSTSet peers = null;
+        
+        PeerSemanticTag sender = interest.getSender();
+        if(sender != null) {
+            peers = InMemoSharkKB.createInMemoPeerSTSet();
+            peers.merge(sender);
+        }
+        
+        PeerSTSet remotePeers = interest.getReceivers();
+        TimeSTSet times = interest.getTimes();
+        SpatialSTSet locations = interest.getLocations();
+        int direction = interest.getDirection();
+        
+        SharkCS kepInterest = InMemoSharkKB.createInMemoInterest(topics, originator, peers, 
+                remotePeers, times, locations, direction);
+        
+        this.doExpose(kepInterest, laspConnection.asKepConnection());
+    }
+    
+    /**
+     * Standard behaviour: do nothing
+     * @param is
+     * @param kepConnection 
+     */
+    protected void doRaw(InputStream is, LASPConnection kepConnection) {
+    }
     
     /**
      * Has this AbstractKP been started to handle requests?

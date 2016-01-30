@@ -1,7 +1,9 @@
 package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeListener;
 import net.sharkfw.knowledgeBase.LASP_CS;
@@ -55,6 +57,26 @@ public class SQLKnowledge implements Knowledge {
 
     @Override
     public void addInformationSpace(LASP_CS space) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeInformationSpace(LASP_CS cp) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<InformationSpace> informationSpaces() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getNumberOfInformationSpaces() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public InformationSpace getInformationSpace(int i) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
