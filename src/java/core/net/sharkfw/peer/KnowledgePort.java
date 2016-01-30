@@ -12,6 +12,8 @@ import net.sharkfw.kp.KPListener;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
 import net.sharkfw.wasp.LASPConnection;
+import net.sharkfw.wasp.LASPInMessage;
+import net.sharkfw.wasp.LASPMessage;
 
 /**
  * This is the abstract superclass of all implementations of Knowledge Ports.
@@ -183,6 +185,37 @@ abstract public class KnowledgePort {
         this.isStarted = true;
         this.se.addKP(this);
     }
+    
+    public synchronized final boolean handleMessage(LASPInMessage msg, 
+            LASPConnection con) {
+        
+        // TODO
+        L.d("about handling LASP message");
+        
+        // Do a lot of other stuff here.. add what is required, see below
+        
+        // ...
+        
+        switch (msg.getCommand()) {
+            case LASPMessage.LASP_INSERT:
+                try {
+                    this.doInsert(msg.getKnowledge(), con);
+                } catch (Exception ex) {
+                    L.e("Error while handling insert request:\n" + ex.getMessage(), this);
+                }
+                break;
+            case LASPMessage.LASP_EXPOSE:
+                try {
+                    this.doExpose(msg.getInterest(), con);
+                } catch (Exception ex) {
+                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
+                }
+                break;
+        }
+
+        return con.responseSent();
+    }
+    
     
     /********************************************************
      *   parse KEP message - call KEPEngine for handling    *

@@ -79,8 +79,9 @@ public interface KEPConnection {
   public void insert(Knowledge k, String[] receiveraddresses) throws SharkException;
 
   /**
-   * Return if the delivery of the response was successful or not.
-   *
+   * That methode can be used to figure out if a response was succcessully sent.
+   * A failing sending attempt will result in a "false". 
+   * 
    * @return True if response could be sent. False otherwise.
    */
   public boolean responseSent();
