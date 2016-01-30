@@ -16,21 +16,66 @@ import net.sharkfw.knowledgeBase.*;
  */
 class InMemoInterest extends InMemoSharkCS implements Interest {
     
-    private STSet topics;
-    private PeerSemanticTag originator;
-    private PeerSTSet peers;
-    private PeerSTSet remotePeers;
-    private TimeSTSet times;
-    private SpatialSTSet locations;
-    private int direction;
+    /* 
+    We are about migrating from KEP to LASP. We need a mapping
+    of LASP concepts to KEP concepts.
+    
+    That's a technical mapping not a semantical. E.g.
+    approver is actually an originator from a semantically
+    perspective. Cardinality of approvers fits to peer, though.
+    
+    WASP        KEP
+    topic       topic
+    type        --
+    approver    peer
+    sender      originator
+    receiver    remotePeer
+    location    location
+    time        time
+    direction   direction
+    */
+    
+    private STSet topics; // KEP and LASP topics
+    private STSet types; // LASP types
+    private PeerSemanticTag originator; // also LASP sender
+    private PeerSTSet peers; // also LASP approver
+    private PeerSTSet remotePeers; // also LASP receiver
+    private TimeSTSet times; // both
+    private SpatialSTSet locations; // both
+    private int direction; // both
     
     /**
-     * creates an any interest.
+     * Creates an any interest.
      */
     InMemoInterest() {
-        this(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT); 
+        this(null, null, null, null, null, null, null, SharkCS.DIRECTION_INOUT); 
     }
     
+    /**
+     * Creates an interest.
+     */
+    InMemoInterest(STSet topics, STSet types, PeerSemanticTag sender, 
+            PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
+            SpatialSTSet locations, int direction) {
+        
+        // that's an LASP interest
+        super(true);
+
+        this.topics = topics;
+        this.types = types;
+        this.originator = sender;
+        this.peers = approvers;
+        this.remotePeers = receivers;
+        this.times = times;
+        this.locations = locations;
+        this.direction = direction;
+    }
+
+    /**
+     * New Shark applications must not use this contructor.
+     * creates an any interest.
+     * @deprecated 
+     */
     InMemoInterest(STSet topics, PeerSemanticTag originator, 
             PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, 
             SpatialSTSet locations, int direction) {
@@ -189,26 +234,26 @@ class InMemoInterest extends InMemoSharkCS implements Interest {
             return null;
         }
     }
-
     
-    ////////////////// TODO TODO TODO //////////////////////////////
+    ////////////////// LASP mapping //////////////////////////////
     @Override
     public STSet getTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.types;
     }
 
     @Override
     public PeerSemanticTag getSender() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // we map LASP sender to KEP originator (due to the fitting cardinality, see comments in top of that class)
+        return this.getOriginator();
     }
 
     @Override
     public PeerSTSet getReceivers() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getRemotePeers();
     }
 
     @Override
     public PeerSTSet getApprovers() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getPeers();
     }
 }

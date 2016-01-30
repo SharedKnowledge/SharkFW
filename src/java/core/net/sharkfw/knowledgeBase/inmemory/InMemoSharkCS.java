@@ -11,7 +11,6 @@ import net.sharkfw.knowledgeBase.*;
  */
 public abstract class InMemoSharkCS implements SharkCS, LASP_CS {
 
-    // TODO
     /* That's a technical mapping not a semantical. E.g.
     approver is actually an originator from a semantically
     perspective. Cardinality of approvers fits to peer, though.
@@ -27,21 +26,30 @@ public abstract class InMemoSharkCS implements SharkCS, LASP_CS {
     direction   direction
     */
     
+    // flag if this object acts as KEP or LASP interest
+    private final boolean isLASP;
+    
+    boolean isLASP() {
+        return this.isLASP;
+    }
+    
     protected InMemoSharkCS() {
-        
+        this.isLASP = false; // is a KEP object
+    }
+    
+    protected InMemoSharkCS(boolean isLASP) {
+        this.isLASP = isLASP; // can be KEP or LASP
     }
     
     @Override
     public STSet getSTSet(int dim) throws SharkKBException {
         switch(dim) {
-            case SharkCS.DIM_TOPIC | LASP_CS.DIM_TOPIC:
+            // KEP
+            case SharkCS.DIM_TOPIC:
                 return this.getTopics();
                 
-            case LASP_CS.DIM_TYPE : 
-                return this.getTypes();
-                
             // see comments
-            case SharkCS.DIM_ORIGINATOR: 
+            case SharkCS.DIM_ORIGINATOR:
                 return this.getOriginators();
                                         
             case SharkCS.DIM_PEER: 
@@ -58,9 +66,58 @@ public abstract class InMemoSharkCS implements SharkCS, LASP_CS {
                 
             case SharkCS.DIM_DIRECTION: 
                 return this.getDirections();
+
+            ////////////////////////////////////////////////////////
+            //                      LASP                          //
+            ////////////////////////////////////////////////////////
+                
+            case LASP_CS.DIM_TOPIC:
+                return this.getTopics();
+                
+            case LASP_CS.DIM_TYPE : 
+                return this.getTypes();
+                
+            case LASP_CS.DIM_APPROVERS : 
+                return this.getApprovers();
+                
+            case LASP_CS.DIM_SENDER : 
+                return this.getSenders();
+                
+            case LASP_CS.DIM_RECEIVER : 
+                return this.getReceivers();
+                
+            case LASP_CS.DIM_TIME : 
+                return this.getTimes();
+                
+            case LASP_CS.DIM_LOCATION : 
+                return this.getLocations();
+                
+            case LASP_CS.DIM_DIRECTION : 
+                return this.getLocations();
         }
         
         throw new SharkKBException("unknown dimension in Shark Context Space: " + dim);
+    }
+    
+    /* sender has cardinality of 0..1
+      sometime we need it as peer semantic tag set
+    We keep that structure here: viola
+    */
+    private InMemoPeerSTSet senders = null;
+    private PeerSTSet getSenders() {
+        if(this.senders != null) return this.senders;
+        
+        if(this.getSender() == null) return null;
+        
+        this.senders = new InMemoPeerSTSet();
+        try {
+            this.senders.add(this.getOriginator());
+        } catch (SharkKBException ex) {
+            // won't happen.
+            return null;
+        }
+        
+        return this.senders;
     }
     
     private InMemoPeerSTSet originators = null;

@@ -21,22 +21,20 @@ public interface LASP_CS {
 
 
     /**
-     * In interests: Is this a sending or a receiving interest (or both?)
-     * (identical to direction in KEP)
+     * This dimention denotes for which topic this context is valid
      */
-    public static final int DIM_DIRECTION = 10;
+    public static final int DIM_TOPIC = 10;
 
+    /**
+     * This dimention denotes type of information, e.g. news
+     */
+    public static final int DIM_TYPE = 11;
+    
     /**
      * This dimensions describes what peers agrees that topics describe
      * attaced information correctly. (is/was orignator in KEP)
      */
-    public static final int DIM_APPROVERS = 11;
-
-    /**
-     * This dimension denotes to whom a peer likes to exchange information
-     * with.
-     */
-    public static final int DIM_RECEIVER = 12;
+    public static final int DIM_APPROVERS = 12;
 
     /**
      * This dimension denotes the actual peer that (originally) issued 
@@ -45,24 +43,26 @@ public interface LASP_CS {
     public static final int DIM_SENDER = 13;
 
     /**
+     * This dimension denotes to whom a peer likes to exchange information
+     * with.
+     */
+    public static final int DIM_RECEIVER = 14;
+
+    /**
      * This dimension denote in which timespans the context is valid
      */
-    public static final int DIM_TIME = 14;
+    public static final int DIM_TIME = 15;
 
     /**
      * This dimension denotes where this context is valid
      */
-    public static final int DIM_LOCATION = 15;
-
-    /**
-     * This dimention denotes for which topic this context is valid
-     */
-    public static final int DIM_TOPIC = 16;
+    public static final int DIM_LOCATION = 16;
     
     /**
-     * This dimention denotes type of information, e.g. news
+     * In interests: Is this a sending or a receiving interest (or both?)
+     * (identical to direction in KEP)
      */
-    public static final int DIM_TYPE = 17;
+    public static final int DIM_DIRECTION = 17;
 
     /**
      * The single URL to use as SI when describing the ANY tag
