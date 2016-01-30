@@ -3,10 +3,13 @@ package net.sharkfw.knowledgeBase.inmemory;
 import net.sharkfw.knowledgeBase.*;
 
 /**
- * That class implements both, SharkCS and WASP_CS
+ * Shark 3.0 is going to support LASP instead of KEP. Using 
+ * SharkCS becomes depreated. That class is the root of 
+ * all context space implementations and will support both
+ * protcols for a while, propably until version Shark 4.
  * @author thsc
  */
-public abstract class InMemoSharkCS implements SharkCS, WASP_CS {
+public abstract class InMemoSharkCS implements SharkCS, LASP_CS {
 
     // TODO
     /* That's a technical mapping not a semantical. E.g.
@@ -31,10 +34,10 @@ public abstract class InMemoSharkCS implements SharkCS, WASP_CS {
     @Override
     public STSet getSTSet(int dim) throws SharkKBException {
         switch(dim) {
-            case SharkCS.DIM_TOPIC | WASP_CS.DIM_TOPIC:
+            case SharkCS.DIM_TOPIC | LASP_CS.DIM_TOPIC:
                 return this.getTopics();
                 
-            case WASP_CS.DIM_TYPE : 
+            case LASP_CS.DIM_TYPE : 
                 return this.getTypes();
                 
             // see comments

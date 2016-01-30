@@ -42,7 +42,7 @@ package net.sharkfw.knowledgeBase;
  * 
  * @author mfi, thsc
  */
-public interface WASP_Interest {
+public interface LASP_Interest {
 
   /**
    * Topics are stored in semantic tag set. Most implementations will choose
@@ -122,7 +122,7 @@ public interface WASP_Interest {
    * @return Mutual interest or null if there is no match
      * @throws net.sharkfw.knowledgeBase.SharkKBException
    */
-  public Interest contextualize(WASP_CS context, FragmentationParameter[] fp)
+  public Interest contextualize(LASP_CS context, FragmentationParameter[] fp)
           throws SharkKBException;
   
 }

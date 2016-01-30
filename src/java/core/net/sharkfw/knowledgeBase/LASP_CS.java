@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sharkfw.knowledgeBase;
 
 /**
  *
  * @author thsc
  */
-public interface WASP_CS {
+public interface LASP_CS {
   /**
    * The maximum number of allowed dimensions in the context space
    * In for-loops this value can be used as the upper boundary, as long
@@ -27,43 +22,47 @@ public interface WASP_CS {
 
     /**
      * In interests: Is this a sending or a receiving interest (or both?)
+     * (identical to direction in KEP)
      */
-    public static final int DIM_DIRECTION = 0;
+    public static final int DIM_DIRECTION = 10;
 
     /**
-     * This dimensions denote which peer formulated the context
+     * This dimensions describes what peers agrees that topics describe
+     * attaced information correctly. (is/was orignator in KEP)
      */
-    public static final int DIM_APPROVERS = 1;
+    public static final int DIM_APPROVERS = 11;
 
     /**
-     * This dimension denotes valid communication partners in this context
+     * This dimension denotes to whom a peer likes to exchange information
+     * with.
      */
-    public static final int DIM_RECEIVER = 2;
+    public static final int DIM_RECEIVER = 12;
 
     /**
-     * This dimension denotes who is the valid local peer in this context
+     * This dimension denotes the actual peer that (originally) issued 
+     * commands. It is the logical sender.
      */
-    public static final int DIM_SENDER = 3;
+    public static final int DIM_SENDER = 13;
 
     /**
      * This dimension denote in which timespans the context is valid
      */
-    public static final int DIM_TIME = 4;
+    public static final int DIM_TIME = 14;
 
     /**
      * This dimension denotes where this context is valid
      */
-    public static final int DIM_LOCATION = 5;
+    public static final int DIM_LOCATION = 15;
 
     /**
      * This dimention denotes for which topic this context is valid
      */
-    public static final int DIM_TOPIC = 6;
+    public static final int DIM_TOPIC = 16;
     
     /**
      * This dimention denotes type of information, e.g. news
      */
-    public static final int DIM_TYPE = 7;
+    public static final int DIM_TYPE = 17;
 
     /**
      * The single URL to use as SI when describing the ANY tag
