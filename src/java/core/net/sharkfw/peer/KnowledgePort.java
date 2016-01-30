@@ -3,8 +3,8 @@ package net.sharkfw.peer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.PrivateKey;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -46,7 +46,7 @@ abstract public class KnowledgePort {
     protected SharkKB kb;
     protected SharkStub kepStub;
     private boolean isStarted = false;
-    protected Vector listeners = new Vector();
+    protected ArrayList<KPListener> listeners = new ArrayList();
     @SuppressWarnings("unused")
     private String id = null;
     protected SharkEngine se;
@@ -413,10 +413,10 @@ abstract public class KnowledgePort {
      * @param mutualinterest The interest that has been sent.
      */
     protected void notifyExposeSent(KnowledgePort kp, SharkCS mutualinterest) {
-        Enumeration listenerEnum = this.listeners.elements();
+        Iterator listenerIter = this.listeners.iterator();
 
-        while (listenerEnum.hasMoreElements()) {
-            KPListener kpl = (KPListener) listenerEnum.nextElement();
+        while (listenerIter.hasNext()) {
+            KPListener kpl = (KPListener) listenerIter.next();
             kpl.exposeSent(kp, mutualinterest);
         }
     }
@@ -428,10 +428,10 @@ abstract public class KnowledgePort {
      * @param k The knowledge sent.
      */
     protected void notifyInsertSent(KnowledgePort kp, Knowledge k) {
-        Enumeration listenerEnum = this.listeners.elements();
+        Iterator listenerIter = this.listeners.iterator();
 
-        while (listenerEnum.hasMoreElements()) {
-            KPListener kpl = (KPListener) listenerEnum.nextElement();
+        while (listenerIter.hasNext()) {
+            KPListener kpl = (KPListener) listenerIter.next();
             kpl.insertSent(kp, k);
         }
     }
@@ -443,10 +443,10 @@ abstract public class KnowledgePort {
      * @param cp The {@link net.sharkfw.knowledgeBase.ContextPoint} that has been assimilated.
      */
     protected void notifyKnowledgeAssimilated(KnowledgePort kp, ContextPoint cp) {
-        Enumeration listenerEnum = this.listeners.elements();
+        Iterator listenerIter = this.listeners.iterator();
 
-        while (listenerEnum.hasMoreElements()) {
-            KPListener kpl = (KPListener) listenerEnum.nextElement();
+        while (listenerIter.hasNext()) {
+            KPListener kpl = (KPListener) listenerIter.next();
             kpl.knowledgeAssimilated(kp, cp);
         }
     }
@@ -464,19 +464,6 @@ abstract public class KnowledgePort {
 //            kpl.receivedKnowledge(k);
 //        }
     }
-
-    /**
-     * send knowledge to all recipients - this call is delegated to shark engine
-     * @param k knowledge to be sent
-     * @param recipientAddresses addresses in Shark format. mail://... tcp://... etc.
-     */
-//    public void sendKnowledge(Knowledge k, String[] recipientAddresses) {
-//        if(recipientAddresses.length <= 0) {
-//            return;
-//        }
-//
-//        this.se.sendKnowledge(k, Arrays.asList(recipientAddresses), this);
-//    }
     
     /**
      * send knowledge to all recipients - this call is delegated to shark engine
