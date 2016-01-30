@@ -10,7 +10,6 @@ import net.sharkfw.knowledgeBase.SharkVocabulary;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.KnowledgePort;
