@@ -80,9 +80,9 @@ public class SimpleKBTest {
     @Test
     public void testSTManagement() throws SharkKBException {
         kb = new InMemoSharkKB(); // that test is specific for in memo implementation!
-      PeerSemanticTag peer = kb.createPeerSemanticTag("Peer", new String[]{"http://peer.de"}, new String[]{"tcp://peer.de:1234"});
-      SemanticTag topic = kb.createSemanticTag("Topic", new String[]{"http://Topic.de"});
-      TimeSemanticTag time = kb.createTimeSemanticTag(1000, 2000);
+      PeerSemanticTag peer = kb.getPeerSTSet().createPeerSemanticTag("Peer", new String[]{"http://peer.de"}, new String[]{"tcp://peer.de:1234"});
+      SemanticTag topic = kb.getTopicSTSet().createSemanticTag("Topic", new String[]{"http://Topic.de"});
+      TimeSemanticTag time = kb.getTimeSTSet().createTimeSemanticTag(1000, 2000);
 //      SpatialSemanticTag geo = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{12.34, 45.67}, 5000);
 
       PeerSemanticTag peerResult = kb.getPeerSemanticTag(peer.getSI());
@@ -114,7 +114,7 @@ public class SimpleKBTest {
 //      SharkKB kb = new InMemoSharkKB();
 
       // Create a tag
-      SemanticTag topic = kb.createSemanticTag("Topic", new String[]{"http://topic.de"});
+      SemanticTag topic = kb.getTopicSTSet().createSemanticTag("Topic", new String[]{"http://topic.de"});
 
       STSet stset = InMemoSharkKB.createInMemoSTSet();
       Enumeration tagEnum = stset.tags();
@@ -512,8 +512,8 @@ public class SimpleKBTest {
       J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
 //      SharkKB kb = new InMemoSharkKB();
 
-      SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
-      SemanticTag tag = kb.createSemanticTag("Tag", "http://tag.de");
+      SemanticTag test = kb.getTopicSTSet().createSemanticTag("Test", "http://test.de");
+      SemanticTag tag = kb.getTopicSTSet().createSemanticTag("Tag", "http://tag.de");
 
       // Check Taxonomy result
       Taxonomy topicNet = kb.getTopicsAsTaxonomy();
@@ -670,7 +670,7 @@ public class SimpleKBTest {
       String value1 = "value1";
       String value2 = "value2";
 
-      SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
+      SemanticTag test = kb.getTopicSTSet().createSemanticTag("Test", "http://test.de");
       test.setProperty("key1", value1, false);
       test.setProperty("key2", value2, true);
 
@@ -892,8 +892,8 @@ public class SimpleKBTest {
 
 //      SharkKB kb = new InMemoSharkKB();
 
-      SemanticTag test1 = kb.createSemanticTag("Test1", "http://test1.de");
-      SemanticTag test2 = kb.createSemanticTag("Test2", "http://test2.de");
+      SemanticTag test1 = kb.getTopicSTSet().createSemanticTag("Test1", "http://test1.de");
+      SemanticTag test2 = kb.getTopicSTSet().createSemanticTag("Test2", "http://test2.de");
 
       STSet topics = kb.getTopicSTSet();
       STSet fragment = topics.fragment(test1);

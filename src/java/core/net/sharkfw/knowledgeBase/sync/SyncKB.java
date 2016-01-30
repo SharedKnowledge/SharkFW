@@ -153,26 +153,26 @@ public class SyncKB implements SharkKB {
         return _localKB.getStandardFPSet();
     }
 
-    @Override
-    public Interest createInterest() throws SharkKBException {
-        return _localKB.createInterest();
-    }
+//    @Override
+//    public Interest createInterest() throws SharkKBException {
+//        return _localKB.createInterest();
+//    }
 
-    @Override
-    public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
-        return _localKB.createInterest(cc);
-    }
+//    @Override
+//    public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
+//        return _localKB.createInterest(cc);
+//    }
 
-    @Override
-    public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        return _localKB.createSemanticTag(name, sis);
-    }
-
-    @Override
-    public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        return _localKB.createSemanticTag(name, si);
-    }
-
+//    @Override
+//    public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
+//        return _localKB.getTopicSTSet().createSemanticTag(name, sis);
+//    }
+//
+//    @Override
+//    public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
+//        return _localKB.createSemanticTag(name, si);
+//    }
+//
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
         return _localKB.createPeerSemanticTag(name, sis, addresses);
@@ -271,6 +271,21 @@ public class SyncKB implements SharkKB {
     @Override
     public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
         return _localKB.getTopicsAsTaxonomy();
+    }
+
+    @Override
+    public STSet getTypeSTSet() throws SharkKBException {
+        return this._localKB.getTypeSTSet();
+    }
+
+    @Override
+    public SemanticNet getTypesAsSemanticNet() throws SharkKBException {
+        return this._localKB.getTypesAsSemanticNet();
+    }
+
+    @Override
+    public Taxonomy getTypesAsTaxonomy() throws SharkKBException {
+        return this._localKB.getTypesAsTaxonomy();
     }
 
     @Override

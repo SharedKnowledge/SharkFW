@@ -60,7 +60,7 @@ public class BUG_NoDoublettInformationSuppressionTest {
         aliceTopicTag.move(aliceJapanTag);
         
 //        Interest aliceInterest = aliceKB.createInterest(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, null, null, null, ContextSpace.OUT));
-        Interest aliceInterest = aliceKB.createInterest(aliceKB.createContextCoordinates(aliceTopicTag, aliceOwnerTag, null, null, null, null, SharkCS.DIRECTION_OUT));
+        Interest aliceInterest = InMemoSharkKB.createInMemoCopy((SharkCS) aliceKB.createContextCoordinates(aliceTopicTag, aliceOwnerTag, null, null, null, null, SharkCS.DIRECTION_OUT));
         StandardKP aliceKP = new StandardKP(alice, aliceInterest, aliceKB);
         
 //        ContextPoint cp = aliceKB.createContextPoint(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, aliceOwnerTag, null, null, ContextSpace.OUT));
@@ -77,7 +77,7 @@ public class BUG_NoDoublettInformationSuppressionTest {
         PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:4131");
         //SemanticTag bobTopicTag = bobKB.createSemanticTag("Nippon", "http://www.nippon.jp");
         
-        Interest bobInterest = bobKB.createInterest(bobKB.createContextCoordinates(null, bobOwnerTag, null, null, null, null, SharkCS.DIRECTION_IN));
+        Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) bobKB.createContextCoordinates(null, bobOwnerTag, null, null, null, null, SharkCS.DIRECTION_IN));
         
         StandardKP bobKP = bob.createKP(bobInterest, bobKB);
         

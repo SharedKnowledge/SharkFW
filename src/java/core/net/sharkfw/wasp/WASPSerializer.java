@@ -195,7 +195,7 @@ public class WASPSerializer {
     }
         
     public SharkCS deserializeSharkCS(SharkKB kb, String sharkCS) throws SharkKBException {
-        Interest interest = kb.createInterest();
+        Interest interest = null; //kb.createInterest();
 
         // read topics dimension
         String topicsSerialized = "topics dim as JSON String"; // muss man aus dem sharkCSString füllen

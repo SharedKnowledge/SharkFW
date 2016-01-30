@@ -40,8 +40,8 @@ public class Assimilate_ExtractionTests {
       SharkKB kb = new InMemoSharkKB();
 
       // We need two distinct topics
-      SemanticTag topic = kb.createSemanticTag("Topic", "http://topic.de");
-      SemanticTag otherTopic = kb.createSemanticTag("Other-Topic", "http://other-topic.de");
+      SemanticTag topic = kb.getTopicSTSet().createSemanticTag("Topic", "http://topic.de");
+      SemanticTag otherTopic = kb.getTopicSTSet().createSemanticTag("Other-Topic", "http://other-topic.de");
 
       // Also two distinct originator
       PeerSemanticTag peerA = kb.createPeerSemanticTag("PeerA", "http://peerA.com", (String[]) null);
@@ -169,7 +169,7 @@ public class Assimilate_ExtractionTests {
       J2SEAndroidSharkEngine bob = new J2SEAndroidSharkEngine();
       SharkKB bobKb = new InMemoSharkKB();
 
-      SemanticTag bobTools = bobKb.createSemanticTag("Tools", "http://tools.org");
+      SemanticTag bobTools = bobKb.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
       PeerSemanticTag bobLocalPeer = bobKb.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556");
 

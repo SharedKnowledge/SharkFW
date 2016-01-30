@@ -21,6 +21,7 @@ public class FSSharkKB extends InMemoSharkKB implements SharkKB {
     private FSKnowledge fsk;
     
     public static final String TOPIC_FOLDER = "/topics";
+    public static final String TYPE_FOLDER = "/types";
     public static final String PEERS_FOLDER = "/peers";
     public static final String LOCATIONS_FOLDER = "/locations";
     public static final String TIMES_FOLDER = "/times";
@@ -40,6 +41,10 @@ public class FSSharkKB extends InMemoSharkKB implements SharkKB {
         // topics
             new InMemoSemanticNet(
                 new FSGenericTagStorage(rootFolder + TOPIC_FOLDER)),
+        
+        // types
+            new InMemoSemanticNet(
+                new FSGenericTagStorage(rootFolder + TYPE_FOLDER)),
         
         // peers
         new InMemoPeerTaxonomy(new InMemoPeerSemanticNet(
@@ -63,8 +68,17 @@ public class FSSharkKB extends InMemoSharkKB implements SharkKB {
     public FSSharkKB(SemanticNet topics, PeerTaxonomy peers,
                  SpatialSTSet locations, TimeSTSet times, String rootFolder) 
             throws SharkKBException {
+        this(topics,
+            new InMemoSemanticNet(
+                new FSGenericTagStorage(rootFolder + TYPE_FOLDER)),
+            peers, locations, times, rootFolder);
+    }
+    
+    public FSSharkKB(SemanticNet topics, SemanticNet types, PeerTaxonomy peers,
+                 SpatialSTSet locations, TimeSTSet times, String rootFolder) 
+            throws SharkKBException {
         
-        super(topics, peers, locations, times);
+        super(topics, types, peers, locations, times);
         
         // this as knowledge background.
         String kFolderName = rootFolder + KNOWLEDGE_FOLDER;

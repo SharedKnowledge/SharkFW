@@ -66,10 +66,10 @@ public class FSSharkKBTest {
         L.setLogLevel(L.LOGLEVEL_ALL);
         
         String javaSI = "http://www.java.net";
-        SemanticTag javaTag = kb.createSemanticTag("Java", javaSI);
+        SemanticTag javaTag = kb.getTopicSTSet().createSemanticTag("Java", javaSI);
         javaTag.setProperty("testProp", "testPropValue");
         
-        SemanticTag javaTagAgain = kb.createSemanticTag("Java", javaSI);
+        SemanticTag javaTagAgain = kb.getTopicSTSet().createSemanticTag("Java", javaSI);
         
         // should be the same
         Assert.assertEquals(javaTag, javaTagAgain);
@@ -142,7 +142,7 @@ public class FSSharkKBTest {
         L.setLogLevel(L.LOGLEVEL_ALL);
         
         String javaSI = "http://www.java.net";
-        SemanticTag javaTag = kb.createSemanticTag("Java", javaSI);
+        SemanticTag javaTag = kb.getTopicSTSet().createSemanticTag("Java", javaSI);
         
         ContextCoordinates cc = kb.createContextCoordinates(javaTag, null, null, null, null, null, SharkCS.DIRECTION_OUT);
         
@@ -180,7 +180,7 @@ public class FSSharkKBTest {
         L.setLogLevel(L.LOGLEVEL_ALL);
         
         String javaSI = "http://www.java.net";
-        SemanticTag javaTag = kb.createSemanticTag("Java", javaSI);
+        SemanticTag javaTag = kb.getTopicSTSet().createSemanticTag("Java", javaSI);
         
         ContextCoordinates cc = kb.createContextCoordinates(javaTag, null, null, null, null, null, SharkCS.DIRECTION_OUT);
         

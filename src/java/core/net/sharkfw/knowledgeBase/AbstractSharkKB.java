@@ -28,6 +28,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public static String SHARKFW_TIME_RECEIVED_PROPERTY = "sharkfw_timeReceived";
 
     protected SemanticNet topics;
+    protected SemanticNet types;
     protected PeerTaxonomy peers;
     protected SpatialSTSet locations;
     protected TimeSTSet times;
@@ -37,16 +38,23 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     protected AbstractSharkKB() {}
     
-    protected AbstractSharkKB(SemanticNet topics, PeerTaxonomy peers,
-                 SpatialSTSet locations, TimeSTSet times) 
+    protected AbstractSharkKB(SemanticNet topics, SemanticNet types, 
+            PeerTaxonomy peers, SpatialSTSet locations, TimeSTSet times) 
     {
         
         this.topics = topics;
+        this.types = types;
         this.peers = peers;
         this.locations = locations;
         this.times = times;
         
+        
         topics.addListener(this);
+        
+        if(types != null) {
+            types.addListener(this);
+        }
+        
         peers.addListener(this);
         locations.addListener(this);
         times.addListener(this);
@@ -56,8 +64,15 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     protected AbstractSharkKB(SemanticNet topics, PeerTaxonomy peers,
                  SpatialSTSet locations, TimeSTSet times,
                  Knowledge k) throws SharkKBException {
+        this(topics, null, peers, locations, times, k);
         
-        this(topics, peers, locations, times);
+    }
+    
+    protected AbstractSharkKB(SemanticNet topics, SemanticNet types, 
+            PeerTaxonomy peers, SpatialSTSet locations, TimeSTSet times,
+                 Knowledge k) throws SharkKBException {
+        
+        this(topics, types, peers, locations, times);
         this.knowledge = k;
         this.knowledge.addListener(this);
     }    
@@ -116,23 +131,23 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException;
 
 
-    @Override
-    /**
-     * @deprecated
-     */
-    public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        SemanticTag st = this.getTopicSTSet().createSemanticTag(name, sis);
-        this.notifySemanticTagCreated(st);
-        return st;
-    }
-
-    /**
-     * @deprecated
-     */
-    @Override
-    public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        return this.createSemanticTag(name, new String[] {si});
-    }
+//    @Override
+//    /**
+//     * @deprecated
+//     */
+//    public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
+//        SemanticTag st = this.getTopicSTSet().createSemanticTag(name, sis);
+//        this.notifySemanticTagCreated(st);
+//        return st;
+//    }
+//    
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
+//        return this.getTopicSTSet().createSemanticTag(name, new String[] {si});
+//    }
 
     /**
      * @deprecated
@@ -288,6 +303,33 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             throw new SharkKBException("topic semantic tag set is not a semantic network");
         }
     }
+    
+    @Override
+    public STSet getTypeSTSet() throws SharkKBException {
+        return this.types;
+    }
+
+    @Override
+    public SemanticNet getTypesAsSemanticNet() throws SharkKBException {
+        if(this.types instanceof SemanticNet) {
+            return (SemanticNet) this.types;
+        } else {
+            throw new SharkKBException("type semantic tag set is not a semantic network");
+        }
+    }
+
+    @Override
+    public Taxonomy getTypesAsTaxonomy() throws SharkKBException {
+        if(this.types instanceof Taxonomy) {
+            return (Taxonomy) this.types;
+        } else {
+            if(this.types instanceof SemanticNet) {
+                return new InMemoTaxonomy((SemanticNet)this.types);
+            } else {
+                throw new SharkKBException("types semantic tag set is not a taxonomy and cannot be used as taxonomy");
+            }
+        }
+    }
 
     public void setTopics(SemanticNet topics) {
         this.topics = topics;
@@ -352,9 +394,17 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return this.contextualize(as, this.getStandardFPSet());
     }
     
+    /**
+     * Should use methods in the algebra!
+     * @param context
+     * @param fp
+     * @return
+     * @throws SharkKBException 
+     * @deprecated 
+     */
     @Override
     public Interest contextualize(SharkCS context, FragmentationParameter[] fp) throws SharkKBException {
-        Interest result = this.createInterest();
+        Interest result = new net.sharkfw.knowledgeBase.inmemory.InMemoInterest();
         
         SharkCSAlgebra.contextualize(result, this.asSharkCS(), context, fp);
         /* NOTE: contextualize twists peer/remote peer and changes direction

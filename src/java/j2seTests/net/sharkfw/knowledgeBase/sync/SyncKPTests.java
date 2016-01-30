@@ -130,7 +130,7 @@ public class SyncKPTests {
         // TODO there is no communication at all which is not what the test is about
         
         // Bob will have a standard KP for this and is interested in anything.
-        Interest bobAnyInterest = _bobKB.createInterest(_bobKB.createContextCoordinates(null, null, _bob, null, null, null, SharkCS.DIRECTION_INOUT));
+        Interest bobAnyInterest = InMemoSharkKB.createInMemoCopy((SharkCS) _bobKB.createContextCoordinates(null, null, _bob, null, null, null, SharkCS.DIRECTION_INOUT));
         _bobEngine = new J2SEAndroidSharkEngine();
         KnowledgePort bobStandardKP = new StandardKP(_bobEngine, bobAnyInterest, _bobKB);
         
@@ -309,13 +309,13 @@ public class SyncKPTests {
         ContextPoint aliceCP = aliceKB.createContextPoint(aliceCC);
         aliceCP.addInformation("I like teapots.");
         // And bob some about noodles 
-        SemanticTag noodlesST = bobKB.createSemanticTag("Noodles", "NoodlesIdentifier");
+        SemanticTag noodlesST = bobKB.getTopicSTSet().createSemanticTag("Noodles", "NoodlesIdentifier");
         ContextCoordinates bobCC = bobKB.createContextCoordinates(noodlesST, _bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
         ContextPoint bobCP = bobKB.createContextPoint(bobCC);
         bobCP.addInformation("Noodles are very good when you're hungry.");
         bobCP.addInformation("Unlike teapots. They suck.");
         // And about sauce
-        SemanticTag sauceST = bobKB.createSemanticTag("Sauce", "SauceIdentifier");
+        SemanticTag sauceST = bobKB.getTopicSTSet().createSemanticTag("Sauce", "SauceIdentifier");
         ContextCoordinates bobCC2 = bobKB.createContextCoordinates(sauceST, _bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
         ContextPoint bobCP2 = bobKB.createContextPoint(bobCC2);
         bobCP2.addInformation("Sauces make noodles even better.");

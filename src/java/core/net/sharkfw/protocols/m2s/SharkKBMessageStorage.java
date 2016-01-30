@@ -49,7 +49,7 @@ public class SharkKBMessageStorage implements MessageStorage {
     }
     
     public ContextPoint createCP(String id, boolean toBeSent) throws SharkException {
-        SemanticTag idTag = kb.createSemanticTag(id, id);
+        SemanticTag idTag = kb.getTopicSTSet().createSemanticTag(id, id);
 
         int direction = toBeSent ? SharkCS.DIRECTION_OUT : SharkCS.DIRECTION_IN;
         ContextCoordinates cc = 
@@ -60,7 +60,7 @@ public class SharkKBMessageStorage implements MessageStorage {
     
     private ContextPoint getCP(String id, boolean toBeSent) throws SharkException {
         try {
-            SemanticTag idTag = kb.createSemanticTag(id, id);
+            SemanticTag idTag = kb.getTopicSTSet().createSemanticTag(id, id);
             
             int direction = toBeSent ? SharkCS.DIRECTION_OUT : SharkCS.DIRECTION_IN;
             ContextCoordinates cc = 

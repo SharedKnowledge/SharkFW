@@ -34,7 +34,7 @@ public class TimestampListTest {
     public void setUp() throws SharkKBException {
         _kb = new SyncKB(new InMemoSharkKB());
         L.setLogLevel(L.LOGLEVEL_ALL);
-        _teapotST = _kb.createSemanticTag("teapot", "www.teapot.net");
+        _teapotST = _kb.getTopicSTSet().createSemanticTag("teapot", "www.teapot.net");
         _alicePST = _kb.createPeerSemanticTag("Alice", "www.alice.net", "mail@alice.net");
         _bobPST = _kb.createPeerSemanticTag("Bob", "www.bob.net", "mail@bob.net");
         _claraPST = _kb.createPeerSemanticTag("Clara", "www.clara.net", "mail@clara.net");

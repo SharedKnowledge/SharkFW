@@ -125,7 +125,7 @@ public class ExchangeTests {
       J2SEAndroidSharkEngine bob = new J2SEAndroidSharkEngine();
       SharkKB bobKB = new InMemoSharkKB();
 
-      SemanticTag bobTools = bobKB.createSemanticTag("Tools", "http://tools.org");
+      SemanticTag bobTools = bobKB.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
 //      PeerSemanticTag bobLocalPeer = bobKB.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556");
       PeerSemanticTag bobLocalPeer = bobKB.createPeerSemanticTag("Bob", "http://bob.org", (String[]) null);
@@ -241,7 +241,7 @@ public class ExchangeTests {
       J2SEAndroidSharkEngine bob = new J2SEAndroidSharkEngine();
       SharkKB bobKb = new InMemoSharkKB();
 
-      SemanticTag bobTools = bobKb.createSemanticTag("Tools", "http://tools.org");
+      SemanticTag bobTools = bobKb.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
       PeerSemanticTag bobLocalPeer = bobKb.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5558");
 
@@ -379,7 +379,7 @@ public class ExchangeTests {
       J2SEAndroidSharkEngine bob = new J2SEAndroidSharkEngine();
       SharkKB bobKb = new InMemoSharkKB();
 
-      SemanticTag bobTools = bobKb.createSemanticTag("Tools", "http://tools.org");
+      SemanticTag bobTools = bobKb.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
       PeerSemanticTag bobLocalPeer = bobKb.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5561");
 
@@ -661,7 +661,7 @@ public class ExchangeTests {
         aliceTopicTag.move(aliceJapanTag);
         
 //        Interest aliceInterest = aliceKB.createInterest(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, null, null, null, ContextSpace.OUT));
-        Interest aliceInterest = aliceKB.createInterest(
+        Interest aliceInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
                 InMemoSharkKB.createInMemoContextCoordinates(aliceTopicTag, 
                 aliceOwnerTag, null, null, null, null, SharkCS.DIRECTION_OUT));
         
@@ -685,7 +685,7 @@ public class ExchangeTests {
         PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:2121");
         //SemanticTag bobTopicTag = bobKB.createSemanticTag("Nippon", "http://www.nippon.jp");
         
-        Interest bobInterest = bobKB.createInterest(
+        Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
                 InMemoSharkKB.createInMemoContextCoordinates(null, bobOwnerTag, 
                 null, null, null, null, SharkCS.DIRECTION_IN)
                 );
@@ -744,7 +744,7 @@ public class ExchangeTests {
         aliceTopicTag.move(aliceJapanTag);
         
 //        Interest aliceInterest = aliceKB.createInterest(new InMemoContextCoordinates(aliceTopicTag, aliceOwnerTag, aliceBobTag, null, null, null, ContextSpace.OUT));
-        Interest aliceInterest = aliceKB.createInterest(
+        Interest aliceInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
                 InMemoSharkKB.createInMemoContextCoordinates(
                 aliceTopicTag, aliceOwnerTag, null, null, null, null, 
                 SharkCS.DIRECTION_OUT));
@@ -769,7 +769,7 @@ public class ExchangeTests {
         PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:4131");
         //SemanticTag bobTopicTag = bobKB.createSemanticTag("Nippon", "http://www.nippon.jp");
         
-        Interest bobInterest = bobKB.createInterest(
+        Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
                 InMemoSharkKB.createInMemoContextCoordinates(null, bobOwnerTag, 
                 null, null, null, null, SharkCS.DIRECTION_IN));
         StandardKP bobKP = new StandardKP(bob, bobInterest, bobKB);
@@ -803,7 +803,7 @@ public class ExchangeTests {
         SharkKB aliceKB = new InMemoSharkKB();
         
         PeerSemanticTag aliceOwnerTag = aliceKB.createPeerSemanticTag("Alice", aliceURL, aliceAddress);
-        SemanticTag aliceJavaTag = aliceKB.createSemanticTag("Japan", "http://www.java.de");
+        SemanticTag aliceJavaTag = aliceKB.getTopicSTSet().createSemanticTag("Japan", "http://www.java.de");
         ContextCoordinates aliceCC = 
                 InMemoSharkKB.createInMemoContextCoordinates(aliceJavaTag, 
                 aliceOwnerTag, null, aliceOwnerTag, null, null, 
@@ -812,7 +812,7 @@ public class ExchangeTests {
         ContextPoint aliceCP = aliceKB.createContextPoint(aliceCC);
         aliceCP.addInformation(testText);
         
-        Interest aliceInterest = aliceKB.createInterest(aliceCC);
+        Interest aliceInterest = InMemoSharkKB.createInMemoCopy((SharkCS) aliceCC);
         
         StandardKP aliceKP = new StandardKP(alice, aliceInterest, aliceKB);
         
@@ -823,7 +823,7 @@ public class ExchangeTests {
         SharkKB bobKB = new InMemoSharkKB();
         
         PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", bobURL, bobAddress);
-        Interest bobInterest = bobKB.createInterest(
+        Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
                 InMemoSharkKB.createInMemoContextCoordinates(null, bobOwnerTag, 
                 null, null, null, null, SharkCS.DIRECTION_IN));
         StandardKP bobKP = new StandardKP(bob, bobInterest, bobKB);

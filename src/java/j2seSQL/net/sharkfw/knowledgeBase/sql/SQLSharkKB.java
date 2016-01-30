@@ -885,16 +885,6 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
 
     @Override
-    public Interest createInterest() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Iterator<SemanticTag> getTags() throws SharkKBException {
         EnumerationChain eChain = new EnumerationChain();
         eChain.addEnumeration(this.tags());

@@ -6,7 +6,6 @@ import java.util.Iterator;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
-import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.L;
 import net.sharkfw.system.Util;
 
@@ -538,6 +537,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      */
     public InMemoSharkKB() {
         super(new InMemoSemanticNet(),
+            new InMemoSemanticNet(),
             new InMemoPeerTaxonomy(),
             new InMemoSpatialSTSet(),
             new InMemoTimeSTSet());
@@ -548,10 +548,27 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         this.setKnowledge(k);
     }
 
+    /**
+     * 
+     * @param topics
+     * @param peers
+     * @param locations
+     * @param times
+     * @throws SharkKBException 
+     * @deprecated 
+     */
     protected InMemoSharkKB(SemanticNet topics, PeerTaxonomy peers,
                  SpatialSTSet locations, TimeSTSet times) throws SharkKBException {
         
-        super(topics, peers, locations, times);
+        super(topics, 
+            new InMemoSemanticNet(), peers, locations, times);
+    }
+    
+    protected InMemoSharkKB(SemanticNet topics, SemanticNet types, 
+            PeerTaxonomy peers, SpatialSTSet locations, 
+            TimeSTSet times) throws SharkKBException {
+        
+        super(topics, types, peers, locations, times);
     }
     
     InMemoSharkKB(SemanticNet topics, PeerTaxonomy peers,
@@ -559,6 +576,13 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                  Knowledge k) throws SharkKBException {
         
         super(topics, peers, locations, times, k);
+    }
+    
+    InMemoSharkKB(SemanticNet topics, SemanticNet types, PeerTaxonomy peers,
+                 SpatialSTSet locations, TimeSTSet times,
+                 Knowledge k) throws SharkKBException {
+        
+        super(topics, types, peers, locations, times, k);
     }
     
     SharkKB createTwin(Knowledge k) throws SharkKBException {
@@ -594,7 +618,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return new InMemoContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
     }
     
-    @Override
+//    @Override
     public Interest createInterest() throws SharkKBException{
         return new InMemoInterest();
     }
@@ -619,7 +643,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * @return
      * @throws SharkKBException 
      */
-    @Override
+//    @Override
     public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
         return InMemoSharkKB.createInMemoCopy((SharkCS) cc);
     }

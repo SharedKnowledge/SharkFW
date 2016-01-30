@@ -42,11 +42,11 @@ public class SyncInformationTests {
         inMemoKB = new InMemoSharkKB();
         
         // And add some vocabulary
-        SemanticTag teapotST = inMemoKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
-        SemanticTag programmingST = inMemoKB.createSemanticTag("Programming", "http://en.wikipedia.org/wiki/Programming");
-        PeerSemanticTag alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
-        PeerSemanticTag bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
-        TimeSemanticTag timeST = inMemoKB.createTimeSemanticTag(100, 9000);
+        SemanticTag teapotST = inMemoKB.getTopicSTSet().createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
+        SemanticTag programmingST = inMemoKB.getTopicSTSet().createSemanticTag("Programming", "http://en.wikipedia.org/wiki/Programming");
+        PeerSemanticTag alice = inMemoKB.getPeerSTSet().createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
+        PeerSemanticTag bob = inMemoKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
+        TimeSemanticTag timeST = inMemoKB.getTimeSTSet().createTimeSemanticTag(100, 9000);
         SpatialSemanticTag spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" });
         
         teapotCP = inMemoKB.createContextPoint(inMemoKB.createContextCoordinates(teapotST, bob, bob, alice, timeST, spatialST, SharkCS.DIRECTION_INOUT));

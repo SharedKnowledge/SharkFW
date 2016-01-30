@@ -55,7 +55,7 @@ public class BUG_TaxonomyTest {
 
         ContextCoordinates interestCCAlice = kbAlice.createContextCoordinates(categorieTagAlice, peerAlice_alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
 
-        Interest interestAlice = kbAlice.createInterest(interestCCAlice);
+        Interest interestAlice = InMemoSharkKB.createInMemoCopy((SharkCS) interestCCAlice);
 
         FragmentationParameter[] defaultFpAlice = kbAlice.getStandardFPSet();
         FragmentationParameter fpAlice = new FragmentationParameter(false, true, 3);
@@ -90,7 +90,7 @@ public class BUG_TaxonomyTest {
 
         ContextCoordinates interestCCBob = kbBob.createContextCoordinates(categorieTagBob, peerBob_bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
 
-        Interest interestBob = kbBob.createInterest(interestCCBob);
+        Interest interestBob = InMemoSharkKB.createInMemoCopy((SharkCS) interestCCBob);
 
         FragmentationParameter[] defaultFpBob = kbBob.getStandardFPSet();
         FragmentationParameter fpBob = new FragmentationParameter(false, true, 3);

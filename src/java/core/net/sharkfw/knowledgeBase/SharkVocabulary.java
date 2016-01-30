@@ -83,6 +83,24 @@ public interface SharkVocabulary {
   public Taxonomy getTopicsAsTaxonomy() throws SharkKBException;
 
   /**
+   * @return An STSet containing all types
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
+   */
+  public STSet getTypeSTSet() throws SharkKBException;
+
+  /**
+   * @return All types in a SemanticNet.
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
+   */
+  public SemanticNet getTypesAsSemanticNet()throws SharkKBException;
+
+  /**
+   * @return All types in a Taxonomy.
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
+   */
+  public Taxonomy getTypesAsTaxonomy() throws SharkKBException;
+  
+  /**
    * Return all Peers as an STSet.
    * 
    * Changes on this STSet also change the knowledgebase itself!

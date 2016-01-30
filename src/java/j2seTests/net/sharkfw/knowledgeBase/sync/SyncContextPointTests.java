@@ -53,11 +53,11 @@ public class SyncContextPointTests {
     public void setUp() throws SharkKBException {
         inMemoKB = new InMemoSharkKB();
     
-        teapotST = inMemoKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
-        alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
-        bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
-        timeST = inMemoKB.createTimeSemanticTag(100, 9000);
-        spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" });
+        teapotST = inMemoKB.getTopicSTSet().createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
+        alice = inMemoKB.getPeerSTSet().createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
+        bob = inMemoKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
+        timeST = inMemoKB.getTimeSTSet().createTimeSemanticTag(100, 9000);
+        spatialST = null; // TODO: inMemoKB.getSpatialSTSet().createSpatialSemanticTag("Berlin", new String[] { "Berlin" });
         
         teapotCC = inMemoKB.createContextCoordinates(teapotST, alice, bob, bob, timeST, spatialST, SharkCS.DIRECTION_INOUT);
         programmingCC = inMemoKB.createContextCoordinates(programmingST, bob, alice, alice, timeST, spatialST, SharkCS.DIRECTION_IN);

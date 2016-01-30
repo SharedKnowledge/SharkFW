@@ -14,7 +14,7 @@ import net.sharkfw.knowledgeBase.*;
 
 * @author mfi, thsc
  */
-class InMemoInterest extends InMemoSharkCS implements Interest {
+public class InMemoInterest extends InMemoSharkCS implements Interest {
     
     /* 
     We are about migrating from KEP to LASP. We need a mapping
@@ -47,7 +47,7 @@ class InMemoInterest extends InMemoSharkCS implements Interest {
     /**
      * Creates an any interest.
      */
-    InMemoInterest() {
+    public InMemoInterest() {
         this(null, null, null, null, null, null, null, SharkCS.DIRECTION_INOUT); 
     }
     

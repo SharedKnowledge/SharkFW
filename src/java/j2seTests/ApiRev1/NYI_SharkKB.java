@@ -93,9 +93,9 @@ public class NYI_SharkKB {
         J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
         SharkKB kb = new InMemoSharkKB();
 
-        SemanticTag topic1 = kb.createSemanticTag("Topic1", "http://topic1.de");
-        SemanticTag topic2 = kb.createSemanticTag("Topic2", "http://topic2.de");
-        SemanticTag topic3 = kb.createSemanticTag("Topic3", "http://topic3.de");
+        SemanticTag topic1 = kb.getTopicSTSet().createSemanticTag("Topic1", "http://topic1.de");
+        SemanticTag topic2 = kb.getTopicSTSet().createSemanticTag("Topic2", "http://topic2.de");
+        SemanticTag topic3 = kb.getTopicSTSet().createSemanticTag("Topic3", "http://topic3.de");
 
         PeerSemanticTag peer1 = kb.createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
         PeerSemanticTag peer2 = kb.createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
@@ -201,7 +201,7 @@ public class NYI_SharkKB {
     public void testAddSiInStandAloneSTSet() throws SharkKBException {
         SharkKB kb = new InMemoSharkKB();
 
-        SemanticTag topic = kb.createSemanticTag("Topic", "http://topic.de");
+        SemanticTag topic = kb.getTopicSTSet().createSemanticTag("Topic", "http://topic.de");
 
         // New STSet, empty
         STSet topics = InMemoSharkKB.createInMemoSTSet();

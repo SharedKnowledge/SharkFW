@@ -21,8 +21,8 @@ public class TestData {
     public static SharkKB createKB1() throws SharkKBException {
         SharkKB kb = new InMemoSharkKB();
         
-        SemanticTag topic1 = kb.createSemanticTag("Topic1", TOPIC1_SI);
-        PeerSemanticTag peer1 = kb.createPeerSemanticTag("Peer1", PEER1_SI, "tcp://localhost:5555");
+        SemanticTag topic1 = kb.getTopicSTSet().createSemanticTag("Topic1", TOPIC1_SI);
+        PeerSemanticTag peer1 = kb.getPeerSTSet().createPeerSemanticTag("Peer1", PEER1_SI, "tcp://localhost:5555");
         
         ContextCoordinates cc = kb.createContextCoordinates(topic1, peer1, peer1, null, null, null, SharkCS.DIRECTION_INOUT);
         

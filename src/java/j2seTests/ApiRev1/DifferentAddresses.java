@@ -2,23 +2,17 @@ package ApiRev1;
 
 import java.io.IOException;
 import junit.framework.Assert;
-import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.peer.KnowledgePort;
-import net.sharkfw.peer.StandardKP;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -56,7 +50,7 @@ public class DifferentAddresses {
         J2SEAndroidSharkEngine aliceSE = new J2SEAndroidSharkEngine();
         
         SharkKB aliceKB = new InMemoSharkKB();
-        Interest aliceInterest = aliceKB.createInterest();
+        Interest aliceInterest = InMemoSharkKB.createInMemoInterest();
         
         DummyKP aliceKP = new DummyKP(aliceSE);
         PeerSemanticTag aliceBob = aliceKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", this.bobAddress);

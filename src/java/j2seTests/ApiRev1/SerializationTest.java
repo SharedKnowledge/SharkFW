@@ -62,10 +62,10 @@ public class SerializationTest {
       SharkKB kb = new InMemoSharkKB();
 
       // Build vocabulary
-      SemanticTag t1 = kb.createSemanticTag("Topic1", "http://topci1.de");
-      SemanticTag t2 = kb.createSemanticTag("Topic2", "http://topci2.de");
-      SemanticTag t3 = kb.createSemanticTag("Topic3", "http://topci3.de");
-      SemanticTag t4 = kb.createSemanticTag("Topic4", "http://topci4.de");
+      SemanticTag t1 = kb.getTopicSTSet().createSemanticTag("Topic1", "http://topci1.de");
+      SemanticTag t2 = kb.getTopicSTSet().createSemanticTag("Topic2", "http://topci2.de");
+      SemanticTag t3 = kb.getTopicSTSet().createSemanticTag("Topic3", "http://topci3.de");
+      SemanticTag t4 = kb.getTopicSTSet().createSemanticTag("Topic4", "http://topci4.de");
 
       PeerSemanticTag p1 = kb.createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
       PeerSemanticTag p2 = kb.createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
@@ -126,7 +126,7 @@ public class SerializationTest {
           J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
           SharkKB kb = new InMemoSharkKB();
 
-          SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
+          SemanticTag test = kb.getTopicSTSet().createSemanticTag("Test", "http://test.de");
           test.setProperty("key1", "Value1");
           test.setProperty("key2", "value2");
 
@@ -164,7 +164,7 @@ public class SerializationTest {
           J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
           SharkKB kb = new InMemoSharkKB();
 
-          SemanticTag test = kb.createSemanticTag("Test", "http://test.de");
+          SemanticTag test = kb.getTopicSTSet().createSemanticTag("Test", "http://test.de");
           test.setProperty("key1", "Value1");
           test.setProperty("key2", "value2", false);
 

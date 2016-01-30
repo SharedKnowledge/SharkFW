@@ -199,34 +199,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public FragmentationParameter[] getStandardFPSet();
 
-    public Interest createInterest() throws SharkKBException;
-    
-    /**
-     * Create an interest by copying coordinate settings
-     * @param cc
-     * @return 
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     */
-    public Interest createInterest(ContextCoordinates cc) throws SharkKBException;
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param sis
-     * @return
-     * @throws SharkKBException 
-     */
-    public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException;
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param si
-     * @return
-     * @throws SharkKBException 
-     */
-    public SemanticTag createSemanticTag(String name, String si) throws SharkKBException;
-
     /**
      * @deprecated use method semantic tag set instead
      * @param name

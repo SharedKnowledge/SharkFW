@@ -43,7 +43,7 @@ public class SyncKBTests{
         inMemoKB = new InMemoSharkKB();
         
         try {
-            teapotST = inMemoKB.createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
+            teapotST = inMemoKB.getTopicSTSet().createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
             alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
             bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
             timeST = inMemoKB.createTimeSemanticTag(100, 9000);
