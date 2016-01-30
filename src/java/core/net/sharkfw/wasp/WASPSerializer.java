@@ -1,8 +1,11 @@
 package net.sharkfw.wasp;
 
 import java.util.Enumeration;
+import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.LASP_CS;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -15,6 +18,7 @@ import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.Util;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -154,8 +158,57 @@ public class WASPSerializer {
         return null;
     }
     
-    public static Knowledge deserializeKnowledge(String knowledge){
-        return null;
+    /**
+     * Deserializes knowledge and return a newly created knowledge object..
+     * @param knowledge
+     * @return
+     * @throws SharkKBException 
+     */
+    public static Knowledge deserializeKnowledge(String knowledge) throws SharkKBException {
+        WASPSerializer wS = new WASPSerializer();
+        
+        InMemoSharkKB imkb = new InMemoSharkKB();
+        
+        wS.deserializeAndMergeKnowledge(imkb, knowledge);
+        
+        return imkb.asKnowledge();
+    }
+    
+    /**
+     * Deserialzes and merges knowledge into an existing knowledge base
+     * @param target
+     * @param knowledgeString
+     * @throws SharkKBException 
+     */
+    public void deserializeAndMergeKnowledge(SharkKB target, String knowledgeString) throws SharkKBException {
+        // deserialize vocabulary and merge into target
+        SharkCS vocabulary = null; // shouldn't be null after deserialization
+        Util.merge(target, vocabulary);
+        
+        // deserialize context
+        
+        /*
+        LASP exchanges knowledge which contains semantically annotated 
+        information. Each information is attached to a context space (!) not 
+        only a single context point as in KEP. That actually is one major
+        difference (enhancements) compared to KEP. Thus, we can deserialize
+        ContextSpace objects and add information later...
+        */
+        
+        /* we use deserializeCS in that class to create a context space out
+            of a string */
+        LASP_CS cs = this.deserializeCS(target, knowledgeString);
+        
+        // could add cs to knowledge base
+        InformationSpace infoSpace = target.createContextSpace(cs);
+        
+        /* infos can be added now - tja und das muss man schlau machen
+        wegen der eventuell großen Datenmengen. Man kann ein Infoobjekt
+        eibnhängen, das aber nicht sofort alle Daten aus dem stream liest...
+        Da InfoSpace nicht implementiert ist, kann man sich noch alles
+        wünschen... ;)
+        */
+        // infoSpace.addInformation(??)
     }
     
     public SemanticTag deserializeTag(STSet targetSet, String tag) throws SharkKBException {
@@ -192,7 +245,7 @@ public class WASPSerializer {
         return null;
     }
         
-    public SharkCS deserializeSharkCS(SharkKB kb, String sharkCS) throws SharkKBException {
+    public LASP_CS deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
         Interest interest = InMemoSharkKB.createInMemoInterest();
 
         // read topics dimension
@@ -247,9 +300,11 @@ public class WASPSerializer {
      * @return
      * @throws SharkKBException
      */
-    public static SharkCS deserializeSharkCS(String sharkCS) throws SharkKBException {
+    public static LASP_CS deserializeSharkCS(String sharkCS) throws SharkKBException {
         WASPSerializer wS = new WASPSerializer();
         
-        return wS.deserializeSharkCS(new InMemoSharkKB(), sharkCS);
+        InMemoSharkKB imkb = new InMemoSharkKB();
+        
+        return wS.deserializeCS(imkb, sharkCS);
     }
 }

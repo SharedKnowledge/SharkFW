@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeListener;
+import net.sharkfw.knowledgeBase.LASP_CS;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
 /**
@@ -49,6 +50,11 @@ public class SQLKnowledge implements Knowledge {
 
     @Override
     public void removeListener(KnowledgeListener kListener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void addInformationSpace(LASP_CS space) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

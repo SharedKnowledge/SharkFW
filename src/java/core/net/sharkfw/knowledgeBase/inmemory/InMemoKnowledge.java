@@ -132,4 +132,9 @@ public class InMemoKnowledge implements Knowledge {
     public void removeListener(KnowledgeListener kbl) {
         this.listeners.remove(kbl);
     }
+
+    @Override
+    public void addInformationSpace(LASP_CS space) {
+        // TODO
+    }
 }

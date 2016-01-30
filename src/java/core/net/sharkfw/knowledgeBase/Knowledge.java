@@ -30,6 +30,8 @@ public interface Knowledge {
    * @param cp The ContextPoint to be added
    */
   public void addContextPoint(ContextPoint cp);
+  
+  public void addInformationSpace(LASP_CS space);
 
   /**
    * Remove a given Context Point from the knowledge.

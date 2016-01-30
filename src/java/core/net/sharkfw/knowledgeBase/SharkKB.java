@@ -101,7 +101,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public ContextPoint createContextPoint(ContextCoordinates coordinates) 
           throws SharkKBException;
   
-  public ContextPoint createContextSpace(LASP_CS space) throws SharkKBException;
+  public InformationSpace createContextSpace(LASP_CS space) throws SharkKBException;
   
     /**
      * Create a new (empty) knowledge object. The actual knowledge base will

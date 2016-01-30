@@ -114,7 +114,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public ContextPoint createContextSpace(LASP_CS space) 
+    public InformationSpace createContextSpace(LASP_CS space) 
             throws SharkKBException {
         throw new SharkKBException("not yet implemented");
     }
