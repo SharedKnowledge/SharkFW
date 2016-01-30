@@ -5,7 +5,7 @@ import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.LASP_CS;
+import net.sharkfw.knowledgeBase.LASPSpace;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -197,7 +197,7 @@ public class WASPSerializer {
         
         /* we use deserializeCS in that class to create a context space out
             of a string */
-        LASP_CS cs = this.deserializeCS(target, knowledgeString);
+        LASPSpace cs = this.deserializeCS(target, knowledgeString);
         
         // could add cs to knowledge base
         InformationSpace infoSpace = target.createInformationSpace(cs);
@@ -245,7 +245,7 @@ public class WASPSerializer {
         return null;
     }
         
-    public LASP_CS deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
+    public LASPSpace deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
         Interest interest = InMemoSharkKB.createInMemoInterest();
 
         // read topics dimension
@@ -300,7 +300,7 @@ public class WASPSerializer {
      * @return
      * @throws SharkKBException
      */
-    public static LASP_CS deserializeSharkCS(String sharkCS) throws SharkKBException {
+    public static LASPSpace deserializeSharkCS(String sharkCS) throws SharkKBException {
         WASPSerializer wS = new WASPSerializer();
         
         InMemoSharkKB imkb = new InMemoSharkKB();

@@ -336,7 +336,7 @@ abstract public class KnowledgePort {
      * @param interest
      * @param laspConnection 
      */
-    protected void doExpose(LASP_CS interest, LASPConnection laspConnection) throws SharkKBException {
+    protected void doExpose(LASPSpace interest, LASPConnection laspConnection) throws SharkKBException {
         // produce a KEP interest based on LASP-interest
         
         STSet topics = interest.getTopics();

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationSpace;
-import net.sharkfw.knowledgeBase.LASP_CS;
+import net.sharkfw.knowledgeBase.LASPSpace;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
@@ -21,10 +21,10 @@ import net.sharkfw.knowledgeBase.SharkVocabulary;
  */
 
 public class InformationSpace2ContextPoint implements InformationSpace {
-    private LASP_CS space;
+    private LASPSpace space;
     private ArrayList<ContextPoint> cpList;
 
-    public InformationSpace2ContextPoint(AbstractSharkKB kb, LASP_CS space) 
+    public InformationSpace2ContextPoint(AbstractSharkKB kb, LASPSpace space) 
             throws SharkKBException {
         
         // let's split our space into a points which are in there.
@@ -41,12 +41,12 @@ public class InformationSpace2ContextPoint implements InformationSpace {
     }
 
     @Override
-    public LASP_CS getContextSpace() throws SharkKBException {
+    public LASPSpace getContextSpace() throws SharkKBException {
         return this.space;
     }
 
     @Override
-    public void setContextSpace(LASP_CS space) throws SharkKBException {
+    public void setContextSpace(LASPSpace space) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

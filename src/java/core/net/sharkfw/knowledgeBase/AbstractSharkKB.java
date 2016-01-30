@@ -126,7 +126,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @throws SharkKBException 
      */
     @Override
-    public InformationSpace createInformationSpace(LASP_CS space) 
+    public InformationSpace createInformationSpace(LASPSpace space) 
             throws SharkKBException {
         
         return new InformationSpace2ContextPoint(this, space);
@@ -302,7 +302,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @return
      * @throws SharkKBException 
      */
-    HashSet<ContextCoordinates> possibleCoordinates(LASP_CS space) throws SharkKBException {
+    HashSet<ContextCoordinates> possibleCoordinates(LASPSpace space) throws SharkKBException {
         if (space == null) {
             return null;
         }

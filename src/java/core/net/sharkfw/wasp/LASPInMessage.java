@@ -2,7 +2,7 @@ package net.sharkfw.wasp;
 
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.LASP_CS;
+import net.sharkfw.knowledgeBase.LASPSpace;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 
@@ -27,7 +27,7 @@ public class LASPInMessage extends LASPMessage {
         return null;
     }
     
-    public LASP_CS getInterest() {
+    public LASPSpace getInterest() {
         return null; // TODO
     }
 }

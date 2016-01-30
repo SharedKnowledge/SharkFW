@@ -19,8 +19,8 @@ import java.util.Iterator;
  * @author thsc
  */
 public interface InformationSpace {
-    LASP_CS getContextSpace() throws SharkKBException;
-    void setContextSpace(LASP_CS space) throws SharkKBException;
+    LASPSpace getContextSpace() throws SharkKBException;
+    void setContextSpace(LASPSpace space) throws SharkKBException;
     
   /**
    * Adds an existing information reference to that context point.
