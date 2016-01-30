@@ -83,7 +83,8 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @return 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
    */
-    public ContextCoordinates createContextCoordinates(SemanticTag topic,
+    public ContextCoordinates createContextCoordinates(
+            SemanticTag topic,
             PeerSemanticTag originator,
             PeerSemanticTag peer,
             PeerSemanticTag remotepeer,
@@ -101,7 +102,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public ContextPoint createContextPoint(ContextCoordinates coordinates) 
           throws SharkKBException;
   
-  public InformationSpace createContextSpace(LASP_CS space) throws SharkKBException;
+  public InformationSpace createInformationSpace(LASP_CS space) throws SharkKBException;
   
     /**
      * Create a new (empty) knowledge object. The actual knowledge base will

@@ -414,7 +414,7 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public InformationSpace createContextSpace(LASP_CS space) throws SharkKBException {
-        return this._localKB.createContextSpace(space);
+    public InformationSpace createInformationSpace(LASP_CS space) throws SharkKBException {
+        return this._localKB.createInformationSpace(space);
     }
 }

@@ -200,7 +200,7 @@ public class WASPSerializer {
         LASP_CS cs = this.deserializeCS(target, knowledgeString);
         
         // could add cs to knowledge base
-        InformationSpace infoSpace = target.createContextSpace(cs);
+        InformationSpace infoSpace = target.createInformationSpace(cs);
         
         /* infos can be added now - tja und das muss man schlau machen
         wegen der eventuell großen Datenmengen. Man kann ein Infoobjekt

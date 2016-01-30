@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -112,13 +113,24 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         
 //        return null;
     }
-    
+
+    /**
+     * That's the less performant implementation I can imagine. We split
+     * the space into single point and attach information to each point.
+     * 
+     * That's ought to be a temporary solutions and must urgently replaced
+     * by better solutions in less abstract derived classes
+     * 
+     * @param space
+     * @return
+     * @throws SharkKBException 
+     */
     @Override
-    public InformationSpace createContextSpace(LASP_CS space) 
+    public InformationSpace createInformationSpace(LASP_CS space) 
             throws SharkKBException {
-        throw new SharkKBException("not yet implemented");
+        
+        return new InformationSpace2ContextPoint(this, space);
     }
-    
     
     /**
      * Create an interest with given parameter. There is no need to
@@ -285,6 +297,96 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return new Iterator2Enumeration(iterCPs);
     }
     
+    /**
+     * @param space
+     * @return
+     * @throws SharkKBException 
+     */
+    HashSet<ContextCoordinates> possibleCoordinates(LASP_CS space) throws SharkKBException {
+        if (space == null) {
+            return null;
+        }
+        HashSet<ContextCoordinates> ccList = new HashSet<ContextCoordinates>();
+        
+        // create first prototype with direction and owner
+        if (space.getDirection() == SharkCS.DIRECTION_INOUT) {
+            // if INOUT: there are two additional coordinates:
+
+            //topic,originator,peer,remotepeer,time,location,direction
+            // we match LASP sender with KEP peer
+            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, SharkCS.DIRECTION_IN));
+            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, SharkCS.DIRECTION_OUT));
+        }
+        
+        ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, space.getDirection()));
+        
+        // no combine with other dimensions
+        
+        // LASP topics go with KEP topics
+        ccList = this.coordCombination(ccList, space.getTopics(), SharkCS.DIM_TOPIC);
+        
+        // LASP types are ignored here
+        
+        // LASP approvers matches with KEP originator
+        ccList = this.coordCombination(ccList, space.getApprovers(), SharkCS.DIM_ORIGINATOR);
+        
+        // LASP receivers go with KEP remote peers
+        ccList = this.coordCombination(ccList, space.getReceivers(), SharkCS.DIM_REMOTEPEER);
+        
+        // time and location is the same in both protocols
+        ccList = this.coordCombination(ccList, space.getTimes(), SharkCS.DIM_TIME);
+        ccList = this.coordCombination(ccList, space.getLocations(), SharkCS.DIM_LOCATION);
+        
+        return ccList;
+    }
+
+    protected HashSet coordCombination(HashSet<ContextCoordinates> protoCoo, STSet set, int dim) throws SharkKBException {
+        if (SharkCSAlgebra.isAny(set)) {
+            return protoCoo;
+        }
+        set.setEnumerateHiddenTags(true);
+        Enumeration<SemanticTag> tagEnum = set.tags();
+        if (tagEnum == null || !tagEnum.hasMoreElements()) {
+            return protoCoo;
+        }
+        HashSet<ContextCoordinates> result = new HashSet<ContextCoordinates>();
+        while (tagEnum.hasMoreElements()) {
+            SemanticTag tag = tagEnum.nextElement();
+            // combine with existing
+            Iterator<ContextCoordinates> cooIter = protoCoo.iterator();
+            while (cooIter.hasNext()) {
+                ContextCoordinates oldCC = cooIter.next();
+                SemanticTag topic = oldCC.getTopic();
+                PeerSemanticTag originator = oldCC.getOriginator();
+                PeerSemanticTag peer = oldCC.getPeer();
+                PeerSemanticTag remotePeer = oldCC.getRemotePeer();
+                TimeSemanticTag time = oldCC.getTime();
+                SpatialSemanticTag location = oldCC.getLocation();
+                int direction = oldCC.getDirection();
+                switch (dim) {
+                    case SharkCS.DIM_TOPIC:
+                        topic = tag;
+                        break;
+                    case SharkCS.DIM_PEER:
+                        peer = (PeerSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_REMOTEPEER:
+                        remotePeer = (PeerSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_TIME:
+                        time = (TimeSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_LOCATION:
+                        location = (SpatialSemanticTag) tag;
+                        break;
+                }
+                ContextCoordinates newCC = this.createContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
+                result.add(newCC);
+            }
+        }
+        return result;
+    }
+
     private ArrayList<KnowledgeBaseListener> listeners = new ArrayList<KnowledgeBaseListener>();
 
     @Override

@@ -656,7 +656,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         
         return cp;
     }
-
+    
     /**
      * Creates an interest with coordinates - coordinates are copied.
      * @param cc
@@ -819,8 +819,25 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         this.knowledge.addContextPoint(cp);
     }
 
+    /**
+     * Returns enumeration of all context points. This actually is the same as
+     * getContextPoints with an context space covering anything - which is technically
+     * a null reference.
+     *
+     * Use this methode very carefully. It produces a complete knowledge base dump.
+     * This can be a lot.
+     *
+     * @return
+     * @throws SharkKBException
+     */
     @Override
-    public Iterator contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
+    public Enumeration getAllContextPoints() throws SharkKBException {
+        ContextCoordinates cc = InMemoSharkKB.getAnyCoordinates();
+        return this.getContextPoints(cc);
+    }
+    
+    @Override
+    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
         if (cs == null) {
             return null;
         }
@@ -856,24 +873,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         }
         return result.iterator();
     }
-
-    /**
-     * Returns enumeration of all context points. This actually is the same as
-     * getContextPoints with an context space covering anything - which is technically
-     * a null reference.
-     *
-     * Use this methode very carefully. It produces a complete knowledge base dump.
-     * This can be a lot.
-     *
-     * @return
-     * @throws SharkKBException
-     */
-    @Override
-    public Enumeration getAllContextPoints() throws SharkKBException {
-        ContextCoordinates cc = InMemoSharkKB.getAnyCoordinates();
-        return this.getContextPoints(cc);
-    }
-
+    
     public HashSet possibleCoordinates(SharkCS cs) throws SharkKBException {
         if (cs == null) {
             return null;
@@ -895,52 +895,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return protoCoo;
     }
 
-    protected HashSet coordCombination(HashSet<ContextCoordinates> protoCoo, STSet set, int dim) throws SharkKBException {
-        if (SharkCSAlgebra.isAny(set)) {
-            return protoCoo;
-        }
-        set.setEnumerateHiddenTags(true);
-        Enumeration<SemanticTag> tagEnum = set.tags();
-        if (tagEnum == null || !tagEnum.hasMoreElements()) {
-            return protoCoo;
-        }
-        HashSet<ContextCoordinates> result = new HashSet<ContextCoordinates>();
-        while (tagEnum.hasMoreElements()) {
-            SemanticTag tag = tagEnum.nextElement();
-            // combine with existing
-            Iterator<ContextCoordinates> cooIter = protoCoo.iterator();
-            while (cooIter.hasNext()) {
-                ContextCoordinates oldCC = cooIter.next();
-                SemanticTag topic = oldCC.getTopic();
-                PeerSemanticTag originator = oldCC.getOriginator();
-                PeerSemanticTag peer = oldCC.getPeer();
-                PeerSemanticTag remotePeer = oldCC.getRemotePeer();
-                TimeSemanticTag time = oldCC.getTime();
-                SpatialSemanticTag location = oldCC.getLocation();
-                int direction = oldCC.getDirection();
-                switch (dim) {
-                    case SharkCS.DIM_TOPIC:
-                        topic = tag;
-                        break;
-                    case SharkCS.DIM_PEER:
-                        peer = (PeerSemanticTag) tag;
-                        break;
-                    case SharkCS.DIM_REMOTEPEER:
-                        remotePeer = (PeerSemanticTag) tag;
-                        break;
-                    case SharkCS.DIM_TIME:
-                        time = (TimeSemanticTag) tag;
-                        break;
-                    case SharkCS.DIM_LOCATION:
-                        location = (SpatialSemanticTag) tag;
-                        break;
-                }
-                ContextCoordinates newCC = this.createContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
-                result.add(newCC);
-            }
-        }
-        return result;
-    }
+    
 
     @Override
     public void persist() {
