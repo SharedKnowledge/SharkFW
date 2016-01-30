@@ -28,7 +28,7 @@ import org.json.JSONObject;
  */
 public class WASPSerializer {
     
-    public static JSONObject serializeExpose(Header header, SharkCS interest) 
+    public static JSONObject serializeExpose(LASPMessage header, SharkCS interest) 
             throws SharkKBException {
         
         JSONObject object = new JSONObject();
@@ -37,11 +37,11 @@ public class WASPSerializer {
         return object;
     }
     
-    public static JSONObject serializeInsert(Header header, Knowledge knowledge){
+    public static JSONObject serializeInsert(LASPMessage header, Knowledge knowledge){
         return new JSONObject();
     }
     
-    public static JSONObject serializeHeader(Header header){
+    public static JSONObject serializeHeader(LASPMessage header){
         return new JSONObject()
             .put("encrypted", header.isEncrypted())
             .put("encryptedSessionKey", header.getEncyptedSessionKey())
@@ -150,7 +150,7 @@ public class WASPSerializer {
         return new JSONObject();
     }
     
-    public static Header deserializeHeader(String header){
+    public static LASPMessage deserializeHeader(String header){
         return null;
     }
     

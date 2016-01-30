@@ -75,7 +75,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * along with message accountin, connection pooling and observing
      * the <code>Environment</code>
      */
-    protected KEPStub kepStub;
+    protected SharkStub kepStub;
     /**
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
      * in <code>KnowledgePort</code>s.
@@ -117,7 +117,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.kps = new Vector();
     }
 
-    protected void setKEPStub(KEPStub kepStub) {
+    protected void setKEPStub(SharkStub kepStub) {
         this.kepStub = kepStub;
         //this.environment = this.kepStub.getEnvironment();
     }
@@ -656,15 +656,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         throw new SharkProtocolNotSupportedException("Mail per Stream not supported");
     }
 
-    protected Stub createWifiDirectStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
+    protected Stub createWifiDirectStreamStub(SharkStub kepStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Wifi not supported in that version");
     }
 
-    protected Stub createNfcStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
+    protected Stub createNfcStreamStub(SharkStub kepStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Nfc not supported in that version");
     }
 
-    protected Stub createBluetoothStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
+    protected Stub createBluetoothStreamStub(SharkStub kepStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Bluetooth not supported in that version");
     }
     
@@ -735,7 +735,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      *
      * @return The KEPStub, currently used by this SharkEngine.
      */
-    public KEPStub getKepStub() {
+    public SharkStub getKepStub() {
         return kepStub;
     }
     private long kepSessionTimeOut = 3000;

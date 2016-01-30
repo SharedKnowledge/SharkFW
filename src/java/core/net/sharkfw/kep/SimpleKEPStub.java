@@ -28,7 +28,7 @@ import net.sharkfw.system.Util;
  * @author mfi
  */
 
-public class SimpleKEPStub extends KEPStub {
+public class SimpleKEPStub extends SharkStub {
   /**
    * A <code>Vector</code> containing all active KPs
    */

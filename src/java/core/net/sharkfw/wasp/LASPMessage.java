@@ -5,32 +5,27 @@
  */
 package net.sharkfw.wasp;
 
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.TimeSemanticTag;
+
 /**
  *
- * @author micha
+ * @author micha, thsc
  */
-public class Header {
+public abstract class LASPMessage {
+    public static final int LASP_EXPOSE = 0;
+    public static final int LASP_INSERT = 1;
+    public static final int LASP_RAW = 2;
     
     private boolean encrypted;
     private String encyptedSessionKey;
     private String version;
     private String format;
-    private String command;
+    private int command;
     private String senderInfo;
     private String signature;
     
-    public Header(){ }
-
-    public Header(boolean encrypted, String encyptedSessionKey, String version, String format, String command, String senderInfo, String signature) {
-        this.encrypted = encrypted;
-        this.encyptedSessionKey = encyptedSessionKey;
-        this.version = version;
-        this.format = format;
-        this.command = command;
-        this.senderInfo = senderInfo;
-        this.signature = signature;
-    }
-
     public boolean isEncrypted() {
         return encrypted;
     }
@@ -63,11 +58,11 @@ public class Header {
         this.format = format;
     }
 
-    public String getCommand() {
+    public int getCommand() {
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(int command) {
         this.command = command;
     }
 
@@ -86,7 +81,4 @@ public class Header {
     public void setSignature(String signature) {
         this.signature = signature;
     }
-    
-    
-    
 }

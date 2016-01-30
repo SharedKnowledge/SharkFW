@@ -23,14 +23,14 @@ import net.sharkfw.system.Streamer;
  * the session will wait and try again. If no more data is sent or more errors occurr the session closes down.
  *
  * @see net.sharkfw.protocols.StreamConnection
- * @see net.sharkfw.kep.KEPStub
+ * @see net.sharkfw.kep.SharkStub
  * @see net.sharkfw.peer.SharkEngine
  *
  * @author thsc
  * @author mfi
  */
 public class KEPSession extends Thread {
-    private KEPStub kepStub;
+    private SharkStub kepStub;
     private StreamConnection con;
     private SharkEngine se;
     //private SharkPublicKeyStorage publicKeyStorage;
@@ -38,7 +38,7 @@ public class KEPSession extends Thread {
     private SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
 
-    KEPSession(SharkEngine se, StreamConnection con, KEPStub kepStub) {
+    KEPSession(SharkEngine se, StreamConnection con, SharkStub kepStub) {
         this.se = se;
         this.con = con;
         this.kepStub = kepStub;

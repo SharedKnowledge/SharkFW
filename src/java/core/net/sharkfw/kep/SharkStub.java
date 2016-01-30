@@ -29,9 +29,9 @@ import net.sharkfw.system.KnowledgeStore;
  * @author thsc
  * @author mfi
  */
-public abstract class KEPStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting {
+public abstract class SharkStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting {
     
-    private static KEPStub env = null;
+    private static SharkStub env = null;
     /**
      * An integer value that contains the default silence period in which no message is allowed to be sent twice
      */

@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.security.PrivateKey;
 import java.util.Enumeration;
 import java.util.Vector;
-import net.sharkfw.kep.KEPStub;
+import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
@@ -42,7 +42,7 @@ abstract public class KnowledgePort {
     protected SharkCS interest;
     protected SharkCS receivedInterest; // TODO: Use!
     protected SharkKB kb;
-    protected KEPStub kepStub;
+    protected SharkStub kepStub;
     private boolean isStarted = false;
     protected Vector listeners = new Vector();
     @SuppressWarnings("unused")
@@ -103,7 +103,7 @@ abstract public class KnowledgePort {
      *
      * @param kepStub An instance of <code>KEPStub</code> that is used as the protocol engine by the local <code>SharkEngine</code>
      */
-    public void setKEPStub(KEPStub kepStub) {
+    public void setKEPStub(SharkStub kepStub) {
         this.kepStub = kepStub;
         this.kepStub.addListener(this);
     }

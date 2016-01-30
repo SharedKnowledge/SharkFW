@@ -69,7 +69,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
 
     // can be set by a knowledge port to change commication channel
 //    private String replyAddress = null;
-    private KEPStub kepStub;
+    private SharkStub kepStub;
     private SharkEngine se;
 
     /**
@@ -103,7 +103,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
     private String[] remotePeerSI = null;
     
     KEPInMessage(SharkEngine se, int kepCmdType, SharkCS receivedInterest, 
-            StreamConnection con, KEPStub kepStub) {
+            StreamConnection con, SharkStub kepStub) {
         
       this.receivedInterest = receivedInterest;
       
@@ -123,7 +123,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
      * @param interest KP description which was found
      * @param mStub
      */
-    KEPInMessage(SharkEngine se, int kepCmdType, SharkCS receivedInterest, KEPStub kepStub) {
+    KEPInMessage(SharkEngine se, int kepCmdType, SharkCS receivedInterest, SharkStub kepStub) {
       this.receivedInterest = receivedInterest;
       this.cmd = kepCmdType;
 
