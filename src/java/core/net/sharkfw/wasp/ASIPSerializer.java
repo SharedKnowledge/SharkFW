@@ -26,9 +26,9 @@ import org.json.JSONObject;
  *
  * @author micha
  */
-public class WASPSerializer {
+public class ASIPSerializer {
     
-    public static JSONObject serializeExpose(LASPMessage header, SharkCS interest) 
+    public static JSONObject serializeExpose(ASIPMessage header, SharkCS interest) 
             throws SharkKBException {
         
         JSONObject object = new JSONObject();
@@ -37,11 +37,11 @@ public class WASPSerializer {
         return object;
     }
     
-    public static JSONObject serializeInsert(LASPMessage header, Knowledge knowledge){
+    public static JSONObject serializeInsert(ASIPMessage header, Knowledge knowledge){
         return new JSONObject();
     }
     
-    public static JSONObject serializeHeader(LASPMessage header){
+    public static JSONObject serializeHeader(ASIPMessage header){
         return new JSONObject()
             .put("encrypted", header.isEncrypted())
             .put("encryptedSessionKey", header.getEncyptedSessionKey())
@@ -65,12 +65,12 @@ public class WASPSerializer {
         STSet times = sharkCS.getTimes();
         int direction = sharkCS.getDirection();
         
-        object.put("topics", WASPSerializer.serializeSTSet(topics));
-        object.put("approvers", WASPSerializer.serializeSTSet(approvers));
-        object.put("peers", WASPSerializer.serializeSTSet(peers));
-        object.put("originator", WASPSerializer.serializeTag(originator));
-        object.put("locations", WASPSerializer.serializeSTSet(locations));
-        object.put("times", WASPSerializer.serializeSTSet(times));
+        object.put("topics", ASIPSerializer.serializeSTSet(topics));
+        object.put("approvers", ASIPSerializer.serializeSTSet(approvers));
+        object.put("peers", ASIPSerializer.serializeSTSet(peers));
+        object.put("originator", ASIPSerializer.serializeTag(originator));
+        object.put("locations", ASIPSerializer.serializeSTSet(locations));
+        object.put("times", ASIPSerializer.serializeSTSet(times));
         object.put("direction", direction);
         
         return object;
@@ -132,7 +132,7 @@ public class WASPSerializer {
         Enumeration<SemanticTag> tags = stset.tags();
         
         while(tags.hasMoreElements()) {
-            set.put(WASPSerializer.serializeTag(tags.nextElement()));
+            set.put(ASIPSerializer.serializeTag(tags.nextElement()));
         }
         
         return set;
@@ -150,7 +150,7 @@ public class WASPSerializer {
         return new JSONObject();
     }
     
-    public static LASPMessage deserializeHeader(String header){
+    public static ASIPMessage deserializeHeader(String header){
         return null;
     }
     
@@ -165,7 +165,7 @@ public class WASPSerializer {
      * @throws SharkKBException 
      */
     public static Knowledge deserializeKnowledge(String knowledge) throws SharkKBException {
-        WASPSerializer wS = new WASPSerializer();
+        ASIPSerializer wS = new ASIPSerializer();
         
         InMemoSharkKB imkb = new InMemoSharkKB();
         
@@ -227,7 +227,7 @@ public class WASPSerializer {
      * @throws SharkKBException 
      */
     public static SemanticTag deserializeTag(String tag) throws SharkKBException {
-        WASPSerializer wS = new WASPSerializer();
+        ASIPSerializer wS = new ASIPSerializer();
         // there is no specific set - create one
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
         return wS.deserializeTag(stSet, tag);
@@ -301,7 +301,7 @@ public class WASPSerializer {
      * @throws SharkKBException
      */
     public static LASPSpace deserializeSharkCS(String sharkCS) throws SharkKBException {
-        WASPSerializer wS = new WASPSerializer();
+        ASIPSerializer wS = new ASIPSerializer();
         
         InMemoSharkKB imkb = new InMemoSharkKB();
         

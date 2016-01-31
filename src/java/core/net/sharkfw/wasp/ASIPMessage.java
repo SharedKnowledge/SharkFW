@@ -5,15 +5,11 @@
  */
 package net.sharkfw.wasp;
 
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
-
 /**
  *
  * @author micha, thsc
  */
-public abstract class LASPMessage {
+public abstract class ASIPMessage {
     public static final int LASP_EXPOSE = 0;
     public static final int LASP_INSERT = 1;
     public static final int LASP_RAW = 2;

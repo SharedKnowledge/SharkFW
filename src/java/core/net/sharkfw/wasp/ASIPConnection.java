@@ -6,6 +6,6 @@ import net.sharkfw.peer.KEPConnection;
  *
  * @author thsc
  */
-public interface LASPConnection extends KEPConnection {
+public interface ASIPConnection extends KEPConnection {
     public KEPConnection asKepConnection();
 }

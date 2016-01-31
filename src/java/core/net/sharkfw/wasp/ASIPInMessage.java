@@ -11,12 +11,12 @@ import net.sharkfw.protocols.StreamConnection;
  * of imcomming messages from underlying protocols
  * @author thsc
  */
-public class LASPInMessage extends LASPMessage {
+public class ASIPInMessage extends ASIPMessage {
     private final SharkEngine se;
     private final StreamConnection con;
     private final SharkStub sharkStub;
     
-    LASPInMessage(SharkEngine se, StreamConnection con, SharkStub sharkStub) {
+    ASIPInMessage(SharkEngine se, StreamConnection con, SharkStub sharkStub) {
         this.se = se;
         this.con = con;
         this.sharkStub = sharkStub;

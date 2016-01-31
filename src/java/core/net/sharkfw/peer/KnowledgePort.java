@@ -11,9 +11,9 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
-import net.sharkfw.wasp.LASPConnection;
-import net.sharkfw.wasp.LASPInMessage;
-import net.sharkfw.wasp.LASPMessage;
+import net.sharkfw.wasp.ASIPConnection;
+import net.sharkfw.wasp.ASIPInMessage;
+import net.sharkfw.wasp.ASIPMessage;
 
 /**
  * This is the abstract superclass of all implementations of Knowledge Ports.
@@ -186,8 +186,8 @@ abstract public class KnowledgePort {
         this.se.addKP(this);
     }
     
-    public synchronized final boolean handleMessage(LASPInMessage msg, 
-            LASPConnection con) {
+    public synchronized final boolean handleMessage(ASIPInMessage msg, 
+            ASIPConnection con) {
         
         // TODO
         L.d("about handling LASP message");
@@ -197,14 +197,14 @@ abstract public class KnowledgePort {
         // ...
         
         switch (msg.getCommand()) {
-            case LASPMessage.LASP_INSERT:
+            case ASIPMessage.LASP_INSERT:
                 try {
                     this.doInsert(msg.getKnowledge(), con);
                 } catch (Exception ex) {
                     L.e("Error while handling insert request:\n" + ex.getMessage(), this);
                 }
                 break;
-            case LASPMessage.LASP_EXPOSE:
+            case ASIPMessage.LASP_EXPOSE:
                 try {
                     this.doExpose(msg.getInterest(), con);
                 } catch (Exception ex) {
@@ -336,7 +336,7 @@ abstract public class KnowledgePort {
      * @param interest
      * @param laspConnection 
      */
-    protected void doExpose(LASPSpace interest, LASPConnection laspConnection) throws SharkKBException {
+    protected void doExpose(LASPSpace interest, ASIPConnection laspConnection) throws SharkKBException {
         // produce a KEP interest based on LASP-interest
         
         STSet topics = interest.getTopics();
@@ -372,7 +372,7 @@ abstract public class KnowledgePort {
      * @param is
      * @param kepConnection 
      */
-    protected void doRaw(InputStream is, LASPConnection kepConnection) {
+    protected void doRaw(InputStream is, ASIPConnection kepConnection) {
     }
     
     /**

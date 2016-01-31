@@ -10,9 +10,9 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
  * 
  * @author thsc
  */
-public class LASPOutMessage extends LASPMessage {
+public class ASIPOutMessage extends ASIPMessage {
     
-    public LASPOutMessage(
+    public ASIPOutMessage(
             boolean encrypted, // mandatory
             String encyptedSessionKey, // optional
             String version,  // mandatory
