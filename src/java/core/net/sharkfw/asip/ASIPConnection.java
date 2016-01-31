@@ -1,4 +1,4 @@
-package net.sharkfw.wasp;
+package net.sharkfw.asip;
 
 import net.sharkfw.peer.KEPConnection;
 

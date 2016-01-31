@@ -1,4 +1,4 @@
-package net.sharkfw.wasp;
+package net.sharkfw.asip;
 
 import java.util.Enumeration;
 import net.sharkfw.knowledgeBase.ContextPoint;

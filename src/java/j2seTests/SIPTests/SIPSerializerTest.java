@@ -20,7 +20,7 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.wasp.ASIPSerializer;
+import net.sharkfw.asip.ASIPSerializer;
 import net.sharkfw.system.SharkNotSupportedException;
 import org.junit.After;
 import org.junit.AfterClass;

@@ -11,9 +11,9 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
-import net.sharkfw.wasp.ASIPConnection;
-import net.sharkfw.wasp.ASIPInMessage;
-import net.sharkfw.wasp.ASIPMessage;
+import net.sharkfw.asip.ASIPConnection;
+import net.sharkfw.asip.ASIPInMessage;
+import net.sharkfw.asip.ASIPMessage;
 
 /**
  * This is the abstract superclass of all implementations of Knowledge Ports.

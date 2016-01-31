@@ -1,4 +1,4 @@
-package net.sharkfw.wasp;
+package net.sharkfw.asip;
 
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.Knowledge;
