@@ -2,7 +2,7 @@ package net.sharkfw.peer;
 
 import java.io.IOException;
 
-import net.sharkfw.kep.KEPStub;
+import net.sharkfw.kep.SharkStub;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -40,7 +40,7 @@ public class AndroidSharkEngine extends J2SEAndroidSharkEngine {
      */
 
     @Override
-    protected Stub createWifiDirectStreamStub(KEPStub kepStub) throws SharkProtocolNotSupportedException {
+    protected Stub createWifiDirectStreamStub(SharkStub kepStub) throws SharkProtocolNotSupportedException {
     	if (_wifi != null) {
     		_wifi.stop();
     	}

@@ -20,6 +20,7 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Util;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -28,8 +29,8 @@ import org.json.JSONObject;
  */
 public class ASIPSerializer {
     
-    public static JSONObject serializeExpose(ASIPMessage header, SharkCS interest) 
-            throws SharkKBException {
+    public static JSONObject serializeExpose(ASIPMessage header, SharkCS interest)
+            throws SharkKBException, JSONException {
         
         JSONObject object = new JSONObject();
         object.put("header", serializeHeader(header));
@@ -41,7 +42,7 @@ public class ASIPSerializer {
         return new JSONObject();
     }
     
-    public static JSONObject serializeHeader(ASIPMessage header){
+    public static JSONObject serializeHeader(ASIPMessage header) throws JSONException {
         return new JSONObject()
             .put("encrypted", header.isEncrypted())
             .put("encryptedSessionKey", header.getEncyptedSessionKey())
@@ -53,7 +54,7 @@ public class ASIPSerializer {
     }
     
     
-    public static JSONObject serializeInterest(SharkCS sharkCS) throws SharkKBException{
+    public static JSONObject serializeInterest(SharkCS sharkCS) throws SharkKBException, JSONException {
         JSONObject object = new JSONObject();
         
         STSet topics = sharkCS.getTopics();
@@ -80,7 +81,7 @@ public class ASIPSerializer {
         return new JSONObject();
     }
     
-    public static JSONObject serializeTag(SemanticTag tag) {
+    public static JSONObject serializeTag(SemanticTag tag) throws JSONException {
         
         JSONObject object = new JSONObject();
         
@@ -121,7 +122,7 @@ public class ASIPSerializer {
         return object;
     }
     
-    public static JSONArray serializeSTSet(STSet stset) throws SharkKBException{
+    public static JSONArray serializeSTSet(STSet stset) throws SharkKBException, JSONException {
         
         if(stset == null){
             return null;
