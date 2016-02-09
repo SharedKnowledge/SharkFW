@@ -9,11 +9,14 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.PeerAddress;
 import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.system.Base64;
 import net.sharkfw.system.L;
+import net.sharkfw.system.SharkNotSupportedException;
 import net.sharkfw.system.Streamer;
 
 /**
@@ -433,5 +436,15 @@ public final class MailMessageStub implements MessageStub, Runnable {
     @Override
     public void setHandler(RequestHandler handler) {
         this.handler = handler;
+    }
+    
+    @Override
+    public void offer(ASIPSpace interest) throws SharkNotSupportedException {
+        throw new SharkNotSupportedException();
+    }
+
+    @Override
+    public void offer(Knowledge knowledge) throws SharkNotSupportedException {
+        throw new SharkNotSupportedException();
     }
 }	

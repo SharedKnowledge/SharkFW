@@ -9,7 +9,7 @@ import net.sharkfw.knowledgeBase.*;
  * protcols for a while, propably until version Shark 4.
  * @author thsc
  */
-public abstract class InMemoSharkCS implements SharkCS, LASPSpace {
+public abstract class InMemoSharkCS implements SharkCS, ASIPSpace {
 
     /* That's a technical mapping not a semantical. E.g.
     approver is actually an originator from a semantically
@@ -71,28 +71,28 @@ public abstract class InMemoSharkCS implements SharkCS, LASPSpace {
             //                      LASP                          //
             ////////////////////////////////////////////////////////
                 
-            case LASPSpace.DIM_TOPIC:
+            case ASIPSpace.DIM_TOPIC:
                 return this.getTopics();
                 
-            case LASPSpace.DIM_TYPE : 
+            case ASIPSpace.DIM_TYPE : 
                 return this.getTypes();
                 
-            case LASPSpace.DIM_APPROVERS : 
+            case ASIPSpace.DIM_APPROVERS : 
                 return this.getApprovers();
                 
-            case LASPSpace.DIM_SENDER : 
+            case ASIPSpace.DIM_SENDER : 
                 return this.getSenders();
                 
-            case LASPSpace.DIM_RECEIVER : 
+            case ASIPSpace.DIM_RECEIVER : 
                 return this.getReceivers();
                 
-            case LASPSpace.DIM_TIME : 
+            case ASIPSpace.DIM_TIME : 
                 return this.getTimes();
                 
-            case LASPSpace.DIM_LOCATION : 
+            case ASIPSpace.DIM_LOCATION : 
                 return this.getLocations();
                 
-            case LASPSpace.DIM_DIRECTION : 
+            case ASIPSpace.DIM_DIRECTION : 
                 return this.getLocations();
         }
         

@@ -5,7 +5,6 @@ import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.LASPSpace;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -22,6 +21,7 @@ import net.sharkfw.system.Util;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import net.sharkfw.knowledgeBase.ASIPSpace;
 
 /**
  *
@@ -198,7 +198,7 @@ public class ASIPSerializer {
         
         /* we use deserializeCS in that class to create a context space out
             of a string */
-        LASPSpace cs = this.deserializeCS(target, knowledgeString);
+        ASIPSpace cs = this.deserializeCS(target, knowledgeString);
         
         // could add cs to knowledge base
         InformationSpace infoSpace = target.createInformationSpace(cs);
@@ -246,7 +246,7 @@ public class ASIPSerializer {
         return null;
     }
         
-    public LASPSpace deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
+    public ASIPSpace deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
         Interest interest = InMemoSharkKB.createInMemoInterest();
 
         // read topics dimension
@@ -301,7 +301,7 @@ public class ASIPSerializer {
      * @return
      * @throws SharkKBException
      */
-    public static LASPSpace deserializeSharkCS(String sharkCS) throws SharkKBException {
+    public static ASIPSpace deserializeSharkCS(String sharkCS) throws SharkKBException {
         ASIPSerializer wS = new ASIPSerializer();
         
         InMemoSharkKB imkb = new InMemoSharkKB();

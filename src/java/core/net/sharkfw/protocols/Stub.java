@@ -1,6 +1,9 @@
 package net.sharkfw.protocols;
 
 import java.io.IOException;
+import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.system.SharkNotSupportedException;
 
 /**
  * A Stub is the general super interface for all protocol abstractions.
@@ -22,4 +25,13 @@ public interface Stub {
     void start() throws IOException;
     
     boolean started();
+    
+    
+    /**
+     * 
+     * @param interest 
+     */
+    void offer(ASIPSpace interest) throws SharkNotSupportedException;
+    
+    void offer(Knowledge knowledge) throws SharkNotSupportedException;
 }

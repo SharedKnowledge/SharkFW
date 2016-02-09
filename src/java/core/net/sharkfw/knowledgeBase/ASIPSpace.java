@@ -4,7 +4,7 @@ package net.sharkfw.knowledgeBase;
  *
  * @author thsc
  */
-public interface LASPSpace {
+public interface ASIPSpace {
   /**
    * The maximum number of allowed dimensions in the context space
    * In for-loops this value can be used as the upper boundary, as long

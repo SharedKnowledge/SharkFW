@@ -37,7 +37,7 @@ package net.sharkfw.knowledgeBase;
  * 
  * @author mfi, thsc
  */
-public interface Interest extends SharkCS, LASPSpace {
+public interface Interest extends SharkCS, ASIPSpace {
 
   /**
    * Topics are stored in semantic tag set. Most implementations will choose

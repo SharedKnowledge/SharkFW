@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.knowledgeBase.Knowledge;
 
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.protocols.RequestHandler;
@@ -13,6 +15,7 @@ import net.sharkfw.protocols.StreamStub;
 import net.sharkfw.protocols.http.HTTPConnection;
 import net.sharkfw.protocols.http.WebServer;
 import net.sharkfw.system.L;
+import net.sharkfw.system.SharkNotSupportedException;
 import net.sharkfw.system.Util;
 
 /**
@@ -218,5 +221,15 @@ public class TCPStreamStub implements StreamStub {
     @Override
     public void setHandler(RequestHandler handler) {
         this.server.setHandler(handler);
+    }
+    
+    @Override
+    public void offer(ASIPSpace interest) throws SharkNotSupportedException {
+        throw new SharkNotSupportedException();
+    }
+
+    @Override
+    public void offer(Knowledge knowledge) throws SharkNotSupportedException {
+        throw new SharkNotSupportedException();
     }
 }

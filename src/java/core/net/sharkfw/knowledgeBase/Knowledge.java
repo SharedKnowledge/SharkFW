@@ -32,7 +32,7 @@ public interface Knowledge {
    */
   public void addContextPoint(ContextPoint cp);
   
-  public void addInformationSpace(LASPSpace space);
+  public void addInformationSpace(ASIPSpace space);
 
   /**
    * Remove a given Context Point from the knowledge.
@@ -43,7 +43,7 @@ public interface Knowledge {
    */
   public void removeContextPoint(ContextPoint cp);
   
-  public void removeInformationSpace(LASPSpace cp);
+  public void removeInformationSpace(ASIPSpace cp);
 
   /**
    * An enumeration of all contained context points.

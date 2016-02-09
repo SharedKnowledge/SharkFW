@@ -5,12 +5,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.StreamStub;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
+import net.sharkfw.system.SharkNotSupportedException;
 
 /**
  * This class makes a message based communication protocol to a stream based
@@ -281,5 +284,15 @@ public class M2SStub implements StreamStub, RequestHandler {
     @Override
     public void handleNewConnectionStream(StreamConnection con) {
         throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void offer(ASIPSpace interest) throws SharkNotSupportedException {
+        throw new SharkNotSupportedException();
+    }
+
+    @Override
+    public void offer(Knowledge knowledge) throws SharkNotSupportedException {
+        throw new SharkNotSupportedException();
     }
 }

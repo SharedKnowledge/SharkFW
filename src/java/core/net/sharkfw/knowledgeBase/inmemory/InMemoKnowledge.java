@@ -134,12 +134,12 @@ public class InMemoKnowledge implements Knowledge {
     }
 
     @Override
-    public void addInformationSpace(LASPSpace space) {
+    public void addInformationSpace(ASIPSpace space) {
         // TODO
     }
 
     @Override
-    public void removeInformationSpace(LASPSpace cp) {
+    public void removeInformationSpace(ASIPSpace cp) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

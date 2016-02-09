@@ -2,9 +2,9 @@ package net.sharkfw.asip;
 
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.LASPSpace;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.knowledgeBase.ASIPSpace;
 
 /**
  * Objects of this class are result of the scanning process
@@ -27,7 +27,7 @@ public class ASIPInMessage extends ASIPMessage {
         return null;
     }
     
-    public LASPSpace getInterest() {
+    public ASIPSpace getInterest() {
         return null; // TODO
     }
 }
