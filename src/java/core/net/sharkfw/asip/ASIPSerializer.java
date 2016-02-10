@@ -1,6 +1,9 @@
 package net.sharkfw.asip;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import net.sharkfw.knowledgeBase.ASIPInterest;
 import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Interest;
@@ -23,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkCS;
 
 /**
  *
@@ -34,14 +39,6 @@ public class ASIPSerializer {
     public static final String INTEREST = "INTEREST";
     public static final String KNOWLEDGE = "KNOWLEDGE";
     
-    /**
-     *
-     * @param header
-     * @param interest
-     * @return
-     * @throws SharkKBException
-     * @throws JSONException
-     */
     public static JSONObject serializeExpose(ASIPMessage header, ASIPSpace interest)
             throws SharkKBException, JSONException {
         
@@ -66,7 +63,6 @@ public class ASIPSerializer {
             .put(ASIPMessage.RECEIVERS, serializeSTSet(header.getReceivers()))
             .put(ASIPMessage.SIGNATURE, header.getSignature());
     }
-    
     
     public static JSONObject serializeInterest(ASIPSpace space) throws SharkKBException, JSONException {
         JSONObject object = new JSONObject();
@@ -131,7 +127,7 @@ public class ASIPSerializer {
         // sst
         if(tag instanceof SpatialSemanticTag) {
             SpatialSemanticTag sst = (SpatialSemanticTag) tag;
-            object.put(SpatialSemanticTag.GEOMETRY, sst);
+            object.put(SpatialSemanticTag.GEOMETRY, sst.getGeometry());
         }
         
         
@@ -179,8 +175,25 @@ public class ASIPSerializer {
         return null;
     }
     
-    public static Interest deserializeInterest(String interest) {
-        return null;
+    public static ASIPInterest deserializeInterest(String interestString) {
+        if(interestString.isEmpty())
+            return null;
+        
+        InMemoInterest interest = (InMemoInterest) InMemoSharkKB.createInMemoInterest();
+        
+        JSONObject jsonObject = new JSONObject(interestString);
+        
+        JSONArray topicsJSON = jsonObject.getJSONArray(ASIPInterest.TOPICS);
+        JSONArray typesJSON = jsonObject.getJSONArray(ASIPInterest.TYPES);
+        JSONArray approversJSON = jsonObject.getJSONArray(ASIPInterest.APPROVERS);
+        JSONObject senderJSON = jsonObject.getJSONObject(ASIPInterest.SENDER);
+        JSONArray receiversJSON = jsonObject.getJSONArray(ASIPInterest.RECEIVERS);
+        JSONArray locationsJSON = jsonObject.getJSONArray(ASIPInterest.LOCATIONS);
+        JSONArray timesJSON = jsonObject.getJSONArray(ASIPInterest.TIMES);
+        JSONArray directionJSON = jsonObject.getJSONArray(ASIPInterest.DIRECTION);
+        
+//        interest.setTopics(topicsJSON.g);
+        return (ASIPInterest) interest;
     }
     
     /**
@@ -236,10 +249,18 @@ public class ASIPSerializer {
         // infoSpace.addInformation(??)
     }
     
-    public SemanticTag deserializeTag(STSet targetSet, String tag) throws SharkKBException {
-        // deserialize something 
-        String name = "exampleName";
-        String[] sis = new String[] {"http://exampleSI.org"}; 
+    public static SemanticTag deserializeTag(STSet targetSet, String tagString) throws SharkKBException {
+        
+        JSONObject jsonObject = new JSONObject(tagString);
+        Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
+                
+        List<String> list = new ArrayList<>();
+        while(siIterator.hasNext()){
+            list.add((String) siIterator.next());
+        }
+        
+        String name = jsonObject.getString(SemanticTag.NAME);
+        String[] sis = (String[]) list.toArray();
         
         // if success - create a tag with targetSet
         return targetSet.createSemanticTag(name, sis);
@@ -259,6 +280,9 @@ public class ASIPSerializer {
     }
     
     public STSet deserializeSTSet(STSet target, String stset){
+        
+        
+        
         return null;
     }
     
@@ -271,15 +295,17 @@ public class ASIPSerializer {
     }
         
     public ASIPSpace deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
+        
+        // TODO
+        
         Interest interest = InMemoSharkKB.createInMemoInterest();
-
         
         JSONObject deserialized = new JSONObject(sharkCS);
         
-        JSONArray topicsArray = deserialized.getJSONArray("topics")
+        JSONArray topicsArray = deserialized.getJSONArray(ASIPInterest.TOPICS);
         
         // read topics dimension
-        String topicsSerialized = deserialized.getString("topics")
+        String topicsSerialized = topicsArray.toString();
 
         // create objects: topics dimension already set in empty interest??
         STSet topics = this.deserializeSTSet(interest.getTopics(), topicsSerialized);
