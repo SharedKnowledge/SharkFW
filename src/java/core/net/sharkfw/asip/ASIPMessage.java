@@ -10,9 +10,9 @@ package net.sharkfw.asip;
  * @author micha, thsc
  */
 public abstract class ASIPMessage {
-    public static final int LASP_EXPOSE = 0;
-    public static final int LASP_INSERT = 1;
-    public static final int LASP_RAW = 2;
+    public static final int ASIP_EXPOSE = 0;
+    public static final int ASIP_INSERT = 1;
+    public static final int ASIP_RAW = 2;
     
     private boolean encrypted;
     private String encyptedSessionKey;

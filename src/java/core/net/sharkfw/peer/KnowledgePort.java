@@ -197,14 +197,14 @@ abstract public class KnowledgePort {
         // ...
         
         switch (msg.getCommand()) {
-            case ASIPMessage.LASP_INSERT:
+            case ASIPMessage.ASIP_INSERT:
                 try {
                     this.doInsert(msg.getKnowledge(), con);
                 } catch (Exception ex) {
                     L.e("Error while handling insert request:\n" + ex.getMessage(), this);
                 }
                 break;
-            case ASIPMessage.LASP_EXPOSE:
+            case ASIPMessage.ASIP_EXPOSE:
                 try {
                     this.doExpose(msg.getInterest(), con);
                 } catch (Exception ex) {

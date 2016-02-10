@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SIPTests;
+package ASIPTests;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -34,9 +34,9 @@ import static org.junit.Assert.*;
  *
  * @author micha
  */
-public class SIPSerializerTest {
+public class ASIPSerializerTest {
     
-    public SIPSerializerTest() {
+    public ASIPSerializerTest() {
     }
     
     @BeforeClass
