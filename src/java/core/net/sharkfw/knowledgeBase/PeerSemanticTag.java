@@ -22,6 +22,9 @@ package net.sharkfw.knowledgeBase;
  * @author mfi
  */
 public interface PeerSemanticTag extends SemanticTag {
+    
+    public static final String ADDRESSES = "ADDRESSES";
+    
     /**
      * Return an array of string containing the addresses of the given peer.
      * @return An array of string with the addresses of this peer.

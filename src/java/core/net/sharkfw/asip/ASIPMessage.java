@@ -5,6 +5,9 @@
  */
 package net.sharkfw.asip;
 
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.STSet;
+
 /**
  *
  * @author micha, thsc
@@ -14,12 +17,22 @@ public abstract class ASIPMessage {
     public static final int ASIP_INSERT = 1;
     public static final int ASIP_RAW = 2;
     
+    public static final String ENCRYPTED = "ENCRYPTED";
+    public static final String ENCRYPTEDSESSIONKEY = "ENCRYPTEDSESSIONKEY";
+    public static final String VERSION = "VERSION";
+    public static final String FORMAT = "FORMAT";
+    public static final String COMMAND = "COMMAND";
+    public static final String SENDER = "SENDER";
+    public static final String RECEIVERS = "RECEIVERS";
+    public static final String SIGNATURE = "SIGNATURE";
+    
     private boolean encrypted;
     private String encyptedSessionKey;
     private String version;
     private String format;
     private int command;
-    private String senderInfo;
+    private PeerSemanticTag sender;
+    private STSet receivers;
     private String signature;
     
     public boolean isEncrypted() {
@@ -62,14 +75,22 @@ public abstract class ASIPMessage {
         this.command = command;
     }
 
-    public String getSenderInfo() {
-        return senderInfo;
+    public PeerSemanticTag getSender() {
+        return sender;
     }
 
-    public void setSenderInfo(String senderInfo) {
-        this.senderInfo = senderInfo;
+    public void setSender(PeerSemanticTag sender) {
+        this.sender = sender;
     }
 
+    public STSet getReceivers() {
+        return receivers;
+    }
+
+    public void setReceivers(STSet receivers) {
+        this.receivers = receivers;
+    }
+    
     public String getSignature() {
         return signature;
     }

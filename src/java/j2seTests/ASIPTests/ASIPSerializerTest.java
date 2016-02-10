@@ -5,14 +5,11 @@
  */
 package ASIPTests;
 
-import net.sharkfw.knowledgeBase.ContextCoordinates;
-import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
@@ -28,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

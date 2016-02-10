@@ -1,7 +1,7 @@
 package net.sharkfw.asip;
 
 import java.util.Enumeration;
-import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.ASIPInterest;
 import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 
 /**
  *
@@ -29,12 +30,24 @@ import net.sharkfw.knowledgeBase.ASIPSpace;
  */
 public class ASIPSerializer {
     
-    public static JSONObject serializeExpose(ASIPMessage header, SharkCS interest)
+    public static final String HEADER = "HEADER";
+    public static final String INTEREST = "INTEREST";
+    public static final String KNOWLEDGE = "KNOWLEDGE";
+    
+    /**
+     *
+     * @param header
+     * @param interest
+     * @return
+     * @throws SharkKBException
+     * @throws JSONException
+     */
+    public static JSONObject serializeExpose(ASIPMessage header, ASIPSpace interest)
             throws SharkKBException, JSONException {
         
         JSONObject object = new JSONObject();
-        object.put("header", serializeHeader(header));
-        object.put("interest", serializeInterest(interest));
+        object.put(HEADER, serializeHeader(header));
+        object.put(INTEREST, serializeInterest(interest));
         return object;
     }
     
@@ -42,37 +55,39 @@ public class ASIPSerializer {
         return new JSONObject();
     }
     
-    public static JSONObject serializeHeader(ASIPMessage header) throws JSONException {
+    public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
         return new JSONObject()
-            .put("encrypted", header.isEncrypted())
-            .put("encryptedSessionKey", header.getEncyptedSessionKey())
-            .put("version", header.getVersion())
-            .put("format", header.getFormat())
-            .put("command", header.getCommand())
-            .put("senderInfo", header.getSenderInfo())
-            .put("signature", header.getSignature());
+            .put(ASIPMessage.ENCRYPTED, header.isEncrypted())
+            .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncyptedSessionKey())
+            .put(ASIPMessage.VERSION, header.getVersion())
+            .put(ASIPMessage.FORMAT, header.getFormat())
+            .put(ASIPMessage.COMMAND, header.getCommand())
+            .put(ASIPMessage.SENDER, serializeTag(header.getSender()))
+            .put(ASIPMessage.RECEIVERS, serializeSTSet(header.getReceivers()))
+            .put(ASIPMessage.SIGNATURE, header.getSignature());
     }
     
     
-    public static JSONObject serializeInterest(SharkCS sharkCS) throws SharkKBException, JSONException {
+    public static JSONObject serializeInterest(ASIPSpace space) throws SharkKBException, JSONException {
         JSONObject object = new JSONObject();
         
-        STSet topics = sharkCS.getTopics();
-//        SemanticTag type = sharkCS.getType();
-        STSet approvers = sharkCS.getPeers();
-        STSet peers = sharkCS.getRemotePeers();
-        SemanticTag originator = sharkCS.getOriginator();
-        STSet locations = sharkCS.getLocations();
-        STSet times = sharkCS.getTimes();
-        int direction = sharkCS.getDirection();
+        STSet topics = space.getTopics();
+        STSet types = space.getTypes();
+        STSet approvers = space.getApprovers();
+        STSet receivers = space.getReceivers();
+        SemanticTag sender = space.getSender();
+        STSet locations = space.getLocations();
+        STSet times = space.getTimes();
+        int direction = space.getDirection();
         
-        object.put("topics", ASIPSerializer.serializeSTSet(topics));
-        object.put("approvers", ASIPSerializer.serializeSTSet(approvers));
-        object.put("peers", ASIPSerializer.serializeSTSet(peers));
-        object.put("originator", ASIPSerializer.serializeTag(originator));
-        object.put("locations", ASIPSerializer.serializeSTSet(locations));
-        object.put("times", ASIPSerializer.serializeSTSet(times));
-        object.put("direction", direction);
+        object.put(ASIPInterest.TOPICS, ASIPSerializer.serializeSTSet(topics));
+        object.put(ASIPInterest.TYPES, ASIPSerializer.serializeSTSet(types));
+        object.put(ASIPInterest.APPROVERS, ASIPSerializer.serializeSTSet(approvers));
+        object.put(ASIPInterest.RECEIVERS, ASIPSerializer.serializeSTSet(receivers));
+        object.put(ASIPInterest.SENDER, ASIPSerializer.serializeTag(sender));
+        object.put(ASIPInterest.LOCATIONS, ASIPSerializer.serializeSTSet(locations));
+        object.put(ASIPInterest.TIMES, ASIPSerializer.serializeSTSet(times));
+        object.put(ASIPInterest.DIRECTION, direction);
         
         return object;
     }
@@ -85,14 +100,14 @@ public class ASIPSerializer {
         
         JSONObject object = new JSONObject();
         
-        object.put("name", tag.getName());
+        object.put(SemanticTag.NAME, tag.getName());
         
         String[] sis = tag.getSI();
         JSONArray sisArray = new JSONArray();
         for(String si : sis){
             sisArray.put(si);
         }
-        object.put("sis", sisArray);
+        object.put(SemanticTag.SI, sisArray);
         
         // pst
         if(tag instanceof PeerSemanticTag) {
@@ -103,15 +118,24 @@ public class ASIPSerializer {
             for(String addr : addresses){
                 addrArray.put(addr);
             }
-            object.put("peer_semantic_tags", addrArray);
+            object.put(PeerSemanticTag.ADDRESSES, addrArray);
         }
 
         // tst
         if(tag instanceof TimeSemanticTag) {
             TimeSemanticTag tst = (TimeSemanticTag) tag;
-            object.put("time_from", tst.getFrom());
-            object.put("time_duration", tst.getDuration());
+            object.put(TimeSemanticTag.FROM, tst.getFrom());
+            object.put(TimeSemanticTag.DURATION, tst.getDuration());
         }
+        
+        // sst
+        if(tag instanceof SpatialSemanticTag) {
+            SpatialSemanticTag sst = (SpatialSemanticTag) tag;
+            object.put(SpatialSemanticTag.GEOMETRY, sst);
+        }
+        
+        
+        //TODO Properties
         
         // properties
 //        String serializedProperties = this.serializeProperties(tag);
@@ -147,7 +171,7 @@ public class ASIPSerializer {
         return new JSONObject();
     }
         
-    public static JSONObject serializeSharkCS(SharkCS sharkCS) throws SharkKBException {
+    public static JSONObject serializeASIPSpace(ASIPSpace space) {
         return new JSONObject();
     }
     
@@ -249,8 +273,13 @@ public class ASIPSerializer {
     public ASIPSpace deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
         Interest interest = InMemoSharkKB.createInMemoInterest();
 
+        
+        JSONObject deserialized = new JSONObject(sharkCS);
+        
+        JSONArray topicsArray = deserialized.getJSONArray("topics")
+        
         // read topics dimension
-        String topicsSerialized = "topics dim as JSON String"; // muss man aus dem sharkCSString füllen
+        String topicsSerialized = deserialized.getString("topics")
 
         // create objects: topics dimension already set in empty interest??
         STSet topics = this.deserializeSTSet(interest.getTopics(), topicsSerialized);
