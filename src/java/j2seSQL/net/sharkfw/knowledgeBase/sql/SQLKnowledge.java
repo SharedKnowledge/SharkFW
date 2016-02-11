@@ -2,11 +2,11 @@ package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeListener;
-import net.sharkfw.knowledgeBase.LASPSpace;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
 /**
@@ -56,12 +56,12 @@ public class SQLKnowledge implements Knowledge {
     }
 
     @Override
-    public void addInformationSpace(LASPSpace space) {
+    public void addInformationSpace(ASIPSpace space) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void removeInformationSpace(LASPSpace cp) {
+    public void removeInformationSpace(ASIPSpace cp) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

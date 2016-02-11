@@ -219,11 +219,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public void persist() {
-    	_localKB.persist();
-    }
-
-    @Override
     public PeerSemanticTag getOwner() {
         return _localKB.getOwner();
     }
@@ -416,5 +411,45 @@ public class SyncKB implements SharkKB {
     @Override
     public InformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
         return this._localKB.createInformationSpace(space);
+    }
+
+    @Override
+    public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
+        return this._localKB.getInformationPoint(coordinates);
+    }
+
+    @Override
+    public InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        return this._localKB.createInformationCoordinates(topic, type, approver, sender, receiver, time, location, direction);
+    }
+
+    @Override
+    public InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
+        return this._localKB.createInformationPoint(coordinates);
+    }
+
+    @Override
+    public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
+        this._localKB.removeInformationPoint(coordinates);
+    }
+
+    @Override
+    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        this._localKB.removeInformationSpace(space);
+    }
+
+    @Override
+    public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException {
+        return this._localKB.informationPoints(cs);
+    }
+
+    @Override
+    public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException {
+        return this._localKB.informationPoints(as, matchAny);
+    }
+
+    @Override
+    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
+        return this._localKB.getAllInformationPoints();
     }
 }

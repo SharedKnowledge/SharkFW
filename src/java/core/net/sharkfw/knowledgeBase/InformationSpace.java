@@ -1,7 +1,5 @@
 package net.sharkfw.knowledgeBase;
 
-import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
@@ -19,72 +17,8 @@ import java.util.Iterator;
  * @author thsc
  */
 public interface InformationSpace {
-    ASIPSpace getContextSpace() throws SharkKBException;
-    void setContextSpace(ASIPSpace space) throws SharkKBException;
+    ASIPSpace getASIPSpace() throws SharkKBException;
+    void setASIPSpace(ASIPSpace space) throws SharkKBException;
     
-  /**
-   * Adds an existing information reference to that context point.
-   * Handle with care: It is not clear where this information belongs,
-   * if it is persistent etc.
-   * 
-   * @param source 
-   */
-  public void addInformation(Information source);
-
-  /**
-   * Creates a new information with content read from the stream.
-   * Reads <code>len</code> bytes from <code>is</code> after initial creation
-   * 
-   * @param is {@link java.io.InputStream} to read from.
-   * @param len The number of bytes to read.
-   */
-  public Information addInformation(InputStream is, long len);
-
-  /**
-   * Creates a new information. Uses the <code>content</code> as content
-   * for the Information object.
-   *
-   * @param content An array of bytes containing arbitrary data
-   * @return An instance of Information containing <code>content</code> as content.
-   */
-  public Information addInformation(byte[] content);
-
-  /**
-   * Creates a new information. Saves the string as content.
-   * This is convenience method, as often the user/programmer just wants
-   * to store Strings inside an information.
-   *
-   * @param content A String to be used as content.
-   * @return An instance of Information containing <code>content</code> as content.
-   */
-  public Information addInformation(String content);
-
-  /**
-   * Returns a information with a given name - Note: names are not unique.
-   * This methode can return an empty iterator, a single information or an arbitrary
-   * number of information.
-   * 
-   * @param name
-   * @return 
-   */
-  public Iterator<Information> getInformation(String name);
-  
-  /**
-   * Return information with no name
-   * @return 
-   */
-  public Iterator<Information> getInformation();
-
-  /**
-   * Remove <code>toDelete</code> {@link Information} from this contextpoint.
-   * @param toDelete The information that shall be deleted
-   */
-  public void removeInformation(Information toDelete);
-
-  /**
-   * Return the number of {@link Information} objects attached to this ContextPoint.
-   * 
-   * @return The number of attached Information objects.
-   */
-  public int getNumberInformation();
+    Iterator<InformationPoint> informationPoints() throws SharkKBException;
 }

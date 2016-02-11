@@ -59,9 +59,12 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @param coordinates ContextCoordinates describing a certain point in the ContextSpace.
    * @return The ContextPoint that can be found at these coordinates, or null if no ContextPoint could be found.
    * @throws SharkKBException Needed?!
+   * @deprecated 
    */
   public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException;
   
+  public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
+    
   /**
    * Each dimension can be null. It means unknown and will match to each other
    * concept in this dimension. 
@@ -82,12 +85,23 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @param direction
    * @return 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     * @deprecated 
    */
     public ContextCoordinates createContextCoordinates(
             SemanticTag topic,
             PeerSemanticTag originator,
             PeerSemanticTag peer,
             PeerSemanticTag remotepeer,
+            TimeSemanticTag time,
+            SpatialSemanticTag location,
+            int direction) throws SharkKBException;
+    
+    public InformationCoordinates createInformationCoordinates(
+            SemanticTag topic,
+            SemanticTag type,
+            PeerSemanticTag approver,
+            PeerSemanticTag sender,
+            PeerSemanticTag receiver,
             TimeSemanticTag time,
             SpatialSemanticTag location,
             int direction) throws SharkKBException;
@@ -98,8 +112,12 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @param coordinates ContextCoordinates describing a certain point in the ContextSpace.
    * @return If a ContextPoint was already present at the given coordinates it will be returned, if not a new ContextPoint will be created and returned
    * @throws SharkKBException
+   * @deprecated 
    */
   public ContextPoint createContextPoint(ContextCoordinates coordinates) 
+          throws SharkKBException;
+  
+  public InformationPoint createInformationPoint(InformationCoordinates coordinates) 
           throws SharkKBException;
   
   public InformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException;
@@ -122,8 +140,12 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    *
    * @param coordinates ContextCoordinates describing a certain point in the ContextSpace.
    * @throws SharkKBException
+   * @deprecated 
    */
   public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException;
+  
+  public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
+  public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
 
   /**
    * Return (copies) of all ContextPoints, which are covered by the 
@@ -133,6 +155,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @param cs A ContextSpace
    * @return An Enumeration of ContextPoints which are covered by the ContextSpace <code>cs</code>
      * @throws net.sharkfw.knowledgeBase.SharkKBException
+     * @deprecated 
    */
   public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException;
 
@@ -144,9 +167,19 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @param cs
    * @return
    * @throws SharkKBException 
+   * @deprecated 
    */
   public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException;
+  public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException;
 
+  /**
+   * 
+   * @param cs
+   * @param matchAny
+   * @return
+   * @throws SharkKBException 
+   * @deprecated 
+   */
   public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException;
   
   /**
@@ -157,8 +190,11 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * any tag is used as each other tag and it is looked for an exact match
    * @return
    * @throws SharkKBException 
+   * @deprecated 
    */
   public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException;
+  
+  public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException;
   
   /**
    * Returns enumeration of all context points. This actually is the same as
@@ -170,8 +206,12 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * 
    * @return
    * @throws SharkKBException 
+   * @deprecated 
    */
   public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException;
+  
+  public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException;
+  
 
   /**
    * Register a new listener for changes on this SharkKB
@@ -285,9 +325,4 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
      * @throws SharkKBException 
      */
     public void removeSemanticTag(SemanticTag st) throws SharkKBException;
-    
-    /**
-     * TODO: shouldn't be a public method in interface
-     */
-    public void persist();
 }
