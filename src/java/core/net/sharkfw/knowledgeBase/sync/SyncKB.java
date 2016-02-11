@@ -452,4 +452,14 @@ public class SyncKB implements SharkKB {
     public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
         return this._localKB.getAllInformationPoints();
     }
+    
+    @Override
+    public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
+        return this._localKB.contextualize(as);
+    }
+
+    @Override
+    public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
+        return this._localKB.contextualize(as, fp);
+    }
 }

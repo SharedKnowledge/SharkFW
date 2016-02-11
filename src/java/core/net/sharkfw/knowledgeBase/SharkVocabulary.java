@@ -42,9 +42,40 @@ public interface SharkVocabulary {
     
     public Interest asInterest();
     
+    /**
+     * 
+     * @param sis
+     * @return
+     * @throws SharkKBException 
+     * @deprecated 
+     */
   public SemanticTag getSemanticTag(String[] sis) throws SharkKBException;
+  
+  /**
+   * 
+   * @param si
+   * @return
+   * @throws SharkKBException 
+   * @deprecated 
+   */
   public SemanticTag getSemanticTag(String si) throws SharkKBException;
+  
+  /**
+   * 
+   * @param sis
+   * @return
+   * @throws SharkKBException 
+   * @deprecated 
+   */
   public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException;
+  
+  /**
+   * 
+   * @param si
+   * @return
+   * @throws SharkKBException 
+   * @deprecated 
+   */
   public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException;
 
   // STSet management
@@ -159,13 +190,27 @@ public interface SharkVocabulary {
    * by running a fragmentation on every STSet of the kb, using the anchor points
    * from <code>as</code> and the standard fp set.</p>
    *
-   * @param as The anchorpoints for the new interest.
+     * @param cs
+   * @param cs The anchorpoints for the new interest.
    * @return An Interest created from the anchorpoints.
      * @throws net.sharkfw.knowledgeBase.SharkKBException
+     * @deprecated 
    */
-  public Interest contextualize(SharkCS as) throws SharkKBException;
+  public Interest contextualize(SharkCS cs) throws SharkKBException;
+  
+  public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException;
 
+  /**
+   * @deprecated 
+   * @param as
+   * @param fp
+   * @return
+   * @throws SharkKBException 
+   */
   public Interest contextualize(SharkCS as, FragmentationParameter[] fp) 
+          throws SharkKBException;
+  
+  public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) 
           throws SharkKBException;
   
     /**
