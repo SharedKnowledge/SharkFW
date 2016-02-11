@@ -14,7 +14,7 @@ import net.sharkfw.knowledgeBase.*;
 
 * @author mfi, thsc
  */
-public class InMemoInterest extends InMemoSharkCS implements Interest {
+public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInterest {
     
     /* 
     We are about migrating from KEP to LASP. We need a mapping

@@ -27,18 +27,18 @@ public abstract class InMemoSharkCS implements SharkCS, ASIPSpace {
     */
     
     // flag if this object acts as KEP or LASP interest
-    private final boolean isLASP;
+    private final boolean isASIP;
     
-    boolean isLASP() {
-        return this.isLASP;
+    boolean isASIPInterest() {
+        return this.isASIP;
     }
     
     protected InMemoSharkCS() {
-        this.isLASP = false; // is a KEP object
+        this.isASIP = false; // is a KEP object
     }
     
     protected InMemoSharkCS(boolean isLASP) {
-        this.isLASP = isLASP; // can be KEP or LASP
+        this.isASIP = isLASP; // can be KEP or LASP
     }
     
     @Override
@@ -68,7 +68,7 @@ public abstract class InMemoSharkCS implements SharkCS, ASIPSpace {
                 return this.getDirections();
 
             ////////////////////////////////////////////////////////
-            //                      LASP                          //
+            //                      ASIP                          //
             ////////////////////////////////////////////////////////
                 
             case ASIPSpace.DIM_TOPIC:

@@ -9,7 +9,7 @@ public interface ASIPSpace {
    * The maximum number of allowed dimensions in the context space
    * In for-loops this value can be used as the upper boundary, as long
    * as the condition is '< MAXDIMENSIONS'. Using '<=' or '==' won't work.
-   *</br>
+   *<br/>
    * Example:<br />
    * <code>
    * for(int dim = 0; dim < ContextSpace.MAXDIMENSIONS; dim++) {

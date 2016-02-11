@@ -37,7 +37,7 @@ package net.sharkfw.knowledgeBase;
  * 
  * @author mfi, thsc
  */
-public interface ASIPInterest {
+public interface ASIPInterest extends ASIPSpace {
     
     public static final String TOPICS = "TOPICS";
     public static final String TYPES = "TYPES";
@@ -118,16 +118,6 @@ public interface ASIPInterest {
      * @param location
    */
   public void setLocations(SpatialSTSet location);
-  
-  /**
-   * calculates mutual interest. This interest is used as source.
-   * @param context Context of the calcuation.
-     * @param fp
-   * @return Mutual interest or null if there is no match
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-   */
-  public Interest contextualize(ASIPSpace context, FragmentationParameter[] fp)
-          throws SharkKBException;
   
 }
 
