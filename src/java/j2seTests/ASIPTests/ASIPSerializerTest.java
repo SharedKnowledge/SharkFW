@@ -19,6 +19,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.asip.ASIPSerializer;
 import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.system.L;
 import net.sharkfw.system.SharkNotSupportedException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -28,7 +29,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * 
+ * Test Naming Convention as When/Given/Then
+ * Taken from http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
+ * When - MethodName, or many methods names if needed, or action without associated with specific method
+ * Given - state at test moment
+ * Then - excepted result.
  * @author msc
  */
 public class ASIPSerializerTest {
@@ -80,7 +85,7 @@ public class ASIPSerializerTest {
         t2 = kb.getTopicSTSet().createSemanticTag("Topic2", "http://topci2.de");
         t3 = kb.getTopicSTSet().createSemanticTag("Topic3", "http://topci3.de");
         t4 = kb.getTopicSTSet().createSemanticTag("Topic4", "http://topci4.de");
-        t5 = kb.getTopicSTSet().createSemanticTag("Topic1", sis );
+        t5 = kb.getTopicSTSet().createSemanticTag("Topic5", sis );
 
         topics = InMemoSharkKB.createInMemoSTSet();
         topics.merge(t1);
@@ -90,7 +95,7 @@ public class ASIPSerializerTest {
         p2 = kb.getPeerSTSet().createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
         p3 = kb.getPeerSTSet().createPeerSemanticTag("Peer3", "http://peer3.de", "tcp://peer3.de:1234");
         p4 = kb.getPeerSTSet().createPeerSemanticTag("Peer4", "http://peer4.de", "tcp://peer4.de:1234");
-        p4 = kb.getPeerSTSet().createPeerSemanticTag("Peer5", "http://peer4.de", addresses);
+        p5 = kb.getPeerSTSet().createPeerSemanticTag("Peer5", "http://peer5.de", addresses);
 
         approvers = InMemoSharkKB.createInMemoPeerSTSet();
         approvers.merge(p1);
@@ -119,43 +124,177 @@ public class ASIPSerializerTest {
     }
     
     /**
-     * Test Naming Convention as When/Given/Then
-     * Taken from http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
-     * When - MethodName, or many methods names if needed, or action without associated with specific method
-     * Given - state at test moment
-     * Then - excepted result.
-     */
-    
-    
-    /**
-     * SemanticTagSerialization_singleSI_success
      * Serializes and deserializes a SemanticTag to check if both tags still equals
      * Uses a String as si
      * @throws SharkKBException 
      */
     @Test
-    public void SemanticTagSerialization_singleSI_success() throws SharkKBException {
-        String serializedT1 = ASIPSerializer.serializeTag(t1);
-        SemanticTag deserializedT1 = ASIPSerializer.deserializeTag(serializedT1);
+    public void SemanticTagSerialization_SToneSI_success() throws SharkKBException {
+        String serializedTag = ASIPSerializer.serializeTag(t1);
+        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
         
-        Assert.assertEquals(deserializedT1, t1);
+        Assert.assertEquals(deserializedTag, t1);
     }
     
     /**
-     * SemanticTagSerialization_arraySI_success()
      * Serializes and deserializes a SemanticTag to check if both tags still equals
      * Uses an array as si
      * @throws SharkKBException 
      */
     @Test
-    public void SemanticTagSerialization_arraySI_success() throws SharkKBException{
-        String serializedT5 = ASIPSerializer.serializeTag(t5);
-        SemanticTag deserializedT5 = ASIPSerializer.deserializeTag(serializedT5);
+    public void SemanticTagSerialization_STmultipleSIS_success() throws SharkKBException{
+        String serializedTag = ASIPSerializer.serializeTag(t5);
+        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
         
-        Assert.assertEquals(deserializedT5, t5);
+        Assert.assertEquals(deserializedTag, t5);
     }
     
+    /**
+     * Serializes and deserializes a SemanticTag to check if both tags still equals
+     * Uses a String as si
+     * @throws SharkKBException 
+     */
     @Test
+    public void SemanticTagSerialization_PSToneAddress_success() throws SharkKBException {
+        String serializedTag = ASIPSerializer.serializeTag(p1);
+        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        
+        Assert.assertEquals(deserializedTag, p1);
+    }
+    
+    /**
+     * Serializes and deserializes a SemanticTag to check if both tags still equals
+     * Uses an array as si
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticTagSerialization_PSTmultipleAddresses_success() throws SharkKBException{
+        String serializedTag = ASIPSerializer.serializeTag(p5);
+        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        
+        Assert.assertEquals(deserializedTag, p5);
+    }
+    
+    /**
+     * Serializes and deserializes a SemanticTag to check if both tags still equals
+     * Uses a String as si
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticTagSerialization_TSToneTime_success() throws SharkKBException {
+        String serializedTag = ASIPSerializer.serializeTag(ti1);
+        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        
+        Assert.assertEquals(deserializedTag, ti1);
+    }
+    
+    
+    /**
+     * TODO Workaround: Compare with Strings of Objects not with Objects
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticSTSetSerialization_singleST_success() throws SharkKBException{
+        
+        STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
+        
+        stSetWithOneTag.merge(t1);
+        String expected = L.stSet2String(stSetWithOneTag);
+        
+        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
+        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
+        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        
+        Assert.assertEquals(expected, actual);
+    }
+    
+    /**
+     * TODO Workaround: Compare with Strings of Objects not with Objects
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticSTSetSerialization_singlePST_success() throws SharkKBException{
+        
+        STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
+        
+        stSetWithOneTag.merge(p1);
+        String expected = L.stSet2String(stSetWithOneTag);
+        
+        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
+        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
+        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        
+        Assert.assertEquals(expected, actual);
+    }
+    
+    /**
+     * TODO Workaround: Compare with Strings of Objects not with Objects
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticSTSetSerialization_singleTST_success() throws SharkKBException{
+        
+        STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
+        
+        stSetWithOneTag.merge(ti1);
+        String expected = L.stSet2String(stSetWithOneTag);
+        
+        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
+        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
+        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        
+        Assert.assertEquals(expected, actual);
+    }
+    
+    /**
+     * TODO Workaround: Compare with Strings of Objects not with Objects
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticSTSetSerialization_multipleTags_success() throws SharkKBException{
+        
+        STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
+        
+        stSetWithOneTag.merge(t1);
+        stSetWithOneTag.merge(t2);
+        stSetWithOneTag.merge(t3);
+        stSetWithOneTag.merge(t5);
+        
+        String expected = L.stSet2String(stSetWithOneTag);
+        
+        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
+        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
+        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        
+        Assert.assertEquals(expected, actual);
+    }
+    
+    
+    /**
+     * TODO Workaround: Compare with Strings of Objects not with Objects
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticSTSetSerialization_multipleMixedTags_success() throws SharkKBException{
+        
+        STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
+        
+        stSetWithOneTag.merge(t1);
+        stSetWithOneTag.merge(ti2);
+        stSetWithOneTag.merge(p5);
+        stSetWithOneTag.merge(t5);
+        
+        String expected = L.stSet2String(stSetWithOneTag);
+        System.out.println(expected);
+        
+        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
+        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
+        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        
+        Assert.assertEquals(expected, actual);
+    }
+    
+//    @Test
     public void coordinateSerializationTest() throws SharkKBException, SharkNotSupportedException {
 
         J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();

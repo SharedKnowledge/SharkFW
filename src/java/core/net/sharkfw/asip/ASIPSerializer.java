@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkCS;
 
 /**
@@ -322,12 +323,22 @@ public class ASIPSerializer {
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
         return ASIPSerializer.deserializeTag(stSet, tag);
     }
+    // TODO Return target or new stSet?
+    public static STSet deserializeSTSet(STSet target, String stSetString) throws SharkKBException{
+        
+        JSONArray jsonArray = new JSONArray(stSetString);
+        Iterator stIterator = jsonArray.iterator();
+        
+        while(stIterator.hasNext()){
+            deserializeTag(target, stIterator.next().toString());
+        }
+        return target;
+    }
     
-    public STSet deserializeSTSet(STSet target, String stset){
-        
-        
-        
-        return null;
+    public static STSet deserializeSTSet(String stSetString) throws SharkKBException{
+        // there is no specific set - create one
+        STSet stSet = InMemoSharkKB.createInMemoSTSet();
+        return ASIPSerializer.deserializeSTSet(stSet, stSetString);
     }
     
     public static SystemPropertyHolder deserializeProperties(String properties){
