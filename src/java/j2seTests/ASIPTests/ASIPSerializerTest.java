@@ -18,7 +18,6 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.asip.ASIPSerializer;
-import net.sharkfw.knowledgeBase.ASIPInterest;
 import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.system.SharkNotSupportedException;
 import org.junit.After;
@@ -119,14 +118,37 @@ public class ASIPSerializerTest {
     public void tearDown() {
     }
     
+    /**
+     * Test Naming Convention as When/Given/Then
+     * Taken from http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
+     * When - MethodName, or many methods names if needed, or action without associated with specific method
+     * Given - state at test moment
+     * Then - excepted result.
+     */
+    
+    
+    /**
+     * SemanticTagSerialization_singleSI_success
+     * Serializes and deserializes a SemanticTag to check if both tags still equals
+     * Uses a String as si
+     * @throws SharkKBException 
+     */
     @Test
-    public void semanticTagTest() throws SharkKBException {
-        
+    public void SemanticTagSerialization_singleSI_success() throws SharkKBException {
         String serializedT1 = ASIPSerializer.serializeTag(t1);
         SemanticTag deserializedT1 = ASIPSerializer.deserializeTag(serializedT1);
         
         Assert.assertEquals(deserializedT1, t1);
-        
+    }
+    
+    /**
+     * SemanticTagSerialization_arraySI_success()
+     * Serializes and deserializes a SemanticTag to check if both tags still equals
+     * Uses an array as si
+     * @throws SharkKBException 
+     */
+    @Test
+    public void SemanticTagSerialization_arraySI_success() throws SharkKBException{
         String serializedT5 = ASIPSerializer.serializeTag(t5);
         SemanticTag deserializedT5 = ASIPSerializer.deserializeTag(serializedT5);
         
