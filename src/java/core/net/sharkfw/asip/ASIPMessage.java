@@ -10,7 +10,7 @@ import net.sharkfw.knowledgeBase.STSet;
 
 /**
  *
- * @author micha, thsc
+ * @author msc, thsc
  */
 public abstract class ASIPMessage {
     public static final int ASIP_EXPOSE = 0;

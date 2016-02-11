@@ -31,7 +31,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkCS;
 
 /**
  *
- * @author micha
+ * @author msc
  */
 public class ASIPSerializer {
     

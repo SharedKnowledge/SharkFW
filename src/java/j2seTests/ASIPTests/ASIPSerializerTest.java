@@ -28,8 +28,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
- * @author micha
+ * 
+ * @author msc
  */
 public class ASIPSerializerTest {
     
