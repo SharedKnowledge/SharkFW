@@ -2235,47 +2235,47 @@ public abstract class SharkCSAlgebra {
         return InMemoSharkKB.createInMemoSemanticTag("any", SharkCS.ANYURL);
     }
     
-	/**
-	 * Checks if subject identifier is and valid URL.
-	 * 
-	 * @param si url to check
-	 * @return true, if url is valid, else false
-	 */
-	public static boolean isValidSi(String si) {
-		boolean valid = true;
-		try {
-			new URL(si);
-		} catch (Exception e) {
-			valid = false;
-		}
-		return valid;
-	}
+    /**
+     * Checks if subject identifier is and valid URL.
+     * 
+     * @param si url to check
+     * @return true, if url is valid, else false
+     */
+    public static boolean isValidSi(String si) {
+            boolean valid = true;
+            try {
+                    new URL(si);
+            } catch (Exception e) {
+                    valid = false;
+            }
+            return valid;
+    }
 
-	/**
-	 * Checks if address starts with tcp:// or is a valid e-mail address.
-	 * 
-	 * @param address address text
-	 * @return true, if address is valid, else false
-	 */
-	public static boolean isValidAddress(String address) {
-		boolean valid = false;
-		String[] addressData = address.split("://");
-		if (addressData.length == 2) {
-			if ("tcp".equals(addressData[0])) {
-				valid = true;
-			} else if ("mail".equals(addressData[0])) {
-				valid = true;
-			} 
-		} else {
-			try {
-				String emailreg = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-				Boolean emailCheck = address.matches(emailreg);
-				if (emailCheck) {
-					valid = true;
-				}
-			} catch (Exception e) {
-			}
-		}
-		return valid;
-	}
+    /**
+     * Checks if address starts with tcp:// or is a valid e-mail address.
+     * 
+     * @param address address text
+     * @return true, if address is valid, else false
+     */
+    public static boolean isValidAddress(String address) {
+        boolean valid = false;
+        String[] addressData = address.split("://");
+        if (addressData.length == 2) {
+            if ("tcp".equals(addressData[0])) {
+                valid = true;
+            } else if ("mail".equals(addressData[0])) {
+                valid = true;
+            } 
+        } else {
+            try {
+                String emailreg = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+                Boolean emailCheck = address.matches(emailreg);
+                if (emailCheck) {
+                    valid = true;
+                }
+            } catch (Exception e) {
+            }
+        }
+        return valid;
+    }
 }

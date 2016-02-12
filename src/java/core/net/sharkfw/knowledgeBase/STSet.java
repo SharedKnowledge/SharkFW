@@ -16,7 +16,15 @@ import java.util.Iterator;
  * @author mfi, thsc
  */
 public interface STSet {
+    
+    public final static String ANYSTSET = "ANYSTSET";
+    public final static String PEERSTSET = "PEERSTSET";
+    public final static String TIMESTSET = "TIMESTSET";
+    public final static String SPATIALSTSET = "SPATIALSTSET";
 
+    public final static String TYPE = "TYPE";
+    public final static String STSET = "STSET";
+    
     /**
      * Makes copies of each source parameter and stores it in the set.
      * A copy of source in this set is created in other words.

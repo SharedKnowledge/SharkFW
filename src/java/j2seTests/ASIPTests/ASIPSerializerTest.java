@@ -199,10 +199,10 @@ public class ASIPSerializerTest {
         
         STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
         stSetWithOneTag.merge(t1);
+        stSetWithOneTag.merge(t2);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
-        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
+        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
@@ -218,8 +218,7 @@ public class ASIPSerializerTest {
         stSetWithOneTag.merge(p1);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
-        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
+        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
@@ -235,8 +234,7 @@ public class ASIPSerializerTest {
         stSetWithOneTag.merge(ti1);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
-        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
+        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
@@ -255,8 +253,7 @@ public class ASIPSerializerTest {
         stSetWithMultipleTags.merge(t5);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithMultipleTags);
-        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
+        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithMultipleTags, deserialized));
     }
@@ -276,8 +273,7 @@ public class ASIPSerializerTest {
         stSetWithMultipleTags.merge(t5);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithMultipleTags);
-        STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
+        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithMultipleTags, deserialized));
     }
