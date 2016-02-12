@@ -134,7 +134,7 @@ public class ASIPSerializerTest {
         String serializedTag = ASIPSerializer.serializeTag(t1);
         SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
         
-        Assert.assertEquals(deserializedTag, t1);
+        Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, t1));
     }
     
     /**
@@ -147,7 +147,7 @@ public class ASIPSerializerTest {
         String serializedTag = ASIPSerializer.serializeTag(t5);
         SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
         
-        Assert.assertEquals(deserializedTag, t5);
+        Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, t5));
     }
     
     /**
@@ -160,7 +160,7 @@ public class ASIPSerializerTest {
         String serializedTag = ASIPSerializer.serializeTag(p1);
         SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
         
-        Assert.assertEquals(deserializedTag, p1);
+        Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, p1));
     }
     
     /**
@@ -173,7 +173,7 @@ public class ASIPSerializerTest {
         String serializedTag = ASIPSerializer.serializeTag(p5);
         SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
         
-        Assert.assertEquals(deserializedTag, p5);
+        Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, p5));
     }
     
     /**
@@ -186,7 +186,7 @@ public class ASIPSerializerTest {
         String serializedTag = ASIPSerializer.serializeTag(ti1);
         SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
         
-        Assert.assertEquals(deserializedTag, ti1);
+        Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, ti1));
     }
     
     
