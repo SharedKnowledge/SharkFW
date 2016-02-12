@@ -42,6 +42,8 @@ public interface SharkVocabulary {
     
     public Interest asInterest();
     
+    public ASIPSpace asASIPSpace();
+    
     /**
      * 
      * @param sis
@@ -198,7 +200,7 @@ public interface SharkVocabulary {
    */
   public Interest contextualize(SharkCS cs) throws SharkKBException;
   
-  public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException;
+  public Interest contextualize(ASIPSpace as) throws SharkKBException;
 
   /**
    * @deprecated 
@@ -210,7 +212,7 @@ public interface SharkVocabulary {
   public Interest contextualize(SharkCS as, FragmentationParameter[] fp) 
           throws SharkKBException;
   
-  public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) 
+  public Interest contextualize(ASIPSpace as, FragmentationParameter[] fp) 
           throws SharkKBException;
   
     /**

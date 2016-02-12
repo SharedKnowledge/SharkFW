@@ -94,4 +94,6 @@ public interface Knowledge {
     public void addListener(KnowledgeListener kListener);
     
     public void removeListener(KnowledgeListener kListener);
+
+    public void removeInformationPoint(InformationPoint toRemove);
 }

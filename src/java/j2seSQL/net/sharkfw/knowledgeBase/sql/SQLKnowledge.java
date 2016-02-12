@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeListener;
@@ -77,6 +78,11 @@ public class SQLKnowledge implements Knowledge {
 
     @Override
     public InformationSpace getInformationSpace(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeInformationPoint(InformationPoint toRemove) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

@@ -678,6 +678,12 @@ public abstract class SharkCSAlgebra {
         return null;
     }
     
+    public static Interest contextualize(ASIPSpace source, ASIPSpace context, 
+            FragmentationParameter[] fp) throws SharkKBException {
+        
+        return null; // TODO
+        
+    }
     
     /**
      * Implementation of interest contextualization. Result is written into

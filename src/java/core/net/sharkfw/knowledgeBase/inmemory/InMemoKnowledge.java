@@ -157,4 +157,9 @@ public class InMemoKnowledge implements Knowledge {
     public InformationSpace getInformationSpace(int i) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public void removeInformationPoint(InformationPoint toRemove) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

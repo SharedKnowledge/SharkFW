@@ -10,13 +10,13 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.InformationCoordinates;
+import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
@@ -890,5 +890,30 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
         eChain.addEnumeration(this.tags());
         
         return eChain;
+    }
+
+    @Override
+    public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

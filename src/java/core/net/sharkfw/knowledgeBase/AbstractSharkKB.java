@@ -77,6 +77,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.knowledge = k;
         this.knowledge.addListener(this);
     }    
+    
+    @Override
+    public ASIPSpace asASIPSpace() {
+        return null; // TODO
+    }
      
     @Override
     public SharkCS asSharkCS() {
@@ -984,52 +989,47 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public abstract InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
 
     @Override
-    public InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public abstract InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException;
 
     @Override
-    public InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public abstract InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
 
     @Override
     public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        InformationPoint toRemove = this.getInformationPoint(coordinates);
+        if(toRemove != null) {
+            this.knowledge.removeInformationPoint(toRemove);
+        }
     }
 
     @Override
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        // TODO iterate all ipoints and remove them
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.informationPoints(cs, true);
     }
 
     @Override
-    public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Interest contextualize(ASIPSpace as) throws SharkKBException {
+        return this.contextualize(as, this.getStandardFPSet());
     }
 
+    /**
+     *
+     * @param as
+     * @param fp
+     * @return
+     * @throws SharkKBException
+     */
     @Override
-    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Interest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
+        return SharkCSAlgebra.contextualize(this.asASIPSpace(), as, fp);
     }
 }
