@@ -145,6 +145,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException;
   
   public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
+  
   public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
 
   /**

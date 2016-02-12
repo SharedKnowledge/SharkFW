@@ -19,6 +19,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.asip.ASIPSerializer;
 import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkNotSupportedException;
 import org.junit.After;
@@ -197,15 +198,13 @@ public class ASIPSerializerTest {
     public void SemanticSTSetSerialization_singleST_success() throws SharkKBException{
         
         STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
-        
         stSetWithOneTag.merge(t1);
-        String expected = L.stSet2String(stSetWithOneTag);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
         STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
         
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
     
     /**
@@ -216,15 +215,13 @@ public class ASIPSerializerTest {
     public void SemanticSTSetSerialization_singlePST_success() throws SharkKBException{
         
         STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
-        
         stSetWithOneTag.merge(p1);
-        String expected = L.stSet2String(stSetWithOneTag);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
         STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
         
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
     
     /**
@@ -235,15 +232,13 @@ public class ASIPSerializerTest {
     public void SemanticSTSetSerialization_singleTST_success() throws SharkKBException{
         
         STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
-        
         stSetWithOneTag.merge(ti1);
-        String expected = L.stSet2String(stSetWithOneTag);
         
         String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
         STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
         
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
     
     /**
@@ -253,20 +248,17 @@ public class ASIPSerializerTest {
     @Test
     public void SemanticSTSetSerialization_multipleTags_success() throws SharkKBException{
         
-        STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
+        STSet stSetWithMultipleTags = InMemoSharkKB.createInMemoSTSet();
+        stSetWithMultipleTags.merge(t1);
+        stSetWithMultipleTags.merge(t2);
+        stSetWithMultipleTags.merge(t3);
+        stSetWithMultipleTags.merge(t5);
         
-        stSetWithOneTag.merge(t1);
-        stSetWithOneTag.merge(t2);
-        stSetWithOneTag.merge(t3);
-        stSetWithOneTag.merge(t5);
-        
-        String expected = L.stSet2String(stSetWithOneTag);
-        
-        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
+        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithMultipleTags);
         STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
         
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(SharkCSAlgebra.identical(stSetWithMultipleTags, deserialized));
     }
     
     
@@ -277,21 +269,17 @@ public class ASIPSerializerTest {
     @Test
     public void SemanticSTSetSerialization_multipleMixedTags_success() throws SharkKBException{
         
-        STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
+        STSet stSetWithMultipleTags = InMemoSharkKB.createInMemoSTSet();
+        stSetWithMultipleTags.merge(t1);
+        stSetWithMultipleTags.merge(ti2);
+        stSetWithMultipleTags.merge(p5);
+        stSetWithMultipleTags.merge(t5);
         
-        stSetWithOneTag.merge(t1);
-        stSetWithOneTag.merge(ti2);
-        stSetWithOneTag.merge(p5);
-        stSetWithOneTag.merge(t5);
-        
-        String expected = L.stSet2String(stSetWithOneTag);
-        System.out.println(expected);
-        
-        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag);
+        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithMultipleTags);
         STSet deserialized = InMemoSharkKB.createInMemoSTSet();
-        String actual = L.stSet2String(ASIPSerializer.deserializeSTSet(deserialized, serializedTopics));
+        ASIPSerializer.deserializeSTSet(deserialized, serializedTopics);
         
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(SharkCSAlgebra.identical(stSetWithMultipleTags, deserialized));
     }
     
 //    @Test
