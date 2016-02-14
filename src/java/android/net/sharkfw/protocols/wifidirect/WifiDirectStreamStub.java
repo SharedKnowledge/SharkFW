@@ -38,6 +38,8 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
+import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.peer.SharkEngine;
 
 import net.sharkfw.protocols.ConnectionStatusListener;
@@ -47,6 +49,7 @@ import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.StreamStub;
 import net.sharkfw.protocols.tcp.TCPConnection;
 import net.sharkfw.protocols.tcp.TCPStreamStub;
+import net.sharkfw.system.SharkNotSupportedException;
 
 /** Searches for WifiDirect peers in range and tries to establish connections to them.
  * 	Since every device can be the Group owner in Wifi Direct (Server) every device will 
@@ -389,6 +392,16 @@ public class WifiDirectStreamStub extends BroadcastReceiver implements StreamStu
 	@Override
 	public boolean started() {
 		return _state != WifiDirectStreamStubState.NOT_READY;
+	}
+
+	@Override
+	public void offer(ASIPSpace interest) throws SharkNotSupportedException {
+
+	}
+
+	@Override
+	public void offer(Knowledge knowledge) throws SharkNotSupportedException {
+
 	}
 
 	/** Throws an IOException, because the wifi stream stub cannot create a stream connection. */
