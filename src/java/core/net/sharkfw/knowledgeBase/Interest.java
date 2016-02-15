@@ -39,7 +39,7 @@ import net.sharkfw.asip.ASIPSpace;
  * 
  * @author mfi, thsc
  */
-public interface Interest extends SharkCS, ASIPSpace {
+public interface Interest extends SharkCS {
 
   /**
    * Topics are stored in semantic tag set. Most implementations will choose
@@ -114,15 +114,4 @@ public interface Interest extends SharkCS, ASIPSpace {
    */
   public Interest contextualize(SharkCS context, FragmentationParameter[] fp)
           throws SharkKBException;
-  
-  
-  ////////////////////////////////////////////////////////////////
-  //                       LASP setter                          // 
-  ////////////////////////////////////////////////////////////////
-  
-    public void setTypes(STSet types);
-    public void setApprovers(PeerSTSet approvers);
-    public void setSender(PeerSemanticTag sender);
-    public void setReceivers(PeerSTSet receivers);
-  
 }

@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
+import net.sharkfw.asip.ASIPInterest;
 
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -679,7 +680,7 @@ public abstract class SharkCSAlgebra {
         return null;
     }
     
-    public static Interest contextualize(ASIPSpace source, ASIPSpace context, 
+    public static ASIPInterest contextualize(ASIPSpace source, ASIPSpace context, 
             FragmentationParameter[] fp) throws SharkKBException {
         
         return null; // TODO

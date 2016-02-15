@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
@@ -398,6 +399,18 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                 times, locations, direction);
     }
     
+    /**
+     * 
+     * @param topics
+     * @param types
+     * @param sender
+     * @param approvers
+     * @param receivers
+     * @param times
+     * @param locations
+     * @param direction
+     * @return 
+     */
     public static Interest createInMemoInterest(STSet topics, STSet types, 
             PeerSemanticTag sender, PeerSTSet approvers, PeerSTSet receivers, 
             TimeSTSet times, SpatialSTSet locations, int direction) {
@@ -406,6 +419,19 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                 receivers, times, locations, direction);
     }
     
+    public static ASIPInterest createInMemoASIPInterest() {
+        return new InMemoInterest();
+    }
+    
+    public static ASIPInterest createInMemoASIPInterest(STSet topics, STSet types, 
+            PeerSemanticTag sender, PeerSTSet approvers, PeerSTSet receivers, 
+            TimeSTSet times, SpatialSTSet locations, int direction) {
+        
+        return new InMemoInterest(topics, types, sender, approvers, 
+                receivers, times, locations, direction);
+    }
+    
+
     public static TimeSTSet createInMemoTimeSTSet() {
         return new InMemoTimeSTSet();
     }

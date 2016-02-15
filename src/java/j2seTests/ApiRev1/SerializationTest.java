@@ -255,7 +255,7 @@ public class SerializationTest {
             SharkVocabulary context = rK.getVocabulary();
 
             // topic
-            SemanticTag topic1 = context.getSemanticTag(TestData.TOPIC1_SI);
+            SemanticTag topic1 = context.getTopicSTSet().getSemanticTag(TestData.TOPIC1_SI);
             Assert.assertNotNull(topic1);
             
             // peer

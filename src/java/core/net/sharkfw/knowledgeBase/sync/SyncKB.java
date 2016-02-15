@@ -5,6 +5,7 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
@@ -236,16 +237,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public SemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        return _localKB.getSemanticTag(sis);
-    }
-
-    @Override
-    public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        return _localKB.getSemanticTag(si);
-    }
-
-    @Override
     public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException {
         return _localKB.getPeerSemanticTag(sis);
     }
@@ -318,16 +309,6 @@ public class SyncKB implements SharkKB {
     @Override
     public Interest contextualize(SharkCS as, FragmentationParameter[] fp) throws SharkKBException {
     	return _localKB.contextualize(as);
-    }
-
-    @Override
-    public Enumeration<SemanticTag> tags() throws SharkKBException {
-    	return _localKB.tags();
-    }
-
-    @Override
-    public Iterator<SemanticTag> getTags() throws SharkKBException {
-    	return _localKB.getTags();
     }
 
     @Override
@@ -456,17 +437,22 @@ public class SyncKB implements SharkKB {
     }
     
     @Override
-    public Interest contextualize(ASIPSpace as) throws SharkKBException {
+    public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
         return this._localKB.contextualize(as);
     }
 
     @Override
-    public Interest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
+    public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
         return this._localKB.contextualize(as, fp);
     }
 
     @Override
     public ASIPSpace asASIPSpace() {
         return this._localKB.asASIPSpace();
+    }
+
+    @Override
+    public ASIPInterest asASIPInterest() {
+        return this._localKB.asASIPInterest();
     }
 }

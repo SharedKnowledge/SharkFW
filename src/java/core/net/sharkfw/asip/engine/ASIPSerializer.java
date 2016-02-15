@@ -421,7 +421,7 @@ public class ASIPSerializer {
         
         // TODO
         
-        Interest interest = InMemoSharkKB.createInMemoInterest();
+        ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest();
         
         JSONObject deserialized = new JSONObject(sharkCS);
         

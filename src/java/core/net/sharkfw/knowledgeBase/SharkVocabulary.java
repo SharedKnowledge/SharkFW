@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPInterest;
 
 /**
  *
@@ -38,30 +39,37 @@ public interface SharkVocabulary {
      * </ul>
      * 
      * @return this knowledge base as Shark context space
+     * @deprecated 
      */
     public SharkCS asSharkCS();
     
+    /**
+     * 
+     * @return 
+     * @deprecated 
+     */
     public Interest asInterest();
     
     public ASIPSpace asASIPSpace();
+    public ASIPInterest asASIPInterest();
     
-    /**
-     * 
-     * @param sis
-     * @return
-     * @throws SharkKBException 
-     * @deprecated 
-     */
-  public SemanticTag getSemanticTag(String[] sis) throws SharkKBException;
-  
-  /**
-   * 
-   * @param si
-   * @return
-   * @throws SharkKBException 
-   * @deprecated 
-   */
-  public SemanticTag getSemanticTag(String si) throws SharkKBException;
+//    /**
+//     * 
+//     * @param sis
+//     * @return
+//     * @throws SharkKBException 
+//     * @deprecated 
+//     */
+//  public SemanticTag getSemanticTag(String[] sis) throws SharkKBException;
+//  
+//  /**
+//   * 
+//   * @param si
+//   * @return
+//   * @throws SharkKBException 
+//   * @deprecated 
+//   */
+//  public SemanticTag getSemanticTag(String si) throws SharkKBException;
   
   /**
    * 
@@ -81,7 +89,10 @@ public interface SharkVocabulary {
    */
   public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException;
 
-  // STSet management
+  ///////////////////////////////////////////////////////////////////////////
+  //                            STSet management                           //
+  ///////////////////////////////////////////////////////////////////////////
+  
   /**
    * Return the STSets containing all topics.
    * Locations, Times and Peers are considered to be potential topics as well,
@@ -201,7 +212,7 @@ public interface SharkVocabulary {
    */
   public Interest contextualize(SharkCS cs) throws SharkKBException;
   
-  public Interest contextualize(ASIPSpace as) throws SharkKBException;
+  public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException;
 
   /**
    * @deprecated 
@@ -213,22 +224,7 @@ public interface SharkVocabulary {
   public Interest contextualize(SharkCS as, FragmentationParameter[] fp) 
           throws SharkKBException;
   
-  public Interest contextualize(ASIPSpace as, FragmentationParameter[] fp) 
+  public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) 
           throws SharkKBException;
   
-    /**
-     * Produces an enumeration of all semantic tags in kb no matter at
-     * what dimension they are used.
-     * 
-     * @return 
-     * @throws net.sharkfw.knowledgeBase.SharkKBException 
-     */
-    public Enumeration<SemanticTag> tags() throws SharkKBException;
-    
-    /**
-     *
-     * @return
-     * @throws SharkKBException
-     */
-    public Iterator<SemanticTag> getTags() throws SharkKBException;
 }

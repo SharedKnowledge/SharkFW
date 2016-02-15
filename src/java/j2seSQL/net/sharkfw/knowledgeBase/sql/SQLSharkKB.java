@@ -10,10 +10,12 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.AbstractSharkKB;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationCoordinates;
 import net.sharkfw.knowledgeBase.InformationPoint;
@@ -659,11 +661,6 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
     
     @Override
-    public Enumeration<SemanticTag> tags() throws SharkKBException {
-        return this.getTopicSTSet().tags();
-    }
-    
-    @Override
     public Interest createInterest(STSet topics, PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -885,14 +882,6 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
 
     @Override
-    public Iterator<SemanticTag> getTags() throws SharkKBException {
-        EnumerationChain eChain = new EnumerationChain();
-        eChain.addEnumeration(this.tags());
-        
-        return eChain;
-    }
-
-    @Override
     public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -914,6 +903,11 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
 
     @Override
     public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ASIPInterest asASIPInterest() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

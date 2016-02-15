@@ -85,10 +85,10 @@ public class FSSharkKBTest {
         // recreate
         kb = new FSSharkKB(FOLDER);
         
-        SemanticTag javaTag2 = kb.getSemanticTag(javaSI);
+        SemanticTag javaTag2 = kb.getTopicSTSet().getSemanticTag(javaSI);
         Assert.assertTrue(SharkCSAlgebra.identical(javaTag, javaTag2));
         
-        SemanticTag tag3 = kb.getSemanticTag(nonPersistentSI);
+        SemanticTag tag3 = kb.getTopicSTSet().getSemanticTag(nonPersistentSI);
         Assert.assertNull(tag3);
     }
 
@@ -154,7 +154,7 @@ public class FSSharkKBTest {
         // drop kb and re-create
         kb = new FSSharkKB(FOLDER);
         
-        javaTag = kb.getSemanticTag(javaSI);
+        javaTag = kb.getTopicSTSet().getSemanticTag(javaSI);
         cc = kb.createContextCoordinates(javaTag, null, null, null, null, null, SharkCS.DIRECTION_OUT);
         
         cp = kb.getContextPoint(cc);

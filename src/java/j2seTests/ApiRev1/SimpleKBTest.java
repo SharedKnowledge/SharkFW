@@ -35,24 +35,6 @@ public class SimpleKBTest {
     
     protected SharkKB kb = null;
 
-    @Test
-    public void testGetSTSet() throws SharkKBException, SharkNotSupportedException, SharkKBException, SharkKBException, SharkKBException {
-      SemanticTag topic = kb.getTopicSTSet().createSemanticTag("Test", "http://test.de");
-      PeerSemanticTag peer = kb.getPeerSTSet().createPeerSemanticTag("Testpeer", "http://testpeer.de", "tcp://localhost:1234");
-      TimeSemanticTag time = kb.getTimeSTSet().createTimeSemanticTag(1000, 2000);
-      
-      Enumeration<SemanticTag> tags = kb.tags();
-      Assert.assertNotNull(tags);
-
-      int counter = 0;
-      while(tags.hasMoreElements()) {
-        SemanticTag tag = tags.nextElement();
-        counter++;
-      }
-
-      Assert.assertEquals(counter, 3);
-    }
-
     /**
      * Print all SI to the console, which can be retrieved using getAllSI().
 
@@ -86,7 +68,7 @@ public class SimpleKBTest {
 //      SpatialSemanticTag geo = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{12.34, 45.67}, 5000);
 
       PeerSemanticTag peerResult = kb.getPeerSemanticTag(peer.getSI());
-      SemanticTag topicResult = kb.getSemanticTag(topic.getSI());
+      SemanticTag topicResult = kb.getTopicSTSet().getSemanticTag(topic.getSI());
 //      TimeSemanticTag timeResult = kb.getTimeSTSet().getTimeSemanticTag(time.getSI());
 //      SpatialSemanticTag geoResult = kb.getSpatialSTSet().getSpatialSemanticTag(geo.getSI());
 
@@ -1264,11 +1246,11 @@ public class SimpleKBTest {
       SemanticTag test = kb.getTopicSTSet().createSemanticTag("Test", "http://test.de");
       Assert.assertNotNull(test);
 
-      Assert.assertNotNull(kb.getSemanticTag(test.getSI()));
+      Assert.assertNotNull(kb.getTopicSTSet().getSemanticTag(test.getSI()));
       
       kb.getTopicSTSet().removeSemanticTag(test);
 
-      Assert.assertNull(kb.getSemanticTag(test.getSI()));
+      Assert.assertNull(kb.getTopicSTSet().getSemanticTag(test.getSI()));
     }
 
 
@@ -1415,7 +1397,7 @@ public class SimpleKBTest {
         SemanticTag tag = kb.getTopicSTSet().createSemanticTag("test1", "http://si-1.de");
         tag.addSI("http://si-2.de");
         
-        SemanticTag sameTag = kb.getSemanticTag(new String[] {"http://si-2.de"});
+        SemanticTag sameTag = kb.getTopicSTSet().getSemanticTag(new String[] {"http://si-2.de"});
         Assert.assertTrue(SharkCSAlgebra.identical(tag, sameTag));
     }
     

@@ -269,7 +269,7 @@ public class ExchangeTests {
       // Bob must know that shovel is a sub-concept of tools
       // Bob must posess the contextpoint for shovel and the information
 
-      SNSemanticTag bobShovel = (SNSemanticTag) bobKb.getSemanticTag(new String[]{"http://shovel.org"});
+      SNSemanticTag bobShovel = (SNSemanticTag) bobKb.getTopicSTSet().getSemanticTag(new String[]{"http://shovel.org"});
       PeerSNSemanticTag bobsAlice = (PeerSNSemanticTag) bobKb.getPeerSemanticTag(alicePeer.getSI());
 
       Assert.assertNull(bobShovel);

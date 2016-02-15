@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -82,6 +83,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public ASIPSpace asASIPSpace() {
+        return null; // TODO
+    }
+     
+    @Override
+    public ASIPInterest asASIPInterest() {
         return null; // TODO
     }
      
@@ -565,41 +571,25 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return this.defaultFP;
     }
   
-    /**
-     * 
-     * @param sis
-     * @return
-     * @throws SharkKBException 
-     * @deprecated
-     */
-  @Override
-  public SemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-      SemanticTag tag = this.getTopicSTSet().getSemanticTag(sis);      
-      if(tag != null) return tag;
-      
-      tag = this.getPeerSTSet().getSemanticTag(sis);
-      if(tag != null) return tag;
-      
-      tag = this.getSpatialSTSet().getSemanticTag(sis);
-      if(tag != null) return tag;
-      
-      tag = this.getTimeSTSet().getSemanticTag(sis);
-      
-      return tag;
-      
-  }
+//  public SemanticTag getSemanticTag(String[] sis) throws SharkKBException {
+//      SemanticTag tag = this.getTopicSTSet().getSemanticTag(sis);      
+//      if(tag != null) return tag;
+//      
+//      tag = this.getPeerSTSet().getSemanticTag(sis);
+//      if(tag != null) return tag;
+//      
+//      tag = this.getSpatialSTSet().getSemanticTag(sis);
+//      if(tag != null) return tag;
+//      
+//      tag = this.getTimeSTSet().getSemanticTag(sis);
+//      
+//      return tag;
+//      
+//  }
   
-  /**
-   * 
-   * @param si
-   * @return
-   * @throws SharkKBException 
-     * @deprecated
-   */
-    @Override
-    public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        return this.getSemanticTag(new String[] {si});
-    }
+//    public SemanticTag getSemanticTag(String si) throws SharkKBException {
+//        return this.getSemanticTag(new String[] {si});
+//    }
   
   
     /**
@@ -657,23 +647,23 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.notifySemanticTagChanged(tag);
     }
 
-    /**
-     * 
-     * @return
-     * @throws SharkKBException 
-     * @deprecated
-     */
-    @Override
-    public Enumeration<SemanticTag> tags() throws SharkKBException {
-        EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
-        
-        tagEnum.addEnumeration(this.getTopicSTSet().tags());
-        tagEnum.addEnumeration(this.getPeerSTSet().tags());
-        tagEnum.addEnumeration(this.getSpatialSTSet().tags());
-        tagEnum.addEnumeration(this.getTimeSTSet().tags());
-        
-        return tagEnum;
-    }
+//    /**
+//     * 
+//     * @return
+//     * @throws SharkKBException 
+//     * @deprecated
+//     */
+//    @Override
+//    public Enumeration<SemanticTag> tags() throws SharkKBException {
+//        EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
+//        
+//        tagEnum.addEnumeration(this.getTopicSTSet().tags());
+//        tagEnum.addEnumeration(this.getPeerSTSet().tags());
+//        tagEnum.addEnumeration(this.getSpatialSTSet().tags());
+//        tagEnum.addEnumeration(this.getTimeSTSet().tags());
+//        
+//        return tagEnum;
+//    }
     
     public Iterator getTags() throws SharkKBException {
         EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
@@ -1019,7 +1009,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
 
     @Override
-    public Interest contextualize(ASIPSpace as) throws SharkKBException {
+    public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
         return this.contextualize(as, this.getStandardFPSet());
     }
 
@@ -1031,7 +1021,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @throws SharkKBException
      */
     @Override
-    public Interest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
+    public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
         return SharkCSAlgebra.contextualize(this.asASIPSpace(), as, fp);
     }
 }
