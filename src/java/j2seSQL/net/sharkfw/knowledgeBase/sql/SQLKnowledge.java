@@ -5,7 +5,6 @@ import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.InformationPoint;
-import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeListener;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
@@ -62,28 +61,27 @@ public class SQLKnowledge implements Knowledge {
     }
 
     @Override
-    public void removeInformationSpace(ASIPSpace cp) {
+    public void addInformationPoint(InformationPoint iPoint) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Iterator<InformationSpace> informationSpaces() {
+    public void removeInformationPoint(InformationPoint cp) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int getNumberOfInformationSpaces() {
+    public Iterator<InformationPoint> informationPoints() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public InformationSpace getInformationSpace(int i) {
+    public int getNumberOfInformationPoints() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void removeInformationPoint(InformationPoint toRemove) {
+    public InformationPoint getInformationPoint(int i) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
 }

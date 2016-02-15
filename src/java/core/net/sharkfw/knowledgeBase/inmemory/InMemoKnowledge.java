@@ -115,7 +115,6 @@ public class InMemoKnowledge implements Knowledge {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Enumeration<ContextPoint> contextPoints() {
         return new Iterator2Enumeration(this.cps.iterator());
@@ -135,31 +134,31 @@ public class InMemoKnowledge implements Knowledge {
 
     @Override
     public void addInformationSpace(ASIPSpace space) {
-        // TODO
-    }
-
-    @Override
-    public void removeInformationSpace(ASIPSpace cp) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Iterator<InformationSpace> informationSpaces() {
+    public void addInformationPoint(InformationPoint iPoint) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int getNumberOfInformationSpaces() {
+    public void removeInformationPoint(InformationPoint cp) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public InformationSpace getInformationSpace(int i) {
+    public Iterator<InformationPoint> informationPoints() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void removeInformationPoint(InformationPoint toRemove) {
+    public int getNumberOfInformationPoints() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public InformationPoint getInformationPoint(int i) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

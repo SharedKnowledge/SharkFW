@@ -5,9 +5,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.knowledgeBase.ASIPInterest;
+import net.sharkfw.knowledgeBase.ASIPKnowledge;
 import net.sharkfw.knowledgeBase.InformationSpace;
 import net.sharkfw.knowledgeBase.Interest;
-import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -27,8 +27,6 @@ import org.json.JSONObject;
 import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticTag;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkCS;
 
 /**
  *
@@ -46,7 +44,7 @@ public class ASIPSerializer {
         return ASIPSerializer.serializeExposeJSON(header, interest).toString();
     }
     
-    public static String serializeInsert(ASIPMessage header, Knowledge knowledge) throws SharkKBException{
+    public static String serializeInsert(ASIPMessage header, ASIPKnowledge knowledge) throws SharkKBException{
         return ASIPSerializer.serializeInsertJSON(header, knowledge).toString();
     }
     
@@ -93,7 +91,7 @@ public class ASIPSerializer {
         return object;
     }
 
-    public static JSONObject serializeInsertJSON(ASIPMessage header, Knowledge knowledge){
+    public static JSONObject serializeInsertJSON(ASIPMessage header, ASIPKnowledge knowledge){
         return new JSONObject();
     }    
     
@@ -265,14 +263,16 @@ public class ASIPSerializer {
      * @return
      * @throws SharkKBException 
      */
-    public static Knowledge deserializeKnowledge(String knowledge) throws SharkKBException {
+    public static ASIPKnowledge deserializeKnowledge(String knowledge) throws SharkKBException {
         ASIPSerializer wS = new ASIPSerializer();
         
         InMemoSharkKB imkb = new InMemoSharkKB();
         
         wS.deserializeAndMergeKnowledge(imkb, knowledge);
         
-        return imkb.asKnowledge();
+        return null; // TODO
+        
+        // return imkb.asKnowledge();
     }
     
     /**
