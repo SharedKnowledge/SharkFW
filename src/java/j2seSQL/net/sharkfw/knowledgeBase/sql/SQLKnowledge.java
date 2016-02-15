@@ -2,7 +2,7 @@ package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
 import java.util.Iterator;
-import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.Knowledge;
