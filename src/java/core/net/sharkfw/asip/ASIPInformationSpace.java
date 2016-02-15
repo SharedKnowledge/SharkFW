@@ -1,6 +1,8 @@
-package net.sharkfw.knowledgeBase;
+package net.sharkfw.asip;
 
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.SharkKBException;
 
 /**
  * Information can be annotated with semantic tags. It plural, e.g.
@@ -16,9 +18,9 @@ import java.util.Iterator;
  * </ul>
  * @author thsc
  */
-public interface InformationSpace {
+public interface ASIPInformationSpace {
     ASIPSpace getASIPSpace() throws SharkKBException;
     void setASIPSpace(ASIPSpace space) throws SharkKBException;
     
-    Iterator<InformationPoint> informationPoints() throws SharkKBException;
+    Iterator<Information> informations() throws SharkKBException;
 }

@@ -1,5 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,7 +15,7 @@ import java.util.Iterator;
  * @author thsc
  */
 
-public class InformationSpace2ContextPoint implements InformationSpace {
+public class InformationSpace2ContextPoint implements ASIPInformationSpace {
     private ASIPSpace space;
     private ArrayList<ContextPoint> cpList;
 
@@ -44,7 +46,7 @@ public class InformationSpace2ContextPoint implements InformationSpace {
     }
 
     @Override
-    public Iterator<InformationPoint> informationPoints() throws SharkKBException {
+    public Iterator<Information> informations() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -1,5 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -131,7 +133,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @throws SharkKBException 
      */
     @Override
-    public InformationSpace createInformationSpace(ASIPSpace space) 
+    public ASIPInformationSpace createInformationSpace(ASIPSpace space) 
             throws SharkKBException {
         
         return new InformationSpace2ContextPoint(this, space);

@@ -1,4 +1,4 @@
-package net.sharkfw.asip;
+package net.sharkfw.asip.engine;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;

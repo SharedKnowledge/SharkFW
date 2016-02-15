@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase;
 
+import net.sharkfw.asip.ASIPSpace;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;

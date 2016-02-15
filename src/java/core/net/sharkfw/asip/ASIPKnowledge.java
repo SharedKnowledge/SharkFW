@@ -1,7 +1,8 @@
-package net.sharkfw.knowledgeBase;
+package net.sharkfw.asip;
 
-import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.InformationPoint;
+import net.sharkfw.knowledgeBase.SharkVocabulary;
 
 /**
  *

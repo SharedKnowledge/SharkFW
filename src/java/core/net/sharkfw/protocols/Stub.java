@@ -2,7 +2,7 @@ package net.sharkfw.protocols;
 
 import java.io.IOException;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.system.SharkNotSupportedException;
 
 /**

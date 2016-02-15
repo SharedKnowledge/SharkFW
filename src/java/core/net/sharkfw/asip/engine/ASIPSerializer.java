@@ -1,12 +1,13 @@
-package net.sharkfw.asip;
+package net.sharkfw.asip.engine;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import net.sharkfw.knowledgeBase.ASIPInterest;
-import net.sharkfw.knowledgeBase.ASIPKnowledge;
-import net.sharkfw.knowledgeBase.InformationSpace;
+import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -24,7 +25,6 @@ import net.sharkfw.system.Util;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import net.sharkfw.knowledgeBase.ASIPSpace;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 
@@ -301,7 +301,7 @@ public class ASIPSerializer {
         ASIPSpace cs = this.deserializeCS(target, knowledgeString);
         
         // could add cs to knowledge base
-        InformationSpace infoSpace = target.createInformationSpace(cs);
+        ASIPInformationSpace infoSpace = target.createInformationSpace(cs);
         
         /* infos can be added now - tja und das muss man schlau machen
         wegen der eventuell großen Datenmengen. Man kann ein Infoobjekt

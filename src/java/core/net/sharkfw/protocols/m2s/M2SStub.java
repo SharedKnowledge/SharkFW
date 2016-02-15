@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import net.sharkfw.knowledgeBase.ASIPSpace;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.RequestHandler;

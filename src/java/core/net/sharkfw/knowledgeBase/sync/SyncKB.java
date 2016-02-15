@@ -1,5 +1,7 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -409,7 +411,7 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public InformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
+    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
         return this._localKB.createInformationSpace(space);
     }
 

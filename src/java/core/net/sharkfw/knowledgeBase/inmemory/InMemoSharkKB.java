@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;

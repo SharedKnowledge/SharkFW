@@ -1,10 +1,10 @@
-package net.sharkfw.asip;
+package net.sharkfw.asip.engine;
 
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.knowledgeBase.ASIPSpace;
 
 /**
  * Objects of this class are result of the scanning process

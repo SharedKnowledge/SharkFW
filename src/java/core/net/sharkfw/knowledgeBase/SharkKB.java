@@ -1,5 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
@@ -120,7 +122,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public InformationPoint createInformationPoint(InformationCoordinates coordinates) 
           throws SharkKBException;
   
-  public InformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException;
+  public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException;
   
     /**
      * Create a new (empty) knowledge object. The actual knowledge base will

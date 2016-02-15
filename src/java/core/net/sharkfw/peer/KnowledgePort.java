@@ -1,5 +1,6 @@
 package net.sharkfw.peer;
 
+import net.sharkfw.asip.ASIPSpace;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -11,9 +12,9 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
-import net.sharkfw.asip.ASIPConnection;
-import net.sharkfw.asip.ASIPInMessage;
-import net.sharkfw.asip.ASIPMessage;
+import net.sharkfw.asip.engine.ASIPConnection;
+import net.sharkfw.asip.engine.ASIPInMessage;
+import net.sharkfw.asip.engine.ASIPMessage;
 
 /**
  * This is the abstract superclass of all implementations of Knowledge Ports.

@@ -1,5 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
+import net.sharkfw.asip.ASIPSpace;
+
 /**
  * <p>An interface defining the interest.</p>
  *

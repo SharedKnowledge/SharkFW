@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
 
 /**
