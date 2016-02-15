@@ -11,6 +11,7 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
@@ -56,8 +57,8 @@ public class ASIPSerializer {
         return ASIPSerializer.serializeInterestJSON(space).toString();
     }
     
-    public static String serializeKnowledge(){
-        return ASIPSerializer.serializeKnowledgeJSON().toString();
+    public static String serializeKnowledge(ASIPKnowledge knowledge){
+        return ASIPSerializer.serializeKnowledgeJSON(knowledge).toString();
     }
     
     public static String serializeTag(SemanticTag tag) throws JSONException {
@@ -68,7 +69,7 @@ public class ASIPSerializer {
         return ASIPSerializer.serializeSTSetJSON(stset).toString();
     }
     
-    public static String serializeProperties(SystemPropertyHolder target){
+    public static String serializeProperties(SystemPropertyHolder target) throws SharkKBException{
         return ASIPSerializer.serializePropertiesJSON(target).toString();
     }
     
@@ -91,8 +92,12 @@ public class ASIPSerializer {
         return object;
     }
 
-    public static JSONObject serializeInsertJSON(ASIPMessage header, ASIPKnowledge knowledge){
-        return new JSONObject();
+    public static JSONObject serializeInsertJSON(ASIPMessage header, ASIPKnowledge knowledge)
+            throws JSONException, SharkKBException{
+        JSONObject object = new JSONObject();
+        object.put(HEADER, serializeHeaderJSON(header));
+        object.put(KNOWLEDGE, serializeKnowledgeJSON(knowledge));
+        return object;
     }    
     
     public static JSONObject serializeHeaderJSON(ASIPMessage header) throws JSONException, SharkKBException {
@@ -131,7 +136,7 @@ public class ASIPSerializer {
         return object;
     }
     
-    public static JSONObject serializeKnowledgeJSON(){
+    public static JSONObject serializeKnowledgeJSON(ASIPKnowledge knowledge){
         return new JSONObject();
     }
     
@@ -218,8 +223,30 @@ public class ASIPSerializer {
         return jsonObject;
     }
     
-    public static JSONObject serializePropertiesJSON(SystemPropertyHolder target){
-        return new JSONObject();
+    public static JSONObject serializePropertiesJSON(SystemPropertyHolder target) throws SharkKBException{
+        if(target == null) {
+            return null;
+        }
+        
+        Enumeration<String> propNamesEnum = target.propertyNames(false);
+        if(propNamesEnum == null || !propNamesEnum.hasMoreElements()) {
+            return new JSONObject();
+        }
+        JSONObject jsonOject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        while(propNamesEnum.hasMoreElements()){
+            String name = propNamesEnum.nextElement();
+            String value = target.getProperty(name);
+            
+            JSONObject property = new JSONObject();
+            property.put(PropertyHolder.NAME, name);
+            property.put(PropertyHolder.VALUE, value);
+            jsonArray.put(property);
+        }
+        
+        jsonOject.put(PropertyHolder.PROPERTIES, jsonArray);
+        
+        return jsonOject;
     }
     
     public static JSONObject serializeRelationsJSON(Enumeration<SemanticTag> tagEnum){

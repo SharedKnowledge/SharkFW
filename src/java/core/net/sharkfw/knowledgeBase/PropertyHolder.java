@@ -7,6 +7,11 @@ import java.util.Enumeration;
  * @author thsc
  */
 public interface PropertyHolder {
+    
+    public final static String PROPERTIES = "PROPERTIES";
+    public final static String NAME = "NAME";
+    public final static String VALUE = "VALUE";
+    
   /**
    * Set a property with the given name to the given value.
    * 
