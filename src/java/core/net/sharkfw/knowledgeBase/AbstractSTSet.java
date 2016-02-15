@@ -61,6 +61,25 @@ public abstract class AbstractSTSet implements STSet {
         }
     }
     
+    @Override
+    public void removeSemanticTag(String si) throws SharkKBException {
+          SemanticTag st = this.getSemanticTag(si);
+
+          if(st != null) {
+              this.removeSemanticTag(st);
+          }
+    }
+  
+    @Override
+    public void removeSemanticTag(String[] sis) throws SharkKBException {
+          SemanticTag st = this.getSemanticTag(sis);
+
+          if(st != null) {
+              this.removeSemanticTag(st);
+          }
+    }
+    
+    
     /**
      * This methods checks whether a tag exists that is identical to anchor.
      * If so, a new STSet is created that contains a copy of the concept in

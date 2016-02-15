@@ -222,4 +222,13 @@ public class InMemoPeerTaxonomy extends InMemoTaxonomy implements PeerTaxonomy, 
         return this.getStorage().peerTags();
     }
 
+    @Override
+    public void removeSemanticTag(String si) throws SharkKBException {
+        this.sn.removeSemanticTag(si);
+    }
+
+    @Override
+    public void removeSemanticTag(String[] sis) throws SharkKBException {
+        this.sn.removeSemanticTag(sis);
+    }
 }

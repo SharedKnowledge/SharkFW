@@ -69,7 +69,7 @@ public class SyncKPTests {
         _alicePort = getPort();
         _alice = _aliceKB.getPeerSemanticTag(ALICE_IDENTIFIER);
         if(_alice == null) {
-            _alice = _aliceKB.createPeerSemanticTag("Alice", ALICE_IDENTIFIER, "tcp://localhost:"+_alicePort);
+            _alice = _aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", ALICE_IDENTIFIER, "tcp://localhost:"+_alicePort);
         } else {
             // alice already defined - change address
             _alice.setAddresses(new String[] {"tcp://localhost:"+_alicePort});
@@ -78,7 +78,7 @@ public class SyncKPTests {
         _bobPort = getPort();
         _bob = _bobKB.getPeerSemanticTag(BOB_IDENTIFIER);
         if(_bob == null) {
-            _bob = _bobKB.createPeerSemanticTag("Alice", BOB_IDENTIFIER, "tcp://localhost:"+_bobPort);
+            _bob = _bobKB.getPeerSTSet().createPeerSemanticTag("Alice", BOB_IDENTIFIER, "tcp://localhost:"+_bobPort);
         } else {
             // alice already defined - change address
             _bob.setAddresses(new String[] {"tcp://localhost:"+_bobPort});
@@ -266,7 +266,7 @@ public class SyncKPTests {
     @Test
     public void syncKP_createPeerInKB_peerIsInBucketList() throws SharkKBException {
         // Add a new peer to Alice's knowledge base
-        PeerSemanticTag clara = _aliceKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
+        PeerSemanticTag clara = _aliceKB.getPeerSTSet().createPeerSemanticTag("Clara", "ClaraIdentifier", "mail@clara.de");
         
         PeerSTSet bucketListPeers = _aliceSyncKP.getTimestamps().getPeers();
         assertNotNull(bucketListPeers.getSemanticTag("bobIdentifier"));
@@ -367,7 +367,7 @@ public class SyncKPTests {
         assertEquals(_bob, peerInSyncBucket);
         
         // Now remove bob from alice's peers
-        _aliceKB.removeSemanticTag(_bob.getSI());
+        _aliceKB.getPeerSTSet().removeSemanticTag(_bob);
 //        _aliceKB.getPeerSTSet().removeSemanticTag(_bob);
         
         assertEquals(0, _aliceSyncKP.getTimestamps().getPeers().size());
@@ -417,7 +417,7 @@ public class SyncKPTests {
         // We need a Clara for this
         SyncKB claraKB = new SyncKB(new InMemoSharkKB());
         int claraPort = getPort();
-        PeerSemanticTag clara = claraKB.createPeerSemanticTag("Clara", "ClaraIdentifier", "tcp://localhost:"+claraPort);
+        PeerSemanticTag clara = claraKB.getPeerSTSet().createPeerSemanticTag("Clara", "ClaraIdentifier", "tcp://localhost:"+claraPort);
         claraKB.setOwner(clara);
         SharkEngine claraEngine = new J2SEAndroidSharkEngine();
         SyncKP claraSyncKP = new SyncKP(claraEngine, claraKB, 1);

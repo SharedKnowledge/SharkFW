@@ -112,4 +112,14 @@ public class SQLPeerTaxonomy extends TaxonomyWrapper implements PeerTaxonomy {
         
         return new InMemoPeerTaxonomy(fragment);
     }
+
+    @Override
+    public void removeSemanticTag(String si) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeSemanticTag(String[] sis) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

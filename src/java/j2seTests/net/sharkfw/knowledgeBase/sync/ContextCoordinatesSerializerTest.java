@@ -36,7 +36,7 @@ public class ContextCoordinatesSerializerTest {
         syncKB = new SyncKB(new InMemoSharkKB());
         st1 = syncKB.getTopicSTSet().createSemanticTag("Teapots", "www.teapots.org");
         st1 = syncKB.getTopicSTSet().createSemanticTag("Noodles", "www.noodles.org");
-        pst = syncKB.createPeerSemanticTag("Alice", "www.alice.org", "mail@alice.org");
+        pst = syncKB.getPeerSTSet().createPeerSemanticTag("Alice", "www.alice.org", "mail@alice.org");
         
         cps = new ArrayList<>();
         ContextCoordinates cc1 = syncKB.createContextCoordinates(st1, pst, pst, pst, null, null, SharkCS.DIRECTION_INOUT);

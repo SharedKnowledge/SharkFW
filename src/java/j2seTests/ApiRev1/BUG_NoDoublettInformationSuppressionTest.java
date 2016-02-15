@@ -51,7 +51,7 @@ public class BUG_NoDoublettInformationSuppressionTest {
         fps[SharkCS.DIM_TOPIC] = fp;
         
         
-        PeerSemanticTag aliceOwnerTag = aliceKB.createPeerSemanticTag("Alice", "http://alice.de", "tcp://localhost:1212");
+        PeerSemanticTag aliceOwnerTag = aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", "http://alice.de", "tcp://localhost:1212");
 //        PeerSemanticTag aliceBobTag = aliceKB.createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:2121");
         
         Taxonomy topicsTX = aliceKB.getTopicsAsTaxonomy();
@@ -74,7 +74,7 @@ public class BUG_NoDoublettInformationSuppressionTest {
         SharkKB bobKB = new InMemoSharkKB();
         bobKB.setStandardFPSet(fps);
         
-        PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:4131");
+        PeerSemanticTag bobOwnerTag = bobKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:4131");
         //SemanticTag bobTopicTag = bobKB.createSemanticTag("Nippon", "http://www.nippon.jp");
         
         Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) bobKB.createContextCoordinates(null, bobOwnerTag, null, null, null, null, SharkCS.DIRECTION_IN));

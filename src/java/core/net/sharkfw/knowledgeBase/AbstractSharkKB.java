@@ -139,11 +139,18 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @throws SharkKBException 
      */
     @Override
-    public ASIPInformationSpace createInformationSpace(ASIPSpace space) 
+    public ASIPSpace createASIPSpace(ASIPSpace space) 
             throws SharkKBException {
         
-        return new InformationSpace2ContextPoint(this, space);
+        return null; // TODO
+        //return new InformationSpace2ContextPoint(this, space);
     }
+    
+    
+    @Override
+    public void mergeInformationSpace(ASIPInformationSpace iSpace) throws SharkKBException {
+        // TODO
+    }    
     
     /**
      * Create an interest with given parameter. There is no need to
@@ -181,66 +188,66 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 //        return this.getTopicSTSet().createSemanticTag(name, new String[] {si});
 //    }
 
-    /**
-     * @deprecated
-     */
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
-        PeerSemanticTag pst = this.getPeerSTSet().createPeerSemanticTag(name, sis, addresses);
-        this.notifyPeerCreated(pst);
-        return pst;
-    }
-    
-    /**
-     * @deprecated
-     */
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException {
-        return this.createPeerSemanticTag(name, new String[] {si}, new String[] {address});
-    }
-
-    /**
-     * @deprecated
-     */
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException {
-        return this.createPeerSemanticTag(name, sis, new String[] {address});
-    }
-    /**
-     * @deprecated
-     */
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
-        return this.createPeerSemanticTag(name, new String[] {si}, addresses);
-    }
-    
-    /**
-     * @deprecated
-     */
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException {
-        return null;
-    }
-
-    /**
-     * @deprecated
-     */
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
-        SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, geom);
-        this.notifyLocationCreated(sst);
-        return sst;
-    }
-    
-    /**
-     * @deprecated
-     */
-    @Override
-    public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
-        TimeSemanticTag tst = this.getTimeSTSet().createTimeSemanticTag(from, duration);
-        this.notifyTimeCreated(tst);
-        return tst;
-    }
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
+//        PeerSemanticTag pst = this.getPeerSTSet().createPeerSemanticTag(name, sis, addresses);
+//        this.notifyPeerCreated(pst);
+//        return pst;
+//    }
+//    
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException {
+//        return this.createPeerSemanticTag(name, new String[] {si}, new String[] {address});
+//    }
+//
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException {
+//        return this.createPeerSemanticTag(name, sis, new String[] {address});
+//    }
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
+//        return this.createPeerSemanticTag(name, new String[] {si}, addresses);
+//    }
+//    
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException {
+//        return null;
+//    }
+//
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
+//        SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, geom);
+//        this.notifyLocationCreated(sst);
+//        return sst;
+//    }
+//    
+//    /**
+//     * @deprecated
+//     */
+//    @Override
+//    public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
+//        TimeSemanticTag tst = this.getTimeSTSet().createTimeSemanticTag(from, duration);
+//        this.notifyTimeCreated(tst);
+//        return tst;
+//    }
     
     protected Knowledge getKnowledge() {
         return this.knowledge;
@@ -676,34 +683,23 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
 
     
-    /**
-     * Delete tag in any dimension - if it can be found
-     * @param sis
-     * @throws SharkKBException 
-     * @deprecated
-     */
-    @Override
-    public void removeSemanticTag(String[] sis) throws SharkKBException {
-        if(sis == null || sis.length == 0) {
-            return;
-        }
-        
-        this.removeSemanticTag(this.getTopicSTSet(), sis);
-        this.removeSemanticTag(this.getPeerSTSet(), sis);
-        this.removeSemanticTag(this.getSpatialSTSet(), sis);
-        this.removeSemanticTag(this.getTimeSTSet(), sis);
-    }
-
-    /**
-     * 
-     * @deprecated
-     */
-    @Override
-    public void removeSemanticTag(SemanticTag st) throws SharkKBException {
-        if(st == null) return;
-        
-        this.removeSemanticTag(st.getSI());
-    }    
+//    /**
+//     * Delete tag in any dimension - if it can be found
+//     * @param sis
+//     * @throws SharkKBException 
+//     * @deprecated
+//     */
+//    @Override
+//    public void removeSemanticTag(String[] sis) throws SharkKBException {
+//        if(sis == null || sis.length == 0) {
+//            return;
+//        }
+//        
+//        this.removeSemanticTag(this.getTopicSTSet(), sis);
+//        this.removeSemanticTag(this.getPeerSTSet(), sis);
+//        this.removeSemanticTag(this.getSpatialSTSet(), sis);
+//        this.removeSemanticTag(this.getTimeSTSet(), sis);
+//    }
     
     protected void removeSemanticTag(STSet set, String[] sis) throws SharkKBException {
         SemanticTag tag = set.getSemanticTag(sis);

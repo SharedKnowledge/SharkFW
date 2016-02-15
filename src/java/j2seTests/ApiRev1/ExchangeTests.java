@@ -86,11 +86,11 @@ public class ExchangeTests {
       shovel.move(tools);
       spade.move(tools);
 
-      PeerSemanticTag alicePeer = aliceKB.createPeerSemanticTag("Alice", "http://alice.org", "tcp://localhost:5555");
+      PeerSemanticTag alicePeer = aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", "http://alice.org", "tcp://localhost:5555");
       aliceKB.setOwner(alicePeer);
       
 //      PeerSemanticTag bobPeer = aliceKB.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556"); // Our future comm partner
-      PeerSemanticTag bobPeer = aliceKB.createPeerSemanticTag("Bob", "http://bob.org", (String[]) null); // I don't know a single address
+      PeerSemanticTag bobPeer = aliceKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.org", (String[]) null); // I don't know a single address
       
       // Next create a contextpoint w/ infos about shovels!
       ContextCoordinates shovelCoords = aliceKB.createContextCoordinates(shovel, alicePeer, null, null, null, null, SharkCS.DIRECTION_OUT);
@@ -128,7 +128,7 @@ public class ExchangeTests {
       SemanticTag bobTools = bobKB.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
 //      PeerSemanticTag bobLocalPeer = bobKB.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556");
-      PeerSemanticTag bobLocalPeer = bobKB.createPeerSemanticTag("Bob", "http://bob.org", (String[]) null);
+      PeerSemanticTag bobLocalPeer = bobKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.org", (String[]) null);
       bobKB.setOwner(bobPeer);
 
       SharkCS bobAs = bobKB.createContextCoordinates(bobTools, null, bobLocalPeer, null, null, null, SharkCS.DIRECTION_IN);
@@ -211,10 +211,10 @@ public class ExchangeTests {
       shovel.move(tools);
       spade.move(tools);
 
-      PeerSemanticTag alicePeer = aliceKB.createPeerSemanticTag("Alice", "http://alice.org", "tcp://localhost:5557");
+      PeerSemanticTag alicePeer = aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", "http://alice.org", "tcp://localhost:5557");
       aliceKB.setOwner(alicePeer);
       
-      PeerSemanticTag bobPeer = aliceKB.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5558"); // Our future comm partner
+      PeerSemanticTag bobPeer = aliceKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5558"); // Our future comm partner
 
       // Next create a contextpoint w/ infos about shovels!
       ContextCoordinates shovelCoords = aliceKB.createContextCoordinates(shovel, alicePeer, null, null, null, null, SharkCS.DIRECTION_OUT);
@@ -243,7 +243,7 @@ public class ExchangeTests {
 
       SemanticTag bobTools = bobKb.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
-      PeerSemanticTag bobLocalPeer = bobKb.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5558");
+      PeerSemanticTag bobLocalPeer = bobKb.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5558");
 
       SharkCS bobAs = bobKb.createContextCoordinates(bobTools, bobLocalPeer, null, null, null, null, SharkCS.DIRECTION_IN);
       // Not only will bob use the same fp as alice, it will also use it as OTP like alice
@@ -381,7 +381,7 @@ public class ExchangeTests {
 
       SemanticTag bobTools = bobKb.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
-      PeerSemanticTag bobLocalPeer = bobKb.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5561");
+      PeerSemanticTag bobLocalPeer = bobKb.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5561");
 
       SharkCS bobAs = bobKb.createContextCoordinates(bobTools, bobLocalPeer, null, null, null, null, SharkCS.DIRECTION_IN);
       // Not only will bob use the same fp as alice, it will also use it as OTP like alice
@@ -489,8 +489,8 @@ public class ExchangeTests {
       Calendar cal = Calendar.getInstance();
       int weekday = cal.get(Calendar.DAY_OF_WEEK);
       
-      TimeSemanticTag today = aliceKB.createTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
-      TimeSemanticTag yesterday = aliceKB.createTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
+      TimeSemanticTag today = aliceKB.getTimeSTSet().createTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
+      TimeSemanticTag yesterday = aliceKB.getTimeSTSet().createTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
       
       // Create two contextpoints, of which one is valid today, the other was valid yesterday
       ContextCoordinates co = aliceKB.createContextCoordinates(topic, alice, bob, alice, today, null, SharkCS.DIRECTION_OUT);
@@ -536,7 +536,7 @@ public class ExchangeTests {
       PeerSNSemanticTag bobAlice = bobKB.getPeersAsSemanticNet().createSemanticTag("Alice", "http://alice.de", "tcp://localhost:6661");
       
       // Create Time vocab
-      TimeSemanticTag bobToday = bobKB.createTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
+      TimeSemanticTag bobToday = bobKB.getTimeSTSet().createTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, TimeSemanticTag.FOREVER);
       
       // No CPs are created, bob only wants to receive information
       
@@ -682,7 +682,7 @@ public class ExchangeTests {
         SharkKB bobKB = new InMemoSharkKB();
         bobKB.setStandardFPSet(fps);
         
-        PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:2121");
+        PeerSemanticTag bobOwnerTag = bobKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:2121");
         //SemanticTag bobTopicTag = bobKB.createSemanticTag("Nippon", "http://www.nippon.jp");
         
         Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
@@ -766,7 +766,7 @@ public class ExchangeTests {
         SharkKB bobKB = new InMemoSharkKB();
         bobKB.setStandardFPSet(fps);
         
-        PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:4131");
+        PeerSemanticTag bobOwnerTag = bobKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.de", "tcp://localhost:4131");
         //SemanticTag bobTopicTag = bobKB.createSemanticTag("Nippon", "http://www.nippon.jp");
         
         Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
@@ -802,7 +802,7 @@ public class ExchangeTests {
         J2SEAndroidSharkEngine alice = new J2SEAndroidSharkEngine();
         SharkKB aliceKB = new InMemoSharkKB();
         
-        PeerSemanticTag aliceOwnerTag = aliceKB.createPeerSemanticTag("Alice", aliceURL, aliceAddress);
+        PeerSemanticTag aliceOwnerTag = aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", aliceURL, aliceAddress);
         SemanticTag aliceJavaTag = aliceKB.getTopicSTSet().createSemanticTag("Japan", "http://www.java.de");
         ContextCoordinates aliceCC = 
                 InMemoSharkKB.createInMemoContextCoordinates(aliceJavaTag, 
@@ -822,7 +822,7 @@ public class ExchangeTests {
         J2SEAndroidSharkEngine bob = new J2SEAndroidSharkEngine();
         SharkKB bobKB = new InMemoSharkKB();
         
-        PeerSemanticTag bobOwnerTag = bobKB.createPeerSemanticTag("Bob", bobURL, bobAddress);
+        PeerSemanticTag bobOwnerTag = bobKB.getPeerSTSet().createPeerSemanticTag("Bob", bobURL, bobAddress);
         Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) 
                 InMemoSharkKB.createInMemoContextCoordinates(null, bobOwnerTag, 
                 null, null, null, null, SharkCS.DIRECTION_IN));

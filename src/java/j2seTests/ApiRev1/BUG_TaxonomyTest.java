@@ -27,8 +27,8 @@ public class BUG_TaxonomyTest {
         J2SEAndroidSharkEngine engineAlice = new J2SEAndroidSharkEngine();
         SharkKB kbAlice = new InMemoSharkKB();
 
-        PeerSemanticTag peerAlice_alice = kbAlice.createPeerSemanticTag("Alice", "derForum://alice", "tcp://127.0.0.1:7070");
-        PeerSemanticTag peerBob_alice = kbAlice.createPeerSemanticTag("Bob", "derForum://bob", "tcp://127.0.0.1:7171");
+        PeerSemanticTag peerAlice_alice = kbAlice.getPeerSTSet().createPeerSemanticTag("Alice", "derForum://alice", "tcp://127.0.0.1:7070");
+        PeerSemanticTag peerBob_alice = kbAlice.getPeerSTSet().createPeerSemanticTag("Bob", "derForum://bob", "tcp://127.0.0.1:7171");
 
         this._log.info("[ ALICE ] creating Tags... ");
         Taxonomy topicsTX = kbAlice.getTopicsAsTaxonomy();
@@ -73,8 +73,8 @@ public class BUG_TaxonomyTest {
         J2SEAndroidSharkEngine engineBob = new J2SEAndroidSharkEngine();
         SharkKB kbBob = new InMemoSharkKB();
 
-        PeerSemanticTag peerAlice_bob = kbBob.createPeerSemanticTag("Alice", "derForum://alice", "tcp://127.0.0.1:7070");
-        PeerSemanticTag peerBob_bob = kbBob.createPeerSemanticTag("Bob", "derForum://bob", "tcp://127.0.0.1:7171");
+        PeerSemanticTag peerAlice_bob = kbBob.getPeerSTSet().createPeerSemanticTag("Alice", "derForum://alice", "tcp://127.0.0.1:7070");
+        PeerSemanticTag peerBob_bob = kbBob.getPeerSTSet().createPeerSemanticTag("Bob", "derForum://bob", "tcp://127.0.0.1:7171");
 
         this._log.info("[ BOB ] creating Tags... ");
         Taxonomy bobTopicsTX = kbBob.getTopicsAsTaxonomy();

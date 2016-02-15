@@ -67,15 +67,15 @@ public class SerializationTest {
       SemanticTag t3 = kb.getTopicSTSet().createSemanticTag("Topic3", "http://topci3.de");
       SemanticTag t4 = kb.getTopicSTSet().createSemanticTag("Topic4", "http://topci4.de");
 
-      PeerSemanticTag p1 = kb.createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
-      PeerSemanticTag p2 = kb.createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
-      PeerSemanticTag p3 = kb.createPeerSemanticTag("Peer3", "http://peer3.de", "tcp://peer3.de:1234");
-      PeerSemanticTag p4 = kb.createPeerSemanticTag("Peer4", "http://peer4.de", "tcp://peer4.de:1234");
+      PeerSemanticTag p1 = kb.getPeerSTSet().createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
+      PeerSemanticTag p2 = kb.getPeerSTSet().createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
+      PeerSemanticTag p3 = kb.getPeerSTSet().createPeerSemanticTag("Peer3", "http://peer3.de", "tcp://peer3.de:1234");
+      PeerSemanticTag p4 = kb.getPeerSTSet().createPeerSemanticTag("Peer4", "http://peer4.de", "tcp://peer4.de:1234");
 
-      TimeSemanticTag ti1 = kb.createTimeSemanticTag(100, 200);
-      TimeSemanticTag ti2 = kb.createTimeSemanticTag(200, 300);
-      TimeSemanticTag ti3 = kb.createTimeSemanticTag(300, 400);
-      TimeSemanticTag ti4 = kb.createTimeSemanticTag(400, 500);
+      TimeSemanticTag ti1 = kb.getTimeSTSet().createTimeSemanticTag(100, 200);
+      TimeSemanticTag ti2 = kb.getTimeSTSet().createTimeSemanticTag(200, 300);
+      TimeSemanticTag ti3 = kb.getTimeSTSet().createTimeSemanticTag(300, 400);
+      TimeSemanticTag ti4 = kb.getTimeSTSet().createTimeSemanticTag(400, 500);
 
 //      SpatialSemanticTag g1 = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{10.0, 20.0}, 1.0);
 //      SpatialSemanticTag g2 = kb.createSpatialSemanticTag("test2", new String[]{"http://test2.de"}, new Double[]{20.0, 30.0}, 1.0);

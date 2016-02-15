@@ -44,8 +44,8 @@ public class Assimilate_ExtractionTests {
       SemanticTag otherTopic = kb.getTopicSTSet().createSemanticTag("Other-Topic", "http://other-topic.de");
 
       // Also two distinct originator
-      PeerSemanticTag peerA = kb.createPeerSemanticTag("PeerA", "http://peerA.com", (String[]) null);
-      PeerSemanticTag peerB = kb.createPeerSemanticTag("PeerB", "http://peerB.com", (String[]) null);
+      PeerSemanticTag peerA = kb.getPeerSTSet().createPeerSemanticTag("PeerA", "http://peerA.com", (String[]) null);
+      PeerSemanticTag peerB = kb.getPeerSTSet().createPeerSemanticTag("PeerB", "http://peerB.com", (String[]) null);
 
       // Create three different coordinates, of which two share a mutual topic
       ContextCoordinates co1 = kb.createContextCoordinates(topic, peerA, null, null, null, null, SharkCS.DIRECTION_INOUT);
@@ -115,8 +115,8 @@ public class Assimilate_ExtractionTests {
       shovel.move(tools);
       spade.move(tools);
 
-      PeerSemanticTag alicePeer = aliceKB.createPeerSemanticTag("Alice", "http://alice.org", "tcp://localhost:5555");
-      PeerSemanticTag bobPeer = aliceKB.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556"); // Our future comm partner
+      PeerSemanticTag alicePeer = aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", "http://alice.org", "tcp://localhost:5555");
+      PeerSemanticTag bobPeer = aliceKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556"); // Our future comm partner
 
       // Next create a contextpoint w/ infos about shovels!
       ContextCoordinates shovelCoords = aliceKB.createContextCoordinates(shovel, alicePeer, alicePeer, null, null, null, SharkCS.DIRECTION_OUT);
@@ -171,7 +171,7 @@ public class Assimilate_ExtractionTests {
 
       SemanticTag bobTools = bobKb.getTopicSTSet().createSemanticTag("Tools", "http://tools.org");
 
-      PeerSemanticTag bobLocalPeer = bobKb.createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556");
+      PeerSemanticTag bobLocalPeer = bobKb.getPeerSTSet().createPeerSemanticTag("Bob", "http://bob.org", "tcp://localhost:5556");
 
       SharkCS bobInterest = bobKb.createContextCoordinates(bobTools, null, bobLocalPeer, null, null, null, SharkCS.DIRECTION_IN);
       // Not only will bob use the same fp as alice, it will also use it as OTP like alice

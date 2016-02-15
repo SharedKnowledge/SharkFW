@@ -53,7 +53,7 @@ public class DifferentAddresses {
         Interest aliceInterest = InMemoSharkKB.createInMemoInterest();
         
         DummyKP aliceKP = new DummyKP(aliceSE);
-        PeerSemanticTag aliceBob = aliceKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", this.bobAddress);
+        PeerSemanticTag aliceBob = aliceKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", this.bobAddress);
         
         // Bob
         J2SEAndroidSharkEngine bobSE = new J2SEAndroidSharkEngine();

@@ -64,6 +64,24 @@ public interface STSet {
   public void removeSemanticTag(SemanticTag tag) throws SharkKBException;
   
   /**
+   * Remove a tag described by this subject identifier. This method does
+   * nothing if no such tag exists.
+   * 
+   * @param si
+   * @throws SharkKBException 
+   */
+  public void removeSemanticTag(String si) throws SharkKBException;
+  
+  /**
+   * Remove a tag described by one of the subject identifiers. This method does
+   * nothing if no such tag exists.
+   * 
+   * @param sis
+   * @throws SharkKBException 
+   */
+  public void removeSemanticTag(String[] sis) throws SharkKBException;
+  
+  /**
    * Semantic tags can be set hidden. This feature can be evaluated during
    * enumerating tags with {@link  tags()}. 
    * 

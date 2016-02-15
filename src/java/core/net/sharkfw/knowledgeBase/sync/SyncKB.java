@@ -1,10 +1,10 @@
 package net.sharkfw.knowledgeBase.sync;
 
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
@@ -154,71 +154,6 @@ public class SyncKB implements SharkKB {
     @Override
     public FragmentationParameter[] getStandardFPSet() {
         return _localKB.getStandardFPSet();
-    }
-
-//    @Override
-//    public Interest createInterest() throws SharkKBException {
-//        return _localKB.createInterest();
-//    }
-
-//    @Override
-//    public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
-//        return _localKB.createInterest(cc);
-//    }
-
-//    @Override
-//    public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-//        return _localKB.getTopicSTSet().createSemanticTag(name, sis);
-//    }
-//
-//    @Override
-//    public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-//        return _localKB.createSemanticTag(name, si);
-//    }
-//
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
-        return _localKB.createPeerSemanticTag(name, sis, addresses);
-    }
-
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException {
-        return _localKB.createPeerSemanticTag(name, si, address);
-    }
-
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException {
-        return _localKB.createPeerSemanticTag(name, sis, address);
-    }
-
-    @Override
-    public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
-        return _localKB.createPeerSemanticTag(name, si, addresses);
-    }
-
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException {
-        return _localKB.createSpatialSemanticTag(name, sis);
-    }
-
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
-        return _localKB.createSpatialSemanticTag(name, sis, geom);
-    }
-
-    @Override
-    public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
-        return _localKB.createTimeSemanticTag(from, duration);
-    }
-
-    @Override
-    public void removeSemanticTag(String[] sis) throws SharkKBException {
-        _localKB.removeSemanticTag(sis);
-    }
-
-    @Override
-    public void removeSemanticTag(SemanticTag st) throws SharkKBException {
-        this.removeSemanticTag(st.getSI());
     }
 
     @Override
@@ -392,8 +327,8 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
-        return this._localKB.createInformationSpace(space);
+    public ASIPSpace createASIPSpace(ASIPSpace space) throws SharkKBException {
+        return this._localKB.createASIPSpace(space);
     }
 
     @Override
@@ -454,5 +389,10 @@ public class SyncKB implements SharkKB {
     @Override
     public ASIPInterest asASIPInterest() {
         return this._localKB.asASIPInterest();
+    }
+
+    @Override
+    public void mergeInformationSpace(ASIPInformationSpace iSpace) throws SharkKBException {
+        this._localKB.mergeInformationSpace(iSpace);
     }
 }

@@ -44,10 +44,10 @@ public class SyncKBTests{
         
         try {
             teapotST = inMemoKB.getTopicSTSet().createSemanticTag("Teapot", "http://de.wikipedia.org/wiki/Teekanne");
-            alice = inMemoKB.createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
-            bob = inMemoKB.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
-            timeST = inMemoKB.createTimeSemanticTag(100, 9000);
-            spatialST = inMemoKB.createSpatialSemanticTag("Berlin", new String[] { "Berlin" });
+            alice = inMemoKB.getPeerSTSet().createPeerSemanticTag("Alice", "http://www.sharksystem.net/alice.html", "alice@shark.net");
+            bob = inMemoKB.getPeerSTSet().createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", "bob@shark.net");
+            timeST = inMemoKB.getTimeSTSet().createTimeSemanticTag(100, 9000);
+//            spatialST = inMemoKB.getSpatialSTSet().createSpatialSemanticTag("Berlin", new String[] { "Berlin" });
         } catch (SharkKBException e) {
             fail(e.toString());
         }

@@ -97,8 +97,8 @@ public class NYI_SharkKB {
         SemanticTag topic2 = kb.getTopicSTSet().createSemanticTag("Topic2", "http://topic2.de");
         SemanticTag topic3 = kb.getTopicSTSet().createSemanticTag("Topic3", "http://topic3.de");
 
-        PeerSemanticTag peer1 = kb.createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
-        PeerSemanticTag peer2 = kb.createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
+        PeerSemanticTag peer1 = kb.getPeerSTSet().createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
+        PeerSemanticTag peer2 = kb.getPeerSTSet().createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
 
         ContextCoordinates co1 = kb.createContextCoordinates(topic1, null, peer1, peer2, null, null, SharkCS.DIRECTION_OUT);
         ContextPoint cp1 = kb.createContextPoint(co1);

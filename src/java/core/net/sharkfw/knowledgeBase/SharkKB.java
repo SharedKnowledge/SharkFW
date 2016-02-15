@@ -119,21 +119,47 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public ContextPoint createContextPoint(ContextCoordinates coordinates) 
           throws SharkKBException;
   
+  /**
+   * Create a place in KB to keep information.
+   * @param coordinates
+   * @return
+   * @throws SharkKBException 
+   */
   public InformationPoint createInformationPoint(InformationCoordinates coordinates) 
           throws SharkKBException;
   
-  public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException;
+  
+  /**
+   * Create an information space which is adding or merging of semantic tags 
+   * into the appropriate dimensions in KBs' vocabulary.
+   * 
+   * @param space
+   * @return 
+   * @throws SharkKBException 
+   */
+  public ASIPSpace createASIPSpace(ASIPSpace space) throws SharkKBException;
+  
+  /**
+   * Merge an information space including its information into that knowledge
+   * base. It's up to knowledge base implementation how those information 
+   * are stored and can be retrieved afterwards.
+   * 
+   * @param iSpace
+   * @throws SharkKBException 
+   */
+  public void mergeInformationSpace(ASIPInformationSpace iSpace) throws SharkKBException;
   
     /**
      * Create a new (empty) knowledge object. The actual knowledge base will
      * be the context of this knowledge.
      * 
      * <b>Note: This knowledge object does NOT contain KBs context points.
-     * It is just an empty knowledge object but with the kb as background.</b>
+     * It is just an empty knowledge object using KBs' vocabulary.</b>
      * 
      * Context points of this knowledge base can be enumerated with getContextPoints()
      * and similiar methods.
      * @return 
+     * @deprecated 
      */
     public Knowledge createKnowledge();
 
@@ -146,8 +172,20 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException;
   
+  /**
+   * Remove a single information pint including its information.
+   * 
+   * @param coordinates
+   * @throws SharkKBException 
+   */
   public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
   
+  /**
+   * Remove all information points inside described space.
+   * 
+   * @param space
+   * @throws SharkKBException 
+   */
   public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
 
   /**
@@ -173,6 +211,14 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @deprecated 
    */
   public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException;
+  
+  /**
+   * Returns all information points inside that kb.
+   * 
+   * @param cs
+   * @return
+   * @throws SharkKBException 
+   */
   public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException;
 
   /**
@@ -196,7 +242,16 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @deprecated 
    */
   public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException;
-  
+
+  /**
+   * 
+   * @param as
+   * @param matchAny true: any tags in each dimensions are used as joker signs: There
+   * are no contraints on the dimension in which the st set in any. If false: 
+   * any tag is used as each other tag and it is looked for an exact match
+   * @return
+   * @throws SharkKBException 
+   */
   public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException;
   
   /**
@@ -213,8 +268,16 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException;
   
+  /**
+   * Returns an interation of all informations points. 
+   * 
+   * Use this methode very carefully. It produces a complete dump of that
+   * knowledge base. That can be a lot.
+   * 
+   * @return
+   * @throws SharkKBException 
+   */
   public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException;
-  
 
   /**
    * Register a new listener for changes on this SharkKB
@@ -245,87 +308,87 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public FragmentationParameter[] getStandardFPSet();
 
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param sis
-     * @param addresses
-     * @return
-     * @throws SharkKBException 
-     */
-    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException;
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param si
-     * @param address
-     * @return
-     * @throws SharkKBException 
-     */
-    public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException;    
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param sis
-     * @param address
-     * @return
-     * @throws SharkKBException 
-     */
-    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException;  
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param si
-     * @param addresses
-     * @return
-     * @throws SharkKBException 
-     */
-    public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException;
-
-    /**
-     * @deprecated please add a geometry if it is really a spatial (!) semantic tag
-     * @param name
-     * @param sis
-     * @return
-     * @throws SharkKBException 
-     */
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException;
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param name
-     * @param sis
-     * @param geom
-     * @return
-     * @throws SharkKBException 
-     */
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException;
-     
-    /**
-     * @deprecated use method semantic tag set instead
-     * @param from
-     * @param duration
-     * @return
-     * @throws SharkKBException 
-     */
-    public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException;
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * Delete tag in any dimension - if it can be found
-     * @param sis
-     * @throws SharkKBException 
-     */
-    public void removeSemanticTag(String[] sis) throws SharkKBException;
-    
-    /**
-     * @deprecated use method semantic tag set instead
-     * Delete tag in any dimension - if it can be found
-     * @param st
-     * @throws SharkKBException 
-     */
-    public void removeSemanticTag(SemanticTag st) throws SharkKBException;
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * @param name
+//     * @param sis
+//     * @param addresses
+//     * @return
+//     * @throws SharkKBException 
+//     */
+//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException;
+//    
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * @param name
+//     * @param si
+//     * @param address
+//     * @return
+//     * @throws SharkKBException 
+//     */
+//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException;    
+//    
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * @param name
+//     * @param sis
+//     * @param address
+//     * @return
+//     * @throws SharkKBException 
+//     */
+//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException;  
+//    
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * @param name
+//     * @param si
+//     * @param addresses
+//     * @return
+//     * @throws SharkKBException 
+//     */
+//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException;
+//
+//    /**
+//     * @deprecated please add a geometry if it is really a spatial (!) semantic tag
+//     * @param name
+//     * @param sis
+//     * @return
+//     * @throws SharkKBException 
+//     */
+//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException;
+//    
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * @param name
+//     * @param sis
+//     * @param geom
+//     * @return
+//     * @throws SharkKBException 
+//     */
+//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException;
+//     
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * @param from
+//     * @param duration
+//     * @return
+//     * @throws SharkKBException 
+//     */
+//    public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException;
+//    
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * Delete tag in any dimension - if it can be found
+//     * @param sis
+//     * @throws SharkKBException 
+//     */
+//    public void removeSemanticTag(String[] sis) throws SharkKBException;
+//    
+//    /**
+//     * @deprecated use method semantic tag set instead
+//     * Delete tag in any dimension - if it can be found
+//     * @param st
+//     * @throws SharkKBException 
+//     */
+//    public void removeSemanticTag(SemanticTag st) throws SharkKBException;
 }

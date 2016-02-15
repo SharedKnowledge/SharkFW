@@ -1,16 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.sharkfw.genericProfile;
 
-import static java.nio.file.Files.*;
 import java.util.ArrayList;
-import static java.util.Collections.list;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.PeerSNSemanticTag;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
@@ -69,7 +62,7 @@ public class BasicGPKPTest {
         daten = profile.getInformation(key);
         assertNotNull(daten);
         profile.removeInformation(key);
-        PeerSemanticTag peer = kb.createPeerSemanticTag("dfdf", "dcxcfv", "dfdf");
+        PeerSemanticTag peer = kb.getPeerSTSet().createPeerSemanticTag("dfdf", "dcxcfv", "dfdf");
         ArrayList<PeerSemanticTag> peerList = new ArrayList<>();
         peerList.add(peer);
         profile.setExposeStatusTrue(key, peerList);

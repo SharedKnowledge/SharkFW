@@ -75,8 +75,8 @@ public class FSSharkKBTest {
         Assert.assertEquals(javaTag, javaTagAgain);
         
 
-        PeerSemanticTag p1 = kb.createPeerSemanticTag("Alice", FSSharkKBTest.ALICE_SIS, FSSharkKBTest.ALICE_ADDR);
-        PeerSemanticTag p2 = kb.createPeerSemanticTag("Alice", FSSharkKBTest.ALICE_SIS, FSSharkKBTest.ALICE_ADDR);
+        PeerSemanticTag p1 = kb.getPeerSTSet().createPeerSemanticTag("Alice", FSSharkKBTest.ALICE_SIS, FSSharkKBTest.ALICE_ADDR);
+        PeerSemanticTag p2 = kb.getPeerSTSet().createPeerSemanticTag("Alice", FSSharkKBTest.ALICE_SIS, FSSharkKBTest.ALICE_ADDR);
         Assert.assertEquals(p1, p2);
         
         String nonPersistentSI = "http://aSI.de";
@@ -213,9 +213,9 @@ public class FSSharkKBTest {
         kb = new FSSharkKB(FOLDER);
         
 
-        PeerSemanticTag alice = kb.createPeerSemanticTag("Alice", ALICE_SIS, ALICE_ADDR);
+        PeerSemanticTag alice = kb.getPeerSTSet().createPeerSemanticTag("Alice", ALICE_SIS, ALICE_ADDR);
         
-        PeerSemanticTag alice2 = kb.createPeerSemanticTag("Alice", ALICE_SIS, ALICE_ADDR);
+        PeerSemanticTag alice2 = kb.getPeerSTSet().createPeerSemanticTag("Alice", ALICE_SIS, ALICE_ADDR);
         
         Assert.assertTrue(alice == alice2);
     }
@@ -230,7 +230,7 @@ public class FSSharkKBTest {
         kb = new FSSharkKB(FOLDER);
         
         // set owner
-        PeerSemanticTag aliceTag = kb.createPeerSemanticTag("Alice", ALICE_SIS, ALICE_ADDR);
+        PeerSemanticTag aliceTag = kb.getPeerSTSet().createPeerSemanticTag("Alice", ALICE_SIS, ALICE_ADDR);
         kb.setOwner(aliceTag);
         
         // drop and restore

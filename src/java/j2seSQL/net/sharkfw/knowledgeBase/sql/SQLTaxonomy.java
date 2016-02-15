@@ -114,4 +114,14 @@ public class SQLTaxonomy extends TaxonomyWrapper implements Taxonomy {
         
         throw new SharkKBException("internal error: SQLTaxonomy not based on SemanticNet");
     }
+
+    @Override
+    public void removeSemanticTag(String si) throws SharkKBException {
+        this.sn.removeSemanticTag(si);
+    }
+
+    @Override
+    public void removeSemanticTag(String[] sis) throws SharkKBException {
+        this.sn.removeSemanticTag(sis);
+    }
 }
