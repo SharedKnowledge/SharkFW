@@ -172,16 +172,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException {
-        return _localKB.getPeerSemanticTag(sis);
-    }
-
-    @Override
-    public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException {
-        return _localKB.getPeerSemanticTag(si);
-    }
-
-    @Override
     public STSet getTopicSTSet() throws SharkKBException {
         return _localKB.getTopicSTSet();
     }

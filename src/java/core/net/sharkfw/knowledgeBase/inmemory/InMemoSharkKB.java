@@ -950,7 +950,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         if (ownerSIString != null) {
             String[] ownerSIs = Util.string2array(ownerSIString);
             try {
-                PeerSemanticTag storedOwner = this.getPeerSemanticTag(ownerSIs);
+                PeerSemanticTag storedOwner = this.getPeerSTSet().getSemanticTag(ownerSIs);
                 if (storedOwner != null) {
                     this.owner = storedOwner;
                     // listen to changed in owner

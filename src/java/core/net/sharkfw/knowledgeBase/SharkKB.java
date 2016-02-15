@@ -4,7 +4,6 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  *

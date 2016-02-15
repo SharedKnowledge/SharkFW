@@ -52,43 +52,7 @@ public interface SharkVocabulary {
     
     public ASIPSpace asASIPSpace();
     public ASIPInterest asASIPInterest();
-    
-//    /**
-//     * 
-//     * @param sis
-//     * @return
-//     * @throws SharkKBException 
-//     * @deprecated 
-//     */
-//  public SemanticTag getSemanticTag(String[] sis) throws SharkKBException;
-//  
-//  /**
-//   * 
-//   * @param si
-//   * @return
-//   * @throws SharkKBException 
-//   * @deprecated 
-//   */
-//  public SemanticTag getSemanticTag(String si) throws SharkKBException;
-  
-  /**
-   * 
-   * @param sis
-   * @return
-   * @throws SharkKBException 
-   * @deprecated 
-   */
-  public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException;
-  
-  /**
-   * 
-   * @param si
-   * @return
-   * @throws SharkKBException 
-   * @deprecated 
-   */
-  public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException;
-
+      
   ///////////////////////////////////////////////////////////////////////////
   //                            STSet management                           //
   ///////////////////////////////////////////////////////////////////////////

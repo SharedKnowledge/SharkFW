@@ -244,7 +244,7 @@ class TimestampList {
                 
                 serialized = serialized.replaceFirst(substring, "");
             }
-            _peer = TimestampList.this._kb.getPeerSemanticTag(sis);
+            _peer = TimestampList.this._kb.getPeerSTSet().getSemanticTag(sis);
             _date = new Date(Long.parseLong(
                     serialized.substring(
                             serialized.indexOf(DATE_TAG) + DATE_TAG.length(),

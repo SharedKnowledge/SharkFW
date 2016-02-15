@@ -600,30 +600,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
   
   
     /**
-     * 
-     * @param sis
-     * @return
-     * @throws SharkKBException 
-     * @deprecated
-     */
-    @Override
-    public PeerSemanticTag getPeerSemanticTag(String[] sis) throws SharkKBException {
-        return this.getPeerSTSet().getSemanticTag(sis);
-    }
-
-    /**
-     * 
-     * @param si
-     * @return
-     * @throws SharkKBException 
-     * @deprecated
-     */
-    @Override
-    public PeerSemanticTag getPeerSemanticTag(String si) throws SharkKBException {
-        return this.getPeerSTSet().getSemanticTag(si);
-    }
-
-    /**
      * That KB listens to its sets which make up the vocabulary. That methode
      * is called whenever e.g. a tag in the topic dimension is created.
      * That message triggers KB listener.

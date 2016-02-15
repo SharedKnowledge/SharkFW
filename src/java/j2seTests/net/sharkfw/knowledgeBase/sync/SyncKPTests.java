@@ -67,7 +67,7 @@ public class SyncKPTests {
         _bobKB = new SyncKB(new InMemoSharkKB());
         // Set up peers with new ports
         _alicePort = getPort();
-        _alice = _aliceKB.getPeerSemanticTag(ALICE_IDENTIFIER);
+        _alice = _aliceKB.getPeerSTSet().getSemanticTag(ALICE_IDENTIFIER);
         if(_alice == null) {
             _alice = _aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", ALICE_IDENTIFIER, "tcp://localhost:"+_alicePort);
         } else {
@@ -76,7 +76,7 @@ public class SyncKPTests {
         }
         
         _bobPort = getPort();
-        _bob = _bobKB.getPeerSemanticTag(BOB_IDENTIFIER);
+        _bob = _bobKB.getPeerSTSet().getSemanticTag(BOB_IDENTIFIER);
         if(_bob == null) {
             _bob = _bobKB.getPeerSTSet().createPeerSemanticTag("Alice", BOB_IDENTIFIER, "tcp://localhost:"+_bobPort);
         } else {

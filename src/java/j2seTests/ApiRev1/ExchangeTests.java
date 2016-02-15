@@ -158,7 +158,7 @@ public class ExchangeTests {
       Taxonomy bobTopics = bobKB.getTopicsAsTaxonomy();
       TXSemanticTag bobShovel = bobTopics.getSemanticTag(new String[]{"http://shovel.org"});
       
-      PeerSemanticTag bobsAlice = bobKB.getPeerSemanticTag(alicePeer.getSI());
+      PeerSemanticTag bobsAlice = bobKB.getPeerSTSet().getSemanticTag(alicePeer.getSI());
 
       Assert.assertNotNull(bobShovel);
       Assert.assertNotNull(bobsAlice);
@@ -270,7 +270,7 @@ public class ExchangeTests {
       // Bob must posess the contextpoint for shovel and the information
 
       SNSemanticTag bobShovel = (SNSemanticTag) bobKb.getTopicSTSet().getSemanticTag(new String[]{"http://shovel.org"});
-      PeerSNSemanticTag bobsAlice = (PeerSNSemanticTag) bobKb.getPeerSemanticTag(alicePeer.getSI());
+      PeerSNSemanticTag bobsAlice = (PeerSNSemanticTag) bobKb.getPeerSTSet().getSemanticTag(alicePeer.getSI());
 
       Assert.assertNull(bobShovel);
       Assert.assertNotNull(bobsAlice);
@@ -624,7 +624,7 @@ public class ExchangeTests {
         bob.startTCP(bobPort);
         alice.startTCP(alicePort);
         
-        bob.publishAllKP(bobKB.getPeerSemanticTag(new String[] {"http://alice.de"}));
+        bob.publishAllKP(bobKB.getPeerSTSet().getSemanticTag(new String[] {"http://alice.de"}));
         Thread.sleep(3000);
         
         Enumeration<ContextPoint> cpEnum = 

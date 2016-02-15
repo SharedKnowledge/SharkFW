@@ -259,7 +259,7 @@ public class SerializationTest {
             Assert.assertNotNull(topic1);
             
             // peer
-            PeerSemanticTag peer1 = context.getPeerSemanticTag(TestData.PEER1_SI);
+            PeerSemanticTag peer1 = context.getPeerSTSet().getSemanticTag(TestData.PEER1_SI);
             Assert.assertNotNull(peer1);
             
             cpEnum = rK.contextPoints();

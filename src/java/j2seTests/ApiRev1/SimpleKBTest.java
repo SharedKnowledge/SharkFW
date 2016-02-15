@@ -67,7 +67,7 @@ public class SimpleKBTest {
       TimeSemanticTag time = kb.getTimeSTSet().createTimeSemanticTag(1000, 2000);
 //      SpatialSemanticTag geo = kb.createSpatialSemanticTag("test1", new String[]{"http://test.de"}, new Double[]{12.34, 45.67}, 5000);
 
-      PeerSemanticTag peerResult = kb.getPeerSemanticTag(peer.getSI());
+      PeerSemanticTag peerResult = kb.getPeerSTSet().getSemanticTag(peer.getSI());
       SemanticTag topicResult = kb.getTopicSTSet().getSemanticTag(topic.getSI());
 //      TimeSemanticTag timeResult = kb.getTimeSTSet().getTimeSemanticTag(time.getSI());
 //      SpatialSemanticTag geoResult = kb.getSpatialSTSet().getSpatialSemanticTag(geo.getSI());
