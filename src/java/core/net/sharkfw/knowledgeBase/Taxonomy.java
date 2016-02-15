@@ -9,6 +9,10 @@ import java.util.Enumeration;
  */
 public interface Taxonomy extends STSet {
     
+    public final static String SUBSUPERTAGS = "SUBSUPERTAGS";
+    public final static String SOURCE = "SOURCE";
+    public final static String TARGET = "TARGET";
+    
     /**
     * Add a tag to this Taxonomy - a copy is made
     * @see net.sharkfw.knowledgeBase.STSet#addSemanticTag(net.sharkfw.knowledgeBase.SemanticTag)

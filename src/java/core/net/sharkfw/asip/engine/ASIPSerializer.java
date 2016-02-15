@@ -12,7 +12,9 @@ import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
+import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
+import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
@@ -27,6 +29,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.TXSemanticTag;
+import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 
 /**
@@ -250,7 +254,106 @@ public class ASIPSerializer {
     }
     
     public static JSONObject serializeRelationsJSON(Enumeration<SemanticTag> tagEnum){
-        return new JSONObject();
+        
+        if(tagEnum == null || !tagEnum.hasMoreElements())
+            return null;
+
+        SemanticTag tag = tagEnum.nextElement();
+        boolean semanticNet;
+        
+        if(tag instanceof SNSemanticTag) {
+            semanticNet = true;
+        } else if(tag instanceof TXSemanticTag) {
+            semanticNet = false;
+        } else
+            return null;
+        
+        JSONArray predicates = new JSONArray();
+        JSONArray subSuperTags = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        
+        if(semanticNet) {
+            // Semantic Net
+            do {
+                SNSemanticTag snTag = (SNSemanticTag) tag;
+                // get tag for next round
+                tag = null;
+                if(tagEnum.hasMoreElements())
+                    tag = tagEnum.nextElement();
+                
+                String[] sSIs = snTag.getSI();
+                if(sSIs != null) {
+                    String sourceSI = sSIs[0];
+                    
+                    Enumeration<String> pNameEnum = snTag.predicateNames();
+                    if(pNameEnum != null) {
+                        while(pNameEnum.hasMoreElements()) {
+                            String predicateName = pNameEnum.nextElement();                            
+                            Enumeration<SNSemanticTag> targetEnum = 
+                                    snTag.targetTags(predicateName);
+                            if(targetEnum == null) {
+                                continue;
+                            }
+                            while(targetEnum.hasMoreElements()) {
+                                SNSemanticTag target = targetEnum.nextElement();
+                                String[] tSIs = target.getSI();
+                                if(tSIs == null) {
+                                    continue;
+                                }
+                                
+                                String targetSI = tSIs[0];
+                                JSONObject predicate = new JSONObject();
+                                
+                                predicate.put(SemanticNet.NAME, predicateName);
+                                predicate.put(SemanticNet.SOURCE, sourceSI);
+                                predicate.put(SemanticNet.TARGET, targetSI);
+                                
+                                predicates.put(predicate);
+                            }
+                        }
+                    }
+                }
+            } while(tag!=null);
+            
+            jsonObject.put(SemanticNet.PREDICATES, predicates);
+            
+        } else {
+            // Taxonomy
+            do {
+                TXSemanticTag txTag = (TXSemanticTag) tag;
+                // get tag for next round
+                tag = null;
+                if(tagEnum.hasMoreElements()) {
+                    tag = tagEnum.nextElement();
+                }
+                
+                String[] sSIs = txTag.getSI();
+                if(sSIs != null) {
+                    String sourceSI = sSIs[0];
+                    
+                    TXSemanticTag superTag = txTag.getSuperTag();
+                    if(superTag != null) {
+                        String[] tSIs = superTag.getSI();
+                        if(tSIs == null) {
+                            continue;
+                        }
+
+                        String targetSI = tSIs[0];
+                        
+                        JSONObject subSuperTag = new JSONObject();
+
+                        subSuperTag.put(Taxonomy.SOURCE, sourceSI);
+                        subSuperTag.put(Taxonomy.TARGET, targetSI);
+
+                        subSuperTags.put(subSuperTag);
+                    }
+                }
+            } while(tagEnum.hasMoreElements());
+            
+            jsonObject.put(Taxonomy.SUBSUPERTAGS, subSuperTags);
+            
+        }
+        return jsonObject;
     }
         
     public static JSONObject serializeASIPSpaceJSON(ASIPSpace space) {

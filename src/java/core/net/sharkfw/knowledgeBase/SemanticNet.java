@@ -31,6 +31,11 @@ import java.util.Enumeration;
  * @author mfi,thsc
  */
 public interface SemanticNet extends STSet {
+    
+    public final static String PREDICATES = "PREDICATES";
+    public final static String NAME = "NAME";
+    public final static String SOURCE = "SOURCE";
+    public final static String TARGET = "TARGET";
 
   /**
    * The constant for defining a subclass relation to another tag.
