@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase;
 
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 
 /**

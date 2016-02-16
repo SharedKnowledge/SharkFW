@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.kep.format.XMLSerializer;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
 import net.sharkfw.system.EnumerationChain;
@@ -38,6 +38,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     protected TimeSTSet times;
     protected PeerSemanticTag owner;
     protected Knowledge knowledge;
+    protected ASIPKnowledge asipKnowledge;
     protected FragmentationParameter[] defaultFP;
     
     protected AbstractSharkKB() {}
@@ -201,6 +202,10 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }    
         
     protected Knowledge getKnowledge() {
+        return this.knowledge;
+    }
+    
+    protected ASIPKnowledge getASIPKnowledge() {
         return this.knowledge;
     }
     
@@ -677,27 +682,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return this.defaultFP;
     }
   
-//  public SemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-//      SemanticTag tag = this.getTopicSTSet().getSemanticTag(sis);      
-//      if(tag != null) return tag;
-//      
-//      tag = this.getPeerSTSet().getSemanticTag(sis);
-//      if(tag != null) return tag;
-//      
-//      tag = this.getSpatialSTSet().getSemanticTag(sis);
-//      if(tag != null) return tag;
-//      
-//      tag = this.getTimeSTSet().getSemanticTag(sis);
-//      
-//      return tag;
-//      
-//  }
-  
-//    public SemanticTag getSemanticTag(String si) throws SharkKBException {
-//        return this.getSemanticTag(new String[] {si});
-//    }
-  
-  
     /**
      * That KB listens to its sets which make up the vocabulary. That methode
      * is called whenever e.g. a tag in the topic dimension is created.
@@ -729,24 +713,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.notifySemanticTagChanged(tag);
     }
 
-//    /**
-//     * 
-//     * @return
-//     * @throws SharkKBException 
-//     * @deprecated
-//     */
-//    @Override
-//    public Enumeration<SemanticTag> tags() throws SharkKBException {
-//        EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
-//        
-//        tagEnum.addEnumeration(this.getTopicSTSet().tags());
-//        tagEnum.addEnumeration(this.getPeerSTSet().tags());
-//        tagEnum.addEnumeration(this.getSpatialSTSet().tags());
-//        tagEnum.addEnumeration(this.getTimeSTSet().tags());
-//        
-//        return tagEnum;
-//    }
-    
     public Iterator getTags() throws SharkKBException {
         EnumerationChain<SemanticTag> tagEnum = new EnumerationChain<SemanticTag>();
         tagEnum.addEnumeration(this.getTopicSTSet().tags());
@@ -756,26 +722,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return tagEnum;
     }
 
-
-    
-//    /**
-//     * Delete tag in any dimension - if it can be found
-//     * @param sis
-//     * @throws SharkKBException 
-//     * @deprecated
-//     */
-//    @Override
-//    public void removeSemanticTag(String[] sis) throws SharkKBException {
-//        if(sis == null || sis.length == 0) {
-//            return;
-//        }
-//        
-//        this.removeSemanticTag(this.getTopicSTSet(), sis);
-//        this.removeSemanticTag(this.getPeerSTSet(), sis);
-//        this.removeSemanticTag(this.getSpatialSTSet(), sis);
-//        this.removeSemanticTag(this.getTimeSTSet(), sis);
-//    }
-    
     protected void removeSemanticTag(STSet set, String[] sis) throws SharkKBException {
         SemanticTag tag = set.getSemanticTag(sis);
         if(tag != null) set.removeSemanticTag(tag);

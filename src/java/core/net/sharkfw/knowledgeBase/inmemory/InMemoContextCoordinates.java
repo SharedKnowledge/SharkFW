@@ -81,9 +81,14 @@ class InMemoContextCoordinates extends InMemoSharkCS implements ContextCoordinat
         return this.direction;
     }
 
+    /**
+     * @deprecated 
+     * @param dim
+     * @return 
+     */
     @Override
     public boolean isAny(int dim) {
-        return SharkCSAlgebra.isAny(this, dim);
+        return SharkCSAlgebra.isAny((SharkCS) this, dim);
     }
 
     private InMemoSTSet topics = null;

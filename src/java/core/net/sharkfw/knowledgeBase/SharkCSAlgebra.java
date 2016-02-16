@@ -1055,9 +1055,48 @@ public abstract class SharkCSAlgebra {
         return false;
     }
     /**
+     * Check whether a dimension of a SharkCS is any.
+     * @param source
+     * @param dim
+     * @return 
+     */
+    public static boolean isAny(ASIPSpace source, int dim) {
+        STSet dimension;
+        
+        switch(dim) {
+            case ASIPSpace.DIM_TOPIC : 
+                return SharkCSAlgebra.isAny(source.getTopics());
+                
+            case ASIPSpace.DIM_TYPE :
+                return SharkCSAlgebra.isAny(source.getTypes());
+                
+            case ASIPSpace.DIM_APPROVERS :
+                return SharkCSAlgebra.isAny(source.getApprovers());
+                
+            case ASIPSpace.DIM_SENDER :
+                return SharkCSAlgebra.isAny(source.getSender());
+                
+            case ASIPSpace.DIM_RECEIVER :
+                return SharkCSAlgebra.isAny(source.getReceivers());
+                
+            case ASIPSpace.DIM_LOCATION :
+                return SharkCSAlgebra.isAny(source.getLocations());
+                
+            case ASIPSpace.DIM_TIME :
+                return SharkCSAlgebra.isAny(source.getTimes());
+                                
+            case ASIPSpace.DIM_DIRECTION :
+                return (source.getDirection() == ASIPSpace.DIRECTION_INOUT);
+        }
+        
+        return false;
+    }
+    
+    /**
      * Check whether a SharkCS is any (all dimensions any).
      * @param source
      * @return 
+     * @deprecated 
      */
     public static boolean isAny(SharkCS source) {
         return (source.isAny(SharkCS.DIM_TOPIC)
@@ -1111,6 +1150,72 @@ public abstract class SharkCSAlgebra {
         return SharkCSAlgebra.identical(sis, SharkCS.ANYSI);
     }
     
+    public static boolean isAny(InformationCoordinates ic) {
+        
+        return(
+            SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_APPROVERS)
+            && SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_TOPIC)
+            && SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_TYPE)
+            && SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_SENDER)
+            && SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_RECEIVER)
+            && SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_LOCATION)
+            && SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_TIME)
+            && SharkCSAlgebra.isAny(ic, ASIPSpace.DIM_DIRECTION)
+            );
+    }
+    
+    public static boolean identical(InformationCoordinates ic1, 
+            InformationCoordinates ic2) {
+        
+        // if references are the same they are identical
+        if(ic1 == ic2) {
+            return true;
+        }
+        
+        // both are null or any
+        if(SharkCSAlgebra.isAny(ic1) && SharkCSAlgebra.isAny(ic2)) {
+            return true;
+        }
+        
+        // both ic are a non null reference
+        
+        // direction
+        if(ic1.getDirection() == ic2.getDirection() || 
+          (ic1.getDirection() == SharkCS.DIRECTION_INOUT && ic2.getDirection() != SharkCS.DIRECTION_NOTHING) ||
+          (ic1.getDirection() != SharkCS.DIRECTION_NOTHING && ic2.getDirection() == SharkCS.DIRECTION_INOUT)) {
+            
+            // originator
+            if(SharkCSAlgebra.identical(ic1.getApprover(),ic2.getApprover())) {
+                
+                // topic
+                if(SharkCSAlgebra.identical(ic1.getTopic(),ic2.getTopic())) {
+                    
+                    // type
+                    if(SharkCSAlgebra.identical(ic1.getType(),ic2.getType())) {
+                    
+                        // sender
+                        if(SharkCSAlgebra.identical(ic1.getSender(),ic2.getSender())) {
+
+                            // receiver
+                            if(SharkCSAlgebra.identical(ic1.getReceiver(),ic2.getReceiver())) {
+
+                                // location
+                                if(SharkCSAlgebra.identical(ic1.getLocation(),ic2.getLocation())) {
+
+                                    // time
+                                    if(SharkCSAlgebra.identical(ic1.getTime(),ic2.getTime())) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } 
+        
+        return false;
+    }
     
     
     /**
@@ -1121,6 +1226,7 @@ public abstract class SharkCSAlgebra {
      * @param cc1
      * @param cc2
      * @return 
+     * @deprecated 
      */
     public static boolean identical(ContextCoordinates cc1, ContextCoordinates cc2) {
         // if references are the same they are identical

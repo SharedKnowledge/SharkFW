@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPKnowledge;
 
 /**
  * <p>Knowledge is a set of {@link ContextPoint}s including attached information.
@@ -22,7 +23,7 @@ import java.util.Iterator;
  * @author thsc
  * @author mfi
  */
-public interface Knowledge {
+public interface Knowledge extends ASIPKnowledge {
 
   /**
    * Add a ContextPoint to the knowledge object
@@ -34,6 +35,7 @@ public interface Knowledge {
    */
   public void addContextPoint(ContextPoint cp);
   
+  @Override
   public void addInformationSpace(ASIPSpace space);
   
   public void addInformationPoint(InformationPoint iPoint);
@@ -58,6 +60,7 @@ public interface Knowledge {
    */
   public Enumeration <ContextPoint> contextPoints();
   
+  @Override
   Iterator<InformationPoint> informationPoints();
 
   /**
@@ -71,6 +74,7 @@ public interface Knowledge {
    *
    * @return A ContextSpace with the above characteristics
    */
+  @Override
     public SharkVocabulary getVocabulary();
 
   /**

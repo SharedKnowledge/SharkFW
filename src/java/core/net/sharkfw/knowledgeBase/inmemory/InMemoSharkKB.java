@@ -1,10 +1,13 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
@@ -15,7 +18,6 @@ import net.sharkfw.system.Util;
  * @author mfi
  * @author thsc
  */
-@SuppressWarnings("unchecked")
 public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPropertyHolder {
     
     ////////////////////////////////////////////////////////////////////////
@@ -168,6 +170,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     /**
      * Create an in memory implementation of a semantic tag. This tag won't be
      * part of a knowledge base. Use {@link merge()} for that task.
+     * @param name
+     * @param si
      * @return 
      */
     public static SemanticTag createInMemoSemanticTag(String name, String si) {
@@ -177,6 +181,9 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     /**
      * Create an in memory implementation of a peer semantic tag. This tag won't be
      * part of a knowledge base. Use {@link merge()} for that task.
+     * @param name
+     * @param sis
+     * @param addresses
      * @return 
      */
     public static PeerSemanticTag createInMemoPeerSemanticTag(String name, String[] sis, 
@@ -187,6 +194,9 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     /**
      * Create an in memory implementation of a peer semantic tag. This tag won't be
      * part of a knowledge base. Use {@link merge()} for that task.
+     * @param name
+     * @param si
+     * @param address
      * @return 
      */
     public static PeerSemanticTag createInMemoPeerSemanticTag(String name, String si, 
@@ -258,8 +268,13 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         copy.merge(timeSTSet);
         return copy;
     }
-    
-    @SuppressWarnings("unused")
+
+    /**
+     * @deprecated 
+     * @param cc
+     * @return
+     * @throws SharkKBException 
+     */
     public static ContextCoordinates createInMemoCopy(ContextCoordinates cc) 
             throws SharkKBException {
         
@@ -281,6 +296,35 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return copy;
     }
     
+    public static InformationCoordinates createInMemoCopy(InformationCoordinates ic) 
+            throws SharkKBException {
+        
+        SemanticTag to, ty;
+        PeerSemanticTag a, s, r;
+        SpatialSemanticTag l;
+        TimeSemanticTag ti;
+        
+        to = InMemoSharkKB.createInMemoCopy(ic.getTopic());
+        ty = InMemoSharkKB.createInMemoCopy(ic.getType());
+        a = InMemoSharkKB.createInMemoCopy(ic.getApprover());
+        s = InMemoSharkKB.createInMemoCopy(ic.getSender());
+        r = InMemoSharkKB.createInMemoCopy(ic.getReceiver());
+        l = InMemoSharkKB.createInMemoCopy(ic.getLocation());
+        ti = InMemoSharkKB.createInMemoCopy(ic.getTime());
+        
+        InformationCoordinates copy = 
+                InMemoSharkKB.createInMemoInformationCoordinates(
+                        to, ty, a, s, r, ti, l, ic.getDirection());
+        
+        return copy;
+    }
+    
+    /**
+     * @deprecated 
+     * @param interest
+     * @return
+     * @throws SharkKBException 
+     */
     private static Interest _createInMemoCopy(SharkCS interest) 
             throws SharkKBException {
         
@@ -302,12 +346,45 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         
         return i;
     }
+    
+    private static ASIPInterest _createInMemoCopy(ASIPSpace as) 
+            throws SharkKBException {
         
+        ASIPInterest i = InMemoSharkKB.createInMemoASIPInterest();
+        
+        i.setTopics(InMemoSharkKB.createInMemoCopy(as.getTopics()));
+        i.setApprovers(InMemoSharkKB.createInMemoCopy(as.getApprovers()));
+        i.setSender(InMemoSharkKB.createInMemoCopy(as.getSender()));
+        i.setReceivers(InMemoSharkKB.createInMemoCopy(as.getReceivers()));
+        i.setTimes(InMemoSharkKB.createInMemoCopy(as.getTimes()));
+        i.setLocations(InMemoSharkKB.createInMemoCopy(as.getLocations()));
+        i.setDirection(as.getDirection());
+        
+        return i;
+    }
+    
+    /**
+     * @deprecated 
+     * @param interest
+     * @return
+     * @throws SharkKBException 
+     */
     public static Interest createInMemoCopy(Interest interest) 
             throws SharkKBException {
         return InMemoSharkKB._createInMemoCopy(interest);
     }
     
+    public static ASIPInterest createInMemoCopy(ASIPInterest interest) 
+            throws SharkKBException {
+        return InMemoSharkKB._createInMemoCopy(interest);
+    }
+
+    /**
+     * @deprecated 
+     * @param cs
+     * @return
+     * @throws SharkKBException 
+     */
     public static Interest createInMemoCopy(SharkCS cs) 
             throws SharkKBException {
         
@@ -316,6 +393,16 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         }
         
         return InMemoSharkKB._createInMemoCopy(cs);
+    }
+    
+    public static ASIPInterest createInMemoCopy(ASIPSpace as) 
+            throws SharkKBException {
+        
+        if(as == null) {
+            throw new SharkKBException("cannot make in memo copy from null");
+        }
+        
+        return InMemoSharkKB._createInMemoCopy(as);
     }
     
     /**
@@ -399,26 +486,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                 times, locations, direction);
     }
     
-    /**
-     * 
-     * @param topics
-     * @param types
-     * @param sender
-     * @param approvers
-     * @param receivers
-     * @param times
-     * @param locations
-     * @param direction
-     * @return 
-     */
-    public static Interest createInMemoInterest(STSet topics, STSet types, 
-            PeerSemanticTag sender, PeerSTSet approvers, PeerSTSet receivers, 
-            TimeSTSet times, SpatialSTSet locations, int direction) {
-        
-        return new InMemoInterest(topics, types, sender, approvers, 
-                receivers, times, locations, direction);
-    }
-    
     public static ASIPInterest createInMemoASIPInterest() {
         return new InMemoInterest();
     }
@@ -439,7 +506,18 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     public static SpatialSTSet createInMemoSpatialSTSet() {
         return new InMemoSpatialSTSet();
     }
-    
+
+    /**
+     * @deprecated 
+     * @param topic
+     * @param originator
+     * @param peer
+     * @param remotePeer
+     * @param time
+     * @param location
+     * @param direction
+     * @return 
+     */
     public static ContextCoordinates createInMemoContextCoordinates(
             SemanticTag topic, 
             PeerSemanticTag originator,
@@ -454,15 +532,40 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                 remotePeer, time, location, direction);
     }
 
+    public static InformationCoordinates createInMemoInformationCoordinates(
+            SemanticTag topic, 
+            SemanticTag type, 
+            PeerSemanticTag approver,
+            PeerSemanticTag sender,
+            PeerSemanticTag receiver,
+            TimeSemanticTag time,
+            SpatialSemanticTag location,
+            int direction) { {
+                
+            }
+        return new InMemoInformationCoordinates(topic, type, approver,
+                sender, receiver, time, location, direction);
+    }
+
+    /**
+     * @deprecated 
+     * @return 
+     */
     public static Interest createInMemoInterest() {
         return new InMemoInterest();
     }
+    
     ///////////////////////////////////////////////////////////////////////////
     //                 actual kb implementation starts here                  //
     ///////////////////////////////////////////////////////////////////////////
 
     public static ContextCoordinates getAnyCoordinates() {
         return InMemoSharkKB.createInMemoContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
+    }
+
+    public static InformationCoordinates getAnyInformationCoordinates() {
+        return InMemoSharkKB.createInMemoInformationCoordinates(null, null, 
+                null, null, null, null, null, ASIPSpace.DIRECTION_INOUT);
     }
 
     /**
@@ -474,6 +577,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * @param co
      * @param coordinates
      * @return
+     * @deprecated 
      */
     public static boolean exactMatch(ContextCoordinates cc1, ContextCoordinates cc2) {
         // if references are the same they are identical
@@ -552,11 +656,109 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
 
     /**
+     * Checks wether to coordinates are exactly the same. Means, that two concept
+     * are NOT the same if one is ANY and the other is something else. Don't
+     * mess up this methode with a similiar one in Shark algebra. If you don't
+     * see the difference use shark algebra.
+     *
+     * @param ic1
+     * @param ic2
+     * @return
+     */
+    public static boolean exactMatch(InformationCoordinates ic1, 
+            InformationCoordinates ic2) {
+        
+        // if references are the same they are identical
+        if (ic1 == ic2) {
+            return true;
+        }
+        if ((ic1 == null) || (ic2 == null)) {
+            // one of them is null, we can't compare
+            return false;
+        }
+        // direction
+        /* Bugfix to avoid recreation/duplicate profiles, it 
+        was triggered by OpenCV() or anything similar which led to 
+        exact direction match failed
+        */
+        switch (ic1.getDirection()) {
+            case SharkCS.DIRECTION_OUT:
+                switch (ic2.getDirection()) {
+                    case SharkCS.DIRECTION_IN:
+                        /* OUT/IN, incompatible */
+                        return false;
+                    case SharkCS.DIRECTION_INOUT:
+                        /* OUT/INOUT */
+                        L.w("relax direction match");
+                        // fall thru - both coordinates still match
+                    default:
+                        /* OUT/OUT is OK */
+                        break;
+                }
+                break;
+            case SharkCS.DIRECTION_IN:
+                switch (ic2.getDirection()) {
+                    case SharkCS.DIRECTION_OUT:
+                        /* IN/OUT, incompatible */
+                        return false;
+                    case SharkCS.DIRECTION_INOUT:
+                        /* IN/INOUT */
+                        L.w("relax direction match");
+                // fall thru
+                    default:
+                        /* IN/IN  is OK */
+                        break;
+                }
+                break;
+            case SharkCS.DIRECTION_INOUT:
+                switch (ic2.getDirection()) {
+                    case SharkCS.DIRECTION_OUT:
+                    /* INOUT/OUT */
+                    case SharkCS.DIRECTION_IN:
+                        /* INOUT/IN */
+                        L.w("relax direction match");
+                // fall thru
+                    case SharkCS.DIRECTION_INOUT:
+                        /* INOUT/INOUT is OK */
+                        break;
+                }
+                break;
+        }
+        // approver
+        if (InMemoSharkKB.exactMatch(ic1.getApprover(), ic2.getApprover())) {
+            // topic
+            if (InMemoSharkKB.exactMatch(ic1.getTopic(), ic2.getTopic())) {
+                // type
+                if (InMemoSharkKB.exactMatch(ic1.getType(), ic2.getType())) {
+                    // sender
+                    if (InMemoSharkKB.exactMatch(ic1.getSender(), ic2.getSender())) {
+                        // receiver
+                        if (InMemoSharkKB.exactMatch(ic1.getReceiver(), ic2.getReceiver())) {
+                            // location
+                            if (InMemoSharkKB.exactMatch(ic1.getLocation(), ic2.getLocation())) {
+                                // time
+                                if (InMemoSharkKB.exactMatch(ic1.getTime(), ic2.getTime())) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+
+    /**
      * Checks wether to tags are exactly the same. Means, that two concept
      * are NOT the same if one is ANY and the other is something else. Don't
      * mess up this methode with a similiar one in Shark algebra. If you don't
      * see the difference use shark algebra.
      *
+     * @param s1
+     * @param s2
+     * @return 
      */
     public static boolean exactMatch(SemanticTag s1, SemanticTag s2) {
         // same objects - ok
@@ -584,11 +786,11 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * It is advised to use the SharkEngine to create a new in-memory SharkKB though.
      */
     public InMemoSharkKB() {
-        super(new InMemoSemanticNet(),
-            new InMemoSemanticNet(),
-            new InMemoPeerTaxonomy(),
-            new InMemoSpatialSTSet(),
-            new InMemoTimeSTSet());
+        super(new InMemoSemanticNet(), // topic
+            new InMemoSemanticNet(), // type
+            new InMemoPeerTaxonomy(), // peers
+            new InMemoSpatialSTSet(), // locations
+            new InMemoTimeSTSet()); // times
         
         // this as knowledge background.
         Knowledge k = new InMemoKnowledge(this);
@@ -618,7 +820,16 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         
         super(topics, types, peers, locations, times);
     }
-    
+
+    /**
+     * @deprecated 
+     * @param topics
+     * @param peers
+     * @param locations
+     * @param times
+     * @param k
+     * @throws SharkKBException 
+     */
     InMemoSharkKB(SemanticNet topics, PeerTaxonomy peers,
                  SpatialSTSet locations, TimeSTSet times,
                  Knowledge k) throws SharkKBException {
@@ -633,26 +844,27 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         super(topics, types, peers, locations, times, k);
     }
     
-    SharkKB createTwin(Knowledge k) throws SharkKBException {
-        return new InMemoSharkKB(this.getTopicsAsSemanticNet(),
-                this.getPeersAsTaxonomy(), this.getSpatialSTSet(), 
-                this.getTimeSTSet(), k);
-    }
-    
+    /**
+     * @deprecated 
+     * @return 
+     */
     @Override
     public Knowledge createKnowledge() {
         return new InMemoKnowledge(this);
     }
 
-//    @Override
-//    public Interest createInterest(STSet topics, PeerSemanticTag originator, 
-//        PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, 
-//        SpatialSTSet locations, int direction) 
-//    {
-//        return new InMemoInterest(topics, originator, peers, remotePeers, 
-//                times, locations, direction);
-//    }
-
+    /**
+     * @deprecated 
+     * @param topic
+     * @param originator
+     * @param peer
+     * @param remotePeer
+     * @param time
+     * @param location
+     * @param direction
+     * @return
+     * @throws SharkKBException 
+     */
     @Override
     public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotePeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
         this.getTopicSTSet().merge(topic);
@@ -666,11 +878,33 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return new InMemoContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
     }
     
-//    @Override
-    public Interest createInterest() throws SharkKBException{
-        return new InMemoInterest();
+    @Override
+    public InformationCoordinates createInformationCoordinates(
+            SemanticTag topic, SemanticTag type, 
+            PeerSemanticTag approver, PeerSemanticTag sender, 
+            PeerSemanticTag receiver, TimeSemanticTag time, 
+            SpatialSemanticTag location, int direction) 
+            throws SharkKBException {
+        
+        SemanticTag to = this.getTopicSTSet().merge(topic);
+        SemanticTag ty = this.getTypeSTSet().merge(type);
+        PeerSTSet peerDimension = this.getPeerSTSet();
+        PeerSemanticTag a = (PeerSemanticTag) peerDimension.merge(approver);
+        PeerSemanticTag s = (PeerSemanticTag) peerDimension.merge(sender);
+        PeerSemanticTag r = (PeerSemanticTag) peerDimension.merge(receiver);
+        TimeSemanticTag ti = (TimeSemanticTag) this.getTimeSTSet().merge(time);
+        SpatialSemanticTag lo = (SpatialSemanticTag) this.getSpatialSTSet().merge(location);
+        
+        return new InMemoInformationCoordinates(
+                to, ty, a, s, r, ti, lo, direction);
     }
 
+    /**
+     * @deprecated 
+     * @param coordinates
+     * @return
+     * @throws SharkKBException 
+     */
     @Override
     public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
         ContextPoint cp = this.getContextPoint(coordinates);
@@ -685,18 +919,22 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return cp;
     }
     
-    /**
-     * Creates an interest with coordinates - coordinates are copied.
-     * @param cc
-     * @return
-     * @throws SharkKBException 
-     */
-//    @Override
-    public Interest createInterest(ContextCoordinates cc) throws SharkKBException {
-        return InMemoSharkKB.createInMemoCopy((SharkCS) cc);
+    
+    @Override
+    public InformationPoint createInformationPoint(
+            InformationCoordinates coordinates) throws SharkKBException {
+        
+        InformationPoint ip = this.getInformationPoint(coordinates);
+        if(ip != null) {
+            return ip;
+        }
+        
+        ip = new InMemoInformationPoint(coordinates);
+        this.addContextPoint(ip);
+        
+        return ip;
     }
     
-    @SuppressWarnings("rawtypes")
     @Override
     public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
         try {
@@ -716,7 +954,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         throw new SharkKBException("peers dimension isn't a semantic net.");
     }
     
-    @SuppressWarnings("rawtypes")
     @Override
     public Taxonomy getTopicsAsTaxonomy()  throws SharkKBException {
         try {
@@ -770,30 +1007,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         this.knowledge.addListener(this);
     }
 
-    ////////////////////////////////////////////////////////////
-    //           some additional methods                      //
-    ////////////////////////////////////////////////////////////
-    //    public STSet getAnySTSet() throws SharkKBException {
-    //        return this.createAnySTSet(SharkCS.DIM_PEER);
-    //    }
-    //
-    //    public STSet getAnyGeoSTSet() throws SharkKBException {
-    //        return this.createAnySTSet(SharkCS.DIM_LOCATION);
-    //    }
-    //
-    //    public STSet getAnyTimeSTSet() throws SharkKBException {
-    //        return this.createAnySTSet(SharkCS.DIM_TIME);
-    //    }
-    //
-    //    public STSet getAnyDirectionSTSet() throws SharkKBException {
-    //        return this.createAnySTSet(SharkCS.DIM_DIRECTION);
-    //    }
-    //
-    //    public STSet createAnySTSet(int dimension) throws SharkKBException {
-    //        return null;
-    //    }
-    
-    
     @Override
     public void setOwner(PeerSemanticTag owner) {
         // remove listener from old owner
@@ -820,6 +1033,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * @param coordinates
      * @return
      * @throws SharkKBException
+     * @deprecated 
      */
     @Override
     public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
@@ -834,17 +1048,33 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return null;
     }
 
-    //    @Override
-    //    abstract public ContextCoordinates createContextCoordinates(SemanticTag topic,
-    //        PeerSemanticTag originator, PeerSemanticTag peer,
-    //        PeerSemanticTag remotePeer, TimeSemanticTag time,
-    //        SpatialSemanticTag location, int direction)
-    //            throws SharkKBException;
-    //    @Override
-    //    abstract public ContextPoint createContextPoint(ContextCoordinates coordinates)
-    //            throws SharkKBException;
+    @Override
+    public InformationPoint getInformationPoint(
+            InformationCoordinates coordinates) throws SharkKBException {
+        
+        Iterator<InformationPoint> ipIter = this.knowledge.informationPoints();
+        while (ipIter.hasNext()) {
+            InformationPoint ip = ipIter.next();
+            InformationCoordinates co = ip.getInformationCoordinates();
+            
+            if (InMemoSharkKB.exactMatch(co, coordinates)) {
+                return ip;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @deprecated 
+     * @param cp
+     * @throws SharkKBException 
+     */
     protected void addContextPoint(ContextPoint cp) throws SharkKBException {
         this.knowledge.addContextPoint(cp);
+    }
+
+    protected void addInformationPoint(InformationPoint ip) throws SharkKBException {
+        this.knowledge.addInformationPoint(ip);
     }
 
     /**
@@ -857,6 +1087,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      *
      * @return
      * @throws SharkKBException
+     * @deprecated 
      */
     @Override
     public Enumeration getAllContextPoints() throws SharkKBException {
@@ -864,6 +1095,18 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return this.getContextPoints(cc);
     }
     
+    @Override
+    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
+        return this.knowledge.informationPoints();
+    }
+
+    /**
+     * @deprecated 
+     * @param cs
+     * @param matchAny
+     * @return
+     * @throws SharkKBException 
+     */
     @Override
     public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
         if (cs == null) {
@@ -902,6 +1145,74 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return result.iterator();
     }
     
+
+    @Override
+    public Iterator<InformationPoint> informationPoints(
+            ASIPSpace as, boolean matchAny) throws SharkKBException {
+        
+        if (as == null) { // no constraints
+            if(matchAny) {
+                // return all
+                return this.getAllInformationPoints();
+            } else { // be an exact match
+                List<InformationPoint> aip = new ArrayList<InformationPoint>();
+                
+                InformationCoordinates ic = 
+                        InMemoSharkKB.getAnyInformationCoordinates();
+                
+                // is there a ip with no constraints at all
+                InformationPoint anyIP = this.getInformationPoint(ic);
+                
+                // yes
+                if(anyIP != null) {
+                    aip.add(anyIP);
+                }
+                
+                // list contains at most one info point
+                return aip.iterator();
+            }
+        }
+        
+        List<InformationPoint> result = new ArrayList<>();
+        List<InformationCoordinates> coo = new ArrayList<>();
+        
+        if (coo == null) {
+            return result.iterator();
+        }
+        
+        Iterator<InformationCoordinates> cooIter = coo.iterator();
+        while (cooIter.hasNext()) {
+            // next possible coordinate
+            InformationCoordinates co = cooIter.next();
+            if (!matchAny) {
+                // exact match
+                InformationPoint ip = this.getInformationPoint(co);
+                if (ip != null) {
+                    // copy ip
+                    result.add(ip);
+                }
+            } else {
+                // matchAny - find all matching cps.
+                Iterator<InformationPoint> ipIter = this.knowledge.informationPoints();
+                while (ipIter.hasNext()) {
+                    InformationPoint ip = ipIter.next();
+                    if(SharkCSAlgebra.identical(ip.getInformationCoordinates(), co)) 
+                    {
+                        result.add(ip);
+                    }
+                }
+            }
+        }
+        
+        return result.iterator();
+    }
+
+    /**
+     * @deprecated 
+     * @param cs
+     * @return
+     * @throws SharkKBException 
+     */
     public HashSet possibleCoordinates(SharkCS cs) throws SharkKBException {
         if (cs == null) {
             return null;
@@ -965,30 +1276,5 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         if (defaultFPValue != null) {
             this.defaultFP = Util.string2fragmentationParameter(defaultFPValue);
         }
-    }
-
-    @Override
-    public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -92,9 +92,14 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
         this.direction = direction;
     }
 
+    /**
+     * @deprecated 
+     * @param dim
+     * @return 
+     */
     @Override
     public boolean isAny(int dim) {
-        return SharkCSAlgebra.isAny(this, dim);
+        return SharkCSAlgebra.isAny((SharkCS) this, dim);
     }
 
     /**
