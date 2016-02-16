@@ -83,19 +83,49 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public ASIPSpace asASIPSpace() {
-        return null; // TODO
+        return this.asASIPInterest();
     }
      
     @Override
     public ASIPInterest asASIPInterest() {
-        return null; // TODO
+        STSet topicsSet = this.topics.asSTSet();
+        PeerSTSet peersSet;
+        try {
+            peersSet = this.peers.asPeerSTSet();
+        } catch (SharkKBException ex) {
+            return null;
+        }
+        
+        // hide semantic tags
+        this.locations.setEnumerateHiddenTags(true);
+        this.times.setEnumerateHiddenTags(true);
+        topicsSet.setEnumerateHiddenTags(true);
+        peersSet.setEnumerateHiddenTags(true);
+        
+        return InMemoSharkKB.createInMemoASIPInterest(
+                topicsSet, 
+                this.types, 
+                this.owner, 
+                peersSet, 
+                peersSet, 
+                this.times, 
+                this.locations, 
+                ASIPSpace.DIRECTION_INOUT);
     }
      
+    /**
+     * @deprecated 
+     * @return 
+     */
     @Override
     public SharkCS asSharkCS() {
         return this.asInterest();
     }
 
+    /**
+     * @deprecated 
+     * @return 
+     */
     @Override
     public Interest asInterest() {
         // hide semantic tags
@@ -125,51 +155,25 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 //        }
         
 //        return null;
-    }
-
-    /**
-     * That's the less performant implementation I can imagine. We split
-     * the space into single point and attach information to each point.
-     * 
-     * That's ought to be a temporary solutions and must urgently replaced
-     * by better solutions in less abstract derived classes
-     * 
-     * @param space
-     * @return
-     * @throws SharkKBException 
-     */
-    @Override
-    public ASIPSpace createASIPSpace(ASIPSpace space) 
-            throws SharkKBException {
-        
-        return null; // TODO
-        //return new InformationSpace2ContextPoint(this, space);
-    }
-    
-    
-    @Override
-    public void mergeInformationSpace(ASIPInformationSpace iSpace) throws SharkKBException {
-        // TODO
     }    
     
     /**
-     * Create an interest with given parameter. There is no need to
-     * copy each dimension.
+     * That's a default implementation. It splits the information space
+     * into information points and merges each point into the KB.
      * 
-     * @param topics
-     * @param originator
-     * @param peers
-     * @param remotePeers
-     * @param times
-     * @param locations
-     * @param direction
-     * @return 
+     * That's probably sufficient for an in memo implementation. 
+     * Reasonable KB should be able to offer a better solution.
+     * 
+     * @param iSpace
+     * @throws SharkKBException 
      */
-    abstract public Interest createInterest(STSet topics, 
-            PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, 
-            TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException;
-
-
+    @Override
+    public void mergeInformationSpace(ASIPInformationSpace iSpace) 
+            throws SharkKBException {
+        
+        // TODO
+    }    
+    
 //    @Override
 //    /**
 //     * @deprecated

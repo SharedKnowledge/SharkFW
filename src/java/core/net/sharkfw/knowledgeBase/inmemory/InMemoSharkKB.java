@@ -644,14 +644,14 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return new InMemoKnowledge(this);
     }
 
-    @Override
-    public Interest createInterest(STSet topics, PeerSemanticTag originator, 
-        PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, 
-        SpatialSTSet locations, int direction) 
-    {
-        return new InMemoInterest(topics, originator, peers, remotePeers, 
-                times, locations, direction);
-    }
+//    @Override
+//    public Interest createInterest(STSet topics, PeerSemanticTag originator, 
+//        PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, 
+//        SpatialSTSet locations, int direction) 
+//    {
+//        return new InMemoInterest(topics, originator, peers, remotePeers, 
+//                times, locations, direction);
+//    }
 
     @Override
     public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotePeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {

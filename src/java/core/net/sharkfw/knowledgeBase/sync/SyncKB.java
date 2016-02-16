@@ -317,11 +317,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public ASIPSpace createASIPSpace(ASIPSpace space) throws SharkKBException {
-        return this._localKB.createASIPSpace(space);
-    }
-
-    @Override
     public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
         return this._localKB.getInformationPoint(coordinates);
     }

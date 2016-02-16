@@ -129,16 +129,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   
   
   /**
-   * Create an information space which is adding or merging of semantic tags 
-   * into the appropriate dimensions in KBs' vocabulary.
-   * 
-   * @param space
-   * @return 
-   * @throws SharkKBException 
-   */
-  public ASIPSpace createASIPSpace(ASIPSpace space) throws SharkKBException;
-  
-  /**
    * Merge an information space including its information into that knowledge
    * base. It's up to knowledge base implementation how those information 
    * are stored and can be retrieved afterwards.

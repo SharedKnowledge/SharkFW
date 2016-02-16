@@ -661,11 +661,6 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
     
     @Override
-    public Interest createInterest(STSet topics, PeerSemanticTag originator, PeerSTSet peers, PeerSTSet remotePeers, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void setOwner(PeerSemanticTag owner) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

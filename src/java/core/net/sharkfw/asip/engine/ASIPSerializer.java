@@ -300,9 +300,6 @@ public class ASIPSerializer {
             of a string */
         ASIPSpace cs = this.deserializeCS(target, knowledgeString);
         
-        // could add cs to knowledge base
-        ASIPSpace infoSpace = target.createASIPSpace(cs);
-        
         /* infos can be added now - tja und das muss man schlau machen
         wegen der eventuell großen Datenmengen. Man kann ein Infoobjekt
         eibnhängen, das aber nicht sofort alle Daten aus dem stream liest...
