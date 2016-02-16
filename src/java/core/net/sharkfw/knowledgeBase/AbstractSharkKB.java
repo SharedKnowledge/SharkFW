@@ -171,98 +171,38 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public void mergeInformationSpace(ASIPInformationSpace iSpace) 
             throws SharkKBException {
         
-        // TODO
+        ASIPSpace asipSpace = iSpace.getASIPSpace();
+        if(asipSpace == null) return;
+        
+        // create coordinates for all points inside that space
+        HashSet<InformationCoordinates> infoCoordSet = 
+                this.possibleInformationCoordinates(asipSpace);
+        
+        if(infoCoordSet == null || infoCoordSet.isEmpty()) return;
+        
+        /* create an infoPoint for each coordinate and add
+        information - that is the dreadful part of that algorithm:
+        it produces redundancy
+         */
+        Iterator<InformationCoordinates> iCoordIter = infoCoordSet.iterator();
+        while(iCoordIter.hasNext()) {
+            InformationCoordinates ic = iCoordIter.next();
+            InformationPoint ip = this.createInformationPoint(ic);
+            
+            // no copy information
+            Iterator<Information> infoIter = iSpace.informations();
+            while(infoIter != null && infoIter.hasNext()) {
+                Information info = infoIter.next();
+                if(info != null) {
+                    ip.addInformation(info);
+                }
+            }
+        }
     }    
-    
-//    @Override
-//    /**
-//     * @deprecated
-//     */
-//    public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-//        SemanticTag st = this.getTopicSTSet().createSemanticTag(name, sis);
-//        this.notifySemanticTagCreated(st);
-//        return st;
-//    }
-//    
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-//        return this.getTopicSTSet().createSemanticTag(name, new String[] {si});
-//    }
-
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
-//        PeerSemanticTag pst = this.getPeerSTSet().createPeerSemanticTag(name, sis, addresses);
-//        this.notifyPeerCreated(pst);
-//        return pst;
-//    }
-//    
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException {
-//        return this.createPeerSemanticTag(name, new String[] {si}, new String[] {address});
-//    }
-//
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException {
-//        return this.createPeerSemanticTag(name, sis, new String[] {address});
-//    }
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
-//        return this.createPeerSemanticTag(name, new String[] {si}, addresses);
-//    }
-//    
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException {
-//        return null;
-//    }
-//
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
-//        SpatialSemanticTag sst = this.getSpatialSTSet().createSpatialSemanticTag(name, sis, geom);
-//        this.notifyLocationCreated(sst);
-//        return sst;
-//    }
-//    
-//    /**
-//     * @deprecated
-//     */
-//    @Override
-//    public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
-//        TimeSemanticTag tst = this.getTimeSTSet().createTimeSemanticTag(from, duration);
-//        this.notifyTimeCreated(tst);
-//        return tst;
-//    }
-    
+        
     protected Knowledge getKnowledge() {
         return this.knowledge;
     }
-    
-//    /**
-//     * creates an empty / any interest
-//     * @return 
-//     */
-//    @Override
-//    abstract public Interest createInterest() throws SharkKBException;
     
     @Override
     public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException {
@@ -321,10 +261,74 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return new Iterator2Enumeration(iterCPs);
     }
     
+    HashSet<InformationCoordinates> possibleInformationCoordinates(ASIPSpace space) throws SharkKBException {
+        if (space == null) {
+            return null;
+        }
+        HashSet<InformationCoordinates> icList = new HashSet<InformationCoordinates>();
+        
+        /* create first prototype with direction and owner: 
+           (-,-,owner,-,-,-,-,direction)
+        */
+        
+        if (space.getDirection() == SharkCS.DIRECTION_INOUT) {
+            /* if INOUT: we already have two points: 
+              (-,-,owner,-,-,-,-,IN) and
+              (-,-,owner,-,-,-,-,OUT)
+            */
+            
+            // topic, type, approver, sender, receiver, time, location, direction
+            
+            // add prototype OUT interest
+            icList.add(this.createInformationCoordinates(null, null, null, 
+                    owner, null, null, null, ASIPSpace.DIRECTION_IN));
+            
+            // add prototype OUT interest
+            icList.add(this.createInformationCoordinates(null, null, null, 
+                    owner, null, null, null, ASIPSpace.DIRECTION_OUT));
+            
+        }
+        
+        // in any case - add prototyp with original direction
+        icList.add(this.createInformationCoordinates(null, null, null, 
+                    owner, null, null, null, space.getDirection()));
+        
+        /* now combine with other dimensions 
+           sender and direction are already combined
+        */
+        
+        // combine topic dimension
+        icList = this.informationCoordinatesCombination(icList, 
+                space.getTopics(), ASIPSpace.DIM_TOPIC);
+        
+        // combine type dimension
+        icList = this.informationCoordinatesCombination(icList, 
+                space.getTypes(), ASIPSpace.DIM_TYPE);
+        
+        // combine approver dimension
+        icList = this.informationCoordinatesCombination(icList, 
+                space.getApprovers(), ASIPSpace.DIM_APPROVERS);
+        
+        // combine receiver dimension
+        icList = this.informationCoordinatesCombination(icList, 
+                space.getReceivers(), ASIPSpace.DIM_RECEIVER);
+        
+        // combine time dimension
+        icList = this.informationCoordinatesCombination(icList, 
+                space.getTimes(), ASIPSpace.DIM_TIME);
+        
+        // combine location dimension
+        icList = this.informationCoordinatesCombination(icList, 
+                space.getLocations(), ASIPSpace.DIM_LOCATION);
+        
+        return icList;
+    }
+
     /**
      * @param space
      * @return
      * @throws SharkKBException 
+     * @deprecated 
      */
     HashSet<ContextCoordinates> possibleCoordinates(ASIPSpace space) throws SharkKBException {
         if (space == null) {
@@ -364,6 +368,97 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return ccList;
     }
 
+    protected HashSet informationCoordinatesCombination(
+            HashSet<InformationCoordinates> protoCoo, STSet set, int dim) 
+            throws SharkKBException {
+        
+        // if stset is empty - no new combination can be created - done
+        if (SharkCSAlgebra.isAny(set)) {
+            return protoCoo;
+        }
+        
+        set.setEnumerateHiddenTags(true);
+        
+        // iterate all tags in set - if empty - we are done.
+        Iterator<SemanticTag> stTags = set.stTags();
+        if (stTags == null || !stTags.hasNext()) {
+            return protoCoo;
+        }
+        
+        // lets combine - create container for results first
+        HashSet<InformationCoordinates> result = new HashSet<InformationCoordinates>();
+        while (stTags.hasNext()) {
+            // take next tag to combine
+            SemanticTag tag = stTags.next();
+            
+            // if this tag is any - continue: no need to create combinations.
+            if(SharkCSAlgebra.isAny(tag)) continue;
+            
+            // create new combination which each already existing coordinate
+            Iterator<InformationCoordinates> cooIter = protoCoo.iterator();
+            while (cooIter.hasNext()) {
+                InformationCoordinates oldCC = cooIter.next();
+                
+                // take all eight parts from coordinate:
+                // topic,type,approver,sender,receiver,time,location,direction
+                SemanticTag topic = oldCC.getTopic();
+                SemanticTag type = oldCC.getType();
+                PeerSemanticTag approver = oldCC.getApprover();
+                PeerSemanticTag sender = oldCC.getSender();
+                PeerSemanticTag receiver = oldCC.getReceiver();
+                TimeSemanticTag time = oldCC.getTime();
+                SpatialSemanticTag location = oldCC.getLocation();
+                int direction = oldCC.getDirection();
+                
+                /* now: what dimension do we combine ?
+                   set our tag instead of the odl one (which is presumably null)
+                */
+                switch (dim) {
+                    case ASIPSpace.DIM_TOPIC:
+                        topic = tag;
+                        break;
+                    case ASIPSpace.DIM_TYPE:
+                        type = tag;
+                        break;
+                    case ASIPSpace.DIM_APPROVERS:
+                        approver = (PeerSemanticTag) tag;
+                        break;
+                    case ASIPSpace.DIM_SENDER:
+                        sender = (PeerSemanticTag) tag;
+                        break;
+                    case ASIPSpace.DIM_RECEIVER:
+                        receiver = (PeerSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_TIME:
+                        time = (TimeSemanticTag) tag;
+                        break;
+                    case SharkCS.DIM_LOCATION:
+                        location = (SpatialSemanticTag) tag;
+                        break;
+                }
+                
+                // we have a new coordinate - create an object
+                InformationCoordinates newIC = 
+                        this.createInformationCoordinates(topic, type, approver, 
+                                sender, receiver, time, location, direction);
+                
+                // add to list
+                result.add(newIC);
+                
+                // combine with next existing coordinate
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @deprecated 
+     * @param protoCoo
+     * @param set
+     * @param dim
+     * @return
+     * @throws SharkKBException 
+     */
     protected HashSet coordCombination(HashSet<ContextCoordinates> protoCoo, STSet set, int dim) throws SharkKBException {
         if (SharkCSAlgebra.isAny(set)) {
             return protoCoo;
