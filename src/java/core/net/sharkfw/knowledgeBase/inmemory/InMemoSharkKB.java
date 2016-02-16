@@ -539,7 +539,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             PeerSemanticTag receiver,
             TimeSemanticTag time,
             SpatialSemanticTag location,
-            int direction) { {
+            int direction) throws SharkKBException { {
                 
             }
         return new InMemoInformationCoordinates(topic, type, approver,
@@ -562,7 +562,9 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return InMemoSharkKB.createInMemoContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
     }
 
-    public static InformationCoordinates getAnyInformationCoordinates() {
+    public static InformationCoordinates getAnyInformationCoordinates() 
+            throws SharkKBException {
+        
         return InMemoSharkKB.createInMemoInformationCoordinates(null, null, 
                 null, null, null, null, null, ASIPSpace.DIRECTION_INOUT);
     }
@@ -1154,7 +1156,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                 // return all
                 return this.getAllInformationPoints();
             } else { // be an exact match
-                List<InformationPoint> aip = new ArrayList<InformationPoint>();
+                List<InformationPoint> aip = new ArrayList<>();
                 
                 InformationCoordinates ic = 
                         InMemoSharkKB.getAnyInformationCoordinates();

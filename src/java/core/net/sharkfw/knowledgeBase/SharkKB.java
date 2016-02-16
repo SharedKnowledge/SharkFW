@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPKnowledge;
 
 /**
  *
@@ -48,7 +49,7 @@ import java.util.Iterator;
  * 
  * @author mfi, thsc
  */
-public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetListener, InterestStorage {
+public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetListener, InterestStorage, ASIPKnowledge {
     
     public void setOwner(PeerSemanticTag owner);
     
@@ -169,14 +170,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
   
-  /**
-   * Remove all information points inside described space.
-   * 
-   * @param space
-   * @throws SharkKBException 
-   */
-  public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
-
   /**
    * Return (copies) of all ContextPoints, which are covered by the 
    * ContextSpace <code>cs</code>. Note: Just the context points are copied, information

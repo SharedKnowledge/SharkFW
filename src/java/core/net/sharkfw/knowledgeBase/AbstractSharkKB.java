@@ -1023,24 +1023,24 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @param space
      * @throws SharkKBException 
      */
-    @Override
-    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
-        if(space == null) return;
-        
-        HashSet<InformationCoordinates> possibleInfoCC = 
-                this.possibleInformationCoordinates(space);
-        
-        if(possibleInfoCC == null || possibleInfoCC.isEmpty()) return;
-        
-        // there are possible points
-        Iterator<InformationCoordinates> infoCCIter = possibleInfoCC.iterator();
-        
-        // remove each thinkable point
-        while(infoCCIter.hasNext()) {
-            InformationCoordinates ic = infoCCIter.next();
-            this.removeInformationPoint(ic);
-        }
-    }
+//    @Override
+//    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+//        if(space == null) return;
+//        
+//        HashSet<InformationCoordinates> possibleInfoCC = 
+//                this.possibleInformationCoordinates(space);
+//        
+//        if(possibleInfoCC == null || possibleInfoCC.isEmpty()) return;
+//        
+//        // there are possible points
+//        Iterator<InformationCoordinates> infoCCIter = possibleInfoCC.iterator();
+//        
+//        // remove each thinkable point
+//        while(infoCCIter.hasNext()) {
+//            InformationCoordinates ic = infoCCIter.next();
+//            this.removeInformationPoint(ic);
+//        }
+//    }
 
     @Override
     public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException {
@@ -1062,5 +1062,35 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     @Override
     public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
         return SharkCSAlgebra.contextualize(this.asASIPSpace(), as, fp);
+    }
+    
+    @Override
+    public int getNumberOfInformationSpaces() throws SharkKBException {
+        return this.asipKnowledge.getNumberOfInformationSpaces();
+    }
+    
+    @Override
+    public void addInformationSpace(ASIPSpace space) throws SharkKBException {
+        this.asipKnowledge.addInformationSpace(space);
+    }
+
+    @Override
+    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        this.asipKnowledge.removeInformationSpace(space);
+    }
+
+    @Override
+    public Iterator<InformationPoint> informationPoints() throws SharkKBException {
+        return this.asipKnowledge.informationPoints();
+    }
+    
+    @Override
+    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
+        return this.asipKnowledge.informationSpaces();
+    }
+
+    @Override
+    public SharkVocabulary getVocabulary() throws SharkKBException {
+        return this;
     }
 }

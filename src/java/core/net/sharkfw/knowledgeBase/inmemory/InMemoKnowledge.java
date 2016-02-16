@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPSpace;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
 
@@ -17,6 +18,8 @@ import net.sharkfw.system.Iterator2Enumeration;
  */
 public class InMemoKnowledge implements Knowledge {
     private ArrayList<ContextPoint> cps;
+    private ArrayList<ASIPInformationSpace> informationSpaces;
+    
     private SharkVocabulary cm;
 
     /** 
@@ -25,6 +28,7 @@ public class InMemoKnowledge implements Knowledge {
     public InMemoKnowledge() {
         // create empty context point list
         cps = new ArrayList<>();
+        informationSpaces = new ArrayList<>();
     }
 
     public InMemoKnowledge(SharkVocabulary background) {
@@ -37,16 +41,26 @@ public class InMemoKnowledge implements Knowledge {
     InMemoKnowledge(SharkVocabulary cm, InMemoKnowledge k) {
         this.cm = cm;
         this.cps = k.getCPS();
+        this.informationSpaces = k.getISS();
     }
     
+    /**
+     * @deprecated 
+     * @return 
+     */
     private ArrayList<ContextPoint> getCPS() {
         return this.cps;
+    }
+
+    private ArrayList<ASIPInformationSpace> getISS() {
+        return this.informationSpaces;
     }
 
     /**
      * Returns the number of elements in the local <code>Vector</code> which stores the <code>ContextPoint</code>s.
      * 
      * @return An integer value representing the number of <code>ContextPoint</code>s  inside this <code>InMemoKnowledge</code>
+     * @deprecated 
      */
     @Override
     public int getNumberOfContextPoints() {
@@ -58,6 +72,7 @@ public class InMemoKnowledge implements Knowledge {
      * 
      * @param i An integer value denoting the index.
      * @return A <code>ContextPoint</code> (<code>InMemoContextPoint</code> really).
+     * @deprecated 
      */
     @Override
     public ContextPoint getCP(int i) {
@@ -75,25 +90,13 @@ public class InMemoKnowledge implements Knowledge {
         return this.cm;
     }
     
-       /**
-     * Create a copy of the passed <code>ContextCoordinates</code>.
-     * This includes creation of a <code>new ContextCoordinates()</code> object
-     * in order to have a new object identity.
-     *
-     * @param co The <code>ContextCoordinates</code> to copy.
-     * @return A new <code>ContextCoordinates</code> instance with the same values set as <code>co</code>
-     */
-    @SuppressWarnings("unused")
-    private InMemoContextCoordinates copyCoords(ContextCoordinates co) {
-      
-        return new InMemoContextCoordinates(
-            co.getTopic(), co.getOriginator(), co.getPeer(), co.getRemotePeer(),
-            co.getTime(), co.getLocation(), co.getDirection());
-    }
-
     // =========================================================================
     // API rev. methods
 
+    /**
+     * @deprecated 
+     * @param cp 
+     */
     @Override
     public final void addContextPoint(ContextPoint cp) {
         this.cps.add(cp);
@@ -104,7 +107,11 @@ public class InMemoKnowledge implements Knowledge {
             listener.contextPointAdded(cp);
         }
     }
-
+    
+    /**
+     * @deprecated 
+     * @param cp 
+     */
     @Override
     public void removeContextPoint(ContextPoint cp) {
         this.cps.remove(cp);
@@ -116,26 +123,24 @@ public class InMemoKnowledge implements Knowledge {
         }
     }
 
+    /**
+     * @deprecated 
+     * @return 
+     */
     @Override
     public Enumeration<ContextPoint> contextPoints() {
         return new Iterator2Enumeration(this.cps.iterator());
     }
 
-    private ArrayList<KnowledgeListener> listeners = new ArrayList<KnowledgeListener>();
-
     @Override
-    public void addListener(KnowledgeListener kbl) {
-        this.listeners.add(kbl);
+    public void addInformationSpace(ASIPSpace space) throws SharkKBException {
+        InMemoInformationSpace is = new InMemoInformationSpace(space);
+        
+        this.informationSpaces.add(is);
     }
-
-    @Override
-    public void removeListener(KnowledgeListener kbl) {
-        this.listeners.remove(kbl);
-    }
-
-    @Override
-    public void addInformationSpace(ASIPSpace space) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    private ASIPSpace point2space(InformationPoint ip) {
+        return new InMemoInformationSpace();
     }
 
     @Override
@@ -172,4 +177,26 @@ public class InMemoKnowledge implements Knowledge {
     public int getNumberOfInformationSpaces() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    //                               knowledge listener                     //
+    //////////////////////////////////////////////////////////////////////////
+    private ArrayList<KnowledgeListener> listeners = new ArrayList<>();
+
+    @Override
+    public void addListener(KnowledgeListener kbl) {
+        this.listeners.add(kbl);
+    }
+
+    @Override
+    public void removeListener(KnowledgeListener kbl) {
+        this.listeners.remove(kbl);
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> informationSpaces() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
 }

@@ -36,9 +36,9 @@ public interface Knowledge extends ASIPKnowledge {
   public void addContextPoint(ContextPoint cp);
   
   @Override
-  public void addInformationSpace(ASIPSpace space);
+  public void addInformationSpace(ASIPSpace space) throws SharkKBException;
   
-  public void addInformationPoint(InformationPoint iPoint);
+  public void addInformationPoint(InformationPoint iPoint) throws SharkKBException;
 
   /**
    * Remove a given Context Point from the knowledge.
@@ -50,7 +50,7 @@ public interface Knowledge extends ASIPKnowledge {
    */
   public void removeContextPoint(ContextPoint cp);
   
-  public void removeInformationPoint(InformationPoint cp);
+  public void removeInformationPoint(InformationPoint cp) throws SharkKBException;
 
   /**
    * An enumeration of all contained context points.
@@ -61,7 +61,7 @@ public interface Knowledge extends ASIPKnowledge {
   public Enumeration <ContextPoint> contextPoints();
   
   @Override
-  Iterator<InformationPoint> informationPoints();
+  Iterator<InformationPoint> informationPoints() throws SharkKBException;
 
   /**
    * Return a ContextSapce containing Tag for the different coordinates of the
@@ -74,7 +74,15 @@ public interface Knowledge extends ASIPKnowledge {
    *
    * @return A ContextSpace with the above characteristics
    */
-  @Override
+
+    /**
+     * Return a ContextSapce containing Tag for the different coordinates of the
+ contained ContextPoints plus (optional) background information for these tags.Note: Method can return null. Context map can also have empty dimensions.
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
+     * @see net.sharkfw.knowledgeBase.ContextSpace
+     * @return A ContextSpace with the above characteristics
+     */
+    @Override
     public SharkVocabulary getVocabulary();
 
   /**
@@ -85,7 +93,7 @@ public interface Knowledge extends ASIPKnowledge {
    */
   public int getNumberOfContextPoints();
   
-  public int getNumberOfInformationPoints();
+  public int getNumberOfInformationPoints() throws SharkKBException;
 
   // ===========================================================================
   // These methods are a left-over from the internal Knowledge interface
@@ -101,7 +109,7 @@ public interface Knowledge extends ASIPKnowledge {
      */
     public ContextPoint getCP(int i);
     
-    public InformationPoint getInformationPoint(int i);
+    public InformationPoint getInformationPoint(int i) throws SharkKBException;
     
     public void addListener(KnowledgeListener kListener);
     

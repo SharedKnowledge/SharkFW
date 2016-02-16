@@ -7,7 +7,6 @@ import java.util.Vector;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 /**
  * Implements a synchronized KB. Delegates most of its
@@ -379,5 +378,30 @@ public class SyncKB implements SharkKB {
     @Override
     public void mergeInformationSpace(ASIPInformationSpace iSpace) throws SharkKBException {
         this._localKB.mergeInformationSpace(iSpace);
+    }
+
+    @Override
+    public void addInformationSpace(ASIPSpace space) throws SharkKBException {
+        this._localKB.addInformationSpace(space);
+    }
+
+    @Override
+    public Iterator<InformationPoint> informationPoints() throws SharkKBException {
+        return this._localKB.informationPoints();
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
+        return this._localKB.informationSpaces();
+    }
+
+    @Override
+    public SharkVocabulary getVocabulary() throws SharkKBException {
+        return this._localKB.getVocabulary();
+    }
+
+    @Override
+    public int getNumberOfInformationSpaces() throws SharkKBException {
+        return this._localKB.getNumberOfInformationSpaces();
     }
 }

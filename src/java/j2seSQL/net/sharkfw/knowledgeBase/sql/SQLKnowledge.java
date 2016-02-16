@@ -2,11 +2,13 @@ package net.sharkfw.knowledgeBase.sql;
 
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.KnowledgeListener;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
 /**
@@ -92,6 +94,11 @@ public class SQLKnowledge implements Knowledge {
 
     @Override
     public int getNumberOfInformationSpaces() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

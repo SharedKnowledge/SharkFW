@@ -5,6 +5,7 @@ import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSTSet;
@@ -14,13 +15,16 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
  *
  * @author thsc
  */
-class InMemoInformationCoordinates implements InformationCoordinates {
+class InMemoInformationCoordinates extends InMemoInformationSpace 
+                            implements InformationCoordinates {
 
     public InMemoInformationCoordinates(SemanticTag topic, 
             SemanticTag type, PeerSemanticTag approver, 
             PeerSemanticTag sender, PeerSemanticTag receiver, 
             TimeSemanticTag time, SpatialSemanticTag location, 
-            int direction) {
+            int direction) throws SharkKBException {
+        
+        super(topic, type, approver, sender, receiver, time, location, direction);
     }
 
     @Override
