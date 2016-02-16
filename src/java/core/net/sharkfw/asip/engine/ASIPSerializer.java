@@ -195,6 +195,8 @@ public class ASIPSerializer {
         
         jsonObject.put(STSet.STSET, set);
         
+        // TODO Relations
+        
 //        System.out.println(jsonObject.toString());
         
         return jsonObject;
@@ -381,27 +383,8 @@ public class ASIPSerializer {
         return null;
     }
     
-    public static ASIPSpace deserializeInterest(String interestString) {
-        if(interestString.isEmpty())
-            return null;
-        
-        InMemoInterest interest = (InMemoInterest) InMemoSharkKB.createInMemoInterest();
-        
-        JSONObject jsonObject = new JSONObject(interestString);
-        
-        JSONArray topicsJSON = jsonObject.getJSONArray(ASIPSpace.TOPICS);
-        JSONArray typesJSON = jsonObject.getJSONArray(ASIPSpace.TYPES);
-        JSONArray approversJSON = jsonObject.getJSONArray(ASIPSpace.APPROVERS);
-        JSONObject senderJSON = jsonObject.getJSONObject(ASIPSpace.SENDER);
-        JSONArray receiversJSON = jsonObject.getJSONArray(ASIPSpace.RECEIVERS);
-        JSONArray locationsJSON = jsonObject.getJSONArray(ASIPSpace.LOCATIONS);
-        JSONArray timesJSON = jsonObject.getJSONArray(ASIPSpace.TIMES);
-        JSONArray directionJSON = jsonObject.getJSONArray(ASIPSpace.DIRECTION);
-        
-        // TODO 
-        
-//        interest.setTopics(topicsJSON.g);
-        return (ASIPSpace) interest;
+    public static ASIPSpace deserializeInterest(String interestString) throws SharkKBException {
+        return deserializeASIPSpace(interestString);
     }
     
     /**
@@ -443,9 +426,9 @@ public class ASIPSerializer {
         ContextSpace objects and add information later...
         */
         
-        /* we use deserializeCS in that class to create a context space out
+        /* we use deserializeASIPSpace in that class to create a context space out
             of a string */
-        ASIPSpace cs = this.deserializeCS(target, knowledgeString);
+        ASIPSpace cs = deserializeASIPSpace(target, knowledgeString);
         
         /* infos can be added now - tja und das muss man schlau machen
         wegen der eventuell großen Datenmengen. Man kann ein Infoobjekt
@@ -457,6 +440,13 @@ public class ASIPSerializer {
     }
     
     public static SemanticTag deserializeTag(STSet targetSet, String tagString) throws SharkKBException {
+        
+        //TODO What if targetSet equals null
+        if(targetSet == null)
+            targetSet = InMemoSharkKB.createInMemoSTSet();
+        
+        if(tagString == null)
+            return null;
         
         JSONObject jsonObject = new JSONObject(tagString);
         Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
@@ -486,31 +476,22 @@ public class ASIPSerializer {
         return ASIPSerializer.deserializeTag(stSet, tag);
     }
     
+    // TODO useless???
     public static STSet deserializeAnySTSet(STSet stSet, String stSetString) throws SharkKBException{   
         
-        // TODO is usefull to just pass the string of the stset without the type?
-        
         JSONObject jsonObject = new JSONObject(stSetString);
-        
         String typeJSON = jsonObject.getString(STSet.TYPE);
-        String stSetJSON = jsonObject.getJSONArray(STSet.STSET).toString();
-        System.out.println(stSetJSON);
-        
         STSet set = stSet;
-        
         switch (typeJSON) {
             case STSet.PEERSTSET:
-                if(set==null) set = InMemoSharkKB.createInMemoPeerSTSet();
-                return (PeerSTSet) ASIPSerializer.deserializeSTSet(set, stSetJSON);
+                return ASIPSerializer.deserializePeerSTSet(set, stSetString);
             case STSet.TIMESTSET:
-                if(set==null) set = InMemoSharkKB.createInMemoTimeSTSet();
-                return (TimeSTSet) ASIPSerializer.deserializeSTSet(set, stSetJSON);
+                return ASIPSerializer.deserializeTimeSTSet(set, stSetString);
             case STSet.SPATIALSTSET:
-                if(set==null) set = InMemoSharkKB.createInMemoSpatialSTSet();
-                return (SpatialSTSet) ASIPSerializer.deserializeSTSet(set, stSetJSON);
+                return ASIPSerializer.deserializeSpatialSTSet(set, stSetString);
             case STSet.ANYSTSET:
                 if(set==null) set = InMemoSharkKB.createInMemoSTSet();
-                return ASIPSerializer.deserializeSTSet(set, stSetJSON);
+                return ASIPSerializer.deserializeSTSet(set, stSetString);
             default:
                 break;
         }
@@ -521,10 +502,8 @@ public class ASIPSerializer {
     public static STSet deserializeSTSet(STSet target, String stSetString) throws SharkKBException{
         
         // SemanticNet
-        
-//        JSONObject jsonObject = new JSONObject(stSetString);
-        
-        JSONArray jsonArray = new JSONArray(stSetString);
+        JSONObject jsonObject = new JSONObject(stSetString);
+        JSONArray jsonArray = jsonObject.getJSONArray(STSet.STSET);
         Iterator stIterator = jsonArray.iterator();
         while(stIterator.hasNext()){
             deserializeTag(target, stIterator.next().toString());
@@ -532,19 +511,22 @@ public class ASIPSerializer {
         return target;
     }
     
-    public static PeerSTSet deserializePeerSTSet(String stSetString) throws SharkKBException{
-        STSet stSet = InMemoSharkKB.createInMemoPeerSTSet();
-        return (PeerSTSet) ASIPSerializer.deserializeSTSet(stSet, stSetString);
+    public static PeerSTSet deserializePeerSTSet(STSet stSet, String stSetString) throws SharkKBException{
+        STSet set = stSet;
+        if(set==null) set = InMemoSharkKB.createInMemoPeerSTSet();
+        return (PeerSTSet) ASIPSerializer.deserializeSTSet(set, stSetString);
     }
     
-    public static TimeSTSet deserializeTimeSTSet(String stSetString) throws SharkKBException{
-        STSet stSet = InMemoSharkKB.createInMemoTimeSTSet();
-        return (TimeSTSet) ASIPSerializer.deserializeSTSet(stSet, stSetString);
+    public static TimeSTSet deserializeTimeSTSet(STSet stSet, String stSetString) throws SharkKBException{
+        STSet set = stSet;
+        if(set==null) set = InMemoSharkKB.createInMemoTimeSTSet();
+        return (TimeSTSet) ASIPSerializer.deserializeSTSet(set, stSetString);
     }
     
-    public static SpatialSTSet deserializeSpatialSTSet(String stSetString) throws SharkKBException{
-        STSet stSet = InMemoSharkKB.createInMemoSpatialSTSet();
-        return (SpatialSTSet) ASIPSerializer.deserializeSTSet(stSet, stSetString);
+    public static SpatialSTSet deserializeSpatialSTSet(STSet stSet, String stSetString) throws SharkKBException{
+        STSet set = stSet;
+        if(set==null) set = InMemoSharkKB.createInMemoSpatialSTSet();
+        return (SpatialSTSet) ASIPSerializer.deserializeSTSet(set, stSetString);
     }
     
     public static STSet deserializeSTSet(String stSetString) throws SharkKBException{
@@ -561,67 +543,43 @@ public class ASIPSerializer {
         return null;
     }
         
-    public ASIPSpace deserializeCS(SharkKB kb, String sharkCS) throws SharkKBException {
-        
-        // TODO
+    public static ASIPSpace deserializeASIPSpace(SharkKB kb, String spaceString) throws SharkKBException {
         
         ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest();
         
-        JSONObject deserialized = new JSONObject(sharkCS);
-        
+        JSONObject deserialized = new JSONObject(spaceString);
         JSONArray topicsArray = deserialized.getJSONArray(ASIPSpace.TOPICS);
+        JSONArray typesArray = deserialized.getJSONArray(ASIPSpace.TYPES);
+        JSONArray approversArray = deserialized.getJSONArray(ASIPSpace.APPROVERS);
+        JSONArray receiversArray = deserialized.getJSONArray(ASIPSpace.RECEIVERS);
+        JSONArray locationsArray = deserialized.getJSONArray(ASIPSpace.LOCATIONS);
+        JSONArray timesArray = deserialized.getJSONArray(ASIPSpace.TIMES);
+        JSONObject senderObject = deserialized.getJSONObject(ASIPSpace.SENDER);
+        int direction = deserialized.getInt(ASIPSpace.DIRECTION);
         
-        // read topics dimension
-        String topicsSerialized = topicsArray.toString();
-
-        // create objects: topics dimension already set in empty interest??
-        STSet topics = this.deserializeSTSet(interest.getTopics(), topicsSerialized);
+        STSet topics = deserializeSTSet(interest.getTopics(), topicsArray.toString());
+        STSet types = deserializeSTSet(interest.getTypes(), typesArray.toString());
+        PeerSTSet approvers = deserializePeerSTSet(interest.getApprovers(), approversArray.toString());
+        PeerSTSet receivers = deserializePeerSTSet(interest.getReceivers(), receiversArray.toString());
+        SpatialSTSet locations = deserializeSpatialSTSet(interest.getLocations(), locationsArray.toString());
+        TimeSTSet times = deserializeTimeSTSet(interest.getTimes(), timesArray.toString());
+        // TODO Casting okay?
+        PeerSemanticTag sender = (PeerSemanticTag) deserializeTag(null, senderObject.toString());
         
         interest.setTopics(topics);
-        
-        // types
-        STSet types = null;
-        // deserialize.. and set
         interest.setTypes(types);
-        
-        // sender
-        PeerSemanticTag sender = null;
-        // deserialize.. and set
-        interest.setSender(sender);
-        
-        // approvers
-        PeerSTSet approvers = null;
-        // deserialize.. and set
         interest.setApprovers(approvers);
-        
-        // receivers
-        PeerSTSet receivers = null;
-        // deserialize.. and set
         interest.setReceivers(receivers);
-        
-        // times
-        TimeSTSet times = null;
-        // deserialize.. and set
-        interest.setTimes(times);
-        
-        // locations
-        SpatialSTSet locations = null;
-        // deserialize.. and set
         interest.setLocations(locations);
-        
-        // direction
-        int direction = 0;
-        // deserialize.. and set
+        interest.setTimes(times);
+        interest.setSender(sender);
         interest.setDirection(direction);
         
         return interest;
     }
     
-    public static ASIPSpace deserializeSharkCS(String sharkCS) throws SharkKBException {
-        ASIPSerializer wS = new ASIPSerializer();
-        
+    public static ASIPSpace deserializeASIPSpace(String sharkCS) throws SharkKBException {
         InMemoSharkKB imkb = new InMemoSharkKB();
-        
-        return wS.deserializeCS(imkb, sharkCS);
+        return ASIPSerializer.deserializeASIPSpace(imkb, sharkCS);
     }
 }

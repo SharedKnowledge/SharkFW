@@ -24,6 +24,7 @@ public interface STSet {
 
     public final static String TYPE = "TYPE";
     public final static String STSET = "STSET";
+    public final static String RELATIONS = "RELATIONS";
     
     /**
      * Makes copies of each source parameter and stores it in the set.
