@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 
 /**
@@ -531,29 +532,36 @@ public class ASIPSerializer {
         return ASIPSerializer.deserializePeerTag(stSet, tag);
     }
     
-    public static SpatialSemanticTag deserializeSpatialTag(STSet targetSet, String tagString) throws SharkKBException {
+    public static SpatialSemanticTag deserializeSpatialTag(SpatialSTSet targetSet, String tagString) throws SharkKBException {
         
-        // TODO What if targetSet equals null
-        // TODO Types of SemanticTags?
         if(targetSet == null)
-            targetSet = InMemoSharkKB.createInMemoSTSet();
+            targetSet = InMemoSharkKB.createInMemoSpatialSTSet();
         
         if(tagString == null)
             return null;
         
         JSONObject jsonObject = new JSONObject(tagString);
         Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
+        Iterator geometryIterator = jsonObject.getJSONArray(SpatialSemanticTag.GEOMETRY).iterator();
                 
         List<String> list = new ArrayList<>();
         while(siIterator.hasNext()){
             list.add((String) siIterator.next());
         }
         
+        List<String> geometriesList = new ArrayList<>();
+        while(geometryIterator.hasNext()){
+            geometriesList.add((String) geometryIterator.next());
+        }
+        
         String name = jsonObject.getString(SemanticTag.NAME);
         String[] sis =  new String[list.size()];
         sis = list.toArray(sis);
+        String[] geometries = new String[geometriesList.size()];
+        geometries = geometriesList.toArray(geometries);
         
-        SemanticTag tag = targetSet.createSemanticTag(name, sis);
+        // TODO Add geometries using SharkGeometry and create SpatialTag.
+        SpatialSemanticTag tag = (SpatialSemanticTag) targetSet.createSemanticTag(name, sis);
         deserializeProperties(tag, tagString);
         return tag;
     }
@@ -566,8 +574,8 @@ public class ASIPSerializer {
      */
     public static SpatialSemanticTag deserializeSpatialTag(String tag) throws SharkKBException {
         // there is no specific set - create one
-        STSet stSet = InMemoSharkKB.createInMemoSTSet();
-        return ASIPSerializer.deserializeTag(stSet, tag);
+        SpatialSTSet stSet = InMemoSharkKB.createInMemoSpatialSTSet();
+        return ASIPSerializer.deserializeSpatialTag(stSet, tag);
     }
     
     public static TimeSemanticTag deserializeTimeTag(STSet targetSet, String tagString) throws SharkKBException {
@@ -605,8 +613,8 @@ public class ASIPSerializer {
      */
     public static TimeSemanticTag deserializeTimeTag(String tag) throws SharkKBException {
         // there is no specific set - create one
-        STSet stSet = InMemoSharkKB.createInMemoSTSet();
-        return ASIPSerializer.deserializeTag(stSet, tag);
+        TimeSTSet stSet = InMemoSharkKB.createInMemoTimeSTSet();
+        return ASIPSerializer.deserializeTimeTag(stSet, tag);
     }
     
     public static STSet deserializeAnySTSet(STSet stSet, String stSetString) throws SharkKBException{   
