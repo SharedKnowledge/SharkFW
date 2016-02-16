@@ -195,9 +195,10 @@ public class ASIPSerializer {
         
         jsonObject.put(STSet.STSET, set);
         
-        // TODO Relations
-        
-//        System.out.println(jsonObject.toString());
+        Enumeration<SemanticTag> tagEnum = stset.tags();
+        if(stset instanceof SemanticNet || stset instanceof Taxonomy) {
+            jsonObject.put(STSet.RELATIONS, serializeRelationsJSON(tagEnum));
+        }
         
         return jsonObject;
     }
