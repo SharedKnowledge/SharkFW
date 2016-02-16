@@ -79,6 +79,7 @@ public interface Interest extends SharkCS {
    * It isn't necessarily part of the peer tag. 
    * 
    * @return a single peer.
+   * @deprecated 
    */
   public void setOriginator(PeerSemanticTag originator);
 
@@ -86,11 +87,13 @@ public interface Interest extends SharkCS {
    * Return the remotepeer dimension of this interest
    *
    * @return A stset containing all remotepeers of this interest
+   * @deprecated 
    */
   public void setRemotePeers(PeerSTSet remotePeers);
 
   /**
    * @return A taxonomy of peers 
+   * @deprecated 
    */
   public void setPeers(PeerSTSet peers);
 

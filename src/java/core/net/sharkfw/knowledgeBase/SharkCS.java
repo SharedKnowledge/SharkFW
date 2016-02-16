@@ -169,6 +169,7 @@ public interface SharkCS extends ContextSpace {
    * It isn't necessarily part of the peer tag. 
    * 
    * @return a single peer.
+   * @deprecated 
    */
   public PeerSemanticTag getOriginator();
 
@@ -176,11 +177,13 @@ public interface SharkCS extends ContextSpace {
    * Return the remotepeer dimension of this interest
    *
    * @return A stset containing all remotepeers of this interest
+   * @deprecated 
    */
   public PeerSTSet getRemotePeers();
 
   /**
    * @return A taxonomy of peers 
+   * @deprecated 
    */
   public PeerSTSet getPeers();
 

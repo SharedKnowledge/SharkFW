@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;

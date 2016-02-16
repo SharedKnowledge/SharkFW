@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 
 /**
@@ -18,14 +19,14 @@ import net.sharkfw.knowledgeBase.*;
 public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInterest {
     
     /* 
-    We are about migrating from KEP to LASP. We need a mapping
-    of LASP concepts to KEP concepts.
+    We are about migrating from KEP to ASIP. We need a mapping
+    of ASIP concepts to KEP concepts.
     
     That's a technical mapping not a semantical. E.g.
     approver is actually an originator from a semantically
     perspective. Cardinality of approvers fits to peer, though.
     
-    WASP        KEP
+    ASIP        KEP
     topic       topic
     type        --
     approver    peer
@@ -36,11 +37,11 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     direction   direction
     */
     
-    private STSet topics; // KEP and LASP topics
-    private STSet types; // LASP types
-    private PeerSemanticTag originator; // also LASP sender
-    private PeerSTSet peers; // also LASP approver
-    private PeerSTSet remotePeers; // also LASP receiver
+    private STSet topics; // KEP and ASIP topics
+    private STSet types; // ASIP types
+    private PeerSemanticTag originator; // also ASIP sender
+    private PeerSTSet peers; // also ASIP approver
+    private PeerSTSet remotePeers; // also ASIP receiver
     private TimeSTSet times; // both
     private SpatialSTSet locations; // both
     private int direction; // both
@@ -59,7 +60,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
             PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
             SpatialSTSet locations, int direction) {
         
-        // that's an LASP interest
+        // that's an ASIP interest
         super(true);
 
         this.topics = topics;
@@ -135,6 +136,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     /**
      * Note: the object reference is returned. The set shouldn't be changed outside.
      * @return 
+     * @deprecated 
      */
     @Override
     public PeerSemanticTag getOriginator() {
@@ -145,6 +147,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      * This interest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
+     * @deprecated 
      */
     @Override
     public void setOriginator(PeerSemanticTag originator) {
@@ -153,6 +156,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     /**
      * Note: the object reference is returned. The set shouldn't be changed outside.
+     * @deprecated 
      */
     @Override
     public PeerSTSet getRemotePeers() {
@@ -163,6 +167,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      * This interest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
+     * @deprecated 
      */
     @Override
     public void setRemotePeers(PeerSTSet remotePeers) {
@@ -171,6 +176,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     /**
      * Note: the object reference is returned. The set shouldn't be changed outside.
+     * @deprecated 
      */
     @Override
     public PeerSTSet getPeers() {
@@ -181,6 +187,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      * This interest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
+     * @deprecated 
      */
     @Override
     public void setPeers(PeerSTSet peers) {
@@ -189,6 +196,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     /**
      * Note: the object reference is returned. The set shouldn't be changed outside.
+     * 
      */
     @Override
     public TimeSTSet getTimes() {
@@ -217,6 +225,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      * This interest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
+     * @param locations
      */
     @Override
     public void setLocations(SpatialSTSet locations) {
@@ -225,8 +234,10 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
   /**
    * calculates mutual interest. This interest is used as source.
-   * @param anchorSet Context of the calcuation.
+     * @param fp
    * @return Mutual interest or null if there is no match
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
+     * @deprecated 
    */
     @Override
     public Interest contextualize(SharkCS context, FragmentationParameter[] fp) 
@@ -241,7 +252,21 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
         }
     }
     
-    ////////////////// LASP mapping //////////////////////////////
+    public ASIPInterest contextualize(ASIPSpace context, FragmentationParameter[] fp) 
+            throws SharkKBException {
+        // create result
+        InMemoInterest mutualInterest = new InMemoInterest();
+        
+        if(SharkCSAlgebra.contextualize(mutualInterest, this, context, fp)) {
+            return mutualInterest;
+        } else {
+            return null;
+        }
+    }
+    
+    //////////////////////////////////////////////////////////////////////
+    //                             ASIP                                 //
+    //////////////////////////////////////////////////////////////////////
     @Override
     public STSet getTypes() {
         return this.types;
@@ -249,7 +274,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     @Override
     public PeerSemanticTag getSender() {
-        // we map LASP sender to KEP originator (due to the fitting cardinality, see comments in top of that class)
+        // we map ASIP sender to KEP originator (due to the fitting cardinality, see comments in top of that class)
         return this.getOriginator();
     }
 
