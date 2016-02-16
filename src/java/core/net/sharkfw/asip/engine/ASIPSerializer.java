@@ -384,6 +384,10 @@ public class ASIPSerializer {
     // Deserialize
     
     public static ASIPMessage deserializeHeader(String header){
+        ASIPMessage message = new ASIPInMessage();
+        JSONObject jsonObject = new JSONObject(header);
+        // TODO deserializeHeader
+        
         return null;
     }
     
@@ -445,7 +449,8 @@ public class ASIPSerializer {
     
     public static SemanticTag deserializeTag(STSet targetSet, String tagString) throws SharkKBException {
         
-        //TODO What if targetSet equals null
+        // TODO What if targetSet equals null
+        // TODO Types of SemanticTags?
         if(targetSet == null)
             targetSet = InMemoSharkKB.createInMemoSTSet();
         
@@ -464,8 +469,9 @@ public class ASIPSerializer {
         String[] sis =  new String[list.size()];
         sis = list.toArray(sis);
         
-        // if success - create a tag with targetSet
-        return targetSet.createSemanticTag(name, sis);
+        SemanticTag tag = targetSet.createSemanticTag(name, sis);
+        deserializeProperties(tag, tagString);
+        return tag;
     }
     
     /**
@@ -475,6 +481,129 @@ public class ASIPSerializer {
      * @throws SharkKBException 
      */
     public static SemanticTag deserializeTag(String tag) throws SharkKBException {
+        // there is no specific set - create one
+        STSet stSet = InMemoSharkKB.createInMemoSTSet();
+        return ASIPSerializer.deserializeTag(stSet, tag);
+    }
+    
+    public static PeerSemanticTag deserializePeerTag(PeerSTSet targetSet, String tagString) throws SharkKBException {
+        
+        if(targetSet == null)
+            targetSet = InMemoSharkKB.createInMemoPeerSTSet();
+        
+        if(tagString == null)
+            return null;
+        
+        JSONObject jsonObject = new JSONObject(tagString);
+        Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
+        Iterator addressIterator = jsonObject.getJSONArray(PeerSemanticTag.ADDRESSES).iterator();
+                
+        List<String> list = new ArrayList<>();
+        while(siIterator.hasNext()){
+            list.add((String) siIterator.next());
+        }
+        
+        List<String> addressesList = new ArrayList<>();
+        while(addressIterator.hasNext()){
+            addressesList.add((String) addressIterator.next());
+        }
+        
+        String name = jsonObject.getString(SemanticTag.NAME);
+        String[] sis =  new String[list.size()];
+        sis = list.toArray(sis);
+        String[] addresses = new String[addressesList.size()];
+        addresses = addressesList.toArray(addresses);
+        
+        PeerSemanticTag tag = targetSet.createPeerSemanticTag(name, sis, addresses);
+        deserializeProperties(tag, tagString);
+        return tag;
+    }
+    
+    /**
+     * static variant - not to be used in protocol parser
+     * @param tag
+     * @return
+     * @throws SharkKBException 
+     */
+    public static PeerSemanticTag deserializePeerTag(String tag) throws SharkKBException {
+        // there is no specific set - create one
+        PeerSTSet stSet = InMemoSharkKB.createInMemoPeerSTSet();
+        return ASIPSerializer.deserializePeerTag(stSet, tag);
+    }
+    
+    public static SpatialSemanticTag deserializeSpatialTag(STSet targetSet, String tagString) throws SharkKBException {
+        
+        // TODO What if targetSet equals null
+        // TODO Types of SemanticTags?
+        if(targetSet == null)
+            targetSet = InMemoSharkKB.createInMemoSTSet();
+        
+        if(tagString == null)
+            return null;
+        
+        JSONObject jsonObject = new JSONObject(tagString);
+        Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
+                
+        List<String> list = new ArrayList<>();
+        while(siIterator.hasNext()){
+            list.add((String) siIterator.next());
+        }
+        
+        String name = jsonObject.getString(SemanticTag.NAME);
+        String[] sis =  new String[list.size()];
+        sis = list.toArray(sis);
+        
+        SemanticTag tag = targetSet.createSemanticTag(name, sis);
+        deserializeProperties(tag, tagString);
+        return tag;
+    }
+    
+    /**
+     * static variant - not to be used in protocol parser
+     * @param tag
+     * @return
+     * @throws SharkKBException 
+     */
+    public static SpatialSemanticTag deserializeSpatialTag(String tag) throws SharkKBException {
+        // there is no specific set - create one
+        STSet stSet = InMemoSharkKB.createInMemoSTSet();
+        return ASIPSerializer.deserializeTag(stSet, tag);
+    }
+    
+    public static TimeSemanticTag deserializeTimeTag(STSet targetSet, String tagString) throws SharkKBException {
+        
+        // TODO What if targetSet equals null
+        // TODO Types of SemanticTags?
+        if(targetSet == null)
+            targetSet = InMemoSharkKB.createInMemoSTSet();
+        
+        if(tagString == null)
+            return null;
+        
+        JSONObject jsonObject = new JSONObject(tagString);
+        Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
+                
+        List<String> list = new ArrayList<>();
+        while(siIterator.hasNext()){
+            list.add((String) siIterator.next());
+        }
+        
+        String name = jsonObject.getString(SemanticTag.NAME);
+        String[] sis =  new String[list.size()];
+        sis = list.toArray(sis);
+        
+        SemanticTag tag = targetSet.createSemanticTag(name, sis);
+        deserializeProperties(tag, tagString);
+        return tag;
+    }
+    
+    /**
+     * static variant - not to be used in protocol parser
+     * @param tag
+     * @return
+     * @throws SharkKBException 
+     */
+    public static TimeSemanticTag deserializeTimeTag(String tag) throws SharkKBException {
         // there is no specific set - create one
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
         return ASIPSerializer.deserializeTag(stSet, tag);
@@ -556,7 +685,7 @@ public class ASIPSerializer {
     }
     
     public static Enumeration<SemanticTag> deserializeRelations(String relations){
-        // TODO
+        // TODO deserializeRelations
         return null;
     }
         
@@ -598,5 +727,15 @@ public class ASIPSerializer {
     public static ASIPSpace deserializeASIPSpace(String sharkCS) throws SharkKBException {
         InMemoSharkKB imkb = new InMemoSharkKB();
         return ASIPSerializer.deserializeASIPSpace(imkb, sharkCS);
+    }
+    
+    public static ASIPMessage deserializeInsert(String message){
+        // TODO deserializeInsert
+        return null;
+    }
+    
+    public static ASIPMessage deserializeExpose(String message){
+        // TODO deserializeExpose
+        return null;
     }
 }

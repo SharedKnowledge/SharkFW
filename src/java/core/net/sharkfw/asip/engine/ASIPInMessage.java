@@ -12,13 +12,27 @@ import net.sharkfw.protocols.StreamConnection;
  * @author thsc
  */
 public class ASIPInMessage extends ASIPMessage {
-    private final SharkEngine se;
-    private final StreamConnection con;
-    private final SharkStub sharkStub;
+    private SharkEngine se;
+    private StreamConnection con;
+    private SharkStub sharkStub;
+
+    public ASIPInMessage() {}    
     
-    ASIPInMessage(SharkEngine se, StreamConnection con, SharkStub sharkStub) {
+    public ASIPInMessage(SharkEngine se, StreamConnection con, SharkStub sharkStub) {
         this.se = se;
         this.con = con;
+        this.sharkStub = sharkStub;
+    }
+
+    public void setSe(SharkEngine se) {
+        this.se = se;
+    }
+
+    public void setCon(StreamConnection con) {
+        this.con = con;
+    }
+
+    public void setSharkStub(SharkStub sharkStub) {
         this.sharkStub = sharkStub;
     }
     

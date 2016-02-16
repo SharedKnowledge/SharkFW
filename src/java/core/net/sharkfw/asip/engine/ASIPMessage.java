@@ -34,7 +34,7 @@ public abstract class ASIPMessage {
     private PeerSemanticTag sender;
     private STSet receivers;
     private String signature;
-    
+
     public boolean isEncrypted() {
         return encrypted;
     }
