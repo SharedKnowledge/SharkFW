@@ -746,6 +746,34 @@ public class ASIPSerializer {
     
     public static void deserializeRelations(SemanticNet target, String relations){
         // TODO deserializeRelations
+        if(target==null) return;
+        if(relations==null) return;
+        JSONObject jsonObject = new JSONObject(relations);
+        JSONArray jsonArray = jsonObject.getJSONArray(SemanticNet.PREDICATES);
+        Iterator iterator = jsonArray.iterator();
+        
+        
+        while(iterator.hasNext()){
+            JSONObject relation = (JSONObject) iterator.next();
+            String sourceSI = relation.getString(SemanticNet.SOURCE);
+            String targetSI = relation.getString(SemanticNet.TARGET);
+            String predicateName = relation.getString(SemanticNet.NAME);
+            try {
+                SNSemanticTag sourceTag = (SNSemanticTag) target.getSemanticTag(sourceSI);
+                if(sourceTag == null) continue;
+
+                SNSemanticTag targetTag = (SNSemanticTag) target.getSemanticTag(targetSI);
+                if(targetTag == null) continue;
+                
+                // set super tag
+                sourceTag.setPredicate(predicateName, targetTag);
+            }
+            catch(SharkKBException skbe) {
+                // ignore and go ahead
+            }
+        }
+        
+            
     
     }
         
