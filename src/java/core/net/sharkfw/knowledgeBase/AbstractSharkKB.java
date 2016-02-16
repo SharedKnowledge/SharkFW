@@ -1068,10 +1068,32 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         }
     }
 
+    /**
+     * That method should be overwritten. This default implementation assumes
+     * that only points are stored in the KB. Removing a space is a multiple
+     * call or removing information points. Other implementations might implement
+     * information space directly and should overwrite that method.
+     * 
+     * @param space
+     * @throws SharkKBException 
+     */
     @Override
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
-        // TODO iterate all ipoints and remove them
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(space == null) return;
+        
+        HashSet<InformationCoordinates> possibleInfoCC = 
+                this.possibleInformationCoordinates(space);
+        
+        if(possibleInfoCC == null || possibleInfoCC.isEmpty()) return;
+        
+        // there are possible points
+        Iterator<InformationCoordinates> infoCCIter = possibleInfoCC.iterator();
+        
+        // remove each thinkable point
+        while(infoCCIter.hasNext()) {
+            InformationCoordinates ic = infoCCIter.next();
+            this.removeInformationPoint(ic);
+        }
     }
 
     @Override
