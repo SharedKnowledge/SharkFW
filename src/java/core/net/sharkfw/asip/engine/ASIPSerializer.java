@@ -65,7 +65,7 @@ public class ASIPSerializer {
         return ASIPSerializer.serializeKnowledgeJSON(knowledge).toString();
     }
     
-    public static String serializeTag(SemanticTag tag) throws JSONException {
+    public static String serializeTag(SemanticTag tag) throws JSONException, SharkKBException {
         return ASIPSerializer.serializeTagJSON(tag).toString();
     }
     
@@ -117,34 +117,14 @@ public class ASIPSerializer {
     }
     
     public static JSONObject serializeInterestJSON(ASIPSpace space) throws SharkKBException, JSONException {
-        JSONObject object = new JSONObject();
-        
-        STSet topics = space.getTopics();
-        STSet types = space.getTypes();
-        STSet approvers = space.getApprovers();
-        STSet receivers = space.getReceivers();
-        SemanticTag sender = space.getSender();
-        STSet locations = space.getLocations();
-        STSet times = space.getTimes();
-        int direction = space.getDirection();
-        
-        object.put(ASIPSpace.TOPICS, ASIPSerializer.serializeSTSetJSON(topics));
-        object.put(ASIPSpace.TYPES, ASIPSerializer.serializeSTSetJSON(types));
-        object.put(ASIPSpace.APPROVERS, ASIPSerializer.serializeSTSetJSON(approvers));
-        object.put(ASIPSpace.RECEIVERS, ASIPSerializer.serializeSTSetJSON(receivers));
-        object.put(ASIPSpace.SENDER, ASIPSerializer.serializeTagJSON(sender));
-        object.put(ASIPSpace.LOCATIONS, ASIPSerializer.serializeSTSetJSON(locations));
-        object.put(ASIPSpace.TIMES, ASIPSerializer.serializeSTSetJSON(times));
-        object.put(ASIPSpace.DIRECTION, direction);
-        
-        return object;
+        return serializeASIPSpaceJSON(space);
     }
     
     public static JSONObject serializeKnowledgeJSON(ASIPKnowledge knowledge){
         return new JSONObject();
     }
     
-    public static JSONObject serializeTagJSON(SemanticTag tag) throws JSONException {
+    public static JSONObject serializeTagJSON(SemanticTag tag) throws JSONException, SharkKBException {
         
         JSONObject object = new JSONObject();
         
@@ -182,14 +162,7 @@ public class ASIPSerializer {
             object.put(SpatialSemanticTag.GEOMETRY, sst.getGeometry());
         }
         
-        
-        //TODO Properties
-        
-        // properties
-//        String serializedProperties = this.serializePropertiesJSON(tag);
-//        if(serializedProperties != null) {
-//            object.append("prooperties", serializedProperties);
-//        }
+        object.put(PropertyHolder.PROPERTIES, serializePropertiesJSON(tag));
         
         return object;
     }
