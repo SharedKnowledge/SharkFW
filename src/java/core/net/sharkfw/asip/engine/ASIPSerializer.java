@@ -384,12 +384,29 @@ public class ASIPSerializer {
     
     // Deserialize
     
-    public static ASIPMessage deserializeHeader(String header){
-        ASIPMessage message = new ASIPInMessage();
+    public static ASIPMessage deserializeHeader(String header) throws SharkKBException{
+        ASIPInMessage message = new ASIPInMessage();
         JSONObject jsonObject = new JSONObject(header);
+        
+        message.setEncrypted(jsonObject.getBoolean(ASIPMessage.ENCRYPTED));
+        message.setEncyptedSessionKey(jsonObject.getString(ASIPMessage.ENCRYPTEDSESSIONKEY));
+        message.setVersion(jsonObject.getString(ASIPMessage.VERSION));
+        message.setFormat(jsonObject.getString(ASIPMessage.FORMAT));
+        message.setCommand(jsonObject.getInt(ASIPMessage.COMMAND));
+        
+        String senderString = jsonObject.getString(ASIPMessage.SENDER);
+        PeerSemanticTag sender = deserializePeerTag(senderString);
+        message.setSender(sender);
+        
+        String receiverString = jsonObject.getString(ASIPMessage.RECEIVERS);
+        STSet set = deserializeSTSet(receiverString);
+        message.setReceivers(set);
+        
+        message.setSignature(jsonObject.getString(ASIPMessage.SIGNATURE));
+        
         // TODO deserializeHeader
         
-        return null;
+        return message;
     }
     
     public static ASIPSpace deserializeInterest(String interestString) throws SharkKBException {
