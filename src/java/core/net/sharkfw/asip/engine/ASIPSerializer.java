@@ -32,7 +32,10 @@ import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
 
 /**
  *
@@ -712,9 +715,38 @@ public class ASIPSerializer {
         }
     }
     
-    public static Enumeration<SemanticTag> deserializeRelations(String relations){
+    public static void deserializeRelations(Taxonomy target, String relations){
         // TODO deserializeRelations
-        return null;
+        if(target==null) return;
+        if(relations==null) return;
+        JSONObject jsonObject = new JSONObject(relations);
+        JSONArray jsonArray = jsonObject.getJSONArray(Taxonomy.SUBSUPERTAGS);
+        Iterator iterator = jsonArray.iterator();
+        
+        while(iterator.hasNext()){
+            JSONObject relation = (JSONObject) iterator.next();
+            String sourceSI = relation.getString(Taxonomy.SOURCE);
+            String targetSI = relation.getString(Taxonomy.TARGET);
+            try {
+                TXSemanticTag sourceTag = (TXSemanticTag) target.getSemanticTag(sourceSI);
+                if(sourceTag == null) continue;
+
+                TXSemanticTag targetTag = (TXSemanticTag) target.getSemanticTag(targetSI);
+                if(targetTag == null) continue;
+                
+                // set super tag
+                sourceTag.move(targetTag);
+            }
+            catch(SharkKBException skbe) {
+                // ignore and go ahead
+            }
+        }
+        
+    }
+    
+    public static void deserializeRelations(SemanticNet target, String relations){
+        // TODO deserializeRelations
+    
     }
         
     public static ASIPSpace deserializeASIPSpace(SharkKB kb, String spaceString) throws SharkKBException {
@@ -765,5 +797,27 @@ public class ASIPSerializer {
     public static ASIPMessage deserializeExpose(String message){
         // TODO deserializeExpose
         return null;
+    }
+    
+    private SemanticNet cast2SN(STSet stset) throws SharkKBException {
+        SemanticNet sn;
+        try {
+            sn = (SemanticNet) stset;
+        }
+        catch(ClassCastException e) {
+            InMemoSTSet imset = null;
+            
+            try {
+                imset = (InMemoSTSet) stset;
+            }
+            catch(ClassCastException cce) {
+                throw new SharkKBException("sorry, this implementation works with in memo shark kb implementation only");
+            }
+            
+            InMemoGenericTagStorage tagStorage = imset.getTagStorage();
+            sn = new InMemoSemanticNet(tagStorage);
+        }
+        
+        return sn;
     }
 }
