@@ -11,6 +11,16 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
  * @author thsc
  */
 public interface ASIPSpace {
+    
+    public static final String TOPICS = "TOPICS";
+    public static final String TYPES = "TYPES";
+    public static final String APPROVERS = "APPROVERS";
+    public static final String RECEIVERS = "RECEIVERS";
+    public static final String SENDER = "SENDER";
+    public static final String LOCATIONS = "LOCATIONS";
+    public static final String TIMES = "TIMES";
+    public static final String DIRECTION = "DIRECTION";
+    
   /**
    * The maximum number of allowed dimensions in the context space
    * In for-loops this value can be used as the upper boundary, as long

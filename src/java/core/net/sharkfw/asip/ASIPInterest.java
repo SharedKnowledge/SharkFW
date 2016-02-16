@@ -44,15 +44,6 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
  * @author mfi, thsc
  */
 public interface ASIPInterest extends ASIPSpace {
-    
-    public static final String TOPICS = "TOPICS";
-    public static final String TYPES = "TYPES";
-    public static final String APPROVERS = "APPROVERS";
-    public static final String RECEIVERS = "RECEIVERS";
-    public static final String SENDER = "SENDER";
-    public static final String LOCATIONS = "LOCATIONS";
-    public static final String TIMES = "TIMES";
-    public static final String DIRECTION = "DIRECTION";
 
   /**
    * Topics are stored in semantic tag set. Most implementations will choose

@@ -81,7 +81,7 @@ public class ASIPSerializer {
         return ASIPSerializer.serializeRelationsJSON(tagEnum).toString();
     }
         
-    public static String serializeASIPSpace(ASIPSpace space) {
+    public static String serializeASIPSpace(ASIPSpace space) throws SharkKBException {
         return ASIPSerializer.serializeASIPSpaceJSON(space).toString();
     }
     
@@ -128,14 +128,14 @@ public class ASIPSerializer {
         STSet times = space.getTimes();
         int direction = space.getDirection();
         
-        object.put(ASIPInterest.TOPICS, ASIPSerializer.serializeSTSetJSON(topics));
-        object.put(ASIPInterest.TYPES, ASIPSerializer.serializeSTSetJSON(types));
-        object.put(ASIPInterest.APPROVERS, ASIPSerializer.serializeSTSetJSON(approvers));
-        object.put(ASIPInterest.RECEIVERS, ASIPSerializer.serializeSTSetJSON(receivers));
-        object.put(ASIPInterest.SENDER, ASIPSerializer.serializeTagJSON(sender));
-        object.put(ASIPInterest.LOCATIONS, ASIPSerializer.serializeSTSetJSON(locations));
-        object.put(ASIPInterest.TIMES, ASIPSerializer.serializeSTSetJSON(times));
-        object.put(ASIPInterest.DIRECTION, direction);
+        object.put(ASIPSpace.TOPICS, ASIPSerializer.serializeSTSetJSON(topics));
+        object.put(ASIPSpace.TYPES, ASIPSerializer.serializeSTSetJSON(types));
+        object.put(ASIPSpace.APPROVERS, ASIPSerializer.serializeSTSetJSON(approvers));
+        object.put(ASIPSpace.RECEIVERS, ASIPSerializer.serializeSTSetJSON(receivers));
+        object.put(ASIPSpace.SENDER, ASIPSerializer.serializeTagJSON(sender));
+        object.put(ASIPSpace.LOCATIONS, ASIPSerializer.serializeSTSetJSON(locations));
+        object.put(ASIPSpace.TIMES, ASIPSerializer.serializeSTSetJSON(times));
+        object.put(ASIPSpace.DIRECTION, direction);
         
         return object;
     }
@@ -356,15 +356,59 @@ public class ASIPSerializer {
         return jsonObject;
     }
         
-    public static JSONObject serializeASIPSpaceJSON(ASIPSpace space) {
-        return new JSONObject();
+    public static JSONObject serializeASIPSpaceJSON(ASIPSpace space) throws SharkKBException {
+        if(space == null)
+            return null;
+        
+        JSONObject jsonObject = new JSONObject();
+         
+        STSet topics = space.getTopics();
+        if(topics != null && !topics.isEmpty()) {
+            jsonObject.put(ASIPSpace.TOPICS, serializeSTSetJSON(topics));
+        }
+        
+        // sender
+        PeerSemanticTag sender = space.getSender();
+        if(sender != null) {
+            jsonObject.put(ASIPSpace.SENDER, serializeTagJSON(sender));
+        }
+        
+        // approvers
+        PeerSTSet approvers = space.getApprovers();
+        if(approvers != null && !approvers.isEmpty()) {
+            jsonObject.put(ASIPSpace.APPROVERS, serializeSTSetJSON(approvers));
+        }
+        
+        // receivers
+        PeerSTSet receivers = space.getReceivers();
+        if(receivers != null && !receivers.isEmpty()) {
+            jsonObject.put(ASIPSpace.RECEIVERS, serializeSTSetJSON(receivers));
+        }
+        
+        // locations
+        SpatialSTSet locations = space.getLocations();
+        if(locations != null && !locations.isEmpty()) {
+            jsonObject.put(ASIPSpace.LOCATIONS, serializeSTSetJSON(locations));
+        }
+        
+        
+        // times
+        TimeSTSet times = space.getTimes();
+        if(times != null && !times.isEmpty()) {
+            jsonObject.put(ASIPSpace.TIMES, serializeSTSetJSON(times));
+        }
+
+        // direction
+        jsonObject.put(ASIPSpace.DIRECTION, space.getDirection());
+        
+        return jsonObject;
     }
     
     public static ASIPMessage deserializeHeader(String header){
         return null;
     }
     
-    public static ASIPInterest deserializeInterest(String interestString) {
+    public static ASIPSpace deserializeInterest(String interestString) {
         if(interestString.isEmpty())
             return null;
         
@@ -372,19 +416,19 @@ public class ASIPSerializer {
         
         JSONObject jsonObject = new JSONObject(interestString);
         
-        JSONArray topicsJSON = jsonObject.getJSONArray(ASIPInterest.TOPICS);
-        JSONArray typesJSON = jsonObject.getJSONArray(ASIPInterest.TYPES);
-        JSONArray approversJSON = jsonObject.getJSONArray(ASIPInterest.APPROVERS);
-        JSONObject senderJSON = jsonObject.getJSONObject(ASIPInterest.SENDER);
-        JSONArray receiversJSON = jsonObject.getJSONArray(ASIPInterest.RECEIVERS);
-        JSONArray locationsJSON = jsonObject.getJSONArray(ASIPInterest.LOCATIONS);
-        JSONArray timesJSON = jsonObject.getJSONArray(ASIPInterest.TIMES);
-        JSONArray directionJSON = jsonObject.getJSONArray(ASIPInterest.DIRECTION);
+        JSONArray topicsJSON = jsonObject.getJSONArray(ASIPSpace.TOPICS);
+        JSONArray typesJSON = jsonObject.getJSONArray(ASIPSpace.TYPES);
+        JSONArray approversJSON = jsonObject.getJSONArray(ASIPSpace.APPROVERS);
+        JSONObject senderJSON = jsonObject.getJSONObject(ASIPSpace.SENDER);
+        JSONArray receiversJSON = jsonObject.getJSONArray(ASIPSpace.RECEIVERS);
+        JSONArray locationsJSON = jsonObject.getJSONArray(ASIPSpace.LOCATIONS);
+        JSONArray timesJSON = jsonObject.getJSONArray(ASIPSpace.TIMES);
+        JSONArray directionJSON = jsonObject.getJSONArray(ASIPSpace.DIRECTION);
         
         // TODO 
         
 //        interest.setTopics(topicsJSON.g);
-        return (ASIPInterest) interest;
+        return (ASIPSpace) interest;
     }
     
     /**
@@ -552,7 +596,7 @@ public class ASIPSerializer {
         
         JSONObject deserialized = new JSONObject(sharkCS);
         
-        JSONArray topicsArray = deserialized.getJSONArray(ASIPInterest.TOPICS);
+        JSONArray topicsArray = deserialized.getJSONArray(ASIPSpace.TOPICS);
         
         // read topics dimension
         String topicsSerialized = topicsArray.toString();
