@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPKnowledge;
 
 /**
@@ -34,9 +35,6 @@ public interface Knowledge extends ASIPKnowledge {
    * @deprecated 
    */
   public void addContextPoint(ContextPoint cp);
-  
-  @Override
-  public void addInformationSpace(ASIPSpace space) throws SharkKBException;
   
   public void addInformationPoint(InformationPoint iPoint) throws SharkKBException;
 

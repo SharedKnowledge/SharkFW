@@ -224,7 +224,7 @@ public class L {
         return buf.toString();
     }
     
-    public static String knowledge2String(Knowledge k) throws SharkKBException {
+    public static String knowledge2String(Knowledge k) {
         if(k == null) return "";
         
         StringBuilder buf = new StringBuilder();

@@ -10,7 +10,9 @@ import net.sharkfw.knowledgeBase.SharkVocabulary;
  * @author thsc
  */
 public interface ASIPKnowledge {
-    public void addInformationSpace(ASIPSpace space) throws SharkKBException;
+    public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException;
+    
+    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException;
 
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
 

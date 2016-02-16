@@ -133,10 +133,8 @@ public class InMemoKnowledge implements Knowledge {
     }
 
     @Override
-    public void addInformationSpace(ASIPSpace space) throws SharkKBException {
-        InMemoInformationSpace is = new InMemoInformationSpace(space);
-        
-        this.informationSpaces.add(is);
+    public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException {
+        this.informationSpaces.add(space);
     }
     
     private ASIPSpace point2space(InformationPoint ip) {
@@ -178,6 +176,19 @@ public class InMemoKnowledge implements Knowledge {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Iterator<ASIPInformationSpace> informationSpaces() {
+        return this.informationSpaces.iterator();
+    }
+
+    @Override
+    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
+        InMemoInformationSpace newIS = new InMemoInformationSpace(space);
+        this.informationSpaces.add(newIS);
+        
+        return newIS;
+    }    
+
     //////////////////////////////////////////////////////////////////////////
     //                               knowledge listener                     //
     //////////////////////////////////////////////////////////////////////////
@@ -192,11 +203,4 @@ public class InMemoKnowledge implements Knowledge {
     public void removeListener(KnowledgeListener kbl) {
         this.listeners.remove(kbl);
     }
-
-    @Override
-    public Iterator<ASIPInformationSpace> informationSpaces() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
 }

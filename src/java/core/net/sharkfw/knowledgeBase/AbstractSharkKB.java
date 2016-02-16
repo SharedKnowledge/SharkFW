@@ -1070,7 +1070,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public void addInformationSpace(ASIPSpace space) throws SharkKBException {
+    public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException {
         this.asipKnowledge.addInformationSpace(space);
     }
 
@@ -1093,4 +1093,10 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public SharkVocabulary getVocabulary() throws SharkKBException {
         return this;
     }
+    
+    @Override
+    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
+        return this.asipKnowledge.createInformationSpace(space);
+    }
+    
 }
