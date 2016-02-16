@@ -578,30 +578,33 @@ public class ASIPSerializer {
         return ASIPSerializer.deserializeSpatialTag(stSet, tag);
     }
     
-    public static TimeSemanticTag deserializeTimeTag(STSet targetSet, String tagString) throws SharkKBException {
+    public static TimeSemanticTag deserializeTimeTag(TimeSTSet targetSet, String tagString) throws SharkKBException {
         
-        // TODO What if targetSet equals null
-        // TODO Types of SemanticTags?
         if(targetSet == null)
-            targetSet = InMemoSharkKB.createInMemoSTSet();
+            targetSet = InMemoSharkKB.createInMemoTimeSTSet();
         
         if(tagString == null)
             return null;
         
+        // TODO TimeTag Correct?
+        
         JSONObject jsonObject = new JSONObject(tagString);
-        Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
-                
-        List<String> list = new ArrayList<>();
-        while(siIterator.hasNext()){
-            list.add((String) siIterator.next());
-        }
+//        Iterator siIterator = jsonObject.getJSONArray(SemanticTag.SI).iterator();
+//                
+//        List<String> list = new ArrayList<>();
+//        while(siIterator.hasNext()){
+//            list.add((String) siIterator.next());
+//        }
+//        
+//        String name = jsonObject.getString(SemanticTag.NAME);
+//        String[] sis =  new String[list.size()];
+//        sis = list.toArray(sis);
+        Long from = jsonObject.getLong(TimeSemanticTag.FROM);
+        Long duration = jsonObject.getLong(TimeSemanticTag.DURATION);
         
-        String name = jsonObject.getString(SemanticTag.NAME);
-        String[] sis =  new String[list.size()];
-        sis = list.toArray(sis);
-        
-        SemanticTag tag = targetSet.createSemanticTag(name, sis);
-        deserializeProperties(tag, tagString);
+        TimeSemanticTag tag = targetSet.createTimeSemanticTag(from, duration);
+        // TODO TimeTag no properties necessary?
+//        deserializeProperties(tag, tagString);
         return tag;
     }
     
