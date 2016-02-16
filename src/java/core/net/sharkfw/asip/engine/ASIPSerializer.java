@@ -121,6 +121,7 @@ public class ASIPSerializer {
     }
     
     public static JSONObject serializeKnowledgeJSON(ASIPKnowledge knowledge){
+        // TODO
         return new JSONObject();
     }
     
@@ -380,6 +381,8 @@ public class ASIPSerializer {
         return jsonObject;
     }
     
+    // Deserialize
+    
     public static ASIPMessage deserializeHeader(String header){
         return null;
     }
@@ -477,9 +480,8 @@ public class ASIPSerializer {
         return ASIPSerializer.deserializeTag(stSet, tag);
     }
     
-    // TODO useless???
     public static STSet deserializeAnySTSet(STSet stSet, String stSetString) throws SharkKBException{   
-        
+        // TODO useless???
         JSONObject jsonObject = new JSONObject(stSetString);
         String typeJSON = jsonObject.getString(STSet.TYPE);
         STSet set = stSet;
@@ -536,11 +538,25 @@ public class ASIPSerializer {
         return ASIPSerializer.deserializeSTSet(stSet, stSetString);
     }
     
-    public static SystemPropertyHolder deserializeProperties(String properties){
-        return null;
+    public static void deserializeProperties(SystemPropertyHolder target, String properties) throws SharkKBException{
+        if(target == null) return;
+        if(properties == null) return;
+        
+        JSONObject jsonObject = new JSONObject(properties);
+        JSONArray jsonArray = jsonObject.getJSONArray(PropertyHolder.PROPERTIES);
+        Iterator iterator = jsonArray.iterator();
+        
+        while(iterator.hasNext()){
+            JSONObject property = (JSONObject) iterator.next();
+            String name = property.getString(PropertyHolder.NAME);
+            String value = property.getString(PropertyHolder.VALUE);
+            
+            target.setProperty(name, value);
+        }
     }
     
     public static Enumeration<SemanticTag> deserializeRelations(String relations){
+        // TODO
         return null;
     }
         
