@@ -10,5 +10,44 @@ package net.sharkfw.asip.engine;
  * @author msc
  */
 public class ASIPInfoMetaData {
+ 
+    private String name;
+    private long offset;
+    private long length;
+
+    public ASIPInfoMetaData() {
+    }
+
+    public ASIPInfoMetaData(String name, long offset, long length) {
+        this.name = name;
+        this.offset = offset;
+        this.length = length;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getOffset() {
+        return offset;
+    }
+
+    public void setOffset(long offset) {
+        this.offset = offset;
+    }
+
+    public long getLength() {
+        return length;
+    }
+
+    public void setLength(long length) {
+        this.length = length;
+    }
+    
+    
     
 }

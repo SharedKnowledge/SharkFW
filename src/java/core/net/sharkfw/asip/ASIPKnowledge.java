@@ -12,7 +12,7 @@ public interface ASIPKnowledge {
     
     public final static String VOCABULARY = "VOCABULARY";
     public final static String INFORMATIONSPACES = "INFORMATIONSPACES";
-    public final static String INFORMATIONPOINTS = "INFORMATIONPOINTS";
+//    public final static String INFORMATIONPOINTS = "INFORMATIONPOINTS";
     
     public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException;
     
