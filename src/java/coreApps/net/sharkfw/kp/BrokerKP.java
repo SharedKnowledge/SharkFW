@@ -72,6 +72,7 @@ public class BrokerKP extends KnowledgePort {
                     storedInterest, interest, fps);
 
             if(mutualInterest != null) {
+                L.d("send mutual interest back to caller: " + L.contextSpace2String(mutualInterest), this);
                 kepConnection.expose(mutualInterest);
             }
         }
@@ -80,6 +81,7 @@ public class BrokerKP extends KnowledgePort {
     @Override
     protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
         
+        L.d("interest received: " + L.contextSpace2String(interest), this);
         try {
             // process interest
             if(interest.getDirection() == SharkCS.DIRECTION_IN || 
