@@ -21,7 +21,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses(
         {
             revisionTests.Version2.class,
-            security.BasicSecurityTests.class
+            security.BasicSecurityTests.class,
+            ASIPTests.ASIPSerializerTest.class
         })
 public class Version3 {
 
