@@ -75,7 +75,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * along with message accountin, connection pooling and observing
      * the <code>Environment</code>
      */
-    protected SharkStub kepStub;
+    protected SharkStub sharkStub;
     /**
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
      * in <code>KnowledgePort</code>s.
@@ -118,7 +118,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     protected void setKEPStub(SharkStub kepStub) {
-        this.kepStub = kepStub;
+        this.sharkStub = kepStub;
         //this.environment = this.kepStub.getEnvironment();
     }
 
@@ -229,7 +229,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     @SuppressWarnings("unused")
     protected final boolean start(int type, int port) throws SharkProtocolNotSupportedException, IOException {
-        Stub protocolStub = this.startServer(type, kepStub, port);
+        Stub protocolStub = this.startServer(type, sharkStub, port);
         
         return true;
     }
@@ -358,7 +358,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @param kp The instance of <code>KnowledgePort</code> to add.
      */
     void addKP(KnowledgePort kp) {
-        kp.setKEPStub(this.kepStub);
+        kp.setKEPStub(this.sharkStub);
         kps.add(kp);
     }
     
@@ -736,7 +736,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @return The KEPStub, currently used by this SharkEngine.
      */
     public SharkStub getKepStub() {
-        return kepStub;
+        return sharkStub;
     }
     private long kepSessionTimeOut = 3000;
 
@@ -997,7 +997,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             }
 
             if (sConn != null /*&& !fromPool*/) {
-                this.kepStub.handleStream(sConn);
+                this.sharkStub.handleStream(sConn);
             }
             
             // one kep message is enough
@@ -1409,7 +1409,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.refuseUnverifiably = refuseUnverifiably;
         
         // propagate to KEPStub the handles Requests.
-        this.kepStub.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+        this.sharkStub.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                 this.encryptionLevel, this.signatureLevel, this.replyPolicy, 
                 this.refuseUnverifiably);
     }
@@ -1547,15 +1547,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
     
     public Iterator<SharkCS> getSentInterests(long since) {
-        return this.kepStub.getSentInterests(since);
+        return this.sharkStub.getSentInterests(since);
     }
 
     public Iterator<Knowledge> getSentKnowledge(long since) {
-        return this.kepStub.getSentKnowledge(since);
+        return this.sharkStub.getSentKnowledge(since);
     }
   
     public Iterator<SharkCS> getUnhandledInterests(long since) {
-        return this.kepStub.getUnhandledInterests(since);
+        return this.sharkStub.getUnhandledInterests(since);
     }
 
     public Iterator<SharkCS> getUnhandledKnowledge(long since) {
@@ -1563,7 +1563,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public void removeSentHistory() {
-        this.kepStub.removeSentHistory();
+        this.sharkStub.removeSentHistory();
     }
     
     public final static int DEFAULT_SILTENT_PERIOD = 500;
@@ -1584,7 +1584,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @param milliseconds 
      */
     public void setSilentPeriod(int milliseconds) {
-        this.kepStub.setSilentPeriod(milliseconds);
+        this.sharkStub.setSilentPeriod(milliseconds);
     }
     
     /////////////////////////////////////////////////////////////////
