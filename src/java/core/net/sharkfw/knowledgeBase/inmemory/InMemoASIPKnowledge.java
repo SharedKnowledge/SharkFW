@@ -10,7 +10,6 @@ import java.util.Iterator;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
@@ -37,11 +36,6 @@ public class InMemoASIPKnowledge implements ASIPKnowledge{
 
     @Override
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
-    }
-
-    @Override
-    public Iterator<InformationPoint> informationPoints() throws SharkKBException {
-        return null;
     }
 
     @Override

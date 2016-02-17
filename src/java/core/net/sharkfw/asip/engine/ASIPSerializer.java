@@ -171,7 +171,7 @@ public class ASIPSerializer {
         JSONArray infoPointsArray = new JSONArray();
         ASIPSpace vocabulary = knowledge.getVocabulary().asASIPSpace();
         Iterator infoSpaces = knowledge.informationSpaces();
-        Iterator infoPoints = knowledge.informationPoints();
+//        Iterator infoPoints = knowledge.informationPoints();
         
         object.put(ASIPKnowledge.VOCABULARY, serializeASIPSpaceJSON(vocabulary));
         
@@ -188,29 +188,29 @@ public class ASIPSerializer {
         }
         object.put(ASIPKnowledge.INFORMATIONSPACES, infoSpaces);
         
-        while(infoPoints.hasNext()){
-            InformationPoint point = (InformationPoint) infoPoints.next();
-            JSONObject pointJSON = new JSONObject();
-            
-            InformationCoordinates coords = point.getInformationCoordinates();
-            JSONObject infoCoordsJSON = new JSONObject();
-            infoCoordsJSON.put(InformationCoordinates.TOPICS, serializeTagJSON(coords.getTopic()));
-            infoCoordsJSON.put(InformationCoordinates.TYPES, serializeTagJSON(coords.getType()));
-            infoCoordsJSON.put(InformationCoordinates.APPROVERS, serializeTagJSON(coords.getApprover()));
-            infoCoordsJSON.put(InformationCoordinates.RECEIVERS, serializeTagJSON(coords.getReceiver()));
-            infoCoordsJSON.put(InformationCoordinates.SENDER, serializeTagJSON(coords.getSender()));
-            infoCoordsJSON.put(InformationCoordinates.LOCATIONS, serializeTagJSON(coords.getLocation()));
-            infoCoordsJSON.put(InformationCoordinates.TIMES, serializeTagJSON(coords.getTime()));
-            infoCoordsJSON.put(InformationCoordinates.DIRECTION, coords.getDirection());
-            pointJSON.put(InformationPoint.INFOCOORDINATES, infoCoordsJSON);
-            
-            JSONArray infosArray = serializeInformationJSON(point.getInformation());
-            pointJSON.put(InformationPoint.INFORMATIONS, infosArray);
-            
-            pointJSON.put(PropertyHolder.PROPERTIES, serializePropertiesJSON(point));
-            
-            infoPointsArray.put(pointJSON);
-        }
+//        while(infoPoints.hasNext()){
+//            InformationPoint point = (InformationPoint) infoPoints.next();
+//            JSONObject pointJSON = new JSONObject();
+//            
+//            InformationCoordinates coords = point.getInformationCoordinates();
+//            JSONObject infoCoordsJSON = new JSONObject();
+//            infoCoordsJSON.put(InformationCoordinates.TOPICS, serializeTagJSON(coords.getTopic()));
+//            infoCoordsJSON.put(InformationCoordinates.TYPES, serializeTagJSON(coords.getType()));
+//            infoCoordsJSON.put(InformationCoordinates.APPROVERS, serializeTagJSON(coords.getApprover()));
+//            infoCoordsJSON.put(InformationCoordinates.RECEIVERS, serializeTagJSON(coords.getReceiver()));
+//            infoCoordsJSON.put(InformationCoordinates.SENDER, serializeTagJSON(coords.getSender()));
+//            infoCoordsJSON.put(InformationCoordinates.LOCATIONS, serializeTagJSON(coords.getLocation()));
+//            infoCoordsJSON.put(InformationCoordinates.TIMES, serializeTagJSON(coords.getTime()));
+//            infoCoordsJSON.put(InformationCoordinates.DIRECTION, coords.getDirection());
+//            pointJSON.put(InformationPoint.INFOCOORDINATES, infoCoordsJSON);
+//            
+//            JSONArray infosArray = serializeInformationJSON(point.getInformation());
+//            pointJSON.put(InformationPoint.INFORMATIONS, infosArray);
+//            
+//            pointJSON.put(PropertyHolder.PROPERTIES, serializePropertiesJSON(point));
+//            
+//            infoPointsArray.put(pointJSON);
+//        }
         
         return object;
     }
