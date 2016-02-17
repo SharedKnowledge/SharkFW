@@ -10,6 +10,10 @@ package net.sharkfw.asip.engine;
  * @author msc
  */
 public class ASIPInfoMetaData {
+    
+    public final static String NAME = "NAME";
+    public final static String OFFSET = "OFFSET";
+    public final static String LENGTH = "LENGTH";
  
     private String name;
     private long offset;

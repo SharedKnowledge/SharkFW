@@ -6,6 +6,7 @@
 package net.sharkfw.asip.engine;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.asip.ASIPSpace;
 
@@ -14,6 +15,9 @@ import net.sharkfw.asip.ASIPSpace;
  * @author msc
  */
 public class ASIPPointInformation {
+    
+    public final static String CONTEXTSPACE = "CONTEXTSPACE";
+    public final static String INFOMETADATA = "INFOMETADATA";
     
     private ASIPSpace space;
     private List<ASIPInfoMetaData> infoData;
@@ -35,8 +39,8 @@ public class ASIPPointInformation {
         this.space = space;
     }
 
-    public List<ASIPInfoMetaData> getInfoData() {
-        return infoData;
+    public Iterator<ASIPInfoMetaData> getInfoData() {
+        return infoData.iterator();
     }
 
     public void setInfoData(List<ASIPInfoMetaData> infoData) {

@@ -167,50 +167,32 @@ public class ASIPSerializer {
         if(knowledge==null) return null;
         
         JSONObject object = new JSONObject();
-        JSONArray infoSpacesArray = new JSONArray();
-        JSONArray infoPointsArray = new JSONArray();
         ASIPSpace vocabulary = knowledge.getVocabulary().asASIPSpace();
-        Iterator infoSpaces = knowledge.informationSpaces();
-//        Iterator infoPoints = knowledge.informationPoints();
         
         object.put(ASIPKnowledge.VOCABULARY, serializeASIPSpaceJSON(vocabulary));
         
-        while(infoSpaces.hasNext()){
-            JSONObject spaceJSON = new JSONObject();
+        ASIPInfoDataManager manager = new ASIPInfoDataManager(knowledge.informationSpaces());
+        Iterator pointInformations = manager.getPointInfromations();
+        JSONArray pointInfoArray = new JSONArray();
+        while(pointInformations.hasNext()){
+            JSONObject pointInfoJSON = new JSONObject();
+            ASIPPointInformation pointInformation = (ASIPPointInformation) pointInformations.next();
+            ASIPSpace space = pointInformation.getSpace();
+            pointInfoJSON.put(ASIPPointInformation.CONTEXTSPACE, serializeASIPSpace(space));
             
-            ASIPInformationSpace space = (ASIPInformationSpace) infoSpaces.next();
-            spaceJSON.put(ASIPInformationSpace.ASIPSPACE, serializeASIPSpaceJSON(space.getASIPSpace()));
-            
-            JSONArray infosArray = serializeInformationJSON(space.informations());
-            spaceJSON.put(ASIPInformationSpace.INFORMATIONS, infosArray);
-            
-            infoSpacesArray.put(spaceJSON);
+            JSONArray infoMetaDataArray = new JSONArray();
+            while(pointInformation.getInfoData().hasNext()){
+                ASIPInfoMetaData infoMetaData = pointInformation.getInfoData().next();
+                JSONObject infoMetaDataJSON = new JSONObject();
+                infoMetaDataJSON.put(ASIPInfoMetaData.NAME, infoMetaData.getName());
+                infoMetaDataJSON.put(ASIPInfoMetaData.OFFSET, infoMetaData.getOffset());
+                infoMetaDataJSON.put(ASIPInfoMetaData.LENGTH, infoMetaData.getLength());
+                infoMetaDataArray.put(infoMetaDataJSON);
+            }
+            pointInfoJSON.put(ASIPPointInformation.INFOMETADATA, infoMetaDataArray);
         }
-        object.put(ASIPKnowledge.INFORMATIONSPACES, infoSpaces);
-        
-//        while(infoPoints.hasNext()){
-//            InformationPoint point = (InformationPoint) infoPoints.next();
-//            JSONObject pointJSON = new JSONObject();
-//            
-//            InformationCoordinates coords = point.getInformationCoordinates();
-//            JSONObject infoCoordsJSON = new JSONObject();
-//            infoCoordsJSON.put(InformationCoordinates.TOPICS, serializeTagJSON(coords.getTopic()));
-//            infoCoordsJSON.put(InformationCoordinates.TYPES, serializeTagJSON(coords.getType()));
-//            infoCoordsJSON.put(InformationCoordinates.APPROVERS, serializeTagJSON(coords.getApprover()));
-//            infoCoordsJSON.put(InformationCoordinates.RECEIVERS, serializeTagJSON(coords.getReceiver()));
-//            infoCoordsJSON.put(InformationCoordinates.SENDER, serializeTagJSON(coords.getSender()));
-//            infoCoordsJSON.put(InformationCoordinates.LOCATIONS, serializeTagJSON(coords.getLocation()));
-//            infoCoordsJSON.put(InformationCoordinates.TIMES, serializeTagJSON(coords.getTime()));
-//            infoCoordsJSON.put(InformationCoordinates.DIRECTION, coords.getDirection());
-//            pointJSON.put(InformationPoint.INFOCOORDINATES, infoCoordsJSON);
-//            
-//            JSONArray infosArray = serializeInformationJSON(point.getInformation());
-//            pointJSON.put(InformationPoint.INFORMATIONS, infosArray);
-//            
-//            pointJSON.put(PropertyHolder.PROPERTIES, serializePropertiesJSON(point));
-//            
-//            infoPointsArray.put(pointJSON);
-//        }
+        object.put(ASIPInfoDataManager.CONTEXTPOINTINFO, pointInfoArray);
+        object.put(ASIPInfoDataManager.INFOCONTENT, manager.getInfoContent());
         
         return object;
     }
