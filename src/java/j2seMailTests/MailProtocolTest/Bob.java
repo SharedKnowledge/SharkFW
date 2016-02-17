@@ -41,12 +41,11 @@ public class Bob {
                 "thsc_test2@sharksystem.net", "thsc_test2", 
                 1, ssl);
         
-        PeerSemanticTag bobPeer = kb.createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", Settings.BOB_ADDRESS);
-        SemanticTag p2p = kb.createSemanticTag("P2P", "http://www.p2p.de");
+        PeerSemanticTag bobPeer = kb.getPeerSTSet().createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", Settings.BOB_ADDRESS);
+        SemanticTag p2p = kb.getPeerSTSet().createSemanticTag("P2P", "http://www.p2p.de");
         
         ContextCoordinates cc = kb.createContextCoordinates(p2p, bobPeer, null, null, null, null, SharkCS.DIRECTION_IN);
-        Interest interest = kb.createInterest(cc);        
-        StandardKP kp = new StandardKP(bob, interest, kb);        
+        StandardKP kp = new StandardKP(bob, cc, kb);        
         System.out.println("done!");
         
         System.out.println("Press Return to start the mail engine");

@@ -52,9 +52,9 @@ public class MailTests implements KPListener {
         SharkKB aliceKB = new InMemoSharkKB();
 
         // Create a peer to describe the topic "Java"
-        SemanticTag javaST = aliceKB.createSemanticTag("Java", JAVA_SI);
+        SemanticTag javaST = aliceKB.getTopicSTSet().createSemanticTag("Java", JAVA_SI);
 
-        PeerSemanticTag alicePST = aliceKB.createPeerSemanticTag("Alice", 
+        PeerSemanticTag alicePST = aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", 
                 MailTests.ALICE_HOMEPAGE, Settings.ALICE_ADDRESS);
 
          aliceKB.setOwner(alicePST);
@@ -70,11 +70,8 @@ public class MailTests implements KPListener {
         // Add a string to the ContextPoint at the given coordinates
         javaAliceCP.addInformation("Java ist toll");
 
-        // Use the coordinates to create a new interest from them
-        Interest javaAliceInterest = aliceKB.createInterest(javaAliceContext);
-
         // Create a KnowledgePort to handle the interest
-        KnowledgePort kp = aliceSE.createKP(javaAliceInterest, aliceKB);
+        KnowledgePort kp = new StandardKP(aliceSE, javaAliceContext, aliceKB);
 
         // configure e-mail
         aliceSE.setMailConfiguration("smtp.sharksystem.net", 
@@ -86,7 +83,7 @@ public class MailTests implements KPListener {
         aliceSE.startMail();
 
         // Create a new peer that will act as out partner for communications
-        PeerSemanticTag bobPST = aliceKB.createPeerSemanticTag("Bob", 
+        PeerSemanticTag bobPST = aliceKB.getPeerSTSet().createPeerSemanticTag("Bob", 
                 BOB_HOMEPAGE, Settings.BOB_ADDRESS);
 
         // publish the KnowledgePort to our partner
@@ -103,23 +100,20 @@ public class MailTests implements KPListener {
         SharkKB bobKB = new InMemoSharkKB();
 
         // Create a tap representing the subject "Java"
-        SemanticTag bobJavaST = bobKB.createSemanticTag("Java", JAVA_SI);
+        SemanticTag bobJavaST = bobKB.getTopicSTSet().createSemanticTag("Java", JAVA_SI);
 
          // Create a peer to describe ourselves (Bob)
         String[] bobAddr = new String[1];
         bobAddr[0] = Settings.BOB_ADDRESS;
 
-        PeerSemanticTag bobbobPST = bobKB.createPeerSemanticTag("Bob", BOB_HOMEPAGE, bobAddr);
+        PeerSemanticTag bobbobPST = bobKB.getPeerSTSet().createPeerSemanticTag("Bob", BOB_HOMEPAGE, bobAddr);
 
         // Create new ContextCoordinates
         ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(bobJavaST, null, 
                 bobbobPST, null, null, null, SharkCS.DIRECTION_IN);
 
-        // Use these coordinates to create a new interest from them
-        Interest javaInterest = bobKB.createInterest(cc);
-
         // Activate a KnowledgePort using the interest to handle incoming events
-        StandardKP bobKP = bobSE.createKP(javaInterest, bobKB);
+        StandardKP bobKP = new StandardKP(bobSE, cc, bobKB);
 
         MailTests bobPeer = new MailTests();
         bobKP.addListener(bobPeer);
@@ -159,23 +153,20 @@ public class MailTests implements KPListener {
         SharkKB bobKB = new InMemoSharkKB();
 
         // Create a tap representing the subject "Java"
-        SemanticTag bobJavaST = bobKB.createSemanticTag("Java", JAVA_SI);
+        SemanticTag bobJavaST = bobKB.getTopicSTSet().createSemanticTag("Java", JAVA_SI);
 
          // Create a peer to describe ourselves (Bob)
         String[] bobAddr = new String[1];
         bobAddr[0] = Settings.BOB_ADDRESS;
 
-        PeerSemanticTag bobbobPST = bobKB.createPeerSemanticTag("Bob", BOB_HOMEPAGE, bobAddr);
+        PeerSemanticTag bobbobPST = bobKB.getPeerSTSet().createPeerSemanticTag("Bob", BOB_HOMEPAGE, bobAddr);
 
         // Create new ContextCoordinates
         ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(bobJavaST, null, 
                 bobbobPST, null, null, null, SharkCS.DIRECTION_IN);
 
-        // Use these coordinates to create a new interest from them
-        Interest javaInterest = bobKB.createInterest(cc);
-
         // Activate a KnowledgePort using the interest to handle incoming events
-        StandardKP bobKP = bobSE.createKP(javaInterest, bobKB);
+        StandardKP bobKP = new StandardKP(bobSE, cc, bobKB);
 
         MailTests bobPeer = new MailTests();
         bobKP.addListener(bobPeer);
@@ -204,9 +195,9 @@ public class MailTests implements KPListener {
         SharkKB aliceKB = new InMemoSharkKB();
 
         // Create a peer to describe the topic "Java"
-        SemanticTag javaST = aliceKB.createSemanticTag("Java", JAVA_SI);
+        SemanticTag javaST = aliceKB.getTopicSTSet().createSemanticTag("Java", JAVA_SI);
 
-        alicePST = aliceKB.createPeerSemanticTag("Alice", 
+        alicePST = aliceKB.getPeerSTSet().createPeerSemanticTag("Alice", 
                 MailTests.ALICE_HOMEPAGE, Settings.ALICE_ADDRESS);
 
          aliceKB.setOwner(alicePST);
@@ -231,11 +222,8 @@ public class MailTests implements KPListener {
         }
         javaAliceCP.addInformation(longContent);
 
-        // Use the coordinates to create a new interest from them
-        Interest javaAliceInterest = aliceKB.createInterest(javaAliceContext);
-
         // Create a KnowledgePort to handle the interest
-        KnowledgePort kp = aliceSE.createKP(javaAliceInterest, aliceKB);
+        KnowledgePort kp = new StandardKP(aliceSE, javaAliceContext, aliceKB);
 
         // configure e-mail
         aliceSE.setMailConfiguration("smtp.sharksystem.net", 

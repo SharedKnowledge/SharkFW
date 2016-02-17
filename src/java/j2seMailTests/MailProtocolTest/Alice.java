@@ -50,8 +50,8 @@ public class Alice {
                 "thsc_test1@sharksystem.net", 
                 "thsc_test1", 1, ssl);
         
-        PeerSemanticTag alicePeer = kb.createPeerSemanticTag("Alice", "http://www.sharksystem.net/thsc_test1.html", Settings.ALICE_ADDRESS);
-        PeerSemanticTag bobPeer = kb.createPeerSemanticTag("Bob", "http://www.sharksystem.net/thsc_test2.html", Settings.BOB_ADDRESS);
+        PeerSemanticTag alicePeer = kb.getPeerSTSet().createPeerSemanticTag("Alice", "http://www.sharksystem.net/thsc_test1.html", Settings.ALICE_ADDRESS);
+        PeerSemanticTag bobPeer = kb.getPeerSTSet().createPeerSemanticTag("Bob", "http://www.sharksystem.net/thsc_test2.html", Settings.BOB_ADDRESS);
         TXSemanticTag p2p = kb.getTopicsAsTaxonomy().createTXSemanticTag("P2P", "http://www.p2p.de");
         TXSemanticTag shark = kb.getTopicsAsTaxonomy().createTXSemanticTag("Shark", "http://www.sharksystem.net");
         shark.move(p2p);
@@ -67,9 +67,7 @@ public class Alice {
         
         cp.addInformation(baos.toByteArray());
         
-        Interest interest = kb.createInterest(cc);
-        
-        StandardKP kp = new StandardKP(alice, interest, kb);
+        StandardKP kp = new StandardKP(alice, cc, kb);
         
         
         System.out.println("start...");
