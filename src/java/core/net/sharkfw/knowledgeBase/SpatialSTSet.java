@@ -15,6 +15,8 @@ public interface SpatialSTSet extends STSet {
     public boolean isInRange(SpatialSemanticTag gc1, SpatialSemanticTag gc2, double radius);
 
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry geom) throws SharkKBException;
+    
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry[] geoms) throws SharkKBException;
 
     public SpatialSemanticTag getSpatialSemanticTag(String[] sis) throws SharkKBException;
     

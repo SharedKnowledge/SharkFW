@@ -109,4 +109,18 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
     public boolean isInRange(SpatialSemanticTag gc1, SpatialSemanticTag gc2, double radius) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    /**
+     * TODO Implement with multiple SharkGeometries
+     * Currently just uses the first Geometry.
+     * @param name
+     * @param si
+     * @param geoms
+     * @return
+     * @throws SharkKBException 
+     */
+    @Override
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry[] geoms) throws SharkKBException {
+        return createSpatialSemanticTag(name, si, geoms[0]);
+    }
 }

@@ -670,7 +670,7 @@ public class ASIPSerializer {
             geoms[i] = InMemoSharkGeometry.createGeomByEWKT(geometries[i]);
         }
         // TODO Geometries just adding the first geom
-        SpatialSemanticTag tag = targetSet.createSpatialSemanticTag(name, sis, geoms[0]);
+        SpatialSemanticTag tag = targetSet.createSpatialSemanticTag(name, sis, geoms);
         deserializeProperties(tag, tagString);
         return tag;
     }
