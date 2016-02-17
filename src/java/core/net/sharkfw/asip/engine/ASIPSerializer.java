@@ -1,5 +1,6 @@
 package net.sharkfw.asip.engine;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -11,7 +12,6 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationCoordinates;
 import net.sharkfw.knowledgeBase.InformationPoint;
-import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
@@ -22,7 +22,6 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SharkVocabulary;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSTSet;
@@ -38,7 +37,6 @@ import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
-import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
 
@@ -154,6 +152,18 @@ public class ASIPSerializer {
     
     public static JSONObject serializeKnowledgeJSON(ASIPKnowledge knowledge) throws SharkKBException{
         // TODO Knowledge Complete?
+        /**
+         * TODO Rework Knowledge to implement ASIP-bnf
+         * - vocabulary
+         * - {contextPointInformation}
+         * -- contextSpace
+         * -- {infoMetaData}
+         * --- name
+         * --- offset
+         * --- length
+         * - infoContents
+         * 
+        */
         if(knowledge==null) return null;
         
         JSONObject object = new JSONObject();
@@ -494,16 +504,14 @@ public class ASIPSerializer {
     
     /**
      * Deserializes knowledge and return a newly created knowledge object..
+     * @param stream
      * @param knowledge
      * @return
      * @throws SharkKBException 
      */
-    public static ASIPKnowledge deserializeKnowledge(String knowledge) throws SharkKBException {
-        ASIPSerializer wS = new ASIPSerializer();
+    public static ASIPKnowledge deserializeKnowledge(InputStream stream) throws SharkKBException {
         
-        InMemoSharkKB imkb = new InMemoSharkKB();
         
-        wS.deserializeAndMergeKnowledge(imkb, knowledge);
         
         return null; 
         // TODO deserializeKnowledge

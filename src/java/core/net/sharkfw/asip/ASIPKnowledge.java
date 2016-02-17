@@ -23,7 +23,7 @@ public interface ASIPKnowledge {
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException;
 
   /**
-   * Return a ContextSapce containing Tag for the different coordinates of the
+   * Return a ContextSpace containing Tag for the different coordinates of the
    * contained ContextPoints plus (optional) background information for these tags.
    * 
    * Note: Method can return null. Context map can also have empty dimensions.
