@@ -381,10 +381,10 @@ public class SyncKB implements SharkKB {
         this._localKB.addInformationSpace(space);
     }
 
-    @Override
-    public Iterator<InformationPoint> informationPoints() throws SharkKBException {
-        return this._localKB.informationPoints();
-    }
+//    @Override
+//    public Iterator<InformationPoint> informationPoints() throws SharkKBException {
+//        return this._localKB.informationPoints();
+//    }
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {

@@ -1,9 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
-import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
-import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPKnowledge;
 
 /**
@@ -37,6 +35,8 @@ public interface Knowledge extends ASIPKnowledge {
   public void addContextPoint(ContextPoint cp);
   
   public void addInformationPoint(InformationPoint iPoint) throws SharkKBException;
+  
+    public Iterator<InformationPoint> informationPoints() throws SharkKBException;  
 
   /**
    * Remove a given Context Point from the knowledge.
@@ -58,8 +58,8 @@ public interface Knowledge extends ASIPKnowledge {
    */
   public Enumeration <ContextPoint> contextPoints();
   
-  @Override
-  Iterator<InformationPoint> informationPoints() throws SharkKBException;
+//  @Override
+//  Iterator<InformationPoint> informationPoints() throws SharkKBException;
 
   /**
    * Return a ContextSapce containing Tag for the different coordinates of the

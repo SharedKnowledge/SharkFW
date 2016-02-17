@@ -1,7 +1,6 @@
 package net.sharkfw.asip;
 
 import java.util.Iterator;
-import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
@@ -16,8 +15,6 @@ public interface ASIPKnowledge {
 
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
 
-    public Iterator<InformationPoint> informationPoints() throws SharkKBException;
-    
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException;
 
   /**
@@ -27,6 +24,7 @@ public interface ASIPKnowledge {
    * Note: Method can return null. Context map can also have empty dimensions.
    * 
    *
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
    * @see net.sharkfw.knowledgeBase.ContextSpace
    *
    * @return A ContextSpace with the above characteristics
