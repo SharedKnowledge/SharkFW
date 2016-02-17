@@ -36,6 +36,7 @@ import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
@@ -656,8 +657,12 @@ public class ASIPSerializer {
         String[] geometries = new String[geometriesList.size()];
         geometries = geometriesList.toArray(geometries);
         
-        // TODO Add geometries using SharkGeometry and create SpatialTag.
-        SpatialSemanticTag tag = (SpatialSemanticTag) targetSet.createSemanticTag(name, sis);
+        SharkGeometry[] geoms = new SharkGeometry[geometries.length];
+        for (int i = 0; i< geometries.length; i++) {
+            geoms[i] = InMemoSharkGeometry.createGeomByEWKT(geometries[i]);
+        }
+        // TODO Geometries just adding the first geom
+        SpatialSemanticTag tag = targetSet.createSpatialSemanticTag(name, sis, geoms[0]);
         deserializeProperties(tag, tagString);
         return tag;
     }
