@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.InformationCoordinates;
-import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
@@ -127,43 +124,7 @@ public class ASIPSerializer {
         return serializeASIPSpaceJSON(space);
     }
     
-    public static JSONArray serializeInformationJSON(Iterator infos) throws SharkKBException{
-        JSONArray infosArray = new JSONArray();
-        while(infos.hasNext()){
-            Information info = (Information) infos.next();
-            JSONObject infoJSON = new JSONObject();
-
-            infoJSON.put(Information.INFONAME, info.getName());
-            infoJSON.put(Information.LASTMODIFIED, info.lastModified());
-            infoJSON.put(Information.CREATIONTIME, info.creationTime());
-            infoJSON.put(Information.CONTENTTYPE, info.getContentType());
-            infoJSON.put(Information.CONTENTLENGTH, info.getContentLength());
-            infoJSON.put(Information.CONTENTASBYTE, info.getContentAsByte());
-
-            // TODO Properties necessarry?
-            infoJSON.put(PropertyHolder.PROPERTIES, serializePropertiesJSON(info));
-
-            // TODO Something missing?
-            infosArray.put(infoJSON);
-        }
-        
-        return infosArray;
-    }
-    
     public static JSONObject serializeKnowledgeJSON(ASIPKnowledge knowledge) throws SharkKBException{
-        // TODO Knowledge Complete?
-        /**
-         * TODO Rework Knowledge to implement ASIP-bnf
-         * - vocabulary
-         * - {contextPointInformation}
-         * -- contextSpace
-         * -- {infoMetaData}
-         * --- name
-         * --- offset
-         * --- length
-         * - infoContents
-         * 
-        */
         if(knowledge==null) return null;
         
         JSONObject object = new JSONObject();
