@@ -8,6 +8,9 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.InformationCoordinates;
+import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -19,6 +22,7 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SharkVocabulary;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSTSet;
@@ -65,7 +69,7 @@ public class ASIPSerializer {
         return ASIPSerializer.serializeInterestJSON(space).toString();
     }
     
-    public static String serializeKnowledge(ASIPKnowledge knowledge){
+    public static String serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException{
         return ASIPSerializer.serializeKnowledgeJSON(knowledge).toString();
     }
     
@@ -124,9 +128,80 @@ public class ASIPSerializer {
         return serializeASIPSpaceJSON(space);
     }
     
-    public static JSONObject serializeKnowledgeJSON(ASIPKnowledge knowledge){
-        // TODO
-        return new JSONObject();
+    public static JSONArray serializeInformationJSON(Iterator infos) throws SharkKBException{
+        JSONArray infosArray = new JSONArray();
+        while(infos.hasNext()){
+            Information info = (Information) infos.next();
+            JSONObject infoJSON = new JSONObject();
+
+            infoJSON.put(Information.INFONAME, info.getName());
+            infoJSON.put(Information.LASTMODIFIED, info.lastModified());
+            infoJSON.put(Information.CREATIONTIME, info.creationTime());
+            infoJSON.put(Information.CONTENTTYPE, info.getContentType());
+            infoJSON.put(Information.CONTENTLENGTH, info.getContentLength());
+            infoJSON.put(Information.CONTENTASBYTE, info.getContentAsByte());
+
+            // TODO Properties necessarry?
+            infoJSON.put(PropertyHolder.PROPERTIES, serializePropertiesJSON(info));
+
+            // TODO Something missing?
+            infosArray.put(infoJSON);
+        }
+        
+        return infosArray;
+    }
+    
+    public static JSONObject serializeKnowledgeJSON(ASIPKnowledge knowledge) throws SharkKBException{
+        // TODO Knowledge Complete?
+        if(knowledge==null) return null;
+        
+        JSONObject object = new JSONObject();
+        JSONArray infoSpacesArray = new JSONArray();
+        JSONArray infoPointsArray = new JSONArray();
+        ASIPSpace vocabulary = knowledge.getVocabulary().asASIPSpace();
+        Iterator infoSpaces = knowledge.informationSpaces();
+        Iterator infoPoints = knowledge.informationPoints();
+        
+        object.put(ASIPKnowledge.VOCABULARY, serializeASIPSpaceJSON(vocabulary));
+        
+        while(infoSpaces.hasNext()){
+            JSONObject spaceJSON = new JSONObject();
+            
+            ASIPInformationSpace space = (ASIPInformationSpace) infoSpaces.next();
+            spaceJSON.put(ASIPInformationSpace.ASIPSPACE, serializeASIPSpaceJSON(space.getASIPSpace()));
+            
+            JSONArray infosArray = serializeInformationJSON(space.informations());
+            spaceJSON.put(ASIPInformationSpace.INFORMATIONS, infosArray);
+            
+            infoSpacesArray.put(spaceJSON);
+        }
+        object.put(ASIPKnowledge.INFORMATIONSPACES, infoSpaces);
+        
+        while(infoPoints.hasNext()){
+            InformationPoint point = (InformationPoint) infoPoints.next();
+            JSONObject pointJSON = new JSONObject();
+            
+            InformationCoordinates coords = point.getInformationCoordinates();
+            JSONObject infoCoordsJSON = new JSONObject();
+            infoCoordsJSON.put(InformationCoordinates.TOPICS, serializeTagJSON(coords.getTopic()));
+            infoCoordsJSON.put(InformationCoordinates.TYPES, serializeTagJSON(coords.getType()));
+            infoCoordsJSON.put(InformationCoordinates.APPROVERS, serializeTagJSON(coords.getApprover()));
+            infoCoordsJSON.put(InformationCoordinates.RECEIVERS, serializeTagJSON(coords.getReceiver()));
+            infoCoordsJSON.put(InformationCoordinates.SENDER, serializeTagJSON(coords.getSender()));
+            infoCoordsJSON.put(InformationCoordinates.LOCATIONS, serializeTagJSON(coords.getLocation()));
+            infoCoordsJSON.put(InformationCoordinates.TIMES, serializeTagJSON(coords.getTime()));
+            infoCoordsJSON.put(InformationCoordinates.DIRECTION, coords.getDirection());
+            pointJSON.put(InformationPoint.INFOCOORDINATES, infoCoordsJSON);
+            
+            JSONArray infosArray = serializeInformationJSON(point.getInformation());
+            pointJSON.put(InformationPoint.INFORMATIONS, infosArray);
+            
+            pointJSON.put(PropertyHolder.PROPERTIES, serializePropertiesJSON(point));
+            
+            infoPointsArray.put(pointJSON);
+        }
+        
+        return object;
     }
     
     public static JSONObject serializeTagJSON(SemanticTag tag) throws JSONException, SharkKBException {
@@ -407,7 +482,7 @@ public class ASIPSerializer {
         
         message.setSignature(jsonObject.getString(ASIPMessage.SIGNATURE));
         
-        // TODO deserializeHeader
+        // TODO deserializeHeader message correct? IN/(OUT) ?
         
         return message;
     }
@@ -429,7 +504,8 @@ public class ASIPSerializer {
         
         wS.deserializeAndMergeKnowledge(imkb, knowledge);
         
-        return null; // TODO
+        return null; 
+        // TODO deserializeKnowledge
         
         // return imkb.asKnowledge();
     }

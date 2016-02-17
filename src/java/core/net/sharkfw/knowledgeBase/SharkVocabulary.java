@@ -15,7 +15,7 @@ public interface SharkVocabulary {
     
     /**
      * Each SharkKB holds Semantic Tag Sets. Thus, it can act as
-     * a Shark Context Space. This methode returns this SharkKB 
+     * a Shark Context Space. This method returns this SharkKB 
      * providing the SharkCS interface.
      * 
      * Note:<br/>

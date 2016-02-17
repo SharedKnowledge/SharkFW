@@ -39,6 +39,16 @@ import java.io.OutputStream;
  * @author mfi
  */
 public interface Information extends SystemPropertyHolder {
+    
+    public final static String LASTMODIFIED = "LASTMODIFIED";
+    public final static String CREATIONTIME = "CREATIONTIME";
+    public final static String CONTENTASBYTE = "CONTENTASBYTE";
+    public final static String CONTENTASSTRING = "CONTENTASSTRING";
+    public final static String CONTENTLENGTH = "CONTENTLENGTH";
+    public final static String CONTENTTYPE = "CONTENTTYPE";
+    public final static String INFONAME = "INFONAME";
+    public final static String UNIQUEID = "UNIQUEID";
+    
     /**
      * Time in millis since 1.1.1970 - UNIX area.
      * @return 

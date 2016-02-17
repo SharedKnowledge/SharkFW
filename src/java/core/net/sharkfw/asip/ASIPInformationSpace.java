@@ -19,6 +19,10 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  * @author thsc
  */
 public interface ASIPInformationSpace {
+    
+    public final static String ASIPSPACE = "ASIPSPACE";
+    public final static String INFORMATIONS = "INFORMATIONS";
+    
     ASIPSpace getASIPSpace() throws SharkKBException;
     void setASIPSpace(ASIPSpace space) throws SharkKBException;
     
