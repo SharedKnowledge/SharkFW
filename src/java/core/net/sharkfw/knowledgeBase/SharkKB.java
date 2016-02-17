@@ -1,10 +1,12 @@
 package net.sharkfw.knowledgeBase;
 
+import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 /**
  *
@@ -129,15 +131,41 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
           throws SharkKBException;
   
   
-  /**
-   * Merge an information space including its information into that knowledge
-   * base. It's up to knowledge base implementation how those information 
-   * are stored and can be retrieved afterwards.
-   * 
-   * @param iSpace
-   * @throws SharkKBException 
-   */
-  public void mergeInformationSpace(ASIPInformationSpace iSpace) throws SharkKBException;
+    public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, 
+            FragmentationParameter[] backgroundFP, Knowledge knowledge, 
+            boolean learnTags, boolean deleteAssimilated) throws SharkKBException;
+  
+    
+    /////////////////////////////////////////////////////////////////////////
+    //                ASIP extraction support                              //
+    /////////////////////////////////////////////////////////////////////////
+    
+   /**
+     * Most simple version of extraction: Zero fragmentation parameter are used,
+     * no recipient or groups are used
+     * @param source
+     * @param context
+     * @return
+     * @throws SharkKBException 
+     */
+    public Knowledge extract(ASIPSpace context) 
+            throws SharkKBException;
+
+    public Knowledge extract( ASIPSpace context, FragmentationParameter[] fp) 
+            throws SharkKBException;
+
+    public Knowledge extract(ASIPSpace context, 
+            FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) 
+                throws SharkKBException;
+    
+    public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, 
+            boolean cutGroups) 
+                throws SharkKBException;
+    
+    public Knowledge extract(SharkKB target, ASIPSpace context, 
+            FragmentationParameter[] backgroundFP, boolean cutGroups, PeerSemanticTag recipient) 
+                throws SharkKBException;
+    
   
     /**
      * Create a new (empty) knowledge object. The actual knowledge base will
@@ -290,87 +318,4 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public FragmentationParameter[] getStandardFPSet();
 
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * @param name
-//     * @param sis
-//     * @param addresses
-//     * @return
-//     * @throws SharkKBException 
-//     */
-//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException;
-//    
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * @param name
-//     * @param si
-//     * @param address
-//     * @return
-//     * @throws SharkKBException 
-//     */
-//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String address) throws SharkKBException;    
-//    
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * @param name
-//     * @param sis
-//     * @param address
-//     * @return
-//     * @throws SharkKBException 
-//     */
-//    public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String address) throws SharkKBException;  
-//    
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * @param name
-//     * @param si
-//     * @param addresses
-//     * @return
-//     * @throws SharkKBException 
-//     */
-//    public PeerSemanticTag createPeerSemanticTag(String name, String si, String[] addresses) throws SharkKBException;
-//
-//    /**
-//     * @deprecated please add a geometry if it is really a spatial (!) semantic tag
-//     * @param name
-//     * @param sis
-//     * @return
-//     * @throws SharkKBException 
-//     */
-//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis) throws SharkKBException;
-//    
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * @param name
-//     * @param sis
-//     * @param geom
-//     * @return
-//     * @throws SharkKBException 
-//     */
-//    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException;
-//     
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * @param from
-//     * @param duration
-//     * @return
-//     * @throws SharkKBException 
-//     */
-//    public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException;
-//    
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * Delete tag in any dimension - if it can be found
-//     * @param sis
-//     * @throws SharkKBException 
-//     */
-//    public void removeSemanticTag(String[] sis) throws SharkKBException;
-//    
-//    /**
-//     * @deprecated use method semantic tag set instead
-//     * Delete tag in any dimension - if it can be found
-//     * @param st
-//     * @throws SharkKBException 
-//     */
-//    public void removeSemanticTag(SemanticTag st) throws SharkKBException;
 }

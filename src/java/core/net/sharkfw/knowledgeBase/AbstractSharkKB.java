@@ -168,7 +168,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @param iSpace
      * @throws SharkKBException 
      */
-    @Override
     public void mergeInformationSpace(ASIPInformationSpace iSpace) 
             throws SharkKBException {
         
@@ -200,7 +199,72 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             }
         }
     }    
+    
+    @Override
+    public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, 
+            FragmentationParameter[] backgroundFP, Knowledge knowledge, 
+            boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
         
+        return null;
+        // TODO
+    }
+    
+    /////////////////////////////////////////////////////////////////////////
+    //                ASIP extraction support                              //
+    /////////////////////////////////////////////////////////////////////////
+    
+   /**
+     * Most simple version of extraction: Zero fragmentation parameter are used,
+     * no recipient or groups are used
+     * @param context
+     * @return
+     * @throws SharkKBException 
+     */
+    public Knowledge extract(ASIPSpace context) throws SharkKBException {
+        
+        SharkKB target = new InMemoSharkKB();
+        
+        FragmentationParameter[] fps = FragmentationParameter.getZeroFPs();
+        
+        return this.extract(target, context, fps, false, null);
+    }
+
+    public Knowledge extract(ASIPSpace context, FragmentationParameter[] fp) 
+            throws SharkKBException {
+        
+        SharkKB target = new InMemoSharkKB();
+        
+        return this.extract(target, context, fp, false, null);
+    }
+
+    public Knowledge extract(ASIPSpace context, 
+            FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) 
+                throws SharkKBException {
+        
+        SharkKB target = new InMemoSharkKB();
+        
+        return this.extract(target, context, backgroundFP, true, recipient);
+    }
+    
+    @Override
+    public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, 
+            boolean cutGroups) 
+                throws SharkKBException {
+        
+        SharkKB target = new InMemoSharkKB();
+        
+        return this.extract(target, context, backgroundFP, true, null);
+    }
+    
+    @Override
+    public Knowledge extract(SharkKB target, ASIPSpace context, FragmentationParameter[] backgroundFP, 
+            boolean cutGroups, PeerSemanticTag recipient) 
+                throws SharkKBException {
+        
+        // TODO
+        return null;
+    }
+    
     protected Knowledge getKnowledge() {
         return this.knowledge;
     }

@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -376,11 +377,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public void mergeInformationSpace(ASIPInformationSpace iSpace) throws SharkKBException {
-        this._localKB.mergeInformationSpace(iSpace);
-    }
-
-    @Override
     public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException {
         this._localKB.addInformationSpace(space);
     }
@@ -408,5 +404,35 @@ public class SyncKB implements SharkKB {
     @Override
     public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
         return this._localKB.createInformationSpace(space);
+    }
+
+    @Override
+    public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
+        return this._localKB.assimilate(target, interest, backgroundFP, knowledge, learnTags, deleteAssimilated);
+    }
+
+    @Override
+    public Knowledge extract(ASIPSpace context) throws SharkKBException {
+        return this._localKB.extract(context);
+    }
+
+    @Override
+    public Knowledge extract(ASIPSpace context, FragmentationParameter[] fp) throws SharkKBException {
+        return this._localKB.extract(context, fp);
+    }
+
+    @Override
+    public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) throws SharkKBException {
+        return this._localKB.extract(context, backgroundFP, recipient);
+    }
+
+    @Override
+    public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups) throws SharkKBException {
+        return this._localKB.extract(context, backgroundFP, cutGroups);
+    }
+
+    @Override
+    public Knowledge extract(SharkKB target, ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups, PeerSemanticTag recipient) throws SharkKBException {
+        return this._localKB.extract(target, context, backgroundFP, cutGroups, recipient);
     }
 }

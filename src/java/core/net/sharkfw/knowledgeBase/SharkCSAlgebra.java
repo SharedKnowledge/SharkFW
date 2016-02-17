@@ -1569,14 +1569,6 @@ public abstract class SharkCSAlgebra {
         return assimilated;
     }
     
-    public static ArrayList<ContextCoordinates> assimilate(SharkKB target, 
-            ASIPSpace interest, FragmentationParameter backgroundFP[], Knowledge knowledge, 
-            boolean learnTags, boolean deleteAssimilated) 
-                throws SharkKBException {
-        return null; // TODO
-    }
-    
-    
     /**
      * Check if given coordinates are within the given (sub) space.
      * @param space
@@ -1980,123 +1972,6 @@ public abstract class SharkCSAlgebra {
                 superTarget.setPredicate(SemanticNet.SUBTAG, sourceTag);
             }
         }
-    }
-    
-    /////////////////////////////////////////////////////////////////////////
-    //                             ASIP support                             //
-    /////////////////////////////////////////////////////////////////////////
-    
-   /**
-     * Most simple version of extraction: Zero fragmentation parameter are used,
-     * no recipient or groups are used
-     * @param source
-     * @param context
-     * @return
-     * @throws SharkKBException 
-     */
-    public static Knowledge extract(SharkKB source, 
-            ASIPSpace context) 
-            throws SharkKBException {
-        
-        SharkKB target = new InMemoSharkKB();
-        
-        FragmentationParameter[] fps = FragmentationParameter.getZeroFPs();
-        
-        return SharkCSAlgebra.extract(target, source, context, 
-                fps, false, null);
-    }
-
-    public static Knowledge extract(SharkKB source, 
-            ASIPSpace context, FragmentationParameter[] fp) 
-            throws SharkKBException {
-        
-        SharkKB target = new InMemoSharkKB();
-        
-        return SharkCSAlgebra.extract(target, source, context, 
-                fp, false, null);
-    }
-
-    public static Knowledge extract(SharkKB source, 
-            ASIPSpace context, 
-            FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) 
-                throws SharkKBException {
-        
-        SharkKB target = new InMemoSharkKB();
-        
-        return SharkCSAlgebra.extract(target, source, context, 
-                backgroundFP, true, recipient);
-    }
-    
-    public static Knowledge extract(SharkKB source, 
-            ASIPSpace context, FragmentationParameter[] backgroundFP, 
-            boolean cutGroups) 
-                throws SharkKBException {
-        
-        SharkKB target = new InMemoSharkKB();
-        
-        return SharkCSAlgebra.extract(target, source, context, 
-                backgroundFP, true, null);
-    }
-    
-    public static Knowledge extract(SharkKB target, SharkKB source, 
-            ASIPSpace context, FragmentationParameter[] backgroundFP, 
-            boolean cutGroups) 
-                throws SharkKBException {
-        
-        return SharkCSAlgebra.extract(target, source, context, 
-                backgroundFP, true, null);
-    }
-    
-
-    /**
-    * It returns knowledge that fits into the given parameter.
-    * 
-    * This methode is somewhat complex and actually one of the two core
-    * concepts of Shark. It extracts context points that fit the the given
-    * context. These context points are copied for further processing. The
-    * <code>target</code> parameter is jused to create a copy. In most cases,
-    * using an in-memo implementation would be advisable.
-    * 
-    * Now, the method makes the following:
-    * 
-    * <ul>
-    * <li>This methode doesn't return any semantic tag that is hidden.
-    * <li> This methode doesn't change anything in the source but in the copy
-    * which resides in the target kb. 
-    * </ul>
-
-    * It also replaces group semantic tag with actual peer semantic tag.
-    * 
-    * Peers can be parts of peer groups. That's defined with sub relations
-    * in PeerTaxonomy. Most application don't want to reveal local groups
-    * to other peers. This methode removes any group in context point coordinates
-    * and background knowledge to which recipient belongs.
-    * 
-    * The algorithm is this:
-    * <ul>
-    * <li>Iterate any context point.
-    * <li>Check if one of the peer coordinates (originator, peer, remotePeer)
-    * is a group and recipient is part of it.
-    * <li> if so, group is replaced by recipient in coordinate and in background
-    * knowledge
-    * </ul>
-    * 
-    * @param target KB to which cps and st are copied - It must be empty.
-    * @param source 
-    * @param context
-    * @param backgroundFP
-    * @param cutGroups
-    * @param recipient recipient of extracted knowledge - if null and cutGroupis set - all groups are resolved
-    * is performed.
-    * @return
-    * @throws SharkKBException 
-    */
-    public static Knowledge extract(SharkKB target, SharkKB source, 
-            ASIPSpace context, FragmentationParameter[] backgroundFP, 
-            boolean cutGroups, PeerSemanticTag recipient) 
-                throws SharkKBException {
-        
-        return null; // TODO
     }
     
     /////////////////////////////////////////////////////////////////////////
