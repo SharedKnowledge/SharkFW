@@ -223,15 +223,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException;
   
   /**
-   * Returns all information points inside that kb.
-   * 
-   * @param cs
-   * @return
-   * @throws SharkKBException 
-   */
-  public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException;
-
-  /**
    * 
    * @param cs
    * @param matchAny
@@ -262,7 +253,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @return
    * @throws SharkKBException 
    */
-  public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException;
+  public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException;
   
   /**
    * Returns enumeration of all context points. This actually is the same as

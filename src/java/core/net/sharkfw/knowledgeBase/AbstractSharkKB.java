@@ -1084,7 +1084,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * call or removing information points. Other implementations might implement
      * information space directly and should overwrite that method.
      * 
-     * @param space
+     * @param cs
      * @throws SharkKBException 
      */
 //    @Override
@@ -1106,9 +1106,14 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 //        }
 //    }
 
-    @Override
-    public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException {
-        return this.informationPoints(cs, true);
+    /**
+     * 
+     * @param cs
+     * @return
+     * @throws SharkKBException 
+     */
+    public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace cs) throws SharkKBException {
+        return this.informationSpaces(cs, true);
     }
 
     @Override

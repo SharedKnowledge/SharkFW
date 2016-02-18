@@ -57,4 +57,9 @@ public class SQLSpatialSTSet extends SQLSTSet implements SpatialSTSet {
         
         return new Iterator2Enumeration(tags);
     }
+
+    @Override
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry[] geoms) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

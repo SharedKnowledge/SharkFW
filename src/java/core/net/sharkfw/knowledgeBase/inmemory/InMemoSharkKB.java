@@ -1,11 +1,10 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
@@ -1148,65 +1147,67 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     
 
     @Override
-    public Iterator<InformationPoint> informationPoints(
+    public Iterator<ASIPInformationSpace> informationSpaces(
             ASIPSpace as, boolean matchAny) throws SharkKBException {
-        
-        if (as == null) { // no constraints
-            if(matchAny) {
-                // return all
-                return this.getAllInformationPoints();
-            } else { // be an exact match
-                List<InformationPoint> aip = new ArrayList<>();
-                
-                InformationCoordinates ic = 
-                        InMemoSharkKB.getAnyInformationCoordinates();
-                
-                // is there a ip with no constraints at all
-                InformationPoint anyIP = this.getInformationPoint(ic);
-                
-                // yes
-                if(anyIP != null) {
-                    aip.add(anyIP);
-                }
-                
-                // list contains at most one info point
-                return aip.iterator();
-            }
-        }
-        
-        List<InformationPoint> result = new ArrayList<>();
-        List<InformationCoordinates> coo = new ArrayList<>();
-        
-        if (coo == null) {
-            return result.iterator();
-        }
-        
-        Iterator<InformationCoordinates> cooIter = coo.iterator();
-        while (cooIter.hasNext()) {
-            // next possible coordinate
-            InformationCoordinates co = cooIter.next();
-            if (!matchAny) {
-                // exact match
-                InformationPoint ip = this.getInformationPoint(co);
-                if (ip != null) {
-                    // copy ip
-                    result.add(ip);
-                }
-            } else {
-                // matchAny - find all matching cps.
-                Iterator<InformationPoint> ipIter = this.knowledge.informationPoints();
-                while (ipIter.hasNext()) {
-                    InformationPoint ip = ipIter.next();
-                    if(SharkCSAlgebra.identical(ip.getInformationCoordinates(), co)) 
-                    {
-                        result.add(ip);
-                    }
-                }
-            }
-        }
-        
-        return result.iterator();
+        return null; // TODO
     }
+        
+//        if (as == null) { // no constraints
+//            if(matchAny) {
+//                // return all
+//                return this.getAllInformationPoints();
+//            } else { // be an exact match
+//                List<InformationPoint> aip = new ArrayList<>();
+//                
+//                InformationCoordinates ic = 
+//                        InMemoSharkKB.getAnyInformationCoordinates();
+//                
+//                // is there a ip with no constraints at all
+//                InformationPoint anyIP = this.getInformationPoint(ic);
+//                
+//                // yes
+//                if(anyIP != null) {
+//                    aip.add(anyIP);
+//                }
+//                
+//                // list contains at most one info point
+//                return aip.iterator();
+//            }
+//        }
+//        
+//        List<InformationPoint> result = new ArrayList<>();
+//        List<InformationCoordinates> coo = new ArrayList<>();
+//        
+//        if (coo == null) {
+//            return result.iterator();
+//        }
+//        
+//        Iterator<InformationCoordinates> cooIter = coo.iterator();
+//        while (cooIter.hasNext()) {
+//            // next possible coordinate
+//            InformationCoordinates co = cooIter.next();
+//            if (!matchAny) {
+//                // exact match
+//                InformationPoint ip = this.getInformationPoint(co);
+//                if (ip != null) {
+//                    // copy ip
+//                    result.add(ip);
+//                }
+//            } else {
+//                // matchAny - find all matching cps.
+//                Iterator<InformationPoint> ipIter = this.knowledge.informationPoints();
+//                while (ipIter.hasNext()) {
+//                    InformationPoint ip = ipIter.next();
+//                    if(SharkCSAlgebra.identical(ip.getInformationCoordinates(), co)) 
+//                    {
+//                        result.add(ip);
+//                    }
+//                }
+//            }
+//        }
+//        
+//        return result.iterator();
+//    }
 
     /**
      * @deprecated 

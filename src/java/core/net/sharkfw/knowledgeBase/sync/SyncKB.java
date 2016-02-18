@@ -342,13 +342,8 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public Iterator<InformationPoint> informationPoints(ASIPSpace cs) throws SharkKBException {
-        return this._localKB.informationPoints(cs);
-    }
-
-    @Override
-    public Iterator<InformationPoint> informationPoints(ASIPSpace as, boolean matchAny) throws SharkKBException {
-        return this._localKB.informationPoints(as, matchAny);
+    public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException {
+        return this._localKB.informationSpaces(as, matchAny);
     }
 
     @Override
