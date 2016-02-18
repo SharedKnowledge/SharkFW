@@ -875,17 +875,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
 
     @Override
-    public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -895,7 +885,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
 
     @Override
-    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
+    public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

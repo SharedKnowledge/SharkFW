@@ -317,23 +317,8 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        return this._localKB.getInformationPoint(coordinates);
-    }
-
-    @Override
     public InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
         return this._localKB.createInformationCoordinates(topic, type, approver, sender, receiver, time, location, direction);
-    }
-
-    @Override
-    public InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        return this._localKB.createInformationPoint(coordinates);
-    }
-
-    @Override
-    public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        this._localKB.removeInformationPoint(coordinates);
     }
 
     @Override
@@ -346,11 +331,6 @@ public class SyncKB implements SharkKB {
         return this._localKB.informationSpaces(as, matchAny);
     }
 
-    @Override
-    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
-        return this._localKB.getAllInformationPoints();
-    }
-    
     @Override
     public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
         return this._localKB.contextualize(as);
@@ -429,5 +409,10 @@ public class SyncKB implements SharkKB {
     @Override
     public Knowledge extract(SharkKB target, ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups, PeerSemanticTag recipient) throws SharkKBException {
         return this._localKB.extract(target, context, backgroundFP, cutGroups, recipient);
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
+        return this._localKB.getAllInformationSpaces();
     }
 }

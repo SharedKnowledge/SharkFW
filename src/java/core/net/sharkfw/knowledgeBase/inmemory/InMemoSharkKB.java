@@ -920,20 +920,20 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
     
     
-    @Override
-    public InformationPoint createInformationPoint(
-            InformationCoordinates coordinates) throws SharkKBException {
-        
-        InformationPoint ip = this.getInformationPoint(coordinates);
-        if(ip != null) {
-            return ip;
-        }
-        
-        ip = new InMemoInformationPoint(coordinates);
-        this.addContextPoint(ip);
-        
-        return ip;
-    }
+//    @Override
+//    public InformationPoint createInformationPoint(
+//            InformationCoordinates coordinates) throws SharkKBException {
+//        
+//        InformationPoint ip = this.getInformationPoint(coordinates);
+//        if(ip != null) {
+//            return ip;
+//        }
+//        
+//        ip = new InMemoInformationPoint(coordinates);
+//        this.addContextPoint(ip);
+//        
+//        return ip;
+//    }
     
     @Override
     public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
@@ -1048,21 +1048,21 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return null;
     }
 
-    @Override
-    public InformationPoint getInformationPoint(
-            InformationCoordinates coordinates) throws SharkKBException {
-        
-        Iterator<InformationPoint> ipIter = this.knowledge.informationPoints();
-        while (ipIter.hasNext()) {
-            InformationPoint ip = ipIter.next();
-            InformationCoordinates co = ip.getInformationCoordinates();
-            
-            if (InMemoSharkKB.exactMatch(co, coordinates)) {
-                return ip;
-            }
-        }
-        return null;
-    }
+//    @Override
+//    public InformationPoint getInformationPoint(
+//            InformationCoordinates coordinates) throws SharkKBException {
+//        
+//        Iterator<InformationPoint> ipIter = this.knowledge.informationSpaces();
+//        while (ipIter.hasNext()) {
+//            InformationPoint ip = ipIter.next();
+//            InformationCoordinates co = ip.getInformationCoordinates();
+//            
+//            if (InMemoSharkKB.exactMatch(co, coordinates)) {
+//                return ip;
+//            }
+//        }
+//        return null;
+//    }
     
     /**
      * @deprecated 
@@ -1096,8 +1096,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
     
     @Override
-    public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException {
-        return this.knowledge.informationPoints();
+    public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
+        return this.knowledge.informationSpaces();
     }
 
     /**

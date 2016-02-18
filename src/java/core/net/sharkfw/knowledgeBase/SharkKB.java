@@ -6,7 +6,6 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 /**
  *
@@ -67,8 +66,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException;
   
-  public InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
-    
   /**
    * Each dimension can be null. It means unknown and will match to each other
    * concept in this dimension. 
@@ -120,17 +117,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public ContextPoint createContextPoint(ContextCoordinates coordinates) 
           throws SharkKBException;
-  
-  /**
-   * Create a place in KB to keep information.
-   * @param coordinates
-   * @return
-   * @throws SharkKBException 
-   */
-  public InformationPoint createInformationPoint(InformationCoordinates coordinates) 
-          throws SharkKBException;
-  
-  
+    
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, 
             FragmentationParameter[] backgroundFP, Knowledge knowledge, 
             boolean learnTags, boolean deleteAssimilated) throws SharkKBException;
@@ -189,14 +176,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @deprecated 
    */
   public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException;
-  
-  /**
-   * Remove a single information pint including its information.
-   * 
-   * @param coordinates
-   * @throws SharkKBException 
-   */
-  public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
   
   /**
    * Return (copies) of all ContextPoints, which are covered by the 
@@ -278,7 +257,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @return
    * @throws SharkKBException 
    */
-  public Iterator<InformationPoint> getAllInformationPoints() throws SharkKBException;
+  public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException;
 
   /**
    * Register a new listener for changes on this SharkKB

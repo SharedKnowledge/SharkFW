@@ -158,47 +158,47 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 //        return null;
     }    
     
-    /**
-     * That's a default implementation. It splits the information space
-     * into information points and merges each point into the KB.
-     * 
-     * That's probably sufficient for an in memo implementation. 
-     * Reasonable KB should be able to offer a better solution.
-     * 
-     * @param iSpace
-     * @throws SharkKBException 
-     */
-    public void mergeInformationSpace(ASIPInformationSpace iSpace) 
-            throws SharkKBException {
-        
-        ASIPSpace asipSpace = iSpace.getASIPSpace();
-        if(asipSpace == null) return;
-        
-        // create coordinates for all points inside that space
-        HashSet<InformationCoordinates> infoCoordSet = 
-                this.possibleInformationCoordinates(asipSpace);
-        
-        if(infoCoordSet == null || infoCoordSet.isEmpty()) return;
-        
-        /* create an infoPoint for each coordinate and add
-        information - that is the dreadful part of that algorithm:
-        it produces redundancy
-         */
-        Iterator<InformationCoordinates> iCoordIter = infoCoordSet.iterator();
-        while(iCoordIter.hasNext()) {
-            InformationCoordinates ic = iCoordIter.next();
-            InformationPoint ip = this.createInformationPoint(ic);
-            
-            // no copy information
-            Iterator<Information> infoIter = iSpace.informations();
-            while(infoIter != null && infoIter.hasNext()) {
-                Information info = infoIter.next();
-                if(info != null) {
-                    ip.addInformation(info);
-                }
-            }
-        }
-    }    
+//    /**
+//     * That's a default implementation. It splits the information space
+//     * into information points and merges each point into the KB.
+//     * 
+//     * That's probably sufficient for an in memo implementation. 
+//     * Reasonable KB should be able to offer a better solution.
+//     * 
+//     * @param iSpace
+//     * @throws SharkKBException 
+//     */
+//    public void mergeInformationSpace(ASIPInformationSpace iSpace) 
+//            throws SharkKBException {
+//        
+//        ASIPSpace asipSpace = iSpace.getASIPSpace();
+//        if(asipSpace == null) return;
+//        
+//        // create coordinates for all points inside that space
+//        HashSet<InformationCoordinates> infoCoordSet = 
+//                this.possibleInformationCoordinates(asipSpace);
+//        
+//        if(infoCoordSet == null || infoCoordSet.isEmpty()) return;
+//        
+//        /* create an infoPoint for each coordinate and add
+//        information - that is the dreadful part of that algorithm:
+//        it produces redundancy
+//         */
+//        Iterator<InformationCoordinates> iCoordIter = infoCoordSet.iterator();
+//        while(iCoordIter.hasNext()) {
+//            InformationCoordinates ic = iCoordIter.next();
+//            InformationPoint ip = this.createInformationPoint(ic);
+//            
+//            // no copy information
+//            Iterator<Information> infoIter = iSpace.informations();
+//            while(infoIter != null && infoIter.hasNext()) {
+//                Information info = infoIter.next();
+//                if(info != null) {
+//                    ip.addInformation(info);
+//                }
+//            }
+//        }
+//    }    
     
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, 
@@ -1062,21 +1062,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public abstract InformationPoint getInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
-
-    @Override
     public abstract InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException;
-
-    @Override
-    public abstract InformationPoint createInformationPoint(InformationCoordinates coordinates) throws SharkKBException;
-
-    @Override
-    public void removeInformationPoint(InformationCoordinates coordinates) throws SharkKBException {
-        InformationPoint toRemove = this.getInformationPoint(coordinates);
-        if(toRemove != null) {
-            this.knowledge.removeInformationPoint(toRemove);
-        }
-    }
 
     /**
      * That method should be overwritten. This default implementation assumes

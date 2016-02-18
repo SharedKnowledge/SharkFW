@@ -73,7 +73,7 @@ public class SQLKnowledge implements Knowledge {
     }
 
     @Override
-    public Iterator<InformationPoint> informationPoints() {
+    public Iterator<ASIPInformationSpace> informationSpaces() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -94,11 +94,6 @@ public class SQLKnowledge implements Knowledge {
 
     @Override
     public int getNumberOfInformationSpaces() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
