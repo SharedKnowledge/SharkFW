@@ -152,7 +152,7 @@ public class ASIPSerializer {
             }
             pointInfoJSON.put(ASIPPointInformation.INFOMETADATA, infoMetaDataArray);
         }
-        object.put(ASIPInfoDataManager.CONTEXTPOINTINFO, pointInfoArray);
+        object.put(ASIPInfoDataManager.INFODATA, pointInfoArray);
         object.put(ASIPInfoDataManager.INFOCONTENT, manager.getInfoContent());
         
         return object;
@@ -452,7 +452,7 @@ public class ASIPSerializer {
      * @return
      * @throws SharkKBException 
      */
-    public static ASIPKnowledge deserializeKnowledge(InputStream stream) throws SharkKBException {
+    public static ASIPKnowledge deserializeKnowledge(String knowledge) throws SharkKBException {
         
         
         

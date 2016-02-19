@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.io.OutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +25,6 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     private SharkVocabulary cm;
 
     protected InMemoASIPKnowledge() {
-//        this.informationSpaces = new ArrayList<>();
         this.infoList = new ArrayList<>();
     }
     

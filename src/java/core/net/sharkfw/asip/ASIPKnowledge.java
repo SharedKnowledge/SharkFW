@@ -15,7 +15,6 @@ public interface ASIPKnowledge {
     
     public final static String VOCABULARY = "VOCABULARY";
     public final static String INFORMATIONSPACES = "INFORMATIONSPACES";
-//    public final static String INFORMATIONPOINTS = "INFORMATIONPOINTS";
     
     /**
      * Merge (create copies) of information into described space.

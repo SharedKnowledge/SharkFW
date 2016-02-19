@@ -20,7 +20,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 public class ASIPInfoDataManager {
     
     public final static String INFOCONTENT = "INFOCONTENT";
-    public final static String CONTEXTPOINTINFO = "CONTEXTPOINTINFO";
+    public final static String INFODATA = "INFODATA";
     
     private long currentOffset = 0;
     private final List<ASIPPointInformation> infoPoints;
