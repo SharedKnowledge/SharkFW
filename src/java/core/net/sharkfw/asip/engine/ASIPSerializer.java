@@ -377,6 +377,12 @@ public class ASIPSerializer {
             jsonObject.put(ASIPSpace.TOPICS, serializeSTSetJSON(topics));
         }
         
+        // types
+        STSet types = space.getTypes();
+        if(types != null && !types.isEmpty()) {
+            jsonObject.put(ASIPSpace.TYPES, serializeSTSetJSON(types));
+        }
+        
         // sender
         PeerSemanticTag sender = space.getSender();
         if(sender != null) {
@@ -400,7 +406,6 @@ public class ASIPSerializer {
         if(locations != null && !locations.isEmpty()) {
             jsonObject.put(ASIPSpace.LOCATIONS, serializeSTSetJSON(locations));
         }
-        
         
         // times
         TimeSTSet times = space.getTimes();
@@ -454,7 +459,14 @@ public class ASIPSerializer {
      */
     public static ASIPKnowledge deserializeKnowledge(String knowledge) throws SharkKBException {
         
+        if(knowledge==null) return null;
         
+        JSONObject jsonObject = new JSONObject(knowledge);
+        JSONObject vocabularyJSON = jsonObject.getJSONObject(ASIPKnowledge.VOCABULARY);
+        STSet topics = deserializeSTSet(vocabularyJSON.getString(ASIPSpace.TOPICS));
+        STSet types = deserializeSTSet(vocabularyJSON.getString(ASIPSpace.TYPES));
+        PeerSTSet peers = deserializePeerSTSet(null, vocabularyJSON.getString(ASIPSpace.APPROVERS));
+        deserializePeerSTSet(peers, vocabularyJSON.getString(ASIPSpace.SENDER));
         
         return null; 
         // TODO deserializeKnowledge
