@@ -1,5 +1,6 @@
 package net.sharkfw.asip.engine;
 
+import com.sun.xml.internal.fastinfoset.vocab.SerializerVocabulary;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -19,6 +20,7 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SharkVocabulary;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSTSet;
@@ -128,9 +130,9 @@ public class ASIPSerializer {
         if(knowledge==null) return null;
         
         JSONObject object = new JSONObject();
-        ASIPSpace vocabulary = knowledge.getVocabulary().asASIPSpace();
+        SharkVocabulary vocabulary = knowledge.getVocabulary();
         
-        object.put(ASIPKnowledge.VOCABULARY, serializeASIPSpaceJSON(vocabulary));
+        object.put(ASIPKnowledge.VOCABULARY, serializeVocabulary(vocabulary));
         
         ASIPInfoDataManager manager = new ASIPInfoDataManager(knowledge.informationSpaces());
         Iterator pointInformations = manager.getPointInfromations();
@@ -156,6 +158,18 @@ public class ASIPSerializer {
         object.put(ASIPInfoDataManager.INFOCONTENT, manager.getInfoContent());
         
         return object;
+    }
+    
+    public static JSONObject serializeVocabulary(SharkVocabulary vocabulary) throws SharkKBException{
+        JSONObject jsonObject = new JSONObject();
+        
+        jsonObject.put(SharkVocabulary.TOPICS, serializeSTSetJSON(vocabulary.getTopicSTSet()));
+        jsonObject.put(SharkVocabulary.TYPES, serializeSTSetJSON(vocabulary.getTypeSTSet()));
+        jsonObject.put(SharkVocabulary.PEERS, serializeSTSetJSON(vocabulary.getPeerSTSet()));
+        jsonObject.put(SharkVocabulary.LOCATIONS, serializeSTSetJSON(vocabulary.getSpatialSTSet()));
+        jsonObject.put(SharkVocabulary.TIMES, serializeSTSetJSON(vocabulary.getTimeSTSet()));
+        
+        return jsonObject;
     }
     
     public static JSONObject serializeTagJSON(SemanticTag tag) throws JSONException, SharkKBException {

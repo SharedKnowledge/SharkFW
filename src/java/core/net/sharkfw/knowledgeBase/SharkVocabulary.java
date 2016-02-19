@@ -11,6 +11,13 @@ import net.sharkfw.asip.ASIPInterest;
  */
 public interface SharkVocabulary {
     
+    public final static String PEERS = "PEERS";
+    public final static String TIMES = "TIMES";
+    public final static String LOCATIONS = "LOCATIONS";
+    public final static String TOPICS = "TOPICS";
+    public final static String TYPES = "TYPES";
+    
+    
     public PeerSemanticTag getOwner();
     
     /**
