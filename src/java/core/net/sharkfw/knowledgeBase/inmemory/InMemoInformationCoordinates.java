@@ -15,7 +15,7 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
  *
  * @author thsc
  */
-class InMemoInformationCoordinates extends InMemoInformationSpace 
+public class InMemoInformationCoordinates extends InMemoInformationSpace 
                             implements InformationCoordinates {
 
     public InMemoInformationCoordinates(SemanticTag topic, 

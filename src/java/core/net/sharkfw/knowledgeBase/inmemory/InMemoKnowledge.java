@@ -4,6 +4,8 @@ import net.sharkfw.asip.ASIPSpace;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
+import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -16,7 +18,7 @@ import net.sharkfw.system.Iterator2Enumeration;
  * 
  * @author thsc
  */
-public class InMemoKnowledge implements Knowledge {
+public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
     private ArrayList<ContextPoint> cps;
     private ArrayList<ASIPInformationSpace> informationSpaces;
     
@@ -132,33 +134,8 @@ public class InMemoKnowledge implements Knowledge {
         return new Iterator2Enumeration(this.cps.iterator());
     }
 
-    @Override
-    public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException {
-        this.informationSpaces.add(space);
-    }
-    
     private ASIPSpace point2space(InformationPoint ip) {
         return new InMemoInformationSpace();
-    }
-
-    @Override
-    public void addInformationPoint(InformationPoint iPoint) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void removeInformationPoint(InformationPoint cp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int getNumberOfInformationPoints() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public InformationPoint getInformationPoint(int i) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -167,7 +144,7 @@ public class InMemoKnowledge implements Knowledge {
     }
 
     @Override
-    public int getNumberOfInformationSpaces() {
+    public int getNumberInformation() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -177,7 +154,8 @@ public class InMemoKnowledge implements Knowledge {
     }
 
     @Override
-    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
+    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> infos, ASIPSpace space) throws SharkKBException {
+        // TODO
         InMemoInformationSpace newIS = new InMemoInformationSpace(space);
         this.informationSpaces.add(newIS);
         
@@ -197,5 +175,10 @@ public class InMemoKnowledge implements Knowledge {
     @Override
     public void removeListener(KnowledgeListener kbl) {
         this.listeners.remove(kbl);
+    }
+
+    @Override
+    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

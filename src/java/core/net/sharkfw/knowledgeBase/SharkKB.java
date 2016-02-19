@@ -5,6 +5,7 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPKnowledge;
 
 /**
@@ -97,16 +98,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
             SpatialSemanticTag location,
             int direction) throws SharkKBException;
     
-    public InformationCoordinates createInformationCoordinates(
-            SemanticTag topic,
-            SemanticTag type,
-            PeerSemanticTag approver,
-            PeerSemanticTag sender,
-            PeerSemanticTag receiver,
-            TimeSemanticTag time,
-            SpatialSemanticTag location,
-            int direction) throws SharkKBException;
-  
   /**
    * Create a new ContextPoint at the given coordinates.
    *
@@ -117,7 +108,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    */
   public ContextPoint createContextPoint(ContextCoordinates coordinates) 
           throws SharkKBException;
-    
+
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, 
             FragmentationParameter[] backgroundFP, Knowledge knowledge, 
             boolean learnTags, boolean deleteAssimilated) throws SharkKBException;

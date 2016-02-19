@@ -24,7 +24,6 @@ public interface ASIPInformationSpace {
     public final static String INFORMATIONS = "INFORMATIONS";
     
     ASIPSpace getASIPSpace() throws SharkKBException;
-    void setASIPSpace(ASIPSpace space) throws SharkKBException;
     
-    Iterator<Information> informations() throws SharkKBException;
+    Iterator<ASIPInformation> informations() throws SharkKBException;
 }

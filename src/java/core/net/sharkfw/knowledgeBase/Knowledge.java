@@ -1,8 +1,6 @@
 package net.sharkfw.knowledgeBase;
 
 import java.util.Enumeration;
-import java.util.Iterator;
-import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPKnowledge;
 
 /**
@@ -35,10 +33,6 @@ public interface Knowledge extends ASIPKnowledge {
    */
   public void addContextPoint(ContextPoint cp);
   
-  public void addInformationPoint(InformationPoint iPoint) throws SharkKBException;
-  
-    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException;  
-
   /**
    * Remove a given Context Point from the knowledge.
    *
@@ -49,8 +43,6 @@ public interface Knowledge extends ASIPKnowledge {
    */
   public void removeContextPoint(ContextPoint cp);
   
-  public void removeInformationPoint(InformationPoint cp) throws SharkKBException;
-
   /**
    * An enumeration of all contained context points.
    *
@@ -92,8 +84,6 @@ public interface Knowledge extends ASIPKnowledge {
    */
   public int getNumberOfContextPoints();
   
-  public int getNumberOfInformationPoints() throws SharkKBException;
-
   // ===========================================================================
   // These methods are a left-over from the internal Knowledge interface
 
@@ -107,8 +97,6 @@ public interface Knowledge extends ASIPKnowledge {
      * @deprecated 
      */
     public ContextPoint getCP(int i);
-    
-    public InformationPoint getInformationPoint(int i) throws SharkKBException;
     
     public void addListener(KnowledgeListener kListener);
     

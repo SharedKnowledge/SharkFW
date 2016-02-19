@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Information;
@@ -107,21 +108,21 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
         return this;
     }
 
-    @Override
-    public void setASIPSpace(ASIPSpace space) throws SharkKBException {
-        this.topics = InMemoSharkKB.createInMemoCopy(space.getTopics());
-        this.types = InMemoSharkKB.createInMemoCopy(space.getTypes());
-        this.approvers = InMemoSharkKB.createInMemoCopy(space.getApprovers());
-        this.senders = InMemoSharkKB.createInMemoPeerSTSet();
-        this.senders.merge(space.getSender());
-        this.receivers = InMemoSharkKB.createInMemoCopy(space.getReceivers());
-        this.times = InMemoSharkKB.createInMemoCopy(space.getTimes());
-        this.locations = InMemoSharkKB.createInMemoCopy(space.getLocations());
-        this.direction = space.getDirection();
-    }
+//    @Override
+//    public void setASIPSpace(ASIPSpace space) throws SharkKBException {
+//        this.topics = InMemoSharkKB.createInMemoCopy(space.getTopics());
+//        this.types = InMemoSharkKB.createInMemoCopy(space.getTypes());
+//        this.approvers = InMemoSharkKB.createInMemoCopy(space.getApprovers());
+//        this.senders = InMemoSharkKB.createInMemoPeerSTSet();
+//        this.senders.merge(space.getSender());
+//        this.receivers = InMemoSharkKB.createInMemoCopy(space.getReceivers());
+//        this.times = InMemoSharkKB.createInMemoCopy(space.getTimes());
+//        this.locations = InMemoSharkKB.createInMemoCopy(space.getLocations());
+//        this.direction = space.getDirection();
+//    }
 
     @Override
-    public Iterator<Information> informations() throws SharkKBException {
+    public Iterator<ASIPInformation> informations() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

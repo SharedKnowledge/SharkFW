@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
@@ -317,11 +319,6 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        return this._localKB.createInformationCoordinates(topic, type, approver, sender, receiver, time, location, direction);
-    }
-
-    @Override
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
         this._localKB.removeInformationSpace(space);
     }
@@ -372,13 +369,8 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public int getNumberOfInformationSpaces() throws SharkKBException {
-        return this._localKB.getNumberOfInformationSpaces();
-    }
-
-    @Override
-    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
-        return this._localKB.createInformationSpace(space);
+    public int getNumberInformation() throws SharkKBException {
+        return this._localKB.getNumberInformation();
     }
 
     @Override
@@ -414,5 +406,25 @@ public class SyncKB implements SharkKB {
     @Override
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
         return this._localKB.getAllInformationSpaces();
+    }
+
+    @Override
+    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        return this._localKB.mergeInformation(information, space);
+    }
+
+    @Override
+    public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
+        this._localKB.removeInformation(info, infoSpace);
+    }
+
+    @Override
+    public Iterator<Information> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+        return this._localKB.getInformation(infoSpace);
+    }
+
+    @Override
+    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        return this._localKB.addInformation(information, space);
     }
 }

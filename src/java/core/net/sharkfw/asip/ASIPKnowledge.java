@@ -1,6 +1,8 @@
 package net.sharkfw.asip;
 
 import java.util.Iterator;
+import java.util.List;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
@@ -14,9 +16,46 @@ public interface ASIPKnowledge {
     public final static String INFORMATIONSPACES = "INFORMATIONSPACES";
 //    public final static String INFORMATIONPOINTS = "INFORMATIONPOINTS";
     
-    public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException;
+    /**
+     * Merge (create copies) of information into described space.
+     * 
+     * @param information
+     * @param space
+     * @return
+     * @throws SharkKBException 
+     */
+    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information,
+            ASIPSpace space) throws SharkKBException;
     
-    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException;
+    /**
+     * Remove information from described space. The infoSpace does not have to
+     * be the same as during adding that information. That method just takes that
+     * information out of that space. Information can reside in another space,
+     * though.
+     * 
+     * @param info
+     * @param infoSpace
+     * @throws SharkKBException 
+     */
+    public void removeInformation(Information info, ASIPSpace infoSpace)
+          throws SharkKBException;
+    
+    public Iterator<Information> getInformation(ASIPSpace infoSpace)
+          throws SharkKBException;
+            
+    /**
+     * Adds information into that space. Be careful: That method is free to create
+     * copies of information. Any subsequent changes in those information
+     * can result in changes but don't have to. Meaning: Release all object references
+     * to information after calling that method!
+     * 
+     * @param information
+     * @param space
+     * @return
+     * @throws SharkKBException 
+     */
+    public ASIPInformationSpace addInformation(List<ASIPInformation> information,
+            ASIPSpace space) throws SharkKBException;
 
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
 
@@ -36,5 +75,5 @@ public interface ASIPKnowledge {
    */
     public SharkVocabulary getVocabulary() throws SharkKBException;
 
-    public int getNumberOfInformationSpaces() throws SharkKBException;
+    public int getNumberInformation() throws SharkKBException;
 }

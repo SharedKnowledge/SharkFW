@@ -4,6 +4,8 @@ import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.knowledgeBase.*;
@@ -878,27 +880,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return new InMemoContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
     }
     
-    @Override
-    public InformationCoordinates createInformationCoordinates(
-            SemanticTag topic, SemanticTag type, 
-            PeerSemanticTag approver, PeerSemanticTag sender, 
-            PeerSemanticTag receiver, TimeSemanticTag time, 
-            SpatialSemanticTag location, int direction) 
-            throws SharkKBException {
-        
-        SemanticTag to = this.getTopicSTSet().merge(topic);
-        SemanticTag ty = this.getTypeSTSet().merge(type);
-        PeerSTSet peerDimension = this.getPeerSTSet();
-        PeerSemanticTag a = (PeerSemanticTag) peerDimension.merge(approver);
-        PeerSemanticTag s = (PeerSemanticTag) peerDimension.merge(sender);
-        PeerSemanticTag r = (PeerSemanticTag) peerDimension.merge(receiver);
-        TimeSemanticTag ti = (TimeSemanticTag) this.getTimeSTSet().merge(time);
-        SpatialSemanticTag lo = (SpatialSemanticTag) this.getSpatialSTSet().merge(location);
-        
-        return new InMemoInformationCoordinates(
-                to, ty, a, s, r, ti, lo, direction);
-    }
-
     /**
      * @deprecated 
      * @param coordinates
@@ -1274,5 +1255,20 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         if (defaultFPValue != null) {
             this.defaultFP = Util.string2fragmentationParameter(defaultFPValue);
         }
+    }
+
+    @Override
+    public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
+        this.asipKnowledge.removeInformationSpace(infoSpace);
+    }
+
+    @Override
+    public Iterator<Information> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+        return this.asipKnowledge.getInformation(infoSpace);
+    }
+
+    @Override
+    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        return this.asipKnowledge.addInformation(information, space);
     }
 }

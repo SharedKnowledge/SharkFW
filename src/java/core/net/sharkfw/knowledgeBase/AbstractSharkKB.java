@@ -7,9 +7,11 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.knowledgeBase.inmemory.InMemoInformationCoordinates;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
 import net.sharkfw.system.EnumerationChain;
@@ -220,6 +222,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @return
      * @throws SharkKBException 
      */
+    @Override
     public Knowledge extract(ASIPSpace context) throws SharkKBException {
         
         SharkKB target = new InMemoSharkKB();
@@ -229,6 +232,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return this.extract(target, context, fps, false, null);
     }
 
+    @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] fp) 
             throws SharkKBException {
         
@@ -237,6 +241,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return this.extract(target, context, fp, false, null);
     }
 
+    @Override
     public Knowledge extract(ASIPSpace context, 
             FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) 
                 throws SharkKBException {
@@ -330,11 +335,31 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return new Iterator2Enumeration(iterCPs);
     }
     
+    public InformationCoordinates createInformationCoordinates(
+            SemanticTag topic, SemanticTag type, 
+            PeerSemanticTag approver, PeerSemanticTag sender, 
+            PeerSemanticTag receiver, TimeSemanticTag time, 
+            SpatialSemanticTag location, int direction) 
+            throws SharkKBException {
+        
+        SemanticTag to = this.getTopicSTSet().merge(topic);
+        SemanticTag ty = this.getTypeSTSet().merge(type);
+        PeerSTSet peerDimension = this.getPeerSTSet();
+        PeerSemanticTag a = (PeerSemanticTag) peerDimension.merge(approver);
+        PeerSemanticTag s = (PeerSemanticTag) peerDimension.merge(sender);
+        PeerSemanticTag r = (PeerSemanticTag) peerDimension.merge(receiver);
+        TimeSemanticTag ti = (TimeSemanticTag) this.getTimeSTSet().merge(time);
+        SpatialSemanticTag lo = (SpatialSemanticTag) this.getSpatialSTSet().merge(location);
+        
+        return new InMemoInformationCoordinates(
+                to, ty, a, s, r, ti, lo, direction);
+    }
+    
     HashSet<InformationCoordinates> possibleInformationCoordinates(ASIPSpace space) throws SharkKBException {
         if (space == null) {
             return null;
         }
-        HashSet<InformationCoordinates> icList = new HashSet<InformationCoordinates>();
+        HashSet<InformationCoordinates> icList = new HashSet<>();
         
         /* create first prototype with direction and owner: 
            (-,-,owner,-,-,-,-,direction)
@@ -403,7 +428,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         if (space == null) {
             return null;
         }
-        HashSet<ContextCoordinates> ccList = new HashSet<ContextCoordinates>();
+        HashSet<ContextCoordinates> ccList = new HashSet<>();
         
         // create first prototype with direction and owner
         if (space.getDirection() == SharkCS.DIRECTION_INOUT) {
@@ -455,7 +480,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         }
         
         // lets combine - create container for results first
-        HashSet<InformationCoordinates> result = new HashSet<InformationCoordinates>();
+        HashSet<InformationCoordinates> result = new HashSet<>();
         while (stTags.hasNext()) {
             // take next tag to combine
             SemanticTag tag = stTags.next();
@@ -537,7 +562,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         if (tagEnum == null || !tagEnum.hasMoreElements()) {
             return protoCoo;
         }
-        HashSet<ContextCoordinates> result = new HashSet<ContextCoordinates>();
+        HashSet<ContextCoordinates> result = new HashSet<>();
         while (tagEnum.hasMoreElements()) {
             SemanticTag tag = tagEnum.nextElement();
             // combine with existing
@@ -1061,9 +1086,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return this.interestsList.iterator();
     }
     
-    @Override
-    public abstract InformationCoordinates createInformationCoordinates(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException;
-
     /**
      * That method should be overwritten. This default implementation assumes
      * that only points are stored in the KB. Removing a space is a multiple
@@ -1120,15 +1142,10 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public int getNumberOfInformationSpaces() throws SharkKBException {
-        return this.asipKnowledge.getNumberOfInformationSpaces();
+    public int getNumberInformation() throws SharkKBException {
+        return this.asipKnowledge.getNumberInformation();
     }
     
-    @Override
-    public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException {
-        this.asipKnowledge.addInformationSpace(space);
-    }
-
     @Override
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
         this.asipKnowledge.removeInformationSpace(space);
@@ -1150,8 +1167,8 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public ASIPInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
-        return this.asipKnowledge.createInformationSpace(space);
+    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        return this.asipKnowledge.mergeInformation(information, space);
     }
     
 }
