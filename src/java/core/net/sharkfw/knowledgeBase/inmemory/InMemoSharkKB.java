@@ -1073,10 +1073,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         this.knowledge.addContextPoint(cp);
     }
 
-    protected void addInformationPoint(InformationPoint ip) throws SharkKBException {
-        this.knowledge.addInformationPoint(ip);
-    }
-
     /**
      * Returns enumeration of all context points. This actually is the same as
      * getContextPoints with an context space covering anything - which is technically
