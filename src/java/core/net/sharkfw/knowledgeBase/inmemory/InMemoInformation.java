@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sharkfw.asip.ASIPSpace;
 
 import net.sharkfw.system.TimeLong;
 import net.sharkfw.kep.KEPMessage;
@@ -465,5 +466,10 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 	
 	public void releaseLock() {
 	}
+
+    @Override
+    public ASIPSpace getASIPSpace() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

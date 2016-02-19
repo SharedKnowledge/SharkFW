@@ -5,8 +5,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.sharkfw.asip.ASIPSpace;
 
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationListener;
@@ -205,4 +204,9 @@ public class SyncInformation implements Information{
                 l.contentTypeChanged();
             }
         }
+
+    @Override
+    public ASIPSpace getASIPSpace() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

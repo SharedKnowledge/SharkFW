@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -380,6 +381,11 @@ public class SQLInformation extends SQLPropertyHolderDelegate implements Informa
     @Override
     public InputStream getInputStream() throws SharkKBException {
         throw new SharkKBException("Not supported yet in SQL implementation."); 
+    }
+
+    @Override
+    public ASIPSpace getASIPSpace() throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

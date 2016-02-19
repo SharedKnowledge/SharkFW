@@ -901,7 +901,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
 
     @Override
-    public Iterator<Information> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

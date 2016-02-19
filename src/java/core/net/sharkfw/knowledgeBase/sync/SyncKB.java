@@ -319,8 +319,8 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
-        this._localKB.removeInformationSpace(space);
+    public void removeInformation(ASIPSpace space) throws SharkKBException {
+        this._localKB.removeInformation(space);
     }
 
     @Override
@@ -346,11 +346,6 @@ public class SyncKB implements SharkKB {
     @Override
     public ASIPInterest asASIPInterest() {
         return this._localKB.asASIPInterest();
-    }
-
-    @Override
-    public void addInformationSpace(ASIPInformationSpace space) throws SharkKBException {
-        this._localKB.addInformationSpace(space);
     }
 
 //    @Override
@@ -419,12 +414,12 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public Iterator<Information> getInformation(ASIPSpace infoSpace) throws SharkKBException {
-        return this._localKB.getInformation(infoSpace);
+    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        return this._localKB.addInformation(information, space);
     }
 
     @Override
-    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        return this._localKB.addInformation(information, space);
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

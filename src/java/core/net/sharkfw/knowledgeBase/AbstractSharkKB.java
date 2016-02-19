@@ -1147,8 +1147,8 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     @Override
-    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
-        this.asipKnowledge.removeInformationSpace(space);
+    public void removeInformation(ASIPSpace space) throws SharkKBException {
+        this.asipKnowledge.removeInformation(space);
     }
 
 //    @Override

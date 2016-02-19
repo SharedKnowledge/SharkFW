@@ -139,7 +139,7 @@ public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
     }
 
     @Override
-    public void removeInformationSpace(ASIPSpace space) {
+    public void removeInformation(ASIPSpace space) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

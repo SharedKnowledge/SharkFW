@@ -10,6 +10,9 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  * @author thsc
  */
 public interface ASIPInformation extends PropertyHolder {
+    
+    ASIPSpace getASIPSpace() throws SharkKBException;
+    
     /**
      * Time in millis since 1.1.1970 - UNIX area.
      * @return 

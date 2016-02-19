@@ -816,7 +816,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             new InMemoSemanticNet(), peers, locations, times);
     }
     
-    protected InMemoSharkKB(SemanticNet topics, SemanticNet types, 
+    public InMemoSharkKB(SemanticNet topics, SemanticNet types, 
             PeerTaxonomy peers, SpatialSTSet locations, 
             TimeSTSet times) throws SharkKBException {
         
@@ -1259,11 +1259,11 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
-        this.asipKnowledge.removeInformationSpace(infoSpace);
+        this.asipKnowledge.removeInformation(infoSpace);
     }
 
     @Override
-    public Iterator<Information> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
         return this.asipKnowledge.getInformation(infoSpace);
     }
 

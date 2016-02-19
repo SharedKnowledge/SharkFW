@@ -40,7 +40,18 @@ public interface ASIPKnowledge {
     public void removeInformation(Information info, ASIPSpace infoSpace)
           throws SharkKBException;
     
-    public Iterator<Information> getInformation(ASIPSpace infoSpace)
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace)
+          throws SharkKBException;
+    
+    /**
+     * Return info spaces. That message does not return mutli copies
+     * of information. Each information is only present in on information
+     * space.
+     * 
+     * @return
+     * @throws SharkKBException 
+     */
+    public Iterator<ASIPInformationSpace> informationSpaces()
           throws SharkKBException;
             
     /**
@@ -57,9 +68,16 @@ public interface ASIPKnowledge {
     public ASIPInformationSpace addInformation(List<ASIPInformation> information,
             ASIPSpace space) throws SharkKBException;
 
-    public void removeInformationSpace(ASIPSpace space) throws SharkKBException;
-
-    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException;
+    /**
+     * Clean up that space by removing all information. Removing does not
+     * necessarily mean that any information is lost. Information which are
+     * also in another space are still stored in that knowledge but not in the
+     * given space.
+     * 
+     * @param space
+     * @throws SharkKBException 
+     */
+    public void removeInformation(ASIPSpace space) throws SharkKBException;
 
   /**
    * Return a ContextSpace containing Tag for the different coordinates of the
