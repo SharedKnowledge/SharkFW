@@ -11,10 +11,11 @@ Download SDK
 
 Subscribe to our [Shark-news- mailing list](https://lists.htw-berlin.de/mailman/listinfo/shark-news) to get announcements about new releases and patches.
 
-* [SharkFW 2.12.1](http://www.sharksystem.net/releases/sharkfw.2.12.1.jar) 
+* [SharkFW 2.12.1](http://www.sharksystem.net/releases/sharkfw.2.12.1.jar)
 * [SharkFW changelog 2.12.1](http://www.sharksystem.net/releases/sharkfw.changes.2.12.1.txt)
 * [Javadoc SharkFW 2.12](http://www.sharksystem.net/releases/sharkfw.javadoc.2.12.0.zip)
 * [Current Javadoc online reference.](http://www.sharksystem.net/javadoc/current/)
+* [Current ASIP BNF.](asip.md)
 
 Tutorials
 --------------
