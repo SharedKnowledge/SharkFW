@@ -63,7 +63,26 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         this.informationSpaces.add(newIS);
         
         return newIS;
-    }    
+    }
+    
+    ASIPInformationSpace mergeInformation(ASIPInformation info, ASIPSpace space) 
+            throws SharkKBException {
+        
+        return null;
+    }
+    
+    /**
+     * Method adds (but does not make a copy) that info object.
+     * @param info
+     * @param space
+     * @return
+     * @throws SharkKBException 
+     */
+    ASIPInformationSpace addInformation(InMemoInformation info, ASIPSpace space) 
+            throws SharkKBException {
+        
+        return null;
+    }
 
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
