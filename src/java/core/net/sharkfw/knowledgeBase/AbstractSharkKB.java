@@ -1162,7 +1162,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
 
     @Override
-    public SharkVocabulary getVocabulary() throws SharkKBException {
+    public SharkVocabulary getVocabulary() {
         return this;
     }
     

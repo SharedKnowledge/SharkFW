@@ -55,20 +55,6 @@ public interface ASIPKnowledge {
           throws SharkKBException;
             
     /**
-     * Adds information into that space. Be careful: That method is free to create
-     * copies of information. Any subsequent changes in those information
-     * can result in changes but don't have to. Meaning: Release all object references
-     * to information after calling that method!
-     * 
-     * @param information
-     * @param space
-     * @return
-     * @throws SharkKBException 
-     */
-    public ASIPInformationSpace addInformation(List<ASIPInformation> information,
-            ASIPSpace space) throws SharkKBException;
-
-    /**
      * Clean up that space by removing all information. Removing does not
      * necessarily mean that any information is lost. Information which are
      * also in another space are still stored in that knowledge but not in the
@@ -91,7 +77,7 @@ public interface ASIPKnowledge {
    *
    * @return A ContextSpace with the above characteristics
    */
-    public SharkVocabulary getVocabulary() throws SharkKBException;
+    public SharkVocabulary getVocabulary();
 
     public int getNumberInformation() throws SharkKBException;
 }

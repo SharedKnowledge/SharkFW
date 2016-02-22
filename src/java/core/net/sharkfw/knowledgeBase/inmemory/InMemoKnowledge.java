@@ -1,12 +1,8 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import net.sharkfw.asip.ASIPSpace;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
-import net.sharkfw.asip.ASIPInformation;
-import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
 
@@ -19,10 +15,7 @@ import net.sharkfw.system.Iterator2Enumeration;
  * @author thsc
  */
 public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
-    private ArrayList<ContextPoint> cps;
-    private ArrayList<ASIPInformationSpace> informationSpaces;
-    
-    private SharkVocabulary cm;
+    private final ArrayList<ContextPoint> cps;
 
     /** 
      * Create knowledge without background 
@@ -30,20 +23,16 @@ public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
     public InMemoKnowledge() {
         // create empty context point list
         cps = new ArrayList<>();
-        informationSpaces = new ArrayList<>();
     }
 
     public InMemoKnowledge(SharkVocabulary background) {
-        this();
-        
-        // use external background
-        this.cm = background;
+        super(background);
+        cps = new ArrayList<>();
     }
     
     InMemoKnowledge(SharkVocabulary cm, InMemoKnowledge k) {
-        this.cm = cm;
+        super(cm);
         this.cps = k.getCPS();
-        this.informationSpaces = k.getISS();
     }
     
     /**
@@ -52,10 +41,6 @@ public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
      */
     private ArrayList<ContextPoint> getCPS() {
         return this.cps;
-    }
-
-    private ArrayList<ASIPInformationSpace> getISS() {
-        return this.informationSpaces;
     }
 
     /**
@@ -81,17 +66,6 @@ public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
         return this.cps.get(i);
     }
 
-    /**
-     * Return a reference to the contextmap.
-     * Note: Method can return null. Context map can also have empty dimensions.
-     * 
-     * @return A <code>ContextSpace</code> representing the contextmap of this <code>Knowledge</code>
-     */
-    @Override
-    public SharkVocabulary getVocabulary() {
-        return this.cm;
-    }
-    
     // =========================================================================
     // API rev. methods
 
@@ -134,34 +108,6 @@ public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
         return new Iterator2Enumeration(this.cps.iterator());
     }
 
-    private ASIPSpace point2space(InformationPoint ip) {
-        return new InMemoInformationSpace();
-    }
-
-    @Override
-    public void removeInformation(ASIPSpace space) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int getNumberInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Iterator<ASIPInformationSpace> informationSpaces() {
-        return this.informationSpaces.iterator();
-    }
-
-    @Override
-    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> infos, ASIPSpace space) throws SharkKBException {
-        // TODO
-        InMemoInformationSpace newIS = new InMemoInformationSpace(space);
-        this.informationSpaces.add(newIS);
-        
-        return newIS;
-    }    
-
     //////////////////////////////////////////////////////////////////////////
     //                               knowledge listener                     //
     //////////////////////////////////////////////////////////////////////////
@@ -175,10 +121,5 @@ public class InMemoKnowledge extends InMemoASIPKnowledge implements Knowledge {
     @Override
     public void removeListener(KnowledgeListener kbl) {
         this.listeners.remove(kbl);
-    }
-
-    @Override
-    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

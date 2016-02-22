@@ -1266,9 +1266,4 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
         return this.asipKnowledge.getInformation(infoSpace);
     }
-
-    @Override
-    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        return this.asipKnowledge.addInformation(information, space);
-    }
 }

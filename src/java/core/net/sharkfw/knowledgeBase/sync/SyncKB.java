@@ -359,7 +359,7 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public SharkVocabulary getVocabulary() throws SharkKBException {
+    public SharkVocabulary getVocabulary() {
         return this._localKB.getVocabulary();
     }
 
@@ -411,11 +411,6 @@ public class SyncKB implements SharkKB {
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
         this._localKB.removeInformation(info, infoSpace);
-    }
-
-    @Override
-    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        return this._localKB.addInformation(information, space);
     }
 
     @Override

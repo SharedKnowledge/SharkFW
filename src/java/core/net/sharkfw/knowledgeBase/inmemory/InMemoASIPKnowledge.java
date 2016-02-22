@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.asip.ASIPInformation;
@@ -16,44 +17,53 @@ import net.sharkfw.knowledgeBase.SharkVocabulary;
  * @author msc
  */
 public class InMemoASIPKnowledge implements ASIPKnowledge {
+    private List<ASIPInformationSpace> informationSpaces;
+    private ArrayList<ASIPInformation> infoList;
+    private SharkVocabulary cm;
+
+    protected InMemoASIPKnowledge() {
+        this.informationSpaces = new ArrayList<>();
+        this.infoList = new ArrayList<>();
+    }
     
-    private InputStream stream;
-
-    protected InMemoASIPKnowledge() {}
+    public InMemoASIPKnowledge(SharkVocabulary background) {
+        this();
+        this.cm = background;
+    }
     
-    public InMemoASIPKnowledge(InputStream stream) {
-        this.stream = stream;
+    InMemoASIPKnowledge(SharkVocabulary cm, InMemoASIPKnowledge k) {
+        this.cm = cm;
+        this.informationSpaces = k.getInformationSpaces();
+        this.infoList = k.getInfoList();
     }
-
+    
+    /////////////////////////////////////////////////////////////////////////
+    //                        information management                       //
+    /////////////////////////////////////////////////////////////////////////
+    
     @Override
-    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> infos,
-            ASIPSpace space) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void removeInformation(ASIPSpace space) throws SharkKBException {
-    }
-
-    @Override
-    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public SharkVocabulary getVocabulary() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public int getNumberInformation() throws SharkKBException {
-        return 0;
-    }
-
-    @Override
-    public ASIPInformationSpace addInformation(List<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+    public void removeInformation(ASIPSpace space) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public int getNumberInformation() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> informationSpaces() {
+        return this.informationSpaces.iterator();
+    }
+
+    @Override
+    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> infos, ASIPSpace space) throws SharkKBException {
+        // TODO
+        InMemoInformationSpace newIS = new InMemoInformationSpace(space);
+        this.informationSpaces.add(newIS);
+        
+        return newIS;
+    }    
 
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
@@ -63,5 +73,18 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public SharkVocabulary getVocabulary() {
+        return this.cm;
+    }
+
+    private List<ASIPInformationSpace> getInformationSpaces() {
+        return this.informationSpaces;
+    }
+
+    private ArrayList<ASIPInformation> getInfoList() {
+        return this.infoList;
     }
 }
