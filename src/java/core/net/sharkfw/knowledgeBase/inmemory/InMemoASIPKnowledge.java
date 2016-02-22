@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
+import net.sharkfw.system.Streamer;
 
 /**
  *
@@ -58,32 +60,27 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> infos, ASIPSpace space) throws SharkKBException {
-        // TODO
-        InMemoInformationSpace newIS = new InMemoInformationSpace(space);
-        this.informationSpaces.add(newIS);
-        
-        return newIS;
-    }
-    
-    ASIPInformationSpace mergeInformation(ASIPInformation info, ASIPSpace space) 
-            throws SharkKBException {
-        
-        return null;
-    }
-    
-    /**
-     * Method adds (but does not make a copy) that info object.
-     * @param info
-     * @param space
-     * @return
-     * @throws SharkKBException 
-     */
-    ASIPInformationSpace addInformation(InMemoInformation info, ASIPSpace space) 
-            throws SharkKBException {
-        
-        return null;
-    }
+        if(infos == null || !infos.hasNext()) throw new SharkKBException("info list must no be null");
 
+        ASIPInformationSpace isp = null;
+        
+        do {
+            ASIPInformation info = infos.next();
+            
+            // copy information object
+            InMemoInformation infoCopy = new InMemoInformation();
+            infoCopy.setContent(info.getContentAsByte());
+            
+            // add to internal lists
+            this.infoList.add(info);
+            
+            // TODO: gi ahead here..
+
+        } while(infos.hasNext());
+        
+        return isp;
+    }
+    
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
