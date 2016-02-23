@@ -268,16 +268,11 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
         }
     }
     
-    public ASIPInterest contextualize(ASIPSpace context, FragmentationParameter[] fp) 
+    public ASIPInterest contextualize(ASIPSpace context, FPSet fps) 
             throws SharkKBException {
-        // create result
-        InMemoInterest mutualInterest = new InMemoInterest();
         
-        if(SharkCSAlgebra.contextualize(mutualInterest, this, context, fp)) {
-            return mutualInterest;
-        } else {
-            return null;
-        }
+        // create result
+        return SharkAlgebra.contextualize(this, context, fps);
     }
     
     //////////////////////////////////////////////////////////////////////
@@ -291,17 +286,17 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     @Override
     public PeerSemanticTag getSender() {
         // we map ASIP sender to KEP originator (due to the fitting cardinality, see comments in top of that class)
-        return this.getOriginator();
+        return this.originator;
     }
 
     @Override
     public PeerSTSet getReceivers() {
-        return this.getRemotePeers();
+        return this.receivers;
     }
 
     @Override
     public PeerSTSet getApprovers() {
-        return this.getPeers();
+        return this.approvers;
     }
 
     @Override
@@ -326,11 +321,11 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     @Override
     public void setSenders(PeerSTSet senders) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.senders = senders;
     }
 
     @Override
     public PeerSTSet getSenders() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.senders;
     }
 }

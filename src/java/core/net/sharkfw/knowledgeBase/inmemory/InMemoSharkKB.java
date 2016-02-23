@@ -1235,8 +1235,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             }
         }
         // default fp
-        if (this.defaultFP != null) {
-            String defaultFPString = Util.fragmentationParameter2string(defaultFP);
+        if (this.standardFP != null) {
+            String defaultFPString = Util.fragmentationParameter2string(standardFP);
             this.setSystemProperty(AbstractSharkKB.DEFAULT_FP, defaultFPString);
         }
     }
@@ -1262,7 +1262,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         // default fp
         String defaultFPValue = this.getSystemProperty(AbstractSharkKB.DEFAULT_FP);
         if (defaultFPValue != null) {
-            this.defaultFP = Util.string2fragmentationParameter(defaultFPValue);
+            this.standardFP = Util.string2fragmentationParameter(defaultFPValue);
         }
     }
 

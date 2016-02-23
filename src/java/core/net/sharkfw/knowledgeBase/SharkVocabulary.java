@@ -188,7 +188,7 @@ public interface SharkVocabulary {
   public Interest contextualize(SharkCS as, FragmentationParameter[] fp) 
           throws SharkKBException;
   
-  public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) 
+  public ASIPInterest contextualize(ASIPSpace as, FPSet fps) 
           throws SharkKBException;
   
 }

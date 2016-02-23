@@ -14,10 +14,8 @@ import java.util.Vector;
  * @author mfi
  */
 public class FragmentationParameter implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7292106520692533611L;
+    // ??
+    private static final long serialVersionUID = 7292106520692533611L;
     private boolean superAllowed = false;
     private boolean subAllowed = false;
     private int depth = 0;
@@ -63,9 +61,13 @@ public class FragmentationParameter implements Serializable{
     }
     
     private static final FragmentationParameter[] zeroFPs = {
-        zeroFP, zeroFP, zeroFP, zeroFP, zeroFP, zeroFP, zeroFP
+        zeroFP, zeroFP, zeroFP, zeroFP, zeroFP, zeroFP, zeroFP, zeroFP
     };
     
+    /**
+     * @deprecated 
+     * @return 
+     */
     public static FragmentationParameter[] getZeroFPs() {
         return zeroFPs;
     }

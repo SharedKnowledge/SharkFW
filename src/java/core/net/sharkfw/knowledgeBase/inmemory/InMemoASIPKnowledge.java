@@ -6,9 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.knowledgeBase.FPSet;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.SharkAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 
@@ -86,7 +89,27 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
 
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // iterate information and see what space fits..
+        
+        List<ASIPInformation> result = new ArrayList<>();
+        
+        Iterator<ASIPInformation> infoIter = this.infoList.iterator();
+        while(infoIter.hasNext()) {
+            ASIPInformation info = infoIter.next();
+            ASIPSpace asipSpace = info.getASIPSpace();
+            
+            ASIPInterest mutualInterest = InMemoSharkKB.createInMemoASIPInterest(); // just a container
+        
+            if(SharkAlgebra.contextualize(mutualInterest, 
+                    asipSpace, infoSpace, FPSet.getZeroFPSet())) {
+                
+                // they have something in common - add info
+                result.add(info);
+            }
+        }
+        
+        return result.iterator();
+        
     }
 
     @Override

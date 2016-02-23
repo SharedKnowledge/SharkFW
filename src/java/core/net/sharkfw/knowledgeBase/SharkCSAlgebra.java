@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
-import net.sharkfw.asip.ASIPInterest;
 
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -22,7 +21,7 @@ import net.sharkfw.system.Util;
  * 
  * @author thsc
  */
-public abstract class SharkCSAlgebra {
+public abstract class SharkCSAlgebra extends SharkAlgebra {
     private static net.sharkfw.knowledgeBase.geom.SpatialAlgebra spatialAlgebra;
     private static final String JTS_SPATIAL_ALGEBRA_CLASS = 
             "net.sharkfw.knowledgeBase.geom.jts.SpatialAlgebra";
@@ -699,21 +698,6 @@ public abstract class SharkCSAlgebra {
         
         return null;
     }
-    
-    public static ASIPInterest contextualize(ASIPSpace source, ASIPSpace context, 
-            FragmentationParameter[] fp) throws SharkKBException {
-        
-        return null; // TODO
-        
-    }
-    
-    public static boolean contextualize(Interest mutualInterest, 
-            ASIPSpace source, ASIPSpace context, FragmentationParameter[] fp) 
-            throws SharkKBException {
-        
-        return false; // TODO
-    }
-    
     
     /**
      * Implementation of interest contextualization. Result is written into

@@ -41,7 +41,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     protected PeerSemanticTag owner;
     protected Knowledge knowledge;
     //private ASIPKnowledge asipKnowledge;
-    protected FragmentationParameter[] defaultFP;
+    protected FragmentationParameter[] standardFP;
     
     protected AbstractSharkKB() {}
     
@@ -745,30 +745,30 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
     @Override
     public void setStandardFPSet(FragmentationParameter[] fps) {
-        this.defaultFP = fps;
+        this.standardFP = fps;
         this.persist();
     }
 
     @Override
     public FragmentationParameter[] getStandardFPSet() {
-        if(this.defaultFP == null) {
+        if(this.standardFP == null) {
             FragmentationParameter topicsFP = new FragmentationParameter(false, true, 2);
             FragmentationParameter peersFP = new FragmentationParameter(true, false, 2);
             FragmentationParameter restFP = new FragmentationParameter(false, false, 0);
             
-            this.defaultFP = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
+            this.standardFP = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
             
-            this.defaultFP[SharkCS.DIM_TOPIC] = topicsFP;
-            this.defaultFP[SharkCS.DIM_PEER] = peersFP;
-            this.defaultFP[SharkCS.DIM_REMOTEPEER] = peersFP;
-            this.defaultFP[SharkCS.DIM_ORIGINATOR] = peersFP;
-            this.defaultFP[SharkCS.DIM_TIME] = restFP;
-            this.defaultFP[SharkCS.DIM_LOCATION] = restFP;
-            this.defaultFP[SharkCS.DIM_DIRECTION] = restFP;
+            this.standardFP[SharkCS.DIM_TOPIC] = topicsFP;
+            this.standardFP[SharkCS.DIM_PEER] = peersFP;
+            this.standardFP[SharkCS.DIM_REMOTEPEER] = peersFP;
+            this.standardFP[SharkCS.DIM_ORIGINATOR] = peersFP;
+            this.standardFP[SharkCS.DIM_TIME] = restFP;
+            this.standardFP[SharkCS.DIM_LOCATION] = restFP;
+            this.standardFP[SharkCS.DIM_DIRECTION] = restFP;
             
         }
         
-        return this.defaultFP;
+        return this.standardFP;
     }
   
     /**
@@ -1126,19 +1126,46 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
     @Override
     public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
-        return this.contextualize(as, this.getStandardFPSet());
+        return this.contextualize(as, this.getDefaultFPSet());
+    }
+    
+    private FPSet defaultFPSet = null;
+    
+    public FPSet getDefaultFPSet() {
+        if(this.defaultFPSet == null) {
+            FragmentationParameter topicsFP = new FragmentationParameter(false, true, 2);
+            FragmentationParameter typesFP = new FragmentationParameter(false, true, 2);
+            FragmentationParameter peersFP = new FragmentationParameter(true, false, 2);
+            FragmentationParameter restFP = FragmentationParameter.getZeroFP();
+            
+            this.standardFP[SharkCS.DIM_TOPIC] = topicsFP;
+            this.standardFP[SharkCS.DIM_PEER] = peersFP;
+            this.standardFP[SharkCS.DIM_REMOTEPEER] = peersFP;
+            this.standardFP[SharkCS.DIM_ORIGINATOR] = peersFP;
+            this.standardFP[SharkCS.DIM_TIME] = restFP;
+            this.standardFP[SharkCS.DIM_LOCATION] = restFP;
+            this.standardFP[SharkCS.DIM_DIRECTION] = restFP;
+        
+            this.defaultFPSet = new FPSet(topicsFP, typesFP, // topics and types
+                    peersFP, peersFP, peersFP, // all peers same
+                    restFP, restFP, restFP); // time / location / direction
+            
+        }
+        
+        return this.defaultFPSet;
     }
 
     /**
      *
      * @param as
+     * @param fps
      * @param fp
      * @return
      * @throws SharkKBException
      */
     @Override
-    public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
-        return SharkCSAlgebra.contextualize(this.asASIPSpace(), as, fp);
+    public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
+        return SharkAlgebra.contextualize(this.asASIPSpace(), as, fps);
     }
     
     @Override

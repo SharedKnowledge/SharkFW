@@ -334,8 +334,8 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public ASIPInterest contextualize(ASIPSpace as, FragmentationParameter[] fp) throws SharkKBException {
-        return this._localKB.contextualize(as, fp);
+    public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
+        return this._localKB.contextualize(as, fps);
     }
 
     @Override

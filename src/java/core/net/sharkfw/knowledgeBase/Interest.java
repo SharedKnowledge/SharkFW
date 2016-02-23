@@ -118,4 +118,12 @@ public interface Interest extends SharkCS {
    */
   public Interest contextualize(SharkCS context, FragmentationParameter[] fp)
           throws SharkKBException;
+
+    public void setTypes(STSet mTypes);
+
+    public void setApprovers(PeerSTSet mApprovers);
+
+    public void setSenders(PeerSTSet mSenders);
+
+    public void setReceivers(PeerSTSet mReceivers);
 }
