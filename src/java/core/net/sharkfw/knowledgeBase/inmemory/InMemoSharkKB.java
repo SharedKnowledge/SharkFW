@@ -8,6 +8,7 @@ import java.util.Iterator;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
@@ -786,6 +787,22 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         }
         // both not null and both not any
         return SharkCSAlgebra.identical(s1, s2);
+    }
+
+    public static Knowledge legacyCreateKEPKnowledge(ASIPKnowledge asipKnowledge) 
+            throws SharkKBException {
+        
+        InMemoSharkKB k = new InMemoSharkKB();
+        
+        k.setTopics(asipKnowledge.getVocabulary().getTopicsAsSemanticNet());
+        k.setPeers(asipKnowledge.getVocabulary().getPeersAsTaxonomy());
+        k.setTimes(asipKnowledge.getVocabulary().getTimeSTSet());
+        k.setLocations(asipKnowledge.getVocabulary().getSpatialSTSet());
+        
+        // TODO: copy info spaces into context points in some way
+        
+        return k.asKnowledge();
+
     }
 
     /**

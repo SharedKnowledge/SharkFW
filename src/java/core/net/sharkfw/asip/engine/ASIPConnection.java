@@ -1,5 +1,6 @@
 package net.sharkfw.asip.engine;
 
+import java.io.InputStream;
 import net.sharkfw.peer.KEPConnection;
 
 /**
@@ -8,4 +9,6 @@ import net.sharkfw.peer.KEPConnection;
  */
 public interface ASIPConnection extends KEPConnection {
     public KEPConnection asKepConnection();
+    
+    public InputStream getInputStream();
 }

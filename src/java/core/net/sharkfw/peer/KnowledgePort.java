@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -191,7 +194,7 @@ abstract public class KnowledgePort {
             ASIPConnection con) {
         
         // TODO
-        L.d("about handling LASP message");
+        L.d("about handling ASIP message");
         
         // Do a lot of other stuff here.. add what is required, see below
         
@@ -200,7 +203,7 @@ abstract public class KnowledgePort {
         switch (msg.getCommand()) {
             case ASIPMessage.ASIP_INSERT:
                 try {
-                    this.doInsert(msg.getKnowledge(), con);
+                    this.doInsert((ASIPKnowledge) msg.getKnowledge(), con);
                 } catch (Exception ex) {
                     L.e("Error while handling insert request:\n" + ex.getMessage(), this);
                 }
@@ -208,6 +211,13 @@ abstract public class KnowledgePort {
             case ASIPMessage.ASIP_EXPOSE:
                 try {
                     this.doExpose(msg.getInterest(), con);
+                } catch (Exception ex) {
+                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
+                }
+                break;
+            case ASIPMessage.ASIP_RAW:
+                try {
+                    this.doRaw(con.getInputStream(), con);
                 } catch (Exception ex) {
                     L.e("Error while handling expose request:\n" + ex.getMessage(), this);
                 }
@@ -318,8 +328,30 @@ abstract public class KnowledgePort {
      * @param kepConnection
      * @see net.sharkfw.kep.KEPResponse
      * @see net.sharkfw.peer.KEPRequest
+     * @deprecated 
      */
     protected abstract void doInsert(Knowledge knowledge, KEPConnection kepConnection);
+
+    /**
+     * Place logic for handling an insert command in this method.
+     *
+     * @param asipKnowledge
+     * @param asipConnection
+     * @see net.sharkfw.kep.KEPResponse
+     * @see net.sharkfw.peer.KEPRequest
+     */
+    protected void doInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
+        // legacy wrapper
+        // create knowledge object
+        try {
+            Knowledge k = InMemoSharkKB.legacyCreateKEPKnowledge(asipKnowledge);
+
+            this.doInsert(k, (KEPConnection) asipConnection);
+        }
+        catch(SharkKBException e) {
+            L.w("problems when performing legacy wrapper doInsert: " + e.getMessage());
+        }
+    }
 
     /**
      * Place logic for handling an expose command in this method.
@@ -328,6 +360,7 @@ abstract public class KnowledgePort {
      * @param kepConnection
      * @see net.sharkfw.kep.KEPResponse
      * @see net.sharkfw.peer.KEPRequest
+     * @deprecated 
      */
     protected abstract void doExpose(SharkCS interest, KEPConnection kepConnection);
     
@@ -335,9 +368,9 @@ abstract public class KnowledgePort {
      * standard behaviour: map to doExpose variant of KEP to provide backward
      * compatibility 
      * @param interest
-     * @param laspConnection 
+     * @param asipConnection 
      */
-    protected void doExpose(ASIPSpace interest, ASIPConnection laspConnection) throws SharkKBException {
+    protected void doExpose(ASIPSpace interest, ASIPConnection asipConnection) throws SharkKBException {
         // produce a KEP interest based on LASP-interest
         
         STSet topics = interest.getTopics();
@@ -365,7 +398,7 @@ abstract public class KnowledgePort {
         SharkCS kepInterest = InMemoSharkKB.createInMemoInterest(topics, originator, peers, 
                 remotePeers, times, locations, direction);
         
-        this.doExpose(kepInterest, laspConnection.asKepConnection());
+        this.doExpose(kepInterest, asipConnection.asKepConnection());
     }
     
     /**
@@ -373,7 +406,7 @@ abstract public class KnowledgePort {
      * @param is
      * @param kepConnection 
      */
-    protected void doRaw(InputStream is, ASIPConnection kepConnection) {
+    protected void doRaw(InputStream is, ASIPConnection asipConnection) {
     }
     
     /**
