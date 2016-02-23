@@ -1275,6 +1275,11 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
         return this.getKnowledge().getInformation(infoSpace);
     }
+    
+    @Override
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
+        return this.getKnowledge().getInformation(infoSpace, fullyInside, matchAny);
+    }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet senders, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {

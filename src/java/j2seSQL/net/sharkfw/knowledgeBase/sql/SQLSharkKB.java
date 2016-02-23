@@ -929,4 +929,9 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     public ASIPInformationSpace addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

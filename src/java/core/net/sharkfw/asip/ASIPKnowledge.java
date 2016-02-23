@@ -82,6 +82,38 @@ public interface ASIPKnowledge {
           throws SharkKBException;
     
     /**
+     * Produces a list of information which are <i>in</i> the infoSpace.
+     * The short word <i>in</i> has two meaning, though:
+     * 
+     * Each information is stored with its semantic annotations.
+     * Let#s imagine some information are about topic A and B.
+     * Those information are stored.
+     * 
+     * Lets look later for information which fit to topic A but
+     * not necessarily B. Set fullyInside to false if you want to find 
+     * our information.
+     * 
+     * That informations wouldn't be found if fullyInside is set to true.
+     * It means, that infoSpace must fully cover all semantic annotations.
+     * In our example, topics A and B <b>must</b> be part of infoSpace. 
+     * 
+     * There is another option: We don't have to define each semantic
+     * aspect of information. We could look e.g. for information of <i>any</i>
+     * topics in a dedicated location.
+     * 
+     * Set matchAny to true to allow any tags and to false otherwise.
+     * 
+     * @param infoSpace
+     * @param fullyInside
+     * @param matchAny
+     * @return
+     * @throws SharkKBException 
+     */
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, 
+            boolean fullyInside, boolean matchAny)
+          throws SharkKBException;
+    
+    /**
      * Return info spaces. That message does not return mutli copies
      * of information. Each information is only present in on information
      * space.

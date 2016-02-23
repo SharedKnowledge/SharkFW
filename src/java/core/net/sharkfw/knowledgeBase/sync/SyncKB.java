@@ -442,4 +442,9 @@ public class SyncKB implements SharkKB {
     public ASIPInformationSpace addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         return this._localKB.addInformation(content, semanticAnnotations);
     }
+
+    @Override
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
+        return this._localKB.getInformation(infoSpace, fullyInside, matchAny);
+    }
 }

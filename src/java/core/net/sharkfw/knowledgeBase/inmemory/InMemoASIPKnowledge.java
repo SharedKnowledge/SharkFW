@@ -87,8 +87,14 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+        return this.getInformation(infoSpace, false, true);
+    }
+    
+    @Override
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
         // iterate information and see what space fits..
         
         List<ASIPInformation> result = new ArrayList<>();
