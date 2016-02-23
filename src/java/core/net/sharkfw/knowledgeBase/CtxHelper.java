@@ -30,6 +30,8 @@ class CtxHelper {
                 // that must be not null if mutual interest exists
                 if(this.result == null || this.result.isEmpty()) {
                     this.success = false;
+                } else {
+                    this.success = true;
                 }
             }
         }

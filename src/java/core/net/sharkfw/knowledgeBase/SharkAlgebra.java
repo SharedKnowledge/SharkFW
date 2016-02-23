@@ -1,5 +1,7 @@
 package net.sharkfw.knowledgeBase;
 
+import java.util.Enumeration;
+import java.util.Iterator;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
@@ -277,6 +279,81 @@ public class SharkAlgebra {
         mutualInterest.setLocations(mLocations);
         mutualInterest.setDirection(mutualDirection);
         
+        return true;
+    }
+    
+    /**
+     * Check if context is completely inside target. Both, target and context
+     * describe a sub space in the overall asip space. Overlapping regions
+     * can be calculated with contextualization. This methods return only true
+     * if context is inside target. It return false otherwise.
+     * 
+     * @param target
+     * @param context
+     * @return 
+     */
+    public static boolean isIn(ASIPInterest target, ASIPInterest context) throws SharkKBException {
+        if(SharkCSAlgebra.isAny(target)) return true; // anything is in the universe
+        
+        if(SharkCSAlgebra.isAny(context)) return false; // context is everthing, target not..
+        
+        // both are not any / not null
+        if(!SharkAlgebra.isIn(target.getTopics(), context.getTopics())) {
+            return false;
+        } else if(!SharkAlgebra.isIn(target.getTypes(), context.getTypes())) {
+            return false;
+        } else
+        if(!SharkAlgebra.isIn(target.getApprovers(), context.getApprovers())) {
+            return false;
+        } else if(!SharkAlgebra.isIn(target.getSenders(), context.getSenders())) {
+            return false;
+        } else if(!SharkAlgebra.isIn(target.getReceivers(), context.getReceivers())) {
+            return false;
+        } else if(!SharkAlgebra.isIn(target.getTimes(), context.getTimes())) {
+            return false;
+        } else if(!SharkAlgebra.isIn(target.getLocations(), context.getLocations())) {
+            return false;
+        } 
+        
+        // direction
+        int dTarget = target.getDirection();
+        int dContext = context.getDirection();
+        
+        /*
+         * NO / NO = true 
+         * NO / * = false 
+         * IN / IN = true 
+         * IN / * = false 
+         * OUT / OUT = true 
+         * OUT / * = false 
+         * INOUT / IN or OUT or INOUT = true 
+         */
+        
+        // if target inout und context in/out/inout == !nothing -> ok
+        if(
+            (dTarget == ASIPSpace.DIRECTION_INOUT) && 
+            (dContext == ASIPSpace.DIRECTION_NOTHING)
+        ) return false;
+        
+        // else: context must have same direction as target
+        if(dTarget != dContext) return false;
+        
+        return true;
+    }
+    
+    public static boolean isIn(STSet target, STSet context) throws SharkKBException {
+        if(SharkCSAlgebra.isAny(target)) return true; // anything is in the universe
+        
+        if(SharkCSAlgebra.isAny(context)) return false; // context is everthing, target not..
+        Iterator<SemanticTag> stTags = context.stTags();
+        
+        if(stTags == null) return false;
+        while(stTags.hasNext()) {
+            SemanticTag tag = stTags.next();
+            if(!SharkCSAlgebra.isIn(target, tag)) return false;
+        }
+        
+        // no missing tag found in context - context is in target.
         return true;
     }
 }
