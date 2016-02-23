@@ -22,7 +22,9 @@ import org.junit.runners.Suite;
         {
             revisionTests.Version2.class,
             security.BasicSecurityTests.class,
-            ASIPTests.ASIPSerializerTest.class
+            ASIPTests.ASIPSerializerTest.class,
+            ASIPTests.ASIPSharkKBImpl.class
+                
         })
 public class Version3 {
 
