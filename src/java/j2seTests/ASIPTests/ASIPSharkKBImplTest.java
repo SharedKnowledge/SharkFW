@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author thsc
  */
-public class ASIPSharkKBImpl {
+public class ASIPSharkKBImplTest {
     
-    public ASIPSharkKBImpl() {
+    public ASIPSharkKBImplTest() {
     }
     
     @Before
