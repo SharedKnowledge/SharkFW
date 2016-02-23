@@ -20,7 +20,6 @@ import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.InformationCoordinates;
-import net.sharkfw.knowledgeBase.InformationPoint;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticNet;

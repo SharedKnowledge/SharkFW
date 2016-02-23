@@ -38,6 +38,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     
 // Save the content. Manages internal byte array automatically.
     private ByteArrayOutputStream content = new ByteArrayOutputStream();
+    private ASIPSpace space;
 
     /**
      * Create a new InMemoInformation from an existing bytearray.
@@ -59,6 +60,11 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public InMemoInformation() {
         super();
         this.defaultInit();
+    }
+    
+    InMemoInformation(ASIPSpace space) {
+        this();
+        this.space = space;
     }
 
     /**

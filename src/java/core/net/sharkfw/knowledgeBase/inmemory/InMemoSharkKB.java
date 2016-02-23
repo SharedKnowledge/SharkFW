@@ -492,9 +492,18 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     
     public static ASIPInterest createInMemoASIPInterest(STSet topics, STSet types, 
             PeerSemanticTag sender, PeerSTSet approvers, PeerSTSet receivers, 
-            TimeSTSet times, SpatialSTSet locations, int direction) {
+            TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         
         return new InMemoInterest(topics, types, sender, approvers, 
+                receivers, times, locations, direction);
+    }
+    
+
+    public static ASIPInterest createInMemoASIPInterest(STSet topics, STSet types, 
+            PeerSTSet senders, PeerSTSet approvers, PeerSTSet receivers, 
+            TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        
+        return new InMemoInterest(topics, types, senders, approvers, 
                 receivers, times, locations, direction);
     }
     
@@ -1259,36 +1268,47 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
-        this.asipKnowledge.removeInformation(infoSpace);
+        this.getKnowledge().removeInformation(infoSpace);
     }
 
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
-        return this.asipKnowledge.getInformation(infoSpace);
+        return this.getKnowledge().getInformation(infoSpace);
     }
 
     @Override
-    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet senders, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        // merge dimensions
+        STSet set = this.getTopicSTSet();
+        if(set != null) {
+            set.merge(topics);
+        }
+        
+        return new InMemoInterest(topics, types, approvers, senders, receiver, 
+                times, locations, direction);
     }
 
     @Override
-    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ASIPSpace createASIPSpace(STSet topics, STSet types, 
+            PeerSTSet approvers, PeerSTSet senders, PeerSTSet receiver, 
+            TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
+        
+        return this.createASIPSpace(topics, types, approvers, senders, receiver, 
+                times, locations, ASIPSpace.DIRECTION_INOUT);
     }
 
     @Override
     public ASIPInformationSpace addInformation(byte[] content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getKnowledge().addInformation(content, semanticalAnnotations);
     }
 
     @Override
     public ASIPInformationSpace addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getKnowledge().addInformation(contentOS, numberOfBytes, semanticalAnnotations);
     }
 
     @Override
     public ASIPInformationSpace addInformation(String content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getKnowledge().addInformation(content, semanticalAnnotations);
     }
 }

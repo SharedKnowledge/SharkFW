@@ -1,7 +1,9 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
@@ -29,6 +31,8 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
     private TimeSTSet times;
     private SpatialSTSet locations;
     private int direction;
+    
+    private List<Information> infoList = new ArrayList<>();
 
     InMemoInformationSpace() {}
     
@@ -89,6 +93,10 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
         this.direction = direction;
     }
     
+    InMemoInformationSpace(Information info) throws SharkKBException {
+        this(info.getASIPSpace());
+        this.addInformation(info);
+    }
     
     InMemoInformationSpace(ASIPSpace space) throws SharkKBException {
         this(
@@ -101,6 +109,12 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
                 InMemoSharkKB.createInMemoCopy(space.getLocations()),
                 space.getDirection()
         );
+    }
+    
+    final void addInformation(Information info) {
+        this.infoList.add(info);
+        
+        // extends space!!! TODO
     }
 
     @Override

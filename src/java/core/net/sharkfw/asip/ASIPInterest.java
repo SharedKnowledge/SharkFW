@@ -91,6 +91,18 @@ public interface ASIPInterest extends ASIPSpace {
   public void setSender(PeerSemanticTag originator);
 
   /**
+   * Return the originator dimension of this interest.
+   * 
+   * This peer is the one who can also sign the message.
+   * It isn't necessarily part of the peer tag. 
+   * 
+     * @param senders
+   */
+  public void setSenders(PeerSTSet senders);
+  
+  public PeerSTSet getSenders();
+
+  /**
    * Return the remotepeer dimension of this interest
    *
      * @param remotePeers

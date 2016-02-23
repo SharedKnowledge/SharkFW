@@ -50,8 +50,8 @@ public interface SharkVocabulary {
      */
     public Interest asInterest();
     
-    public ASIPSpace asASIPSpace();
-    public ASIPInterest asASIPInterest();
+    public ASIPSpace asASIPSpace() throws SharkKBException;
+    public ASIPInterest asASIPInterest() throws SharkKBException;
       
   ///////////////////////////////////////////////////////////////////////////
   //                            STSet management                           //

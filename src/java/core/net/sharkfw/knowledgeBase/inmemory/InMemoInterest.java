@@ -30,7 +30,8 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     topic       topic
     type        --
     approver    peer
-    sender      originator
+    --          originator
+    senders     --
     receiver    remotePeer
     location    location
     time        time
@@ -39,9 +40,10 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     
     private STSet topics; // KEP and ASIP topics
     private STSet types; // ASIP types
-    private PeerSemanticTag originator; // also ASIP sender
-    private PeerSTSet peers; // also ASIP approver
-    private PeerSTSet remotePeers; // also ASIP receiver
+    private PeerSTSet senders; // ASIP senders
+    private PeerSemanticTag originator; // KEP originator only - can be removed soon
+    private PeerSTSet approvers; // also KEP peers
+    private PeerSTSet receivers; // also KEP remotePeers
     private TimeSTSet times; // both
     private SpatialSTSet locations; // both
     private int direction; // both
@@ -50,13 +52,13 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      * Creates an any interest.
      */
     public InMemoInterest() {
-        this(null, null, null, null, null, null, null, SharkCS.DIRECTION_INOUT); 
+        this(null, null, (PeerSTSet) null, null, null, null, null, SharkCS.DIRECTION_INOUT); 
     }
     
     /**
      * Creates an interest.
      */
-    InMemoInterest(STSet topics, STSet types, PeerSemanticTag sender, 
+    InMemoInterest(STSet topics, STSet types, PeerSTSet senders, 
             PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
             SpatialSTSet locations, int direction) {
         
@@ -65,12 +67,26 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
         this.topics = topics;
         this.types = types;
-        this.originator = sender;
-        this.peers = approvers;
-        this.remotePeers = receivers;
+        this.senders = senders;
+        this.approvers = approvers;
+        this.receivers = receivers;
         this.times = times;
         this.locations = locations;
         this.direction = direction;
+    }
+    
+    /**
+     * Creates an interest.
+     */
+    InMemoInterest(STSet topics, STSet types, PeerSemanticTag sender, 
+            PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
+            SpatialSTSet locations, int direction) throws SharkKBException {
+        
+        this(topics, types, (PeerSTSet) null, approvers, receivers, times, 
+                locations, direction);
+        
+        this.senders = InMemoSharkKB.createInMemoPeerSTSet();
+        this.senders.merge(sender);
     }
 
     /**
@@ -86,8 +102,8 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
         
         this.topics = topics;
         this.originator = originator;
-        this.peers = peers;
-        this.remotePeers = remotePeers;
+        this.approvers = peers;
+        this.receivers = remotePeers;
         this.times = times;
         this.locations = locations;
         this.direction = direction;
@@ -160,7 +176,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      */
     @Override
     public PeerSTSet getRemotePeers() {
-        return this.remotePeers;
+        return this.receivers;
     }
 
     /**
@@ -171,7 +187,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      */
     @Override
     public void setRemotePeers(PeerSTSet remotePeers) {
-        this.remotePeers = remotePeers;
+        this.receivers = remotePeers;
     }
 
     /**
@@ -180,7 +196,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      */
     @Override
     public PeerSTSet getPeers() {
-        return this.peers;
+        return this.approvers;
     }
 
     /**
@@ -191,7 +207,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      */
     @Override
     public void setPeers(PeerSTSet peers) {
-        this.peers = peers;
+        this.approvers = peers;
     }
 
     /**
@@ -295,7 +311,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     @Override
     public void setApprovers(PeerSTSet approvers) {
-        this.peers = approvers;
+        this.approvers = approvers;
     }
 
     @Override
@@ -305,6 +321,16 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     @Override
     public void setReceivers(PeerSTSet receivers) {
-        this.remotePeers = receivers;
+        this.receivers = receivers;
+    }
+
+    @Override
+    public void setSenders(PeerSTSet senders) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PeerSTSet getSenders() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

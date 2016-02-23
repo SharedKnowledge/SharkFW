@@ -257,10 +257,12 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @param locations
    * @param direction
    * @return 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
    */
   public ASIPSpace createASIPSpace(
           STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
-          PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction);
+          PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction)
+            throws SharkKBException;
   
   /**
    * Create an set of semantic annotations (space) which can be used to add
@@ -280,10 +282,13 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @param times
    * @param locations
    * @return 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
    */
   public ASIPSpace createASIPSpace(
           STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
-          PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations);
+          PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations)
+            throws SharkKBException;
+
   
   /**
    * Returns an interation of all informations points. 

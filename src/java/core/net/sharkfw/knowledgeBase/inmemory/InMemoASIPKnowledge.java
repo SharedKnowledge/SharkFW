@@ -17,12 +17,11 @@ import net.sharkfw.knowledgeBase.SharkVocabulary;
  * @author msc
  */
 public class InMemoASIPKnowledge implements ASIPKnowledge {
-    private List<ASIPInformationSpace> informationSpaces;
     private ArrayList<ASIPInformation> infoList;
     private SharkVocabulary cm;
 
     protected InMemoASIPKnowledge() {
-        this.informationSpaces = new ArrayList<>();
+//        this.informationSpaces = new ArrayList<>();
         this.infoList = new ArrayList<>();
     }
     
@@ -33,7 +32,7 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     
     InMemoASIPKnowledge(SharkVocabulary cm, InMemoASIPKnowledge k) {
         this.cm = cm;
-        this.informationSpaces = k.getInformationSpaces();
+//        this.informationSpaces = k.getInformationSpaces();
         this.infoList = k.getInfoList();
     }
     
@@ -53,7 +52,8 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() {
-        return this.informationSpaces.iterator();
+//        return this.informationSpaces.iterator();
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -95,25 +95,43 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     }
 
     private List<ASIPInformationSpace> getInformationSpaces() {
-        return this.informationSpaces;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        return this.informationSpaces;
     }
 
     private ArrayList<ASIPInformation> getInfoList() {
         return this.infoList;
     }
+    
+    private void addInfo(Information i) {
+        this.infoList.add(i);
+    }
 
     @Override
-    public ASIPInformationSpace addInformation(byte[] content, ASIPSpace semanticalAnnotations) throws SharkKBException {
+    public ASIPInformationSpace addInformation(byte[] content, 
+            ASIPSpace semanticAnnotations) throws SharkKBException {
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ASIPInformationSpace addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
+    public ASIPInformationSpace addInformation(OutputStream contentOS, 
+            int numberOfBytes, ASIPSpace semanticAnnotations) 
+            throws SharkKBException {
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ASIPInformationSpace addInformation(String content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ASIPInformationSpace addInformation(String content, 
+            ASIPSpace semanticAnnotations) throws SharkKBException {
+        
+        InMemoInformation info = new InMemoInformation(semanticAnnotations);
+        info.setContent(content);
+        this.addInfo(info);
+        
+        InMemoInformationSpace infoSpace = new InMemoInformationSpace();
+        infoSpace.addInformation(info);
+        return infoSpace;
     }
 }

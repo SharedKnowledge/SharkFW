@@ -1,7 +1,6 @@
 package net.sharkfw.asip;
 
 import java.util.Iterator;
-import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
 /**

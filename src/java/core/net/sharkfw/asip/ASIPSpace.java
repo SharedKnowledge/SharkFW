@@ -3,7 +3,6 @@ package net.sharkfw.asip;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 

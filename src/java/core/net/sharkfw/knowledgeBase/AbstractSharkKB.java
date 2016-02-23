@@ -40,7 +40,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     protected TimeSTSet times;
     protected PeerSemanticTag owner;
     protected Knowledge knowledge;
-    protected ASIPKnowledge asipKnowledge;
+    //private ASIPKnowledge asipKnowledge;
     protected FragmentationParameter[] defaultFP;
     
     protected AbstractSharkKB() {}
@@ -85,12 +85,12 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }    
     
     @Override
-    public ASIPSpace asASIPSpace() {
+    public ASIPSpace asASIPSpace() throws SharkKBException {
         return this.asASIPInterest();
     }
      
     @Override
-    public ASIPInterest asASIPInterest() {
+    public ASIPInterest asASIPInterest() throws SharkKBException {
         STSet topicsSet = this.topics.asSTSet();
         PeerSTSet peersSet;
         try {
@@ -1143,12 +1143,12 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public int getNumberInformation() throws SharkKBException {
-        return this.asipKnowledge.getNumberInformation();
+        return this.knowledge.getNumberInformation();
     }
     
     @Override
     public void removeInformation(ASIPSpace space) throws SharkKBException {
-        this.asipKnowledge.removeInformation(space);
+        this.knowledge.removeInformation(space);
     }
 
 //    @Override
@@ -1158,7 +1158,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
-        return this.asipKnowledge.informationSpaces();
+        return this.knowledge.informationSpaces();
     }
 
     @Override
@@ -1168,7 +1168,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        return this.asipKnowledge.mergeInformation(information, space);
+        return this.knowledge.mergeInformation(information, space);
     }
     
 }
