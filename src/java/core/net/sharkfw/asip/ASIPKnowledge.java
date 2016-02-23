@@ -1,5 +1,6 @@
 package net.sharkfw.asip;
 
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.knowledgeBase.Information;
@@ -26,6 +27,43 @@ public interface ASIPKnowledge {
      */
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information,
             ASIPSpace space) throws SharkKBException;
+
+    /**
+     * Add information with it semantical annotations to knowledge base.
+     * 
+     * @param content
+     * @param semanticAnnotations
+     * @return
+     * @throws SharkKBException 
+     */
+    public ASIPInformationSpace addInformation(byte[] content, 
+            ASIPSpace semanticAnnotations) 
+            throws SharkKBException;
+    
+    /**
+     * Add information with it semantical annotations to knowledge base.
+     * 
+     * @param contentOS
+     * @param numberOfBytes
+     * @param semanticAnnotations
+     * @return
+     * @throws SharkKBException 
+     */
+    public ASIPInformationSpace addInformation(OutputStream contentOS, 
+            int numberOfBytes, ASIPSpace semanticAnnotations) 
+            throws SharkKBException;
+    
+    /**
+     * Add information with it semantical annotations to knowledge base.
+     * 
+     * @param content
+     * @param semanticAnnotations
+     * @return
+     * @throws SharkKBException 
+     */
+    public ASIPInformationSpace addInformation(String content, 
+            ASIPSpace semanticAnnotations) 
+            throws SharkKBException;
     
     /**
      * Remove information from described space. The infoSpace does not have to

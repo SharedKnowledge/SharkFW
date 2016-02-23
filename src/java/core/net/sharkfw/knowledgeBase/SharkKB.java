@@ -5,7 +5,6 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
-import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPKnowledge;
 
 /**
@@ -238,6 +237,53 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * @deprecated 
    */
   public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException;
+  
+  /**
+   * Create an set of semantic annotations (space) which can be used to add
+   * information into the knowledge base. Each parameter describes a facet, a
+   * feature of information, e.g. topics describe topics which fit to information.
+   * 
+   * Each parameter can be null. In that case, information has no semantic
+   * description in that dimension. That's necessary if we don't know that
+   * description. A null parameter can also be understood as <i>no constraints</i>.
+   * Meaning: Added or required information (may) fit to all e.g. topics.
+   * 
+   * @param topics
+   * @param types
+   * @param approvers
+   * @param sender
+   * @param receiver
+   * @param times
+   * @param locations
+   * @param direction
+   * @return 
+   */
+  public ASIPSpace createASIPSpace(
+          STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
+          PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction);
+  
+  /**
+   * Create an set of semantic annotations (space) which can be used to add
+   * information into the knowledge base. Each parameter describes a facet, a
+   * feature of information, e.g. topics describe topics which fit to information.
+   * 
+   * Each parameter can be null. In that case, information has no semantic
+   * description in that dimension. That's necessary if we don't know that
+   * description. A null parameter can also be understood as <i>no constraints</i>.
+   * Meaning: Added or required information (may) fit to all e.g. topics.
+   * 
+   * @param topics
+   * @param types
+   * @param approvers
+   * @param sender
+   * @param receiver
+   * @param times
+   * @param locations
+   * @return 
+   */
+  public ASIPSpace createASIPSpace(
+          STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
+          PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations);
   
   /**
    * Returns an interation of all informations points. 

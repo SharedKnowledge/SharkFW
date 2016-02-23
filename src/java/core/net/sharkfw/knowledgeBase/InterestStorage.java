@@ -12,6 +12,7 @@ public interface InterestStorage {
      * Saves this interest into a list of interests
      * @param interest 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     * @deprecated 
      */
     public void addInterest(SharkCS interest) throws SharkKBException;
     
@@ -19,6 +20,7 @@ public interface InterestStorage {
      * Removes this interest from the storage
      * @param interest 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     * @deprecated 
      */
     public void removeInterest(SharkCS interest) throws SharkKBException;
     
@@ -28,6 +30,7 @@ public interface InterestStorage {
      * 
      * @return 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     * @deprecated 
      */
     public Iterator<SharkCS> interests() throws SharkKBException;
     

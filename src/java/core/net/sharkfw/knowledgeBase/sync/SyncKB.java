@@ -1,10 +1,10 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
@@ -415,6 +415,31 @@ public class SyncKB implements SharkKB {
 
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this._localKB.getInformation(infoSpace);
+    }
+
+    @Override
+    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) {
+        return this._localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
+    }
+
+    @Override
+    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) {
+        return this._localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
+    }
+
+    @Override
+    public ASIPInformationSpace addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        return this._localKB.addInformation(content, semanticAnnotations);
+    }
+
+    @Override
+    public ASIPInformationSpace addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        return this._localKB.addInformation(contentOS, numberOfBytes, semanticAnnotations);
+    }
+
+    @Override
+    public ASIPInformationSpace addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        return this._localKB.addInformation(content, semanticAnnotations);
     }
 }
