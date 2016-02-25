@@ -1,11 +1,14 @@
 package net.sharkfw.kep;
 
 import java.io.IOException;
+import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -15,7 +18,11 @@ import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
+import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.security.pki.storage.SharkPkiStorage;
+import net.sharkfw.system.InterestStore;
+import net.sharkfw.system.KnowledgeStore;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkNotSupportedException;
 import net.sharkfw.system.SharkSecurityException;
@@ -28,7 +35,7 @@ import net.sharkfw.system.Util;
  * @author mfi
  */
 
-public class SimpleKEPStub extends SharkStub {
+public class SimpleKEPStub extends SharkStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting  {
   /**
    * A <code>Vector</code> containing all active KPs
    */
@@ -132,7 +139,6 @@ public class SimpleKEPStub extends SharkStub {
    * @param msg The <code>KEPRequest</code> to handle.
    * @return True if at least one listener was able to handle the message. False otherwise.
   */
-    @Override
     final synchronized protected boolean callListener(KEPInMessage msg) {
         Enumeration<KnowledgePort> lenum = listener.elements();
         /* make a copy of listener - kp can be added or withdrawn during message handling
@@ -197,7 +203,6 @@ public class SimpleKEPStub extends SharkStub {
         this.notHandledRequestsHandler = null;
     }
 
-    @Override
     public final void addListener(KnowledgePort newListener) {
         final int size = this.listener.size();
             for (int i = 0; i < size; i++){
@@ -212,7 +217,6 @@ public class SimpleKEPStub extends SharkStub {
 //        L.d("Having " + this.listener.size() + " listeners.", this);
         };
 
-    @Override
     public final void withdrawListener(KnowledgePort listener) {
 //        L.d("Listener withdrawn.", this);
 //        L.d("Having " + this.listener.size() + " listeners.", this);
@@ -296,11 +300,6 @@ public class SimpleKEPStub extends SharkStub {
       Vector<String> v = new Vector<String>();
       return v.elements();
     }
-  }
-
-    @Override
-  public void setSilentPeriod(int millis) {
-    this.silentPeriod = millis;
   }
 
   /*
@@ -473,4 +472,116 @@ public class SimpleKEPStub extends SharkStub {
     // If we can't find out if the message is allowed for some reasons we send it.
     return true;
   }
+  
+    
+    /**
+     * An integer value that contains the default silence period in which no message is allowed to be sent twice
+     */
+    protected int silentPeriod = SharkEngine.DEFAULT_SILTENT_PERIOD;
+
+    // security stuff
+    //protected SharkPublicKeyStorage publicKeyStorage;
+    protected SharkPkiStorage sharkPkiStorage;
+    protected SharkEngine.SecurityReplyPolicy replyPolicy;
+    protected boolean refuseUnverifiably;
+    protected SharkEngine.SecurityLevel signatureLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
+    protected SharkEngine.SecurityLevel encryptionLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
+    protected PrivateKey privateKey;
+
+    public boolean handleMessage(KEPInMessage msg) {
+        return this.callListener(msg);
+    }
+    
+    public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
+            SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel, 
+            SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
+        
+        this.privateKey = privateKey;
+        //this.publicKeyStorage = publicKeyStorage;
+        this.sharkPkiStorage = sharkPkiStorage;
+        this.signatureLevel = signatureLevel;
+        this.encryptionLevel = encryptionLevel;
+        this.replyPolicy = replyPolicy;
+        this.refuseUnverifiably = refuseUnverifiably;
+    }
+    
+    private InterestStore sentInterests = new InterestStore();
+    private KnowledgeStore sentKnowledge = new KnowledgeStore();
+    
+    private InterestStore unhandledInterests = new InterestStore();
+    private KnowledgeStore unhandledKnowledge = new KnowledgeStore();
+    
+    /**
+     * Remember that this interest was send now
+     * @param interest 
+     */
+    protected void rememberInterest(SharkCS interest) {
+        this.sentInterests.addInterest(interest);
+    }
+    
+    /**
+     * Remember that this interest was send now
+     * @param interest 
+     */
+    protected void rememberKnowledge(Knowledge k) {
+        this.sentKnowledge.addKnowledge(k);
+    }
+
+    public Iterator<SharkCS> getSentInterests(long since) {
+        return this.sentInterests.getInterests(since);
+    }
+
+    public Iterator<Knowledge> getSentKnowledge(long since) {
+        return this.sentKnowledge.getKnowledge(since);
+    }
+    
+    protected void rememberUnhandledInterest(SharkCS interest) {
+        this.unhandledInterests.addInterest(interest);
+    }
+
+    protected void rememberUnhandledKnowledge(Knowledge knowledge) {
+        // cut information to make it smaller
+        if(knowledge != null) {
+            Enumeration<ContextPoint> contextPoints = knowledge.contextPoints();
+            if(contextPoints != null) {
+                while(contextPoints.hasMoreElements()) {
+                    ContextPoint cp = contextPoints.nextElement();
+                    
+                    Enumeration<Information> infoEnum = cp.enumInformation();
+                    if(infoEnum != null) {
+                        while(infoEnum.hasMoreElements()) {
+                            Information info = infoEnum.nextElement();
+                            cp.removeInformation(info);
+                        }
+                    }
+                }
+            }
+            
+            // store cp without information - much smaller
+            this.unhandledKnowledge.addKnowledge(knowledge);
+        }
+    }
+    
+    public Iterator<SharkCS> getUnhandledInterests(long since) {
+        return this.unhandledInterests.getInterests(since);
+    }
+
+    public Iterator<Knowledge> getUnhandledKnowledge(long since) {
+        return this.unhandledKnowledge.getKnowledge(since);
+    }
+    
+    public void removeSentHistory() {
+        this.sentInterests = new InterestStore();
+        this.sentKnowledge = new KnowledgeStore();
+
+        this.unhandledInterests = new InterestStore();
+        this.unhandledKnowledge = new KnowledgeStore();
+    }
+    
+    public void setSilentPeriod(int milliseconds) {
+        if(milliseconds > 0) {
+            this.silentPeriod = milliseconds;
+        }
+    }
+  
 }
