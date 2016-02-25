@@ -35,7 +35,7 @@ import net.sharkfw.system.Util;
  * @author mfi
  */
 
-public class SimpleKEPStub extends SharkStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting  {
+public class SimpleKEPStub extends KEPStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting  {
   /**
    * A <code>Vector</code> containing all active KPs
    */

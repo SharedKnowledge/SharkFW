@@ -30,7 +30,7 @@ import net.sharkfw.system.Streamer;
  * @author mfi
  */
 public class KEPSession extends Thread {
-    private SharkStub kepStub;
+    private KEPStub kepStub;
     private StreamConnection con;
     private SharkEngine se;
     //private SharkPublicKeyStorage publicKeyStorage;
@@ -38,7 +38,7 @@ public class KEPSession extends Thread {
     private SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
 
-    KEPSession(SharkEngine se, StreamConnection con, SharkStub kepStub) {
+    KEPSession(SharkEngine se, StreamConnection con, KEPStub kepStub) {
         this.se = se;
         this.con = con;
         this.kepStub = kepStub;

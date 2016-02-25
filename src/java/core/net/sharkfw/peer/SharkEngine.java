@@ -75,7 +75,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * along with message accountin, connection pooling and observing
      * the <code>Environment</code>
      */
-    protected SharkStub sharkStub;
+    protected KEPStub kepStub;
     /**
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
      * in <code>KnowledgePort</code>s.
@@ -117,8 +117,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.kps = new Vector();
     }
 
-    protected void setKEPStub(SharkStub kepStub) {
-        this.sharkStub = kepStub;
+    protected void setKEPStub(KEPStub kepStub) {
+        this.kepStub = kepStub;
         //this.environment = this.kepStub.getEnvironment();
     }
 
@@ -229,7 +229,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     @SuppressWarnings("unused")
     protected final boolean start(int type, int port) throws SharkProtocolNotSupportedException, IOException {
-        Stub protocolStub = this.startServer(type, sharkStub, port);
+        Stub protocolStub = this.startServer(type, kepStub, port);
         
         return true;
     }
@@ -358,7 +358,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @param kp The instance of <code>KnowledgePort</code> to add.
      */
     void addKP(KnowledgePort kp) {
-        kp.setKEPStub(this.sharkStub);
+        kp.setKEPStub(this.kepStub);
         kps.add(kp);
     }
     
@@ -735,8 +735,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      *
      * @return The KEPStub, currently used by this SharkEngine.
      */
-    public SharkStub getKepStub() {
-        return sharkStub;
+    public KEPStub getKepStub() {
+        return kepStub;
     }
     private long kepSessionTimeOut = 3000;
 
@@ -997,7 +997,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             }
 
             if (sConn != null /*&& !fromPool*/) {
-                this.sharkStub.handleStream(sConn);
+                this.kepStub.handleStream(sConn);
             }
             
             // one kep message is enough
@@ -1409,7 +1409,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.refuseUnverifiably = refuseUnverifiably;
         
         // propagate to KEPStub the handles Requests.
-        this.sharkStub.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+        this.kepStub.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                 this.encryptionLevel, this.signatureLevel, this.replyPolicy, 
                 this.refuseUnverifiably);
     }
@@ -1547,15 +1547,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
     
     public Iterator<SharkCS> getSentInterests(long since) {
-        return this.sharkStub.getSentInterests(since);
+        return this.kepStub.getSentInterests(since);
     }
 
     public Iterator<Knowledge> getSentKnowledge(long since) {
-        return this.sharkStub.getSentKnowledge(since);
+        return this.kepStub.getSentKnowledge(since);
     }
   
     public Iterator<SharkCS> getUnhandledInterests(long since) {
-        return this.sharkStub.getUnhandledInterests(since);
+        return this.kepStub.getUnhandledInterests(since);
     }
 
     public Iterator<SharkCS> getUnhandledKnowledge(long since) {
@@ -1563,7 +1563,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public void removeSentHistory() {
-        this.sharkStub.removeSentHistory();
+        this.kepStub.removeSentHistory();
     }
     
     public final static int DEFAULT_SILTENT_PERIOD = 500;
@@ -1584,7 +1584,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @param milliseconds 
      */
     public void setSilentPeriod(int milliseconds) {
-        this.sharkStub.setSilentPeriod(milliseconds);
+        this.kepStub.setSilentPeriod(milliseconds);
     }
     
     /////////////////////////////////////////////////////////////////

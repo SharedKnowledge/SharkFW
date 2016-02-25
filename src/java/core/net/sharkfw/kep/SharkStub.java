@@ -23,10 +23,6 @@ import net.sharkfw.security.pki.storage.SharkPkiStorage;
  */
 public abstract class SharkStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting {
     
-    public abstract boolean handleMessage(KEPInMessage msg);
-    
-    protected abstract boolean callListener(KEPInMessage msg);
-    
     public abstract void addListener(KnowledgePort newListener);
 
     public abstract void withdrawListener(KnowledgePort listener);
@@ -35,14 +31,4 @@ public abstract class SharkStub implements RequestHandler, KEPConnectionPool, KE
             SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel, 
             SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably);
     
-    public abstract Iterator<SharkCS> getSentInterests(long since);
-            
-    public abstract Iterator<Knowledge> getSentKnowledge(long since);
-    
-    public abstract  Iterator<SharkCS> getUnhandledInterests(long since);
-            
-    public abstract Iterator<Knowledge> getUnhandledKnowledge(long since);
-    
-    public abstract void removeSentHistory();
-            
 }
