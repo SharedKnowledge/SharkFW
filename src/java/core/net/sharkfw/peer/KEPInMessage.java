@@ -102,7 +102,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
     
     private String[] remotePeerSI = null;
     
-    KEPInMessage(SharkEngine se, int kepCmdType, SharkCS receivedInterest, 
+    public KEPInMessage(SharkEngine se, int kepCmdType, SharkCS receivedInterest, 
             StreamConnection con, SharkStub kepStub) {
         
       this.receivedInterest = receivedInterest;

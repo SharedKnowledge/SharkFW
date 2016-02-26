@@ -71,4 +71,20 @@ public abstract class AbstractSharkStub implements SharkStub {
         this.refuseUnverifiably = refuseUnverifiably;
     }
     
+    abstract void callAllInterest(KnowledgePort kp, StreamConnection con);
+    
+    /**
+     * Stream was established and can be used for conversion.
+     * Something must happen. Best would be to call each knowledge
+     * port with an all interest.
+     * @param con 
+     */
+    @Override
+    public final void startConversion(StreamConnection con) {
+        Iterator<KnowledgePort> kpIter = this.kps.iterator();
+        while(kpIter.hasNext()) {
+            KnowledgePort kp = kpIter.next();
+            this.callAllInterest(kp, con);
+        }
+    }
 }

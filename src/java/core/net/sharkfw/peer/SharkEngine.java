@@ -4,18 +4,41 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-import net.sharkfw.kep.*;
+import net.sharkfw.kep.KEPMessage;
+import net.sharkfw.kep.KEPOutMessage;
+import net.sharkfw.kep.KEPStub;
+import net.sharkfw.kep.KnowledgeSerializer;
+import net.sharkfw.kep.SharkProtocolNotSupportedException;
+import net.sharkfw.kep.SharkStub;
 import net.sharkfw.kep.format.XMLSerializer;
-import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.ContextCoordinates;
+import net.sharkfw.knowledgeBase.ContextPoint;
+import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.Interest;
+import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.PeerSTSet;
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkKB;
+import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.protocols.*;
+import net.sharkfw.protocols.MessageStub;
+import net.sharkfw.protocols.Protocols;
+import net.sharkfw.protocols.RequestHandler;
+import net.sharkfw.protocols.SharkOutputStream;
+import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.protocols.StreamStub;
+import net.sharkfw.protocols.Stub;
+import net.sharkfw.protocols.UTF8SharkOutputStream;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -57,20 +80,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
 
     /**
-     * Creates standardKP with simple constructor.
-     * 
-     * It is deprecated - use KP constructor instead. It isn't useful to
-     * handle StandardKP as a special one.
-     * 
-     * @param interest
-     * @param kb
-     * @deprecated 
-     * @return 
-     */
-    public StandardKP createKP(SharkCS interest, SharkKB kb) {
-        return new StandardKP(this, interest, kb);
-    }
-    /**
      * The <code>KEPStub</code> implementation that handles all KEP messages,
      * along with message accountin, connection pooling and observing
      * the <code>Environment</code>
@@ -84,7 +93,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     /**
      * Storage for opened stubs to certain underlying protocols.
      */
-    private Stub[] protocolStubs = new Stub[Protocols.NUMBERPROTOCOLS];
+    private final Stub[] protocolStubs = new Stub[Protocols.NUMBERPROTOCOLS];
     /**
      * The address (in gcf notation) of the relay to use. If set to <code>null</code>
      * no relay will be used.
@@ -109,7 +118,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public SharkEngine() {
-        this.kps = new Vector();
+        this.kps = new ArrayList<>();
     }
 
     protected void setKEPStub(KEPStub kepStub) {
@@ -121,8 +130,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * TODO: Pr�fen, ob wir finalize() noch brauchen
      */
     @Override
-    protected void finalize() {
-        this.deleteAllKP();
+    protected void finalize() throws Throwable {
+        try {
+            this.deleteAllKP();
+        } finally {
+            super.finalize();
+        }
     }
     
     protected final void setProtocolStub(Stub protocolStub, int type) throws SharkProtocolNotSupportedException {
@@ -390,25 +403,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
     
     /**
-     * Takes a connection and handles it. 
-     * Can be used to set up a connection in an ad hoc network.
-     * 
-     * Active interest will be sent over this connection to trigger
-     * a reply from connected peer.
-     * 
-     * @param con 
-     */
-    public void handleConnection(StreamConnection con) {
-        // creates an empty interest - which is interpreted as any interest.
-        Interest anyInterest = InMemoSharkKB.createInMemoInterest();
-        anyInterest.setDirection(SharkCS.DIRECTION_INOUT);
-        
-        KEPInMessage internalMessage = new KEPInMessage(this, 
-                KEPMessage.KEP_EXPOSE, anyInterest, con, this.getKepStub());
-        this.getKepStub().handleMessage(internalMessage);
-    }
-
-    /**
      * Define a default KP that handles messages that no other KP likes to
      * reply to.
      * 
@@ -652,15 +646,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         throw new SharkProtocolNotSupportedException("Mail per Stream not supported");
     }
 
-    protected Stub createWifiDirectStreamStub(SharkStub kepStub) throws SharkProtocolNotSupportedException {
+    protected Stub createWifiDirectStreamStub(SharkStub sharkStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Wifi not supported in that version");
     }
 
-    protected Stub createNfcStreamStub(SharkStub kepStub) throws SharkProtocolNotSupportedException {
+    protected Stub createNfcStreamStub(SharkStub sharkStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Nfc not supported in that version");
     }
 
-    protected Stub createBluetoothStreamStub(SharkStub kepStub) throws SharkProtocolNotSupportedException {
+    protected Stub createBluetoothStreamStub(SharkStub sharkStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Bluetooth not supported in that version");
     }
     
@@ -899,7 +893,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     
     /**
      * Defines if address A or B is "better". This implementation
-     * is pretty simple: stream protocols are better than message based
+     * is pretty simple: stream protocols are better than message based.
+     * Can and should be overwritten.
      * 
      * @param addrA
      * @param addrB

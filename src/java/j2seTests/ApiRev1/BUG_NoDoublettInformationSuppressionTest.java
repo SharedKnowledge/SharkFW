@@ -79,7 +79,7 @@ public class BUG_NoDoublettInformationSuppressionTest {
         
         Interest bobInterest = InMemoSharkKB.createInMemoCopy((SharkCS) bobKB.createContextCoordinates(null, bobOwnerTag, null, null, null, null, SharkCS.DIRECTION_IN));
         
-        StandardKP bobKP = bob.createKP(bobInterest, bobKB);
+        StandardKP bobKP = new StandardKP(bob, bobInterest, bobKB);
         
         bob.startTCP(4131);
         

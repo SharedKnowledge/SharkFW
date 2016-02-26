@@ -61,7 +61,7 @@ public class BUG_TaxonomyTest {
         FragmentationParameter fpAlice = new FragmentationParameter(false, true, 3);
         defaultFpAlice[SharkCS.DIM_TOPIC] = fpAlice;
 
-        StandardKP kpAlice = engineAlice.createKP(interestAlice, kbAlice);
+        StandardKP kpAlice = new StandardKP(engineAlice, interestAlice, kbAlice);
         kpAlice.setFP(defaultFpAlice);
 
         this._log.info("[ ALICE ] start engine on Port 7070... ");
@@ -96,7 +96,7 @@ public class BUG_TaxonomyTest {
         FragmentationParameter fpBob = new FragmentationParameter(false, true, 3);
         defaultFpBob[SharkCS.DIM_TOPIC] = fpBob;
 
-        StandardKP kpBob = engineBob.createKP(interestBob, kbBob);
+        StandardKP kpBob = new StandardKP(engineBob, interestBob, kbBob);
         kpBob.setFP(defaultFpBob);
 
         this._log.info("[ BOB ] start engine on Port 7171... ");

@@ -23,4 +23,14 @@ public interface SharkStub {
             SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably);
 
     public void handleStream(StreamConnection con);
+    
+    /**
+     * Stream was established and can be used for conversion.
+     * Something must happen. Best would be to call each knowledge
+     * port with an all interest.
+     * @param con 
+     */
+    public void startConversion(StreamConnection con);
+    
+    
 }

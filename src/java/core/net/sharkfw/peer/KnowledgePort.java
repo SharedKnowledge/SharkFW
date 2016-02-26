@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.*;

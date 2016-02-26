@@ -1,23 +1,23 @@
 package net.sharkfw.kep;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.InterestStore;
 import net.sharkfw.system.KnowledgeStore;
 import net.sharkfw.system.L;
@@ -78,8 +78,8 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         // handle that stream in stub
         this.handleStream(con);
         
-        // force engine to start a communication
-        this.se.handleConnection(con);
+        // a communication
+        this.startConversion(con);
     }
         
     @Override
@@ -439,6 +439,18 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         if(milliseconds > 0) {
             this.silentPeriod = milliseconds;
         }
+    }
+
+    @Override
+    void callAllInterest(KnowledgePort kp, StreamConnection con) {
+        // creates an empty interest - which is interpreted as any interest.
+        Interest anyInterest = InMemoSharkKB.createInMemoInterest();
+        anyInterest.setDirection(SharkCS.DIRECTION_INOUT);
+        
+        KEPInMessage internalMessage = new KEPInMessage(this.se, 
+                KEPMessage.KEP_EXPOSE, anyInterest, con, (SharkStub) this);
+        
+        this.handleMessage(internalMessage);
     }
   
 }

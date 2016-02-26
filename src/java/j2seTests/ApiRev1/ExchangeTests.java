@@ -518,7 +518,7 @@ public class ExchangeTests {
       times.merge(today);
       interest.setTimes(times);
       
-      StandardKP kp = aliceSE.createKP(interest, aliceKB);
+      StandardKP kp = new StandardKP(aliceSE, interest, aliceKB);
       
       // Start server
       aliceSE.startTCP(6661);
