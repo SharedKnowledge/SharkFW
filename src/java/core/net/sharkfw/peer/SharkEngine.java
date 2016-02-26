@@ -395,11 +395,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * 
      * @param interest 
      */
-    public void handleInterest(SharkCS interest) {
-        KEPInMessage internalMessage = new KEPInMessage(this, 
-                KEPMessage.KEP_EXPOSE, interest, this.getKepStub());
-        
-        this.getKepStub().handleMessage(internalMessage);
+    public void handleInterest(Interest interest) {
+        this.getKepStub().handleInterest(interest);
     }
     
     /**
@@ -672,22 +669,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     public int getKnowledgeFormat() {
         return this.kFormat;
-    }
-
-    /**
-     * Set the serialization format for knowledge
-     *
-     * @see net.sharkfw.kep.KEPMessage
-     * 
-     * @param format An integer value representing the format to use
-     * @throws SharkNotSupportedException
-     */
-    void setKnowledgeFormat(int format) throws SharkNotSupportedException {
-        if (format > KEPMessage.MAXNUMBER || format < 0) {
-            throw new SharkNotSupportedException("unknwon format: " + format);
-        }
-
-        this.kFormat = format;
     }
 
     /**

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
@@ -71,20 +72,8 @@ public abstract class AbstractSharkStub implements SharkStub {
         this.refuseUnverifiably = refuseUnverifiably;
     }
     
-    abstract void callAllInterest(KnowledgePort kp, StreamConnection con);
-    
-    /**
-     * Stream was established and can be used for conversion.
-     * Something must happen. Best would be to call each knowledge
-     * port with an all interest.
-     * @param con 
-     */
     @Override
-    public final void startConversion(StreamConnection con) {
-        Iterator<KnowledgePort> kpIter = this.kps.iterator();
-        while(kpIter.hasNext()) {
-            KnowledgePort kp = kpIter.next();
-            this.callAllInterest(kp, con);
-        }
+    public void handleInterest(Interest interest) {
+        // TODO or remove: default implementation
     }
 }

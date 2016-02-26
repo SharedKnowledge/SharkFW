@@ -441,16 +441,32 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         }
     }
 
+    /**
+     * Stream was established and can be used for conversion.
+     * Something must happen. Best would be to call each knowledge
+     * port with an all interest.
+     * @param con 
+     */
     @Override
-    void callAllInterest(KnowledgePort kp, StreamConnection con) {
+    public final void startConversion(StreamConnection con) {
         // creates an empty interest - which is interpreted as any interest.
         Interest anyInterest = InMemoSharkKB.createInMemoInterest();
         anyInterest.setDirection(SharkCS.DIRECTION_INOUT);
         
-        KEPInMessage internalMessage = new KEPInMessage(this.se, 
-                KEPMessage.KEP_EXPOSE, anyInterest, con, (SharkStub) this);
+        Iterator<KnowledgePort> kpIter = this.getListener();
         
-        this.handleMessage(internalMessage);
+        while(kpIter.hasNext()) {
+            KnowledgePort kp = kpIter.next();
+        
+            KEPInMessage internalMessage = new KEPInMessage(this.se, 
+                    KEPMessage.KEP_EXPOSE, anyInterest, con, this);
+        
+            this.handleMessage(internalMessage);
+        }
     }
-  
+
+    @Override
+    public void handleInterest(Interest interest) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

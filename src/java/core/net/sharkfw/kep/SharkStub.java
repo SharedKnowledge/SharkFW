@@ -2,6 +2,7 @@ package net.sharkfw.kep;
 
 import java.security.PrivateKey;
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
@@ -31,6 +32,14 @@ public interface SharkStub {
      * @param con 
      */
     public void startConversion(StreamConnection con);
+    
+    /**
+     * Handle an interest which does not necessarily comes over a
+     * underlaying protocol.
+     * 
+     * @param interest
+     */
+    public void handleInterest(Interest interest);
     
     
 }
