@@ -9,18 +9,18 @@ import net.sharkfw.peer.KEPInMessage;
  *
  * @author thsc
  */
-public abstract class KEPStub extends SharkStub {
-    public abstract boolean handleMessage(KEPInMessage msg);
+public interface KEPStub extends SharkStub {
+    public boolean handleMessage(KEPInMessage msg);
     
-    protected abstract boolean callListener(KEPInMessage msg);
+    boolean callListener(KEPInMessage msg);
     
-    public abstract Iterator<SharkCS> getSentInterests(long since);
+    Iterator<SharkCS> getSentInterests(long since);
             
-    public abstract Iterator<Knowledge> getSentKnowledge(long since);
+    Iterator<Knowledge> getSentKnowledge(long since);
     
-    public abstract  Iterator<SharkCS> getUnhandledInterests(long since);
+    Iterator<SharkCS> getUnhandledInterests(long since);
             
-    public abstract Iterator<Knowledge> getUnhandledKnowledge(long since);
+    Iterator<Knowledge> getUnhandledKnowledge(long since);
     
-    public abstract void removeSentHistory();
+    void removeSentHistory();
 }

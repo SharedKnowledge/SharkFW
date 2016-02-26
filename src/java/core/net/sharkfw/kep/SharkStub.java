@@ -21,13 +21,13 @@ import net.sharkfw.security.pki.storage.SharkPkiStorage;
  * @author thsc
  * @author mfi
  */
-public abstract class SharkStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting {
+public interface SharkStub extends RequestHandler, KEPConnectionPool, KEPMessageAccounting {
     
-    public abstract void addListener(KnowledgePort newListener);
+    public void addListener(KnowledgePort newListener);
 
-    public abstract void withdrawListener(KnowledgePort listener);
+    public  void withdrawListener(KnowledgePort listener);
     
-    public abstract void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
+    public  void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
             SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel, 
             SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably);
     

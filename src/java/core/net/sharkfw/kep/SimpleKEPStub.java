@@ -35,7 +35,7 @@ import net.sharkfw.system.Util;
  * @author mfi
  */
 
-public class SimpleKEPStub extends KEPStub implements RequestHandler, KEPConnectionPool, KEPMessageAccounting  {
+public class SimpleKEPStub implements KEPStub, RequestHandler, KEPConnectionPool, KEPMessageAccounting  {
   /**
    * A <code>Vector</code> containing all active KPs
    */
@@ -139,7 +139,7 @@ public class SimpleKEPStub extends KEPStub implements RequestHandler, KEPConnect
    * @param msg The <code>KEPRequest</code> to handle.
    * @return True if at least one listener was able to handle the message. False otherwise.
   */
-    final synchronized protected boolean callListener(KEPInMessage msg) {
+    final synchronized public boolean callListener(KEPInMessage msg) {
         Enumeration<KnowledgePort> lenum = listener.elements();
         /* make a copy of listener - kp can be added or withdrawn during message handling
          * which can cause strange side effects.
