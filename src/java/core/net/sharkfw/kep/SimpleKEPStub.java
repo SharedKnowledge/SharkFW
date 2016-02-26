@@ -18,7 +18,6 @@ import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
-import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.InterestStore;
@@ -35,24 +34,7 @@ import net.sharkfw.system.Util;
  * @author mfi
  */
 
-public class SimpleKEPStub implements KEPStub, RequestHandler, KEPConnectionPool, KEPMessageAccounting  {
-  /**
-   * A <code>Vector</code> containing all active KPs
-   */
-	private Vector<KnowledgePort> listener;
-        
-        private KnowledgePort notHandledRequestsHandler;
-
-  /**
-   * The instance of the <code>SharkEngine</code> of this peer.
-   */
-	private SharkEngine se;
-
-  /**
-   * A table containing the connection pool of this <code>KEPStub</code>
-   */
-  private Hashtable<String, StreamConnection> table;
-
+public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
   /**
    * The table that stores all messages' contextspaces in their serialized form plus the timestamp when they've been sent.
    */
@@ -69,9 +51,7 @@ public class SimpleKEPStub implements KEPStub, RequestHandler, KEPConnectionPool
    * @param se The <code>SharkEngine</code> for which a new <code>SimpleKEPStub</code> is instantiated.
    */
 	public SimpleKEPStub(SharkEngine se) {
-		this.listener = new Vector<KnowledgePort>();
-		this.se = se;
-                this.table = new Hashtable<String, StreamConnection>();
+            super(se);
 	}
 
 	/**
@@ -139,21 +119,22 @@ public class SimpleKEPStub implements KEPStub, RequestHandler, KEPConnectionPool
    * @param msg The <code>KEPRequest</code> to handle.
    * @return True if at least one listener was able to handle the message. False otherwise.
   */
+  @Override
     final synchronized public boolean callListener(KEPInMessage msg) {
-        Enumeration<KnowledgePort> lenum = listener.elements();
+        Iterator<KnowledgePort> kpIter = this.getListener();
         /* make a copy of listener - kp can be added or withdrawn during message handling
          * which can cause strange side effects.
          */
         
-        ArrayList<KnowledgePort> kpList = new ArrayList<KnowledgePort>();
-        while(lenum.hasMoreElements()) {
-            kpList.add(lenum.nextElement());
+        ArrayList<KnowledgePort> kpList = new ArrayList<>();
+        while(kpIter.hasNext()) {
+            kpList.add(kpIter.next());
         }
         
-        // iterate kp now
+        // iterate copied list now
         boolean handled = false;
         
-        Iterator<KnowledgePort> kpIter = kpList.iterator();
+        kpIter = kpList.iterator();
         while (kpIter.hasNext()) {
           KnowledgePort l = kpIter.next();
           if (l.handleMessage(msg)) {
@@ -202,105 +183,6 @@ public class SimpleKEPStub implements KEPStub, RequestHandler, KEPConnectionPool
     public final void resetNotHandledRequestKP() {
         this.notHandledRequestsHandler = null;
     }
-
-    public final void addListener(KnowledgePort newListener) {
-        final int size = this.listener.size();
-            for (int i = 0; i < size; i++){
-                    if (this.listener.elementAt(i).equals(newListener)){
-                            return;
-            }
-        }
-        this.listener.add(newListener);
-
-
-//        L.d("Listener added.", this);
-//        L.d("Having " + this.listener.size() + " listeners.", this);
-        };
-
-    public final void withdrawListener(KnowledgePort listener) {
-//        L.d("Listener withdrawn.", this);
-//        L.d("Having " + this.listener.size() + " listeners.", this);
-        this.listener.removeElement(listener);
-    };
-
-
-  /*
-   * Prototypical implementation of connection pool for StreamConnections.
-   * Does not work as expected yet.
-   */
-  
-  /**
-   * Reset the connection pool
-   */
-    @Override
-  public void clear() {
-    L.d("Clearing connection pool.", this);
-    this.table.clear();
-  }
-
-    @Override
-  public StreamConnection getConnectionByAddress(String address) {
-    /*
-     * Todo: maybe update the Timestamp of this connection
-     */
-    return (StreamConnection) this.table.get(address);
-  }
-
-    @Override
-  public void addConnection(String address, StreamConnection connection) {
-    address = Util.resolveDNtoIPinGCFString(address);
-    this.table.put(address, connection);
-    L.d("Adding connection with address: " + address + " to accounting.", this);
-  }
-
-  /**
-   * Return a <code>StreamConnection</code> that has been stored to beong to a certain address.
-   * 
-   * @param tag A Tag representing a communication partner
-   * @return A <code>StreamConnection</code> to that peer.
-   */
-    @Override
-  public StreamConnection getConnectionByTag(PeerSemanticTag tag) {
-    L.d("Trying to find connection to: " + tag.getName(), this);
-    String[] addresses = tag.getAddresses();
-    if(addresses != null) {
-      for(int i = 0; i < addresses.length; i++) {
-        StreamConnection con = this.getConnectionByAddress(addresses[i]);
-        if(con != null) {
-          return con;
-        }
-      }
-    }
-    return null;
-  }
-
-    @Override
-  public void removeStreamConnection(StreamConnection con) {
-    if(this.table != null) {
-      // Check if the connection is in the table at all
-      Enumeration<String> keys = this.table.keys();
-      // check each key's value
-      while(keys != null && keys.hasMoreElements()) {
-        String key = (String) keys.nextElement();
-        //ROPeerSemanticTag key = (ROPeerSemanticTag) keys.nextElement();
-        StreamConnection storedCon = (StreamConnection) this.table.get(key);
-        if(con.equals(storedCon)) {
-          this.table.remove(key);
-        }
-      }
-    }
-  }
-
-    @Override
-  public Enumeration<String> getConnectedAddresses() {
-    if(this.table != null) {
-      return table.keys();
-
-    } else {
-      Vector<String> v = new Vector<String>();
-      return v.elements();
-    }
-  }
 
   /*
    * Implementing KEPMessageAccounting interface

@@ -119,7 +119,7 @@ public class KEPSession extends Thread {
             L.l("Closing TCPConnection although there is more data on the stream: " + e.getMessage(), this);
         }
 
-        this.kepStub.removeStreamConnection(con);
+        //this.kepStub.removeStreamConnection(con);
         this.con.close();
     }
 
