@@ -23,5 +23,4 @@ public interface SharkStub {
             SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably);
 
     public void handleStream(StreamConnection con);
-    
 }

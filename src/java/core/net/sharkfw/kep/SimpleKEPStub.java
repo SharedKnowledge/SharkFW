@@ -6,12 +6,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.KEPInMessage;
@@ -25,7 +23,6 @@ import net.sharkfw.system.KnowledgeStore;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkNotSupportedException;
 import net.sharkfw.system.SharkSecurityException;
-import net.sharkfw.system.Util;
 
 /**
  * Simple implementation of KEP-Protocol engine.
@@ -38,37 +35,36 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
   /**
    * The table that stores all messages' contextspaces in their serialized form plus the timestamp when they've been sent.
    */
-  private Hashtable<String, Long> messages = new Hashtable<String, Long>();
+    private Hashtable<String, Long> messages = new Hashtable<String, Long>();
 
 
   /**
    * This table stores all knowledges' contextspaces in their serialized form plus the timestamp when they've been sent.
    */
-  private Hashtable<String, Long> knowledges = new Hashtable<String, Long>();
+    private Hashtable<String, Long> knowledges = new Hashtable<String, Long>();
   /**
    * Create a new <code>SimpleKEPStub</code> for the <code>SharkEngine</code> se.
    *
    * @param se The <code>SharkEngine</code> for which a new <code>SimpleKEPStub</code> is instantiated.
    */
-	public SimpleKEPStub(SharkEngine se) {
-            super(se);
-	}
+    public SimpleKEPStub(SharkEngine se) {
+        super(se);
+    }
 
-	/**
-	 * this message is called by underlying stream protocols 
-         * whenever a new Stream is established.
-	 * 
-	 * @param is The received stream.
-	 */
+    /**
+     * this message is called by underlying stream protocols 
+     * whenever a new Stream is established.
+     * 
+     * @param con The received stream.
+     */
     @Override
-	public final void handleStream(StreamConnection con) {
-		KEPSession session = new KEPSession(this.se, con, this);
-                session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
-                                this.encryptionLevel, this.signatureLevel,
-                                this.replyPolicy, this.refuseUnverifiably);
-                session.start();
-                
-	}
+    public final void handleStream(StreamConnection con) {
+        KEPSession session = new KEPSession(this.se, con, this);
+        session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+                        this.encryptionLevel, this.signatureLevel,
+                        this.replyPolicy, this.refuseUnverifiably);
+        session.start();
+    }
 
     /**
      * This message is to be called when a new connection was establised e.g.
@@ -361,30 +357,8 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
      */
     protected int silentPeriod = SharkEngine.DEFAULT_SILTENT_PERIOD;
 
-    // security stuff
-    //protected SharkPublicKeyStorage publicKeyStorage;
-    protected SharkPkiStorage sharkPkiStorage;
-    protected SharkEngine.SecurityReplyPolicy replyPolicy;
-    protected boolean refuseUnverifiably;
-    protected SharkEngine.SecurityLevel signatureLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
-    protected SharkEngine.SecurityLevel encryptionLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
-    protected PrivateKey privateKey;
-
     public boolean handleMessage(KEPInMessage msg) {
         return this.callListener(msg);
-    }
-    
-    public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
-            SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel, 
-            SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
-        
-        this.privateKey = privateKey;
-        //this.publicKeyStorage = publicKeyStorage;
-        this.sharkPkiStorage = sharkPkiStorage;
-        this.signatureLevel = signatureLevel;
-        this.encryptionLevel = encryptionLevel;
-        this.replyPolicy = replyPolicy;
-        this.refuseUnverifiably = refuseUnverifiably;
     }
     
     private InterestStore sentInterests = new InterestStore();
@@ -460,6 +434,7 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         this.unhandledKnowledge = new KnowledgeStore();
     }
     
+  @Override
     public void setSilentPeriod(int milliseconds) {
         if(milliseconds > 0) {
             this.silentPeriod = milliseconds;

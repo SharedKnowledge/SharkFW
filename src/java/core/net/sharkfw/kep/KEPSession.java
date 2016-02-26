@@ -9,7 +9,6 @@ import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.peer.SharkEngine.SecurityLevel;
 import net.sharkfw.peer.SharkEngine.SecurityReplyPolicy;
-import net.sharkfw.pki.SharkPublicKeyStorage;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;

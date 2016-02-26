@@ -7,6 +7,7 @@ import java.security.PublicKey;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import net.sharkfw.kep.*;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -17,6 +18,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.protocols.*;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.EnumerationChain;
+import net.sharkfw.system.Iterator2Enumeration;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 import net.sharkfw.system.SharkNotSupportedException;
@@ -78,7 +80,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
      * in <code>KnowledgePort</code>s.
      */
-    protected Vector<KnowledgePort> kps;
+    protected List<KnowledgePort> kps;
     /**
      * Storage for opened stubs to certain underlying protocols.
      */
@@ -88,11 +90,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * no relay will be used.
      */
     protected String relaisaddress;
-    /**
-     * Reference to the PeerSensor working on this SharkEngine
-     */
-    @SuppressWarnings("unused")
-    private PeerSensor psensor = null;
     /**
      * Reference to the GeoSensor working on this SharkEngine
      */
@@ -442,16 +439,17 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * Return all KP which are currently registered in this SharkEngine.
      * @return enumeration of objects of class KP
      * @see net.sharkfw.peer.AbstractKP
+     * @deprecated 
      */
     public Enumeration<KnowledgePort> getKPs() {
-        return this.kps.elements();
+        return new Iterator2Enumeration(this.kps.iterator());
     }
     
     /**
      * @return
      */
     public Iterator<KnowledgePort> getAllKP() {
-        EnumerationChain<KnowledgePort> kpIter = new EnumerationChain<KnowledgePort>();
+        EnumerationChain<KnowledgePort> kpIter = new EnumerationChain<>();
         kpIter.addEnumeration(this.getKPs());
         return kpIter;
     }    
@@ -473,8 +471,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     public void deleteAllKP() {
 
-        while (this.kps.size() != 0) {
-            KnowledgePort kp = (KnowledgePort) this.kps.elementAt(0);
+        while (!this.kps.isEmpty()) {
+            KnowledgePort kp = (KnowledgePort) this.kps.get(0);
             this.deleteKP(kp);
         }
     }
@@ -1253,12 +1251,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public void publishAllKP() throws SharkSecurityException, IOException {
         L.d("Publishing all KPs", this);
         // Find all KPs
-        @SuppressWarnings("rawtypes")
-        Enumeration<KnowledgePort> kpEnum = this.kps.elements();
+        Iterator<KnowledgePort> kpIter = this.kps.iterator();
 
         // publish one by one to the environment
-        while (kpEnum.hasMoreElements()) {
-            KnowledgePort kp = kpEnum.nextElement();
+        while (kpIter.hasNext()) {
+            KnowledgePort kp = kpIter.next();
 
             this.publishKP(kp);
         }
@@ -1269,12 +1266,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         L.d("Publishing all KPs", this);
 
         // Find all KPs
-        @SuppressWarnings("rawtypes")
-        Enumeration kpEnum = this.kps.elements();
+        Iterator<KnowledgePort> kpEnum = this.kps.iterator();
 
         // Publish them one by one to the recipient
-        while (kpEnum.hasMoreElements()) {
-            KnowledgePort kp = (KnowledgePort) kpEnum.nextElement();
+        while (kpEnum.hasNext()) {
+            KnowledgePort kp = kpEnum.next();
             this.publishKP(kp, recipient);
         }
     }
@@ -1332,10 +1328,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     /**
      * 
      * @param engineOwnerPeer
-     * @param privateKey private RSA key of this peer
-     * @param peer a PST that signes messages - in most cases it will be 
-     * the description of the user who actual runs that software
-     * @param publicKeyStorage object providing a Shark public key storage
+     * @param sharkPkiStorage
      * @param encryptionLevel set encryption level of first messages. 
      * MUST: message must be encrypted - if no public key available - no message will be sent
      * IF_POSSIBLE: message will be encrypted if a valid public key can be found
@@ -1349,6 +1342,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @param refuseUnverifiably a message cannot be verified if the peer has no 
      * public key. This paramter defines whether the message is to be refused in this 
      * case or not. Note: Messages with wrong signatures are refused in any case.
+     * @throws net.sharkfw.system.SharkSecurityException
      */
     @SuppressWarnings("unused")
     public void initSecurity(PeerSemanticTag engineOwnerPeer, 
