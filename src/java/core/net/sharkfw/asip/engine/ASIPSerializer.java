@@ -160,7 +160,7 @@ public class ASIPSerializer {
         return object;
     }
     
-    public static JSONObject serializeVocabulary(SharkVocabulary vocabulary) throws SharkKBException{
+    public static JSONObject serializeVocabulary(SharkVocabulary vocabulary) throws SharkKBException{ 
         JSONObject jsonObject = new JSONObject();
         
         jsonObject.put(SharkVocabulary.TOPICS, serializeSTSetJSON(vocabulary.getTopicSTSet()));
@@ -476,11 +476,16 @@ public class ASIPSerializer {
         if(knowledge==null) return null;
         
         JSONObject jsonObject = new JSONObject(knowledge);
+        
         JSONObject vocabularyJSON = jsonObject.getJSONObject(ASIPKnowledge.VOCABULARY);
-        STSet topics = deserializeSTSet(vocabularyJSON.getString(ASIPSpace.TOPICS));
-        STSet types = deserializeSTSet(vocabularyJSON.getString(ASIPSpace.TYPES));
-        PeerSTSet peers = deserializePeerSTSet(null, vocabularyJSON.getString(ASIPSpace.APPROVERS));
-        deserializePeerSTSet(peers, vocabularyJSON.getString(ASIPSpace.SENDER));
+        STSet topics = deserializeSTSet(vocabularyJSON.getString(SharkVocabulary.TOPICS));
+        STSet types = deserializeSTSet(vocabularyJSON.getString(SharkVocabulary.TYPES));
+        PeerSTSet peers = deserializePeerSTSet(null, vocabularyJSON.getString(SharkVocabulary.PEERS));
+        SpatialSTSet locations = deserializeSpatialSTSet(null, vocabularyJSON.getString(SharkVocabulary.LOCATIONS));
+        TimeSTSet times = deserializeTimeSTSet(null, vocabularyJSON.getString(SharkVocabulary.TIMES));
+        
+        
+        
         
         return null; 
         // TODO deserializeKnowledge
