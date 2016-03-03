@@ -10,14 +10,17 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Information;
+import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.PeerTaxonomy;
 import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
@@ -35,9 +38,12 @@ import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
+import net.sharkfw.knowledgeBase.inmemory.InMemoASIPKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
+import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkCS;
 
 /**
  *
@@ -471,20 +477,35 @@ public class ASIPSerializer {
      * @return
      * @throws SharkKBException 
      */
-    public static ASIPKnowledge deserializeKnowledge(String knowledge) throws SharkKBException {
+    public static ASIPKnowledge deserializeKnowledge(String string) throws SharkKBException {
         
-        if(knowledge==null) return null;
+        if(string==null) return null;
         
-        JSONObject jsonObject = new JSONObject(knowledge);
+        JSONObject jsonObject = new JSONObject(string);
         
         JSONObject vocabularyJSON = jsonObject.getJSONObject(ASIPKnowledge.VOCABULARY);
+        
         STSet topics = deserializeSTSet(vocabularyJSON.getString(SharkVocabulary.TOPICS));
         STSet types = deserializeSTSet(vocabularyJSON.getString(SharkVocabulary.TYPES));
         PeerSTSet peers = deserializePeerSTSet(null, vocabularyJSON.getString(SharkVocabulary.PEERS));
         SpatialSTSet locations = deserializeSpatialSTSet(null, vocabularyJSON.getString(SharkVocabulary.LOCATIONS));
         TimeSTSet times = deserializeTimeSTSet(null, vocabularyJSON.getString(SharkVocabulary.TIMES));
         
+        // retrieve vocabulary
         
+        Knowledge k = InMemoSharkKB.createInMemoKnowledge();
+        SharkVocabulary vocabulary = new InMemoSharkKB((SemanticNet) topics, (SemanticNet) types, (PeerTaxonomy) peers, locations, times, k);
+
+        ASIPKnowledge knowledge = new InMemoASIPKnowledge(vocabulary);
+        
+        // retrieve content and spaces and add them to the knowledge
+        // parse InfoData
+        // get Spaces
+        // get Bytes from InfoContent regarding InfoData
+        
+        
+        
+//        knowledge.addInformation(content, semanticAnnotations)
         
         
         return null; 

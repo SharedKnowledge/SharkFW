@@ -865,7 +865,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         super(topics, peers, locations, times, k);
     }
     
-    InMemoSharkKB(SemanticNet topics, SemanticNet types, PeerTaxonomy peers,
+    public InMemoSharkKB(SemanticNet topics, SemanticNet types, PeerTaxonomy peers,
                  SpatialSTSet locations, TimeSTSet times,
                  Knowledge k) throws SharkKBException {
         
