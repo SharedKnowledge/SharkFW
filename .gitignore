@@ -1,4 +1,5 @@
 .idea
+META-INF/
 Manifest.java
 *.iml
 BuildConfig.java
