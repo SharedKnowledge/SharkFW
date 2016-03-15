@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sql;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -95,7 +96,7 @@ public class SQLKnowledge implements Knowledge {
     }
 
     @Override
-    public ASIPInformation addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(InputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

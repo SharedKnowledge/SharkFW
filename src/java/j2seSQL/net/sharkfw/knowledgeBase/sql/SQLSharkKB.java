@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sql;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -921,7 +922,7 @@ public class SQLSharkKB extends AbstractSharkKB implements SharkKB {
     }
 
     @Override
-    public ASIPInformation addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

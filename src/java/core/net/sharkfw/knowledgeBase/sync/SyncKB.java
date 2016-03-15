@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
@@ -434,8 +435,8 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public ASIPInformation addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return this._localKB.addInformation(contentOS, numberOfBytes, semanticAnnotations);
+    public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        return this._localKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
     }
 
     @Override

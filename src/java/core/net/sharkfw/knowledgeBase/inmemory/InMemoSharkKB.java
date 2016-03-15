@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;
@@ -1325,8 +1326,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
 
     @Override
-    public ASIPInformation addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        return this.getKnowledge().addInformation(contentOS, numberOfBytes, semanticalAnnotations);
+    public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
+        return this.getKnowledge().addInformation(contentIS, numberOfBytes, semanticalAnnotations);
     }
 
     @Override

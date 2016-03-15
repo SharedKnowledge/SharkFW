@@ -1,5 +1,6 @@
 package net.sharkfw.asip;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
@@ -42,13 +43,13 @@ public interface ASIPKnowledge {
     /**
      * Add information with it semantical annotations to knowledge base.
      * 
-     * @param contentOS
+     * @param contentIS
      * @param numberOfBytes
      * @param semanticAnnotations
      * @return
      * @throws SharkKBException 
      */
-    public ASIPInformation addInformation(OutputStream contentOS, 
+    public ASIPInformation addInformation(InputStream contentIS, 
             int numberOfBytes, ASIPSpace semanticAnnotations) 
             throws SharkKBException;
     

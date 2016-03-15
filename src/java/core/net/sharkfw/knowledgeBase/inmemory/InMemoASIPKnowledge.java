@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -137,15 +138,23 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     public ASIPInformation addInformation(byte[] content, 
             ASIPSpace semanticAnnotations) throws SharkKBException {
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        InMemoInformation info = new InMemoInformation(semanticAnnotations);
+        info.setContent(content);
+        this.addInfo(info);
+        
+        return info;
     }
 
     @Override
-    public ASIPInformation addInformation(OutputStream contentOS, 
+    public ASIPInformation addInformation(InputStream contentIS, 
             int numberOfBytes, ASIPSpace semanticAnnotations) 
             throws SharkKBException {
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        InMemoInformation info = new InMemoInformation(semanticAnnotations);
+        info.setContent(contentIS, numberOfBytes);
+        this.addInfo(info);
+        
+        return info;
     }
 
     @Override
