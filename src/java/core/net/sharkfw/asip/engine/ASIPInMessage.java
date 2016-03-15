@@ -1,5 +1,6 @@
 package net.sharkfw.asip.engine;
 
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.Knowledge;
@@ -15,7 +16,7 @@ public class ASIPInMessage extends ASIPMessage {
     private SharkEngine se;
     private StreamConnection con;
     private SharkStub sharkStub;
-    private Knowledge knowledge;
+    private ASIPKnowledge knowledge;
     private ASIPSpace interest;
 
     public ASIPInMessage() {}    
@@ -38,11 +39,11 @@ public class ASIPInMessage extends ASIPMessage {
         this.sharkStub = sharkStub;
     }
 
-    public Knowledge getKnowledge() {
+    public ASIPKnowledge getKnowledge() {
         return knowledge;
     }
 
-    public void setKnowledge(Knowledge knowledge) {
+    public void setKnowledge(ASIPKnowledge knowledge) {
         this.knowledge = knowledge;
     }
 

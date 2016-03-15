@@ -38,8 +38,7 @@ import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
  * @author msc
  */
 public class ASIPSerializer {
-    
-    public static final String HEADER = "HEADER";
+
     public static final String CONTENT = "CONTENT";
     public static final String LOGICALSENDER = "LOGICALSENDER";
     public static final String SIGNED = "SIGNED";
@@ -50,24 +49,35 @@ public class ASIPSerializer {
     public static JSONObject serializeExpose(ASIPMessage header, ASIPSpace interest)
             throws SharkKBException, JSONException {
 
-        JSONObject object = new JSONObject();
-        object.put(HEADER, serializeHeader(header));
-        object.put(INTEREST, serializeInterest(interest));
+        JSONObject object = serializeHeader(header);
+        JSONObject content = new JSONObject();
+        content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+        content.put(SIGNED, false); // If signed or not
+        content.put(INTEREST, serializeInterest(interest));
+        object.put(CONTENT, content);
         return object;
     }
 
     public static JSONObject serializeInsert(ASIPMessage header, ASIPKnowledge knowledge)
             throws JSONException, SharkKBException{
-        JSONObject object = new JSONObject();
-        object.put(HEADER, serializeHeader(header));
+
+        JSONObject object = serializeHeader(header);
+        JSONObject content = new JSONObject();
+        content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+        content.put(SIGNED, false); // If signed or not
         object.put(KNOWLEDGE, serializeKnowledge(knowledge));
+        object.put(CONTENT, content);
         return object;
     }
 
     public static JSONObject serializeRaw(ASIPMessage header, Object raw) throws SharkKBException {
-        JSONObject object = new JSONObject();
-        object.put(HEADER, serializeHeader(header));
-        object.put(KNOWLEDGE, raw);
+
+        JSONObject object = serializeHeader(header);
+        JSONObject content = new JSONObject();
+        content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+        content.put(SIGNED, false); // If signed or not
+        object.put(RAW, raw);
+        object.put(CONTENT, content);
         return object;
     }
 
@@ -414,8 +424,15 @@ public class ASIPSerializer {
         
         message.setSignature(jsonObject.getString(ASIPMessage.SIGNATURE));
 
-        // TODO deserializeHeader message correct? IN/(OUT) ?
-        
+        JSONObject content = (JSONObject) jsonObject.get(CONTENT);
+
+        if(content.has(INTEREST)){
+            message.setInterest(deserializeInterest(content.getString(INTEREST)));
+        } else if (content.has(KNOWLEDGE)){
+            message.setKnowledge(deserializeKnowledge(content.getString(KNOWLEDGE)));
+        } else if(content.has(RAW)){
+            // TODO RAW
+        }
         return message;
     }
     
