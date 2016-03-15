@@ -483,20 +483,15 @@ public class ASIPSerializer {
         
         // create knowledge which actuall IS a SharkKB
         SharkKB kb = new InMemoSharkKB((SemanticNet) topics, (SemanticNet) types, (PeerTaxonomy) peers, locations, times);
-        SharkVocabulary vocabulary = kb.getVocabulary();
-        ASIPKnowledge knowledge;
 
         byte[] infoContent = (byte[]) jsonObject.get(ASIPInfoDataManager.INFOCONTENT);
 
-        JSONArray infoPointArray = jsonObject.getJSONArray(ASIPInfoDataManager.INFODATA);
-        Iterator infoPointIterator = infoPointArray.iterator();
+        Iterator infoPointIterator = jsonObject.getJSONArray(ASIPInfoDataManager.INFODATA).iterator();
         while(infoPointIterator.hasNext()){
             JSONObject infoObject = (JSONObject) infoPointIterator.next();
             ASIPSpace space = ASIPSerializer.deserializeASIPSpace(infoObject.getString(ASIPPointInformation.ASIPSPACE));
 
-            ArrayList infos = new ArrayList();
-            JSONArray infoDataArray = jsonObject.getJSONArray(ASIPPointInformation.INFOMETADATA);
-            Iterator infoDataIterator = infoDataArray.iterator();
+            Iterator infoDataIterator = jsonObject.getJSONArray(ASIPPointInformation.INFOMETADATA).iterator();
             while(infoDataIterator.hasNext()){
                 JSONObject object = (JSONObject) infoDataIterator.next();
 
@@ -506,8 +501,10 @@ public class ASIPSerializer {
 
                 System.arraycopy(infoContent, offset, buff, 0, length);
                 
-                ASIPInformation info = kb.addInformation(infoContent, space);
-                info.setName(object.getString(ASIPInfoMetaData.NAME));
+                kb.addInformation(buff, space);
+//                ASIPInformation info = kb.addInformation(buff, space);
+                // Name is not necessary? Won't be
+//                info.setName(object.getString(ASIPInfoMetaData.NAME));
             }
         }
         return kb;
