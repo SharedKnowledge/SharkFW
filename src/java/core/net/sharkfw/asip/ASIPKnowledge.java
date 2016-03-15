@@ -35,7 +35,7 @@ public interface ASIPKnowledge {
      * @return
      * @throws SharkKBException 
      */
-    public ASIPInformationSpace addInformation(byte[] content, 
+    public ASIPInformation addInformation(byte[] content, 
             ASIPSpace semanticAnnotations) 
             throws SharkKBException;
     
@@ -48,7 +48,7 @@ public interface ASIPKnowledge {
      * @return
      * @throws SharkKBException 
      */
-    public ASIPInformationSpace addInformation(OutputStream contentOS, 
+    public ASIPInformation addInformation(OutputStream contentOS, 
             int numberOfBytes, ASIPSpace semanticAnnotations) 
             throws SharkKBException;
     
@@ -60,7 +60,7 @@ public interface ASIPKnowledge {
      * @return
      * @throws SharkKBException 
      */
-    public ASIPInformationSpace addInformation(String content, 
+    public ASIPInformation addInformation(String content, 
             ASIPSpace semanticAnnotations) 
             throws SharkKBException;
     

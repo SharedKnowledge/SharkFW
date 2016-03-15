@@ -134,14 +134,14 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     }
 
     @Override
-    public ASIPInformationSpace addInformation(byte[] content, 
+    public ASIPInformation addInformation(byte[] content, 
             ASIPSpace semanticAnnotations) throws SharkKBException {
         
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ASIPInformationSpace addInformation(OutputStream contentOS, 
+    public ASIPInformation addInformation(OutputStream contentOS, 
             int numberOfBytes, ASIPSpace semanticAnnotations) 
             throws SharkKBException {
         
@@ -149,15 +149,13 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     }
 
     @Override
-    public ASIPInformationSpace addInformation(String content, 
+    public ASIPInformation addInformation(String content, 
             ASIPSpace semanticAnnotations) throws SharkKBException {
         
         InMemoInformation info = new InMemoInformation(semanticAnnotations);
         info.setContent(content);
         this.addInfo(info);
         
-        InMemoInformationSpace infoSpace = new InMemoInformationSpace();
-        infoSpace.addInformation(info);
-        return infoSpace;
+        return info;
     }
 }

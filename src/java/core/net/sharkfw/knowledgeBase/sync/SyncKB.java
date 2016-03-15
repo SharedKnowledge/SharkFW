@@ -429,17 +429,17 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
-    public ASIPInformationSpace addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
         return this._localKB.addInformation(content, semanticAnnotations);
     }
 
     @Override
-    public ASIPInformationSpace addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         return this._localKB.addInformation(contentOS, numberOfBytes, semanticAnnotations);
     }
 
     @Override
-    public ASIPInformationSpace addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         return this._localKB.addInformation(content, semanticAnnotations);
     }
 

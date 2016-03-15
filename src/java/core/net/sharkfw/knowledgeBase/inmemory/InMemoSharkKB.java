@@ -1320,17 +1320,17 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
 
     @Override
-    public ASIPInformationSpace addInformation(byte[] content, ASIPSpace semanticalAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(byte[] content, ASIPSpace semanticalAnnotations) throws SharkKBException {
         return this.getKnowledge().addInformation(content, semanticalAnnotations);
     }
 
     @Override
-    public ASIPInformationSpace addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
         return this.getKnowledge().addInformation(contentOS, numberOfBytes, semanticalAnnotations);
     }
 
     @Override
-    public ASIPInformationSpace addInformation(String content, ASIPSpace semanticalAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(String content, ASIPSpace semanticalAnnotations) throws SharkKBException {
         return this.getKnowledge().addInformation(content, semanticalAnnotations);
     }
 }

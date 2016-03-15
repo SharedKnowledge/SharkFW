@@ -90,17 +90,17 @@ public class SQLKnowledge implements Knowledge {
     }
 
     @Override
-    public ASIPInformationSpace addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ASIPInformationSpace addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(OutputStream contentOS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ASIPInformationSpace addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+    public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

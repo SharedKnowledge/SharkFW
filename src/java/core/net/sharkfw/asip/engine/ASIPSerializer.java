@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sharkfw.asip.*;
+import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -478,11 +479,12 @@ public class ASIPSerializer {
         SpatialSTSet locations = deserializeSpatialSTSet(null, vocabularyJSON.getString(SharkVocabulary.LOCATIONS));
         TimeSTSet times = deserializeTimeSTSet(null, vocabularyJSON.getString(SharkVocabulary.TIMES));
 
-//         Create empty Knowledge to create new Knowledge??
-        Knowledge k = InMemoSharkKB.createInMemoKnowledge();
         // TODO Cast do SN and Taxonomy ?!
-        SharkVocabulary vocabulary = new InMemoSharkKB((SemanticNet) topics, (SemanticNet) types, (PeerTaxonomy) peers, locations, times, k);
-        ASIPKnowledge knowledge = new InMemoASIPKnowledge(vocabulary);
+        
+        // create knowledge which actuall IS a SharkKB
+        SharkKB kb = new InMemoSharkKB((SemanticNet) topics, (SemanticNet) types, (PeerTaxonomy) peers, locations, times);
+        SharkVocabulary vocabulary = kb.getVocabulary();
+        ASIPKnowledge knowledge;
 
         byte[] infoContent = (byte[]) jsonObject.get(ASIPInfoDataManager.INFOCONTENT);
 
@@ -497,21 +499,18 @@ public class ASIPSerializer {
             Iterator infoDataIterator = infoDataArray.iterator();
             while(infoDataIterator.hasNext()){
                 JSONObject object = (JSONObject) infoDataIterator.next();
-                InMemoInformation info = new InMemoInformation();
-                info.setName(object.getString(ASIPInfoMetaData.NAME));
 
                 int offset = object.getInt(ASIPInfoMetaData.OFFSET);
                 int length = object.getInt(ASIPInfoMetaData.LENGTH);
                 byte[] buff = new byte[length];
+
                 System.arraycopy(infoContent, offset, buff, 0, length);
-
-                info.setContent(buff);
-
-                infos.add(info);
+                
+                ASIPInformation info = kb.addInformation(infoContent, space);
+                info.setName(object.getString(ASIPInfoMetaData.NAME));
             }
-            knowledge.mergeInformation(infos.iterator(), space);
         }
-        return knowledge;
+        return kb;
     }
     
     /**
