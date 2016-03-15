@@ -16,7 +16,7 @@ import net.sharkfw.asip.ASIPSpace;
  */
 public class ASIPPointInformation {
     
-    public final static String CONTEXTSPACE = "CONTEXTSPACE";
+    public final static String ASIPSPACE = "ASIPSPACE";
     public final static String INFOMETADATA = "INFOMETADATA";
     
     private ASIPSpace space;

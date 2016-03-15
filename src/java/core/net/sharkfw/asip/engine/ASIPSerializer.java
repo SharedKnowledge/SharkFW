@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.asip.ASIPSpace;
+
+import net.sharkfw.asip.*;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -24,7 +23,7 @@ import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.inmemory.*;
 import net.sharkfw.system.Util;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,10 +33,6 @@ import net.sharkfw.knowledgeBase.TXSemanticTag;
 import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
-import net.sharkfw.knowledgeBase.inmemory.InMemoASIPKnowledge;
-import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
 
 /**
  *
@@ -141,7 +136,7 @@ public class ASIPSerializer {
             JSONObject pointInfoJSON = new JSONObject();
             ASIPPointInformation pointInformation = (ASIPPointInformation) pointInformations.next();
             ASIPSpace space = pointInformation.getSpace();
-            pointInfoJSON.put(ASIPPointInformation.CONTEXTSPACE, serializeASIPSpace(space));
+            pointInfoJSON.put(ASIPPointInformation.ASIPSPACE, serializeASIPSpace(space));
             
             JSONArray infoMetaDataArray = new JSONArray();
             while(pointInformation.getInfoData().hasNext()){
@@ -466,8 +461,6 @@ public class ASIPSerializer {
     
     /**
      * Deserializes knowledge and return a newly created knowledge object..
-     * @param stream
-     * @param knowledge
      * @return
      * @throws SharkKBException 
      */
@@ -484,28 +477,41 @@ public class ASIPSerializer {
         PeerSTSet peers = deserializePeerSTSet(null, vocabularyJSON.getString(SharkVocabulary.PEERS));
         SpatialSTSet locations = deserializeSpatialSTSet(null, vocabularyJSON.getString(SharkVocabulary.LOCATIONS));
         TimeSTSet times = deserializeTimeSTSet(null, vocabularyJSON.getString(SharkVocabulary.TIMES));
-        
-        // retrieve vocabulary
-        
-        Knowledge k = InMemoSharkKB.createInMemoKnowledge();
-        SharkVocabulary vocabulary = new InMemoSharkKB((SemanticNet) topics, (SemanticNet) types, (PeerTaxonomy) peers, locations, times, k);
 
+//         Create empty Knowledge to create new Knowledge??
+        Knowledge k = InMemoSharkKB.createInMemoKnowledge();
+        // TODO Cast do SN and Taxonomy ?!
+        SharkVocabulary vocabulary = new InMemoSharkKB((SemanticNet) topics, (SemanticNet) types, (PeerTaxonomy) peers, locations, times, k);
         ASIPKnowledge knowledge = new InMemoASIPKnowledge(vocabulary);
-        
-        // retrieve content and spaces and add them to the knowledge
-        // parse InfoData
-        // get Spaces
-        // get Bytes from InfoContent regarding InfoData
-        
-        
-        
-//        knowledge.addInformation(content, semanticAnnotations)
-        
-        
-        return null; 
-        // TODO deserializeKnowledge
-        
-        // return imkb.asKnowledge();
+
+        byte[] infoContent = (byte[]) jsonObject.get(ASIPInfoDataManager.INFOCONTENT);
+
+        JSONArray infoPointArray = jsonObject.getJSONArray(ASIPInfoDataManager.INFODATA);
+        Iterator infoPointIterator = infoPointArray.iterator();
+        while(infoPointIterator.hasNext()){
+            JSONObject infoObject = (JSONObject) infoPointIterator.next();
+            ASIPSpace space = ASIPSerializer.deserializeASIPSpace(infoObject.getString(ASIPPointInformation.ASIPSPACE));
+
+            ArrayList infos = new ArrayList();
+            JSONArray infoDataArray = jsonObject.getJSONArray(ASIPPointInformation.INFOMETADATA);
+            Iterator infoDataIterator = infoDataArray.iterator();
+            while(infoDataIterator.hasNext()){
+                JSONObject object = (JSONObject) infoDataIterator.next();
+                InMemoInformation info = new InMemoInformation();
+                info.setName(object.getString(ASIPInfoMetaData.NAME));
+
+                int offset = object.getInt(ASIPInfoMetaData.OFFSET);
+                int length = object.getInt(ASIPInfoMetaData.LENGTH);
+                byte[] buff = new byte[length];
+                System.arraycopy(infoContent, offset, buff, 0, length);
+
+                info.setContent(buff);
+
+                infos.add(info);
+            }
+            knowledge.mergeInformation(infos.iterator(), space);
+        }
+        return knowledge;
     }
     
     /**
