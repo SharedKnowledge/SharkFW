@@ -15,6 +15,8 @@ public class ASIPInMessage extends ASIPMessage {
     private SharkEngine se;
     private StreamConnection con;
     private SharkStub sharkStub;
+    private Knowledge knowledge;
+    private ASIPSpace interest;
 
     public ASIPInMessage() {}    
     
@@ -35,13 +37,20 @@ public class ASIPInMessage extends ASIPMessage {
     public void setSharkStub(SharkStub sharkStub) {
         this.sharkStub = sharkStub;
     }
-    
+
     public Knowledge getKnowledge() {
-        // TODO
-        return null;
+        return knowledge;
     }
-    
+
+    public void setKnowledge(Knowledge knowledge) {
+        this.knowledge = knowledge;
+    }
+
     public ASIPSpace getInterest() {
-        return null; // TODO
+        return interest;
+    }
+
+    public void setInterest(ASIPSpace interest) {
+        this.interest = interest;
     }
 }

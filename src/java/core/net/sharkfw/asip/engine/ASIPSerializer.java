@@ -40,8 +40,12 @@ import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 public class ASIPSerializer {
     
     public static final String HEADER = "HEADER";
+    public static final String CONTENT = "CONTENT";
+    public static final String LOGICALSENDER = "LOGICALSENDER";
+    public static final String SIGNED = "SIGNED";
     public static final String INTEREST = "INTEREST";
     public static final String KNOWLEDGE = "KNOWLEDGE";
+    public static final String RAW = "RAW";
 
     public static JSONObject serializeExpose(ASIPMessage header, ASIPSpace interest)
             throws SharkKBException, JSONException {
@@ -410,8 +414,6 @@ public class ASIPSerializer {
         
         message.setSignature(jsonObject.getString(ASIPMessage.SIGNATURE));
 
-
-        
         // TODO deserializeHeader message correct? IN/(OUT) ?
         
         return message;
@@ -461,11 +463,9 @@ public class ASIPSerializer {
                 byte[] buff = new byte[length];
 
                 System.arraycopy(infoContent, offset, buff, 0, length);
-                
-                kb.addInformation(buff, space);
-//                ASIPInformation info = kb.addInformation(buff, space);
-                // Name is not necessary? Won't be
-//                info.setName(object.getString(ASIPInfoMetaData.NAME));
+
+                ASIPInformation info = kb.addInformation(buff, space);
+                info.setName(object.getString(ASIPInfoMetaData.NAME));
             }
         }
         return kb;
