@@ -61,13 +61,12 @@ public class ASIPSerializer {
     }
 
     public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
-        return new JSONObject()
-            .put(ASIPMessage.ENCRYPTED, header.isEncrypted())
+        return new JSONObject().put(ASIPMessage.ENCRYPTED, header.isEncrypted())
             .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncyptedSessionKey())
             .put(ASIPMessage.VERSION, header.getVersion())
             .put(ASIPMessage.FORMAT, header.getFormat())
             .put(ASIPMessage.COMMAND, header.getCommand())
-            .put(ASIPMessage.SENDER, serializeTag(header.getSender()))
+            .put(ASIPMessage.SENDER, serializeSTSet(header.getSenders()))
             .put(ASIPMessage.RECEIVERS, serializeSTSet(header.getReceivers()))
             .put(ASIPMessage.SIGNATURE, header.getSignature());
     }
@@ -396,8 +395,7 @@ public class ASIPSerializer {
         message.setCommand(jsonObject.getInt(ASIPMessage.COMMAND));
         
         String senderString = jsonObject.getString(ASIPMessage.SENDER);
-        PeerSemanticTag sender = deserializePeerTag(senderString);
-        message.setSender(sender);
+        message.setSenders(deserializeSTSet(senderString));
         
         String receiverString = jsonObject.getString(ASIPMessage.RECEIVERS);
         STSet set = deserializeSTSet(receiverString);

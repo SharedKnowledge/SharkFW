@@ -7,6 +7,9 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
+import net.sharkfw.knowledgeBase.SemanticTag;
+
+import java.util.List;
 
 /**
  *
@@ -31,7 +34,7 @@ public abstract class ASIPMessage {
     private String version;
     private String format;
     private int command;
-    private PeerSemanticTag sender;
+    private STSet senders;
     private STSet receivers;
     private String signature;
 
@@ -75,12 +78,16 @@ public abstract class ASIPMessage {
         this.command = command;
     }
 
-    public PeerSemanticTag getSender() {
-        return sender;
+    public STSet getSenders() {
+        return senders;
     }
 
-    public void setSender(PeerSemanticTag sender) {
-        this.sender = sender;
+    public void setSenders(STSet senders) {
+        this.senders = senders;
+    }
+
+    public void addSender(SemanticTag sender){
+
     }
 
     public STSet getReceivers() {
