@@ -60,6 +60,13 @@ public class ASIPSerializer {
         return object;
     }
 
+    public static JSONObject serializeRaw(ASIPMessage header, Object raw) throws SharkKBException {
+        JSONObject object = new JSONObject();
+        object.put(HEADER, serializeHeader(header));
+        object.put(KNOWLEDGE, raw);
+        return object;
+    }
+
     public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
         return new JSONObject().put(ASIPMessage.ENCRYPTED, header.isEncrypted())
             .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncyptedSessionKey())
