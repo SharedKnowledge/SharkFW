@@ -1,3 +1,5 @@
+package net.sharkfw.knowledgeBase.sql;
+
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;

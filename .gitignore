@@ -6,10 +6,10 @@ BuildConfig.java
 R.java
 out
 gen
-BuildConfig.java
 *.class
-.idea/
 *.classpath
 *.project
 bin/net/sharkfw/knowledgeBase/sync/TODO
 bin/
+*/**/target/
+sharkfw/j2se/j2se-core/Temp

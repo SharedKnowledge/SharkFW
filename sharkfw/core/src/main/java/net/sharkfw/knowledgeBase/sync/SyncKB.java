@@ -436,7 +436,7 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return this._localKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
+        return null;
     }
 
     @Override

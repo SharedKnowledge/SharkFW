@@ -1,3 +1,5 @@
+package net.sharkfw.knowledgeBase.sql;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;

@@ -42,7 +42,12 @@ public class RDFSpatialSTSet implements SpatialSTSet {
 			String[] si, SharkGeometry sg) throws SharkKBException {
 		return new RDFSpatialSemanticTag(kb, si, topic, sg);
 	}
-	
+
+	@Override
+	public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry[] geoms) throws SharkKBException {
+		return null;
+	}
+
 
 	@Override
 	public RDFSpatialSemanticTag getSpatialSemanticTag(String si)
@@ -172,6 +177,16 @@ public class RDFSpatialSTSet implements SpatialSTSet {
 	public void removeSemanticTag(SemanticTag arg0) throws SharkKBException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void removeSemanticTag(String si) throws SharkKBException {
+
+	}
+
+	@Override
+	public void removeSemanticTag(String[] sis) throws SharkKBException {
+
 	}
 
 	@Override

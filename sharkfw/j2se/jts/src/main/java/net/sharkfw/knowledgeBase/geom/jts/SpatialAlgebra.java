@@ -46,7 +46,7 @@ public class SpatialAlgebra extends net.sharkfw.knowledgeBase.geom.SpatialAlgebr
         } catch (ParseException ex) {
             throw new SharkKBException("WKT parsing problem");
         }
-        jtsGeometry = jtsGeometry.union(); //because of self-intersection
+        jtsGeometry = jtsGeometry.union(jtsGeometry); //because of self-intersection
         IsValidOp validOp = new IsValidOp(jtsGeometry);
         return validOp.isValid();
     }

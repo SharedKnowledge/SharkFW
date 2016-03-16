@@ -349,11 +349,11 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _timestamps = s;
     }
     
-    protected TimestampList getTimestamps() {
+    public TimestampList getTimestamps() {
         return _timestamps;
     }
     
-    protected void resetPeerTimestamps() {
+    public void resetPeerTimestamps() {
         PeerSTSet p;
         try {
             p = _kb.getPeerSTSet();

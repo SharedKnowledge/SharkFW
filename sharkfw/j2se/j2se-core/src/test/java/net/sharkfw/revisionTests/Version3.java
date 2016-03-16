@@ -1,10 +1,13 @@
-package net.sharkfw.revisionTests;
+package net.sharkfw.revisiontests;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
+import net.sharkfw.asiptests.ASIPSerializerTest;
+import net.sharkfw.asiptests.ASIPSharkKBImplTest;
+import net.sharkfw.security.BasicSecurityTests;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,10 +22,10 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
         {
-            revisionTests.Version2.class,
-            security.BasicSecurityTests.class,
-            ASIPTests.ASIPSerializerTest.class,
-            ASIPTests.ASIPSharkKBImplTest.class
+            Version2.class,
+            BasicSecurityTests.class,
+            ASIPSerializerTest.class,
+            ASIPSharkKBImplTest.class
                 
         })
 public class Version3 {

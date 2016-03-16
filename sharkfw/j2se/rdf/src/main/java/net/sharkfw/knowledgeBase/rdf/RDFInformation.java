@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
@@ -171,6 +172,11 @@ public class RDFInformation implements Information {
 	@Override
 	public String getUniqueID() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ASIPSpace getASIPSpace() throws SharkKBException {
 		return null;
 	}
 

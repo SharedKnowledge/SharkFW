@@ -141,6 +141,16 @@ public class RDFPeerSemanticNet implements PeerSemanticNet {
 	}
 
 	@Override
+	public void removeSemanticTag(String si) throws SharkKBException {
+
+	}
+
+	@Override
+	public void removeSemanticTag(String[] sis) throws SharkKBException {
+
+	}
+
+	@Override
 	public void setEnumerateHiddenTags(boolean hide) {
 		// TODO Auto-generated method stub
 		

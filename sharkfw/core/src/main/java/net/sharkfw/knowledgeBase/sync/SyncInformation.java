@@ -19,8 +19,8 @@ import net.sharkfw.system.L;
  */
 public class SyncInformation implements Information{
 	private final Information _localInformation;
-	protected static String VERSION_PROPERTY_NAME = "SyncInformation_internalVersion";
-	protected static String VERSION_DEFAULT_VALUE = "1";
+	public static String VERSION_PROPERTY_NAME = "SyncInformation_internalVersion";
+	public static String VERSION_DEFAULT_VALUE = "1";
 	
 	public SyncInformation(Information i) {
             _localInformation = i;

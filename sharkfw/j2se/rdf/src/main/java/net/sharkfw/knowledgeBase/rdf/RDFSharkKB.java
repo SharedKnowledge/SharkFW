@@ -1,32 +1,16 @@
 package net.sharkfw.knowledgeBase.rdf;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sharkfw.knowledgeBase.AbstractSharkKB;
-import net.sharkfw.knowledgeBase.ContextCoordinates;
-import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.Interest;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkKB;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SpatialSTSet;
-import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.TimeSTSet;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
 import org.apache.jena.riot.RDFDataMgr;
@@ -245,14 +229,30 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		return results;	
 	}
 
-			
-		
 	@Override
+	public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+		return null;
+	}
+
+	@Override
+	public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
+		return null;
+	}
+
+	@Override
+	public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
+		return null;
+	}
+
+
+	//FIXME	method does not override or implement a method from a supertype
+	//Override
 	public Interest createInterest() throws SharkKBException {
 		return this.createInterest();
 	}
 
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	//Override
 	public Interest createInterest(ContextCoordinates coordinates) throws SharkKBException {
 		return this.createInterest(coordinates);
 	}
@@ -260,6 +260,11 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	@Override
 	public Iterator<ContextPoint> contextPoints(SharkCS arg0, boolean arg1) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException {
+		return null;
 	}
 
 	@Override
@@ -274,7 +279,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	//Override
 	public SemanticTag createSemanticTag(String name, String[] si) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
@@ -282,7 +288,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	//Override
 	public SemanticTag createSemanticTag(String si, String name) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
@@ -290,7 +297,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	//Override
 	public SemanticTag getSemanticTag(String si) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
@@ -298,7 +306,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
@@ -306,7 +315,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public void removeSemanticTag(String[] arg0) throws SharkKBException {
 
 	}
@@ -314,7 +324,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public void removeSemanticTag(SemanticTag arg0) throws SharkKBException {
 
 	}
@@ -344,7 +355,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public PeerSemanticTag getPeerSemanticTag(String[] arg0) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -352,7 +364,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public PeerSemanticTag getPeerSemanticTag(String arg0) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -360,7 +373,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1, String[] arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -368,7 +382,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1, String arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -376,7 +391,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String[] arg1, String arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -384,7 +400,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public PeerSemanticTag createPeerSemanticTag(String arg0, String arg1, String[] arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -392,7 +409,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public SpatialSemanticTag createSpatialSemanticTag(String arg0, String[] arg1) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -400,7 +418,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public SpatialSemanticTag createSpatialSemanticTag(String arg0, String[] arg1, SharkGeometry arg2) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -408,7 +427,8 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	/**
 	 * @deprecated
 	 */
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public TimeSemanticTag createTimeSemanticTag(long arg0, long arg1) throws SharkKBException {
 		throw new SharkKBException("Please use the TagSet for creating a tag");
 	}
@@ -435,10 +455,40 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 		throw new SharkKBException("Please use the createRDFContextCoordinates method.");
 	}
 
-	@Override
+	//FIXME	method does not override or implement a method from a supertype
+	// @Override
 	public Interest createInterest(STSet arg0, PeerSemanticTag arg1, PeerSTSet arg2, PeerSTSet arg3, TimeSTSet arg4, SpatialSTSet arg5, int arg6)
 			throws SharkKBException {
 		throw new SharkKBException("Deprecated method");
 	}
 
+	@Override
+	public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+		return null;
+	}
+
+	@Override
+	public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+		return null;
+	}
+
+	@Override
+	public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+		return null;
+	}
+
+	@Override
+	public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
+
+	}
+
+	@Override
+	public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+		return null;
+	}
+
+	@Override
+	public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
+		return null;
+	}
 }

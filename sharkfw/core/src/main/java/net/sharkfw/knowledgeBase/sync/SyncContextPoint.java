@@ -26,8 +26,8 @@ import net.sharkfw.system.L;
  */
 public class SyncContextPoint implements ContextPoint, InformationListener {
     private ContextPoint _localCP = null;
-    protected static String VERSION_PROPERTY_NAME = "SyncCP_internalVersion";
-    protected static String VERSION_DEFAULT_VALUE = "1";
+    public static String VERSION_PROPERTY_NAME = "SyncCP_internalVersion";
+    public static String VERSION_DEFAULT_VALUE = "1";
     protected static String TIMESTAMP_PROPERTY_NAME = "SyncCP_internalTimestamp";
 
     /**

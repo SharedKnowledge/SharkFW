@@ -24,7 +24,7 @@ import net.sharkfw.system.L;
  * from the knowledge base.
  * @author simon
  */
-class TimestampList {
+public class TimestampList {
     protected static String LIST_PROPERTY = "internal_timestamp_list";
     protected List<PeerTimestamp> _timestamps;
     protected SyncKB _kb;

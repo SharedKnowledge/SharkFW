@@ -66,6 +66,16 @@ public class RDFSTSet implements STSet {
 				
 	}
 
+	@Override
+	public void removeSemanticTag(String si) throws SharkKBException {
+
+	}
+
+	@Override
+	public void removeSemanticTag(String[] sis) throws SharkKBException {
+
+	}
+
 
 	@Override
 	public Iterator<SemanticTag> getSemanticTagByName(String arg0)

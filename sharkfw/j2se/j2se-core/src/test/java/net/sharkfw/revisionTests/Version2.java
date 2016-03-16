@@ -1,5 +1,8 @@
-package net.sharkfw.revisionTests;
+package net.sharkfw.revisiontests;
 
+import net.sharkfw.apirev1.*;
+import net.sharkfw.knowledgebasetests.InterestsStorage;
+import net.sharkfw.knowledgebasetests.STTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -9,15 +12,15 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    knowledgeBaseTests.STTests.class,
-    knowledgeBaseTests.InterestsStorage.class,
-    ApiRev1.SimpleKBTest.class, 
-    ApiRev1.SerializationTest.class, 
-    ApiRev1.Assimilate_ExtractionTests.class, 
-    ApiRev1.FSSharkKBTest.class,
-    ApiRev1.ExchangeTests.class,
-    ApiRev1.StreamTests.class,
-    ApiRev1.DifferentAddresses.class
+    STTests.class,
+    InterestsStorage.class,
+    SimpleKBTest.class,
+    SerializationTest.class,
+    Assimilate_ExtractionTests.class,
+    FSSharkKBTest.class,
+    ExchangeTests.class,
+    StreamTests.class,
+    DifferentAddresses.class
 })
 public class Version2 {
     

@@ -1,6 +1,6 @@
 package net.sharkfw.apirev1;
 
-import ontology.InMemoAssociatedSTSetTest;
+import net.sharkfw.ontology.InMemoAssociatedSTSetTest;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

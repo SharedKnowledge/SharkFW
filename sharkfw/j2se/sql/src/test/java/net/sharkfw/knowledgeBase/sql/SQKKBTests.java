@@ -1,5 +1,9 @@
+package net.sharkfw.knowledgeBase.sql;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.sql.SQLSharkKB;
 import org.junit.After;
@@ -11,7 +15,9 @@ import static org.junit.Assert.*;
  *
  * @author thsc
  */
-public class SQKKBTests extends ApiRev1.SimpleKBTest {
+public class SQKKBTests {
+
+    protected SharkKB kb = null;
     private SQLSharkKB sqkKB;
     
     public SQKKBTests() {

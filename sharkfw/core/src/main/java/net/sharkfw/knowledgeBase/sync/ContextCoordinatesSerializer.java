@@ -13,7 +13,7 @@ import net.sharkfw.system.SharkException;
  * Internal class that serializes Context Coordinates for the SyncKB.
  * @author s0539710
  */
-class ContextCoordinatesSerializer {
+public class ContextCoordinatesSerializer {
     
     protected static final String LIST_TAG = "cc_list";
     protected static final String ITEM_TAG = "cc_item";  
@@ -30,7 +30,7 @@ class ContextCoordinatesSerializer {
      * @return
      * @throws SharkKBException 
      */
-    protected static String serializeContextCoordinatesList(List<SyncContextPoint> l) {
+    public static String serializeContextCoordinatesList(List<SyncContextPoint> l) {
          if(l == null) {
             L.d("serializeContextCoordinatesList in ContextCoordinateSerializer: parameter was null.");
             return null;
@@ -71,7 +71,7 @@ class ContextCoordinatesSerializer {
      * @throws SharkKBException
      * @throws SharkException 
      */
-    protected static List<SyncContextPoint> deserializeContextCoordinatesList(String serialized) {
+    public static List<SyncContextPoint> deserializeContextCoordinatesList(String serialized) {
         //serialized = disableXMLWorkaround(serialized);
         
         String cs;

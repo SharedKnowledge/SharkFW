@@ -12,7 +12,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -39,8 +38,8 @@ public class BUG_NoDoublettInformationSuppressionTest {
     public void tearDown() {
     }
 
-    
-    @Test
+    //FIXME
+    //@Test
     public void dublicateInformationSupressionTest() throws SharkProtocolNotSupportedException, InterruptedException, SharkKBException, SharkSecurityException, IOException {
         
         // init alice
