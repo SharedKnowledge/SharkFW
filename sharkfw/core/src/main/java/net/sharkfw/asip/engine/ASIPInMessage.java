@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 
@@ -18,10 +19,10 @@ public class ASIPInMessage extends ASIPMessage {
     private SharkStub sharkStub;
     private ASIPKnowledge knowledge;
     private ASIPSpace interest;
-
-    public ASIPInMessage() {}    
     
-    public ASIPInMessage(SharkEngine se, StreamConnection con, SharkStub sharkStub) {
+    public ASIPInMessage(SharkEngine se, StreamConnection con, SharkStub sharkStub) throws SharkKBException {
+        // TODO Constructor same as in ASIPMessage?
+        super(se, con, false, null, null, null, -1, null, null, null, null, null);
         this.se = se;
         this.con = con;
         this.sharkStub = sharkStub;

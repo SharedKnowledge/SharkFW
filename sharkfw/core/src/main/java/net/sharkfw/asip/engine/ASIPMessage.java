@@ -5,11 +5,9 @@
  */
 package net.sharkfw.asip.engine;
 
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SemanticTag;
-
-import java.util.List;
+import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.protocols.StreamConnection;
 
 /**
  *
@@ -19,7 +17,7 @@ public abstract class ASIPMessage {
     public static final int ASIP_EXPOSE = 0;
     public static final int ASIP_INSERT = 1;
     public static final int ASIP_RAW = 2;
-    
+
     public static final String ENCRYPTED = "ENCRYPTED";
     public static final String ENCRYPTEDSESSIONKEY = "ENCRYPTEDSESSIONKEY";
     public static final String VERSION = "VERSION";
@@ -28,18 +26,47 @@ public abstract class ASIPMessage {
     public static final String SENDER = "SENDER";
     public static final String RECEIVERS = "RECEIVERS";
     public static final String SIGNATURE = "SIGNATURE";
-    
+
+    SharkEngine engine;
+    StreamConnection connection;
+
     private boolean encrypted;
-    private String encyptedSessionKey;
+    private String encryptedSessionKey;
     private String version;
     private String format;
     private int command;
-    private STSet senders;
+    private PeerSemanticTag sender;
     private STSet receivers;
+    private PeerSemanticTag receiverPeer;
+    private SpatialSemanticTag receiverSpatial;
+    private TimeSemanticTag receiverTime;
     private String signature;
 
-    protected ASIPMessage(/*alle params*/){
-
+    public ASIPMessage(SharkEngine engine,
+                       StreamConnection connection,
+                       boolean encrypted,
+                       String encryptedSessionKey,
+                       String version,
+                       String format,
+                       int command,
+                       PeerSemanticTag sender,
+                       PeerSemanticTag receiverPeer,
+                       SpatialSemanticTag receiverSpatial,
+                       TimeSemanticTag receiverTime,
+                       String signature) throws SharkKBException {
+        this.engine = engine;
+        this.connection = connection;
+        this.encrypted = encrypted;
+        this.encryptedSessionKey = encryptedSessionKey;
+        this.version = version;
+        this.format = format;
+        this.command = command;
+        this.sender = sender;
+        // TODO all receiver as single STSet or separated?
+        if(receiverPeer!=null) this.receivers.merge(receiverPeer);
+        if(receiverSpatial!=null) this.receivers.merge(receiverSpatial);
+        if(receiverTime!=null) this.receivers.merge(receiverTime);
+        this.signature = signature;
     }
 
     public boolean isEncrypted() {
@@ -50,12 +77,12 @@ public abstract class ASIPMessage {
         this.encrypted = encrypted;
     }
 
-    public String getEncyptedSessionKey() {
-        return encyptedSessionKey;
+    public String getEncryptedSessionKey() {
+        return encryptedSessionKey;
     }
 
-    public void setEncyptedSessionKey(String encyptedSessionKey) {
-        this.encyptedSessionKey = encyptedSessionKey;
+    public void setEncryptedSessionKey(String encryptedSessionKey) {
+        this.encryptedSessionKey = encryptedSessionKey;
     }
 
     public String getVersion() {
@@ -82,16 +109,12 @@ public abstract class ASIPMessage {
         this.command = command;
     }
 
-    public STSet getSenders() {
-        return senders;
+    public PeerSemanticTag getSender() {
+        return sender;
     }
 
-    public void setSenders(STSet senders) {
-        this.senders = senders;
-    }
-
-    public void addSender(SemanticTag sender){
-
+    public void setSenders(PeerSemanticTag sender) {
+        this.sender = sender;
     }
 
     public STSet getReceivers() {

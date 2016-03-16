@@ -83,11 +83,11 @@ public class ASIPSerializer {
 
     public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
         return new JSONObject().put(ASIPMessage.ENCRYPTED, header.isEncrypted())
-            .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncyptedSessionKey())
+            .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncryptedSessionKey())
             .put(ASIPMessage.VERSION, header.getVersion())
             .put(ASIPMessage.FORMAT, header.getFormat())
             .put(ASIPMessage.COMMAND, header.getCommand())
-            .put(ASIPMessage.SENDER, serializeSTSet(header.getSenders()))
+            .put(ASIPMessage.SENDER, serializeTag(header.getSender()))
             .put(ASIPMessage.RECEIVERS, serializeSTSet(header.getReceivers()))
             .put(ASIPMessage.SIGNATURE, header.getSignature());
     }
@@ -406,17 +406,18 @@ public class ASIPSerializer {
     // Deserialize
 
     public static ASIPMessage deserializeMessage(String string) throws SharkKBException{
-        ASIPInMessage message = new ASIPInMessage();
+        // TODO ASIPInMessage Constructor?
+        ASIPInMessage message = new ASIPInMessage(null, null, null);
         JSONObject jsonObject = new JSONObject(string);
         
         message.setEncrypted(jsonObject.getBoolean(ASIPMessage.ENCRYPTED));
-        message.setEncyptedSessionKey(jsonObject.getString(ASIPMessage.ENCRYPTEDSESSIONKEY));
+        message.setEncryptedSessionKey(jsonObject.getString(ASIPMessage.ENCRYPTEDSESSIONKEY));
         message.setVersion(jsonObject.getString(ASIPMessage.VERSION));
         message.setFormat(jsonObject.getString(ASIPMessage.FORMAT));
         message.setCommand(jsonObject.getInt(ASIPMessage.COMMAND));
         
         String senderString = jsonObject.getString(ASIPMessage.SENDER);
-        message.setSenders(deserializeSTSet(senderString));
+        message.setSenders(deserializePeerTag(senderString));
         
         String receiverString = jsonObject.getString(ASIPMessage.RECEIVERS);
         STSet set = deserializeSTSet(receiverString);

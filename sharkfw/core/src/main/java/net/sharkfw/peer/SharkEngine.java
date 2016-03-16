@@ -52,7 +52,7 @@ import net.sharkfw.system.Util;
  *
  * @see net.sharkfw.knowledgeBase.SharkKB
  * @see net.sharkfw.kep.SimpleKEPStub
- * @see net.sharkfw.kp.KnowledgePort
+ * @see net.sharkfw.peer.KnowledgePort
  * 
  * @author thsc
  * @author mfi
@@ -239,7 +239,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @see net.sharkfw.protocols.Protocols
      *
      * @param type Int value to represent the protocol
-     * @param port Int vlaue to represent the port number
      * @return true on success, false on failure TODO: failure is announced by exception!
      * @throws SharkProtocolNotSupportedException
      */
@@ -352,7 +351,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * Most KnowledgePorts call this method fromn their constructors.
      * Needs to be invisible to the user in the future.
      *
-     * @see net.sharkfw.kp.KnowledgePort
+     * @see net.sharkfw.peer.KnowledgePort
      * 
      * @param kp The instance of <code>KnowledgePort</code> to add.
      */
@@ -420,7 +419,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     /**
      * Return all KP which are currently registered in this SharkEngine.
      * @return enumeration of objects of class KP
-     * @see net.sharkfw.peer.AbstractKP
      * @deprecated 
      */
     public Enumeration<KnowledgePort> getKPs() {
@@ -449,7 +447,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * Runs <code>deleteKP()</code> for every <code>KnowledgePort</code> in
      * this <code>SharkEngine</code>
      *
-     * @see net.sharkfw.peer.SharkEngine#deleteKP(net.sharkfw.kp.KnowledgePort) 
+     * @see net.sharkfw.peer.SharkEngine#deleteKP(net.sharkfw.peer.KnowledgePort)
      */
     public void deleteAllKP() {
 
@@ -894,7 +892,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                                                SpatialSemanticTag receiverSpatial /* kann null sein*/ ,
                                                TimeSemanticTag receiverTime /* kann null sein*/,
                                                long ttl /* Max hops*/){
-        // TODO
+        // TODO initSecurity
+//        ASIPOutMessage message = new ASIPOutMessage(this, thi)
         return null;
     }
 
