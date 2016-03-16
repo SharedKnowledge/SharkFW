@@ -7,7 +7,7 @@ import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 
 /**
- * Huhu!
+ * 
  * @author thsc
  */
 public interface ASIPSpace {
