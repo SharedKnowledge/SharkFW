@@ -35,8 +35,7 @@ cmd | message | unit    = '{'
                             '"sender":' peerSemanticTag ','
                             '"receiver":' '[' optionalSemanticTags ']' ','
                             '"signed":' bool ','
-                            '"command":' "INS" | "EXP" | "RAW" '.'
-                            '"ttl":' number | ( unixTime | utcTime) ','
+                            '"ttl":' number','
                             '"content":' content
                           '}' signature ;
 optionalSemanticTag     = peerSemanticTag | spatialSemanticTag | timeSemanticTag ;

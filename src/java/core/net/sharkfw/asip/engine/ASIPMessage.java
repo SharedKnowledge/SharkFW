@@ -38,6 +38,10 @@ public abstract class ASIPMessage {
     private STSet receivers;
     private String signature;
 
+    protected ASIPMessage(/*alle params*/){
+
+    }
+
     public boolean isEncrypted() {
         return encrypted;
     }

@@ -9,6 +9,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.kep.KEPOutMessage;
 import net.sharkfw.kep.KEPStub;
@@ -16,18 +18,7 @@ import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.kep.SharkStub;
 import net.sharkfw.kep.format.XMLSerializer;
-import net.sharkfw.knowledgeBase.ContextCoordinates;
-import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.Interest;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkKB;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SystemPropertyHolder;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -897,6 +888,18 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         
         return false;
     }
+
+    public ASIPOutMessage createASIPOutMessage(PeerSemanticTag sender,
+                                               PeerSemanticTag receiverPeer /* kann null sein*/,
+                                               SpatialSemanticTag receiverSpatial /* kann null sein*/ ,
+                                               TimeSemanticTag receiverTime /* kann null sein*/,
+                                               long ttl /* Max hops*/){
+        // TODO
+        return null;
+    }
+
+
+
     /**
      * Creates a new KEPOutMessage without security initialization.
      * 
