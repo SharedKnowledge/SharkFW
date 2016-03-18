@@ -13,9 +13,11 @@ import net.sharkfw.protocols.SharkInputStream;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 
 /**
  * Objects of this class are result of the scanning process
@@ -25,29 +27,31 @@ import java.io.InputStream;
 public class ASIPInMessage extends ASIPMessage{
     private SharkEngine se;
     private StreamConnection con;
-    private SharkInputStream is;
+    private InputStream is;
     private SharkStub sharkStub;
     private ASIPKnowledge knowledge;
     private ASIPSpace interest;
+    private byte[] raw;
+    private String parsedString;
     
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
         super(se, con);
         this.se = se;
         this.con = con;
-        this.is = con.getInputStream();
+        // Get java.io.inputstream not shark.inputstream
+        this.is = con.getInputStream().getInputStream();
     }
 
     public void parse(){
 
-    }
-
-    private void parseHeader() throws IOException {
-        if(this.is.available() > 0) {
-        } else {
-            L.d("No more bytes on stream!", this);
+        try {
+            this.parsedString = IOUtils.toString(this.is, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        is.readUTF8();
+        ASIPSerializer.deserializeInMessage(this, this.parsedString);
+
     }
 
     public ASIPKnowledge getKnowledge() {
@@ -64,5 +68,13 @@ public class ASIPInMessage extends ASIPMessage{
 
     public void setInterest(ASIPSpace interest) {
         this.interest = interest;
+    }
+
+    public byte[] getRaw() {
+        return raw;
+    }
+
+    public void setRaw(byte[] raw) {
+        this.raw = raw;
     }
 }

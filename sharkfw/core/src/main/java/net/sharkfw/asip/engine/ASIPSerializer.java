@@ -82,6 +82,7 @@ public class ASIPSerializer {
         JSONObject content = new JSONObject();
         content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
+        // TODO Possible to put byte[] in json object?
         try {
             object.put(RAW, IOUtils.toByteArray(raw));
         } catch (IOException e) {
@@ -104,11 +105,11 @@ public class ASIPSerializer {
             .put(ASIPMessage.ENCRYPTED, header.isEncrypted())
             .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncryptedSessionKey())
             .put(ASIPMessage.SIGNED, header.isSigned())
-            .put(ASIPMessage.TTL, header.getTtl()!=-1 ? header.getTtl() : "")
+            .put(ASIPMessage.TTL, header.getTtl())
             .put(ASIPMessage.COMMAND, header.getCommand())
             .put(ASIPMessage.SENDER, serializeTag(header.getSender()))
-            .put(ASIPMessage.RECEIVERS, serializeSTSet(header.getReceivers()))
-            .put(ASIPMessage.SIGNATURE, header.getSignature());
+            .put(ASIPMessage.RECEIVERS, serializeSTSet(header.getReceivers()));
+//            .put(ASIPMessage.SIGNATURE, header.getSignature());
     }
 
     public static JSONObject serializeInterest(ASIPSpace space) throws SharkKBException, JSONException {
@@ -458,10 +459,59 @@ public class ASIPSerializer {
 //        return message;
 //    }
 
-    public static ASIPInMessage deserializeInMessage(SharkInputStream is){
+    public static void deserializeInMessage(ASIPInMessage message, String parsedStream){
+        if(parsedStream.isEmpty()) return;
 
+        JSONObject object = new JSONObject(parsedStream);
 
-        return null;
+        String version = object.getString(ASIPMessage.VERSION);
+        String format = object.getString(ASIPMessage.FORMAT);
+        boolean encrypted = object.getBoolean(ASIPMessage.ENCRYPTED);
+        String encryptedSessionKey = object.getString(ASIPMessage.ENCRYPTEDSESSIONKEY);
+        boolean signed = object.getBoolean(ASIPMessage.SIGNED);
+        long ttl = object.getLong(ASIPMessage.TTL);
+        int command = object.getInt(ASIPMessage.COMMAND);
+        PeerSemanticTag sender = null;
+        STSet receivers = null;
+        try {
+            sender = deserializePeerTag(object.getString(ASIPMessage.SENDER));
+            receivers = deserializeAnySTSet(null, object.getString(ASIPMessage.RECEIVERS));
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+
+        message.setEncrypted(encrypted);
+        message.setEncryptedSessionKey(encryptedSessionKey);
+        message.setSigned(signed);
+        message.setTtl(ttl);
+        message.setCommand(command);
+        message.setSender(sender);
+        message.setReceivers(receivers);
+
+        ASIPSpace interest = null;
+        ASIPKnowledge knowledge = null;
+        switch (command){
+            case ASIPMessage.ASIP_EXPOSE:
+                try {
+                    interest = deserializeASIPSpace(object.getString(ASIPSerializer.INTEREST));
+                    message.setInterest(interest);
+                } catch (SharkKBException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case ASIPMessage.ASIP_INSERT:
+                try {
+                    knowledge = deserializeKnowledge(object.getString(ASIPSerializer.KNOWLEDGE));
+                    message.setKnowledge(knowledge);
+                } catch (SharkKBException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case ASIPMessage.ASIP_RAW:
+                byte[] raw = (byte[]) object.get(ASIPSerializer.RAW);
+                message.setRaw(raw);
+                break;
+        }
     }
 
 

@@ -181,4 +181,36 @@ public abstract class ASIPMessage {
         }
 
     }
+
+    public void setTtl(long ttl) {
+        this.ttl = ttl;
+    }
+
+    public void setSender(PeerSemanticTag sender) {
+        this.sender = sender;
+    }
+
+    public void setReceivers(STSet receivers) {
+        this.receivers = receivers;
+    }
+
+    public void setReceiverPeer(PeerSemanticTag receiverPeer) {
+        this.receiverPeer = receiverPeer;
+    }
+
+    public void setReceiverSpatial(SpatialSemanticTag receiverSpatial) {
+        this.receiverSpatial = receiverSpatial;
+    }
+
+    public void setReceiverTime(TimeSemanticTag receiverTime) {
+        this.receiverTime = receiverTime;
+    }
+
+    public void setEncrypted(boolean encrypted) {
+        this.encrypted = encrypted;
+    }
+
+    public void setSigned(boolean signed) {
+        this.signed = signed;
+    }
 }
