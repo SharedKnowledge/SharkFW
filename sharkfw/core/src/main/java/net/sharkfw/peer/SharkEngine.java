@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sharkfw.asip.ASIPStub;
+import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.kep.KEPOutMessage;
@@ -76,6 +78,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * the <code>Environment</code>
      */
     protected KEPStub kepStub;
+
+    protected ASIPStub asipStub;
+
     /**
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
      * in <code>KnowledgePort</code>s.
@@ -115,6 +120,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     protected void setKEPStub(KEPStub kepStub) {
         this.kepStub = kepStub;
         //this.environment = this.kepStub.getEnvironment();
+    }
+
+    protected void setASIPStub(ASIPStub asipStub){
+        this.asipStub = asipStub;
     }
 
     /**
@@ -229,6 +238,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     @SuppressWarnings("unused")
     protected final boolean start(int type, int port) throws SharkProtocolNotSupportedException, IOException {
         Stub protocolStub = this.startServer(type, kepStub, port);
+
+        // TODO start with ASIPStub
         
         return true;
     }
@@ -357,6 +368,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     void addKP(KnowledgePort kp) {
         kp.setKEPStub(this.kepStub);
+        // TODO asipStub
         kps.add(kp);
     }
     
@@ -698,6 +710,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public KEPStub getKepStub() {
         return kepStub;
     }
+
+    public ASIPStub getAsipStub() {
+        return this.asipStub;
+    }
+
     private long kepSessionTimeOut = 3000;
 
     /**
@@ -887,13 +904,88 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return false;
     }
 
-    public ASIPOutMessage createASIPOutMessage(PeerSemanticTag sender,
-                                               PeerSemanticTag receiverPeer /* kann null sein*/,
-                                               SpatialSemanticTag receiverSpatial /* kann null sein*/ ,
-                                               TimeSemanticTag receiverTime /* kann null sein*/,
-                                               long ttl /* Max hops*/){
-        // TODO initSecurity
-//        ASIPOutMessage message = new ASIPOutMessage(this, thi)
+    public ASIPOutMessage createASIPOutMessage(
+            String[] addresses,
+            PeerSemanticTag sender,
+            PeerSemanticTag receiverPeer /* kann null sein*/,
+            SpatialSemanticTag receiverSpatial /* kann null sein*/ ,
+            TimeSemanticTag receiverTime /* kann null sein*/,
+            long ttl /* Max hops*/){
+
+        ASIPOutMessage message = null;
+        MessageStub mStub;
+        StreamStub sStub;
+        StreamConnection sConn = null;
+
+        if(addresses == null) {
+            return null;
+        }
+
+        // sort addresses first
+        addresses = this.prioritizeAddresses(addresses);
+
+        Enumeration addrEnum = Util.array2Enum(addresses);
+        while (addrEnum.hasMoreElements()) {
+            String address = (String) addrEnum.nextElement();
+            L.d("sendInterest: try address:"+address, this);
+            //boolean fromPool = false;
+            try {
+                /*
+                 * Check if stub is available
+                 */
+
+                int type = Protocols.getValueByAddress(address);
+                Stub protocolStub = this.getProtocolStub(type);
+
+                /*
+                 * Find out which protocol to use
+                 */
+                if (protocolStub instanceof StreamStub) {
+                    sStub = (StreamStub) protocolStub;
+                    //        sConn = this.kepStub.getConnectionByAddress(address);
+                    //      if(sConn == null) {
+                    try {
+                        sConn = sStub.createStreamConnection(address);
+                    }
+                    catch(RuntimeException re) {
+                        throw new SharkException(re.getMessage());
+                    }
+                    //    } else {
+                    //  fromPool = true;
+                    //  }
+                    message = new ASIPOutMessage(this, sConn, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
+                } else {
+                    // TODO necessary?
+                    mStub = (MessageStub) protocolStub;
+//                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
+                }
+            } catch (SharkNotSupportedException ex) {
+                L.e(ex.getMessage(), this);
+//                ex.printStackTrace();
+                continue;
+            } catch (IOException ex) {
+                L.e(ex.getMessage(), this);
+//                ex.printStackTrace();
+                continue;
+            } catch (SharkProtocolNotSupportedException spn) {
+                L.e(spn.getMessage(), this);
+//                spn.printStackTrace();
+                continue;
+            } catch(SharkException sse) {
+                L.w("cannot create KEP message: " + sse.getMessage(), this);
+                continue;
+            }
+
+            if (sConn != null /*&& !fromPool*/) {
+                this.kepStub.handleStream(sConn);
+            }
+
+            // one kep message is enough
+            if(message != null) {
+                return message;
+            }
+        }
+
         return null;
     }
 

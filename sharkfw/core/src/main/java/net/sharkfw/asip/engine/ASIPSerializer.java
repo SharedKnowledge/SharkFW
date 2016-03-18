@@ -1,5 +1,9 @@
 package net.sharkfw.asip.engine;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -23,7 +27,9 @@ import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.*;
+import net.sharkfw.protocols.SharkInputStream;
 import net.sharkfw.system.Util;
+import org.apache.commons.compress.utils.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,22 +76,35 @@ public class ASIPSerializer {
         return object;
     }
 
-    public static JSONObject serializeRaw(ASIPMessage header, Object raw) throws SharkKBException {
+    public static JSONObject serializeRaw(ASIPMessage header, InputStream raw) throws SharkKBException {
 
         JSONObject object = serializeHeader(header);
         JSONObject content = new JSONObject();
         content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
-        object.put(RAW, raw);
+        try {
+            object.put(RAW, IOUtils.toByteArray(raw));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                raw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         object.put(CONTENT, content);
         return object;
     }
 
     public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
-        return new JSONObject().put(ASIPMessage.ENCRYPTED, header.isEncrypted())
-            .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncryptedSessionKey())
+        return new JSONObject()
             .put(ASIPMessage.VERSION, header.getVersion())
             .put(ASIPMessage.FORMAT, header.getFormat())
+            .put(ASIPMessage.ENCRYPTED, header.isEncrypted())
+            .put(ASIPMessage.ENCRYPTEDSESSIONKEY, header.getEncryptedSessionKey())
+            .put(ASIPMessage.SIGNED, header.isSigned())
+            .put(ASIPMessage.TTL, header.getTtl()!=-1 ? header.getTtl() : "")
             .put(ASIPMessage.COMMAND, header.getCommand())
             .put(ASIPMessage.SENDER, serializeTag(header.getSender()))
             .put(ASIPMessage.RECEIVERS, serializeSTSet(header.getReceivers()))
@@ -405,43 +424,54 @@ public class ASIPSerializer {
     
     // Deserialize
 
-    public static ASIPMessage deserializeMessage(String string) throws SharkKBException{
-        // TODO ASIPInMessage Constructor?
-        ASIPInMessage message = new ASIPInMessage(null, null, null);
-        JSONObject jsonObject = new JSONObject(string);
-        
-        message.setEncrypted(jsonObject.getBoolean(ASIPMessage.ENCRYPTED));
-        message.setEncryptedSessionKey(jsonObject.getString(ASIPMessage.ENCRYPTEDSESSIONKEY));
-        message.setVersion(jsonObject.getString(ASIPMessage.VERSION));
-        message.setFormat(jsonObject.getString(ASIPMessage.FORMAT));
-        message.setCommand(jsonObject.getInt(ASIPMessage.COMMAND));
-        
-        String senderString = jsonObject.getString(ASIPMessage.SENDER);
-        message.setSenders(deserializePeerTag(senderString));
-        
-        String receiverString = jsonObject.getString(ASIPMessage.RECEIVERS);
-        STSet set = deserializeSTSet(receiverString);
-        message.setReceivers(set);
-        
-        message.setSignature(jsonObject.getString(ASIPMessage.SIGNATURE));
+//    TODO
+//    public static ASIPMessage deserializeMessage(String string) throws SharkKBException{
+//        ASIPInMessage message = new ASIPInMessage(null, null, null);
+//        JSONObject jsonObject = new JSONObject(string);
+//
+//        message.
+//
+//        message.setEncrypted(jsonObject.getBoolean(ASIPMessage.ENCRYPTED));
+//        message.setEncryptedSessionKey(jsonObject.getString(ASIPMessage.ENCRYPTEDSESSIONKEY));
+//        message.setVersion(jsonObject.getString(ASIPMessage.VERSION));
+//        message.setFormat(jsonObject.getString(ASIPMessage.FORMAT));
+//        message.setCommand(jsonObject.getInt(ASIPMessage.COMMAND));
+//
+//        String senderString = jsonObject.getString(ASIPMessage.SENDER);
+//        message.setSenders(deserializePeerTag(senderString));
+//
+//        String receiverString = jsonObject.getString(ASIPMessage.RECEIVERS);
+//        STSet set = deserializeSTSet(receiverString);
+//        message.setReceivers(set);
+//
+//        message.setSignature(jsonObject.getString(ASIPMessage.SIGNATURE));
+//
+//        JSONObject content = (JSONObject) jsonObject.get(CONTENT);
+//
+//        if(content.has(INTEREST)){
+//            message.setInterest(deserializeInterest(content.getString(INTEREST)));
+//        } else if (content.has(KNOWLEDGE)){
+//            message.setKnowledge(deserializeKnowledge(content.getString(KNOWLEDGE)));
+//        } else if(content.has(RAW)){
+//            // TODO RAW
+//        }
+//        return message;
+//    }
 
-        JSONObject content = (JSONObject) jsonObject.get(CONTENT);
+    public static ASIPInMessage deserializeInMessage(SharkInputStream is){
 
-        if(content.has(INTEREST)){
-            message.setInterest(deserializeInterest(content.getString(INTEREST)));
-        } else if (content.has(KNOWLEDGE)){
-            message.setKnowledge(deserializeKnowledge(content.getString(KNOWLEDGE)));
-        } else if(content.has(RAW)){
-            // TODO RAW
-        }
-        return message;
+
+        return null;
     }
+
+
     
     public static ASIPSpace deserializeInterest(String interestString) throws SharkKBException {
         return deserializeASIPSpace(interestString);
     }
     
     /**
+     * TODO SharkInputStream as param
      * Deserializes knowledge and return a newly created knowledge object..
      * @return
      * @throws SharkKBException 

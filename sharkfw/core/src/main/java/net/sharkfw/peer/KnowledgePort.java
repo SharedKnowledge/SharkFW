@@ -190,38 +190,8 @@ abstract public class KnowledgePort {
     
     public synchronized final boolean handleMessage(ASIPInMessage msg, 
             ASIPConnection con) {
-        
-        // TODO
-        L.d("about handling ASIP message");
-        
-        // Do a lot of other stuff here.. add what is required, see below
-        
-        // ...
-        
-        switch (msg.getCommand()) {
-            case ASIPMessage.ASIP_INSERT:
-                try {
-                    this.doInsert((ASIPKnowledge) msg.getKnowledge(), con);
-                } catch (Exception ex) {
-                    L.e("Error while handling insert request:\n" + ex.getMessage(), this);
-                }
-                break;
-            case ASIPMessage.ASIP_EXPOSE:
-                try {
-                    this.doExpose(msg.getInterest(), con);
-                } catch (Exception ex) {
-                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
-                }
-                break;
-            case ASIPMessage.ASIP_RAW:
-                try {
-                    this.doRaw(con.getInputStream(), con);
-                } catch (Exception ex) {
-                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
-                }
-                break;
-        }
 
+        this.doProcess(msg, con);
         return con.responseSent();
     }
     
@@ -349,6 +319,41 @@ abstract public class KnowledgePort {
         catch(SharkKBException e) {
             L.w("problems when performing legacy wrapper doInsert: " + e.getMessage());
         }
+    }
+
+    protected void doProcess(ASIPInMessage msg, ASIPConnection con){
+
+        // TODO
+        L.d("about handling ASIP message");
+
+        // Do a lot of other stuff here.. add what is required, see below
+
+        // ...
+
+        switch (msg.getCommand()) {
+            case ASIPMessage.ASIP_INSERT:
+                try {
+                    this.doInsert(msg.getKnowledge(), con);
+                } catch (Exception ex) {
+                    L.e("Error while handling insert request:\n" + ex.getMessage(), this);
+                }
+                break;
+            case ASIPMessage.ASIP_EXPOSE:
+                try {
+                    this.doExpose(msg.getInterest(), con);
+                } catch (Exception ex) {
+                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
+                }
+                break;
+            case ASIPMessage.ASIP_RAW:
+                try {
+                    this.doRaw(con.getInputStream(), con);
+                } catch (Exception ex) {
+                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
+                }
+                break;
+        }
+
     }
 
     /**

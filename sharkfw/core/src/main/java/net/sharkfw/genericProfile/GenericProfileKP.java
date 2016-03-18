@@ -1,4 +1,4 @@
-package net.sharkfw.genericprofile;
+package net.sharkfw.genericProfile;
 
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.SharkCS;

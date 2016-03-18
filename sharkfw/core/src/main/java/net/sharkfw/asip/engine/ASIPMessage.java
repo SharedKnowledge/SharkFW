@@ -10,7 +10,6 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 
 /**
- *
  * @author msc, thsc
  */
 public abstract class ASIPMessage {
@@ -18,118 +17,168 @@ public abstract class ASIPMessage {
     public static final int ASIP_INSERT = 1;
     public static final int ASIP_RAW = 2;
 
-    public static final String ENCRYPTED = "ENCRYPTED";
-    public static final String ENCRYPTEDSESSIONKEY = "ENCRYPTEDSESSIONKEY";
     public static final String VERSION = "VERSION";
     public static final String FORMAT = "FORMAT";
+    public static final String ENCRYPTED = "ENCRYPTED";
+    public static final String ENCRYPTEDSESSIONKEY = "ENCRYPTEDSESSIONKEY";
+    public static final String SIGNED = "SIGNED";
+    public static final String TTL = "TTL";
     public static final String COMMAND = "COMMAND";
     public static final String SENDER = "SENDER";
     public static final String RECEIVERS = "RECEIVERS";
     public static final String SIGNATURE = "SIGNATURE";
 
-    SharkEngine engine;
-    StreamConnection connection;
+    private SharkEngine engine;
+    private StreamConnection connection;
 
-    private boolean encrypted;
-    private String encryptedSessionKey;
-    private String version;
-    private String format;
+    private final String version = "ASIP 1.0";
+    private final String format = "JSON";
+    private boolean encrypted = false;
+    private String encryptedSessionKey = "";
+    private boolean signed = false;
+    private String signature = "";
+    private long ttl = -1;
     private int command;
     private PeerSemanticTag sender;
     private STSet receivers;
     private PeerSemanticTag receiverPeer;
     private SpatialSemanticTag receiverSpatial;
     private TimeSemanticTag receiverTime;
-    private String signature;
+
+    public ASIPMessage(SharkEngine engine, StreamConnection connection) {
+        this.engine = engine;
+        this.connection = connection;
+    }
+
+    public ASIPMessage(SharkEngine engine,
+                       StreamConnection connection,
+                       long ttl,
+                       PeerSemanticTag sender,
+                       PeerSemanticTag receiverPeer,
+                       SpatialSemanticTag receiverSpatial,
+                       TimeSemanticTag receiverTime) throws SharkKBException {
+        this.engine = engine;
+        this.connection = connection;
+        this.ttl = ttl;
+
+        this.sender = sender;
+        if (receiverPeer != null) {
+            this.receiverPeer = receiverPeer;
+            this.receivers.merge(receiverPeer);
+        }
+        if (receiverSpatial != null) {
+            this.receiverSpatial = receiverSpatial;
+            this.receivers.merge(receiverSpatial);
+        }
+        if (receiverTime != null) {
+            this.receiverTime = receiverTime;
+            this.receivers.merge(receiverTime);
+        }
+    }
 
     public ASIPMessage(SharkEngine engine,
                        StreamConnection connection,
                        boolean encrypted,
                        String encryptedSessionKey,
-                       String version,
-                       String format,
-                       int command,
+                       boolean signed,
+                       String signature,
+                       long ttl,
                        PeerSemanticTag sender,
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
-                       TimeSemanticTag receiverTime,
-                       String signature) throws SharkKBException {
+                       TimeSemanticTag receiverTime) throws SharkKBException {
         this.engine = engine;
         this.connection = connection;
+
         this.encrypted = encrypted;
         this.encryptedSessionKey = encryptedSessionKey;
-        this.version = version;
-        this.format = format;
-        this.command = command;
-        this.sender = sender;
-        // TODO all receiver as single STSet or separated?
-        if(receiverPeer!=null) this.receivers.merge(receiverPeer);
-        if(receiverSpatial!=null) this.receivers.merge(receiverSpatial);
-        if(receiverTime!=null) this.receivers.merge(receiverTime);
+        this.signed = signed;
         this.signature = signature;
-    }
+        this.ttl = ttl;
 
-    public boolean isEncrypted() {
-        return encrypted;
-    }
-
-    public void setEncrypted(boolean encrypted) {
-        this.encrypted = encrypted;
-    }
-
-    public String getEncryptedSessionKey() {
-        return encryptedSessionKey;
-    }
-
-    public void setEncryptedSessionKey(String encryptedSessionKey) {
-        this.encryptedSessionKey = encryptedSessionKey;
+        this.sender = sender;
+        if (receiverPeer != null) {
+            this.receiverPeer = receiverPeer;
+            this.receivers.merge(receiverPeer);
+        }
+        if (receiverSpatial != null) {
+            this.receiverSpatial = receiverSpatial;
+            this.receivers.merge(receiverSpatial);
+        }
+        if (receiverTime != null) {
+            this.receiverTime = receiverTime;
+            this.receivers.merge(receiverTime);
+        }
     }
 
     public String getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
     public String getFormat() {
         return format;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
+    public boolean isEncrypted() {
+        return encrypted;
+    }
+
+    public String getEncryptedSessionKey() {
+        return encryptedSessionKey;
+    }
+
+    public boolean isSigned() {
+        return signed;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public long getTtl() {
+        return ttl;
     }
 
     public int getCommand() {
         return command;
     }
 
-    public void setCommand(int command) {
-        this.command = command;
-    }
-
     public PeerSemanticTag getSender() {
         return sender;
-    }
-
-    public void setSenders(PeerSemanticTag sender) {
-        this.sender = sender;
     }
 
     public STSet getReceivers() {
         return receivers;
     }
 
-    public void setReceivers(STSet receivers) {
-        this.receivers = receivers;
+    public PeerSemanticTag getReceiverPeer() {
+        return receiverPeer;
     }
-    
-    public String getSignature() {
-        return signature;
+
+    public SpatialSemanticTag getReceiverSpatial() {
+        return receiverSpatial;
+    }
+
+    public TimeSemanticTag getReceiverTime() {
+        return receiverTime;
+    }
+
+    public void setCommand(int command) {
+        this.command = command;
     }
 
     public void setSignature(String signature) {
-        this.signature = signature;
+        if(!signature.isEmpty()){
+            this.signature = signature;
+            this.signed = true;
+        }
+    }
+
+    public void setEncryptedSessionKey(String encryptedSessionKey) {
+        if(!encryptedSessionKey.isEmpty()){
+            this.encryptedSessionKey = encryptedSessionKey;
+            this.encrypted = true;
+        }
+
     }
 }

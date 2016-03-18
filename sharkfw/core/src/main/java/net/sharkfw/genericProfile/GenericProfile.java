@@ -1,4 +1,4 @@
-package net.sharkfw.genericprofile;
+package net.sharkfw.genericProfile;
 
 import java.util.ArrayList;
 import java.util.Iterator;
