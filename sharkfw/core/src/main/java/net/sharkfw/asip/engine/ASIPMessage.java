@@ -5,9 +5,11 @@
  */
 package net.sharkfw.asip.engine;
 
+import java.security.PrivateKey;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.security.pki.storage.SharkPkiStorage;
 
 /**
  * @author msc, thsc
@@ -44,6 +46,12 @@ public abstract class ASIPMessage {
     private PeerSemanticTag receiverPeer;
     private SpatialSemanticTag receiverSpatial;
     private TimeSemanticTag receiverTime;
+    private PrivateKey privateKey;
+    private SharkPkiStorage sharkPkiStorage;
+    private SharkEngine.SecurityLevel signatureLevel;
+    private SharkEngine.SecurityLevel encryptionLevel;
+    private SharkEngine.SecurityReplyPolicy replyPolicy;
+    private boolean refuseUnverifiably;
 
     public ASIPMessage(SharkEngine engine, StreamConnection connection) {
         this.engine = engine;
@@ -109,6 +117,19 @@ public abstract class ASIPMessage {
             this.receiverTime = receiverTime;
             this.receivers.merge(receiverTime);
         }
+    }
+    
+    public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
+            SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel, 
+            SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
+        
+        this.privateKey = privateKey;
+        //this.publicKeyStorage = publicKeyStorage;
+        this.sharkPkiStorage = sharkPkiStorage;
+        this.signatureLevel = signatureLevel;
+        this.encryptionLevel = encryptionLevel;
+        this.replyPolicy = replyPolicy;
+        this.refuseUnverifiably = refuseUnverifiably;
     }
 
     public String getVersion() {

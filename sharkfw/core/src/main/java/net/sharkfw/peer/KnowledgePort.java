@@ -7,7 +7,7 @@ import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.kep.SharkStub;
+import net.sharkfw.asip.SharkStub;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
@@ -46,13 +46,11 @@ abstract public class KnowledgePort {
     protected SharkCS interest;
     protected SharkCS receivedInterest; // TODO: Use!
     protected SharkKB kb;
-    protected SharkStub kepStub;
+    protected SharkStub sharkStub;
     private boolean isStarted = false;
     protected ArrayList<KPListener> listeners = new ArrayList();
-    @SuppressWarnings("unused")
     private String id = null;
     protected SharkEngine se;
-    @SuppressWarnings("unused")
     private PrivateKey privateKey;
     private AccessListManager accessList;
 
@@ -66,8 +64,8 @@ abstract public class KnowledgePort {
         this.se = se;
         this.kb = kb;
         if (se != null) {
-        	this.kepStub = se.getKepStub();
-        	se.addKP(this);
+            this.sharkStub = se.getKepStub();
+            se.addKP(this);
         }
     }
     
@@ -107,9 +105,9 @@ abstract public class KnowledgePort {
      *
      * @param kepStub An instance of <code>KEPStub</code> that is used as the protocol engine by the local <code>SharkEngine</code>
      */
-    public void setKEPStub(SharkStub kepStub) {
-        this.kepStub = kepStub;
-        this.kepStub.addListener(this);
+    public void setSharkStub(SharkStub kepStub) {
+        this.sharkStub = kepStub;
+        this.sharkStub.addListener(this);
     }
 
     /**
@@ -174,7 +172,7 @@ abstract public class KnowledgePort {
      * Make this AbstractKP stop listening to incoming requests.
      */
     public void stop() {
-        this.kepStub.withdrawListener(this);
+        this.sharkStub.withdrawListener(this);
         this.isStarted = false;
     }
 
@@ -183,7 +181,7 @@ abstract public class KnowledgePort {
      */
     public void start() {
         // listen again
-        this.kepStub.addListener(this);
+        this.sharkStub.addListener(this);
         this.isStarted = true;
         this.se.addKP(this);
     }
@@ -194,7 +192,6 @@ abstract public class KnowledgePort {
         this.doProcess(msg, con);
         return con.responseSent();
     }
-    
     
     /********************************************************
      *   parse KEP message - call KEPEngine for handling    *

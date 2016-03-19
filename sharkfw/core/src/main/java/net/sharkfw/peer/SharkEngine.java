@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sharkfw.asip.ASIPStub;
+import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.kep.KEPMessage;
@@ -18,7 +18,7 @@ import net.sharkfw.kep.KEPOutMessage;
 import net.sharkfw.kep.KEPStub;
 import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
-import net.sharkfw.kep.SharkStub;
+import net.sharkfw.asip.SharkStub;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
@@ -79,7 +79,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     protected KEPStub kepStub;
 
-    protected ASIPStub asipStub;
+    protected SimpleASIPStub asipStub;
 
     /**
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
@@ -122,7 +122,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         //this.environment = this.kepStub.getEnvironment();
     }
 
-    protected void setASIPStub(ASIPStub asipStub){
+    protected void setASIPStub(SimpleASIPStub asipStub){
         this.asipStub = asipStub;
     }
 
@@ -367,7 +367,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @param kp The instance of <code>KnowledgePort</code> to add.
      */
     void addKP(KnowledgePort kp) {
-        kp.setKEPStub(this.kepStub);
+        kp.setSharkStub(this.kepStub);
         // TODO asipStub
         kps.add(kp);
     }
@@ -711,7 +711,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return kepStub;
     }
 
-    public ASIPStub getAsipStub() {
+    public SimpleASIPStub getAsipStub() {
         return this.asipStub;
     }
 

@@ -22,7 +22,7 @@ import net.sharkfw.system.Streamer;
  * the session will wait and try again. If no more data is sent or more errors occurr the session closes down.
  *
  * @see net.sharkfw.protocols.StreamConnection
- * @see net.sharkfw.kep.SharkStub
+ * @see net.sharkfw.asip.SharkStub
  * @see net.sharkfw.peer.SharkEngine
  *
  * @author thsc

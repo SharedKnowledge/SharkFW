@@ -2,22 +2,17 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.kep.SharkStub;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.asip.SharkStub;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
-import net.sharkfw.protocols.SharkInputStream;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.system.L;
-import net.sharkfw.system.SharkException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
+import net.sharkfw.asip.ASIPStub;
+import net.sharkfw.knowledgeBase.Interest;
+import net.sharkfw.system.SharkSecurityException;
 
 /**
  * Objects of this class are result of the scanning process
@@ -42,13 +37,13 @@ public class ASIPInMessage extends ASIPMessage{
         this.is = con.getInputStream().getInputStream();
     }
 
-    public void parse(){
+    public ASIPInMessage(SharkEngine se, int asipMessageType, Interest anyInterest, StreamConnection con, ASIPStub asipStub) {
+        super(se, con);
+        // TODO
+    }
 
-        try {
-            this.parsedString = IOUtils.toString(this.is, "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void parse() throws IOException, SharkSecurityException {
+        this.parsedString = IOUtils.toString(this.is, "UTF-8");
 
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
 
@@ -76,5 +71,17 @@ public class ASIPInMessage extends ASIPMessage{
 
     public void setRaw(byte[] raw) {
         this.raw = raw;
+    }
+
+    public void finished() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    ASIPConnection getConnection() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    boolean keepOpen() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

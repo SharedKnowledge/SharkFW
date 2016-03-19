@@ -1,10 +1,12 @@
-package net.sharkfw.kep;
+package net.sharkfw.asip;
 
 import java.security.PrivateKey;
 import java.util.Iterator;
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 
@@ -24,6 +26,8 @@ public interface SharkStub {
             SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably);
 
     public void handleStream(StreamConnection con);
+    
+    public void handleNewConnectionStream(StreamConnection con);
     
     /**
      * Stream was established and can be used for conversion.

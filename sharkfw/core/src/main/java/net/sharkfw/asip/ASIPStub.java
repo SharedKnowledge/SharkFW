@@ -1,9 +1,11 @@
 package net.sharkfw.asip;
 
-import net.sharkfw.kep.KEPStub;
+import net.sharkfw.asip.engine.ASIPInMessage;
 
 /**
- * Created by j4rvis on 18.03.16.
+ *
+ * @author thsc
  */
-public interface ASIPStub extends KEPStub {
+public interface ASIPStub extends SharkStub {
+    public boolean callListener(ASIPInMessage msg);
 }

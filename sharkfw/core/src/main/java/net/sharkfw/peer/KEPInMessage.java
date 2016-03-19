@@ -1,5 +1,6 @@
 package net.sharkfw.peer;
 
+import net.sharkfw.asip.SharkStub;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
