@@ -46,13 +46,13 @@
 <https://de.wikipedia.org/wiki/Gamma/geometry> <http://www.sharksystem.net/SharkGeometry/ewkt> "SRID=4326;POINT (30 10)" <Spatial> .
 <https://de.wikipedia.org/wiki/Gamma/geometry> <http://www.sharksystem.net/SharkGeometry/wkt> "POINT (30 10)" <Spatial> .
 <https://de.wikipedia.org/wiki/Gamma/geometry> <http://www.sharksystem.net/SharkGeometry/srs> "4326" <Spatial> .
-_:BX2D1967ca65X3A1538dbff9fbX3AX2D7fff <http://www.sharksystem.net/ContextPoint/Topic> "http://sharksystem.net" <Context Points> .
-_:BX2D1967ca65X3A1538dbff9fbX3AX2D7fff <http://www.sharksystem.net/ContextPoint/Originator> "http://www.sharksystem.net/clara.html" <Context Points> .
-_:BX2D1967ca65X3A1538dbff9fbX3AX2D7fff <http://www.sharksystem.net/ContextPoint/Peer> "http://www.sharksystem.net/daniel.html" <Context Points> .
-_:BX2D1967ca65X3A1538dbff9fbX3AX2D7fff <http://www.sharksystem.net/ContextPoint/RemotePeer> "http://www.sharksystem.net/bob.html" <Context Points> .
-_:BX2D1967ca65X3A1538dbff9fbX3AX2D7fff <http://www.sharksystem.net/ContextPoint/Location> "null" <Context Points> .
-_:BX2D1967ca65X3A1538dbff9fbX3AX2D7fff <http://www.sharksystem.net/ContextPoint/Time> "http://www.sharksystem.net/time/from:1437400837574/duration:0" <Context Points> .
-_:BX2D1967ca65X3A1538dbff9fbX3AX2D7fff <http://www.sharksystem.net/ContextPoint/Direction> "2" <Context Points> .
+_:B7442a152X3A1538dc78a67X3AX2D7fff <http://www.sharksystem.net/ContextPoint/Topic> "http://sharksystem.net" <Context Points> .
+_:B7442a152X3A1538dc78a67X3AX2D7fff <http://www.sharksystem.net/ContextPoint/Originator> "http://www.sharksystem.net/clara.html" <Context Points> .
+_:B7442a152X3A1538dc78a67X3AX2D7fff <http://www.sharksystem.net/ContextPoint/Peer> "http://www.sharksystem.net/daniel.html" <Context Points> .
+_:B7442a152X3A1538dc78a67X3AX2D7fff <http://www.sharksystem.net/ContextPoint/RemotePeer> "http://www.sharksystem.net/bob.html" <Context Points> .
+_:B7442a152X3A1538dc78a67X3AX2D7fff <http://www.sharksystem.net/ContextPoint/Location> "null" <Context Points> .
+_:B7442a152X3A1538dc78a67X3AX2D7fff <http://www.sharksystem.net/ContextPoint/Time> "http://www.sharksystem.net/time/from:1437400837574/duration:0" <Context Points> .
+_:B7442a152X3A1538dc78a67X3AX2D7fff <http://www.sharksystem.net/ContextPoint/Direction> "2" <Context Points> .
 <http://www.sharksystem.net/alice.html> <http://www.sharksystem.net/Topic/describes> "Alice" <Peer> .
 <http://www.sharksystem.net/alice.html> <http://www.sharksystem.net/Peer/contactableby> <http://www.sharksystem.net/alice.html/address> <Peer> .
 <http://www.sharksystem.net/alice.html/address> <http://www.sharksystem.net/Peer/contacts> "mail://alice@wonderland.net" <Peer> .

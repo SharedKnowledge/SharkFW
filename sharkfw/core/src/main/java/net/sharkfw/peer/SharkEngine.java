@@ -9,9 +9,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import net.sharkfw.asip.ASIPStub;
 
 import net.sharkfw.asip.engine.SimpleASIPStub;
-import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.kep.KEPOutMessage;
@@ -79,7 +79,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     protected KEPStub kepStub;
 
-    protected SimpleASIPStub asipStub;
+    protected ASIPStub asipStub;
 
     /**
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
@@ -706,12 +706,13 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * Return the currently used KEPStub.
      *
      * @return The KEPStub, currently used by this SharkEngine.
+     * @deprecated 
      */
     public KEPStub getKepStub() {
         return kepStub;
     }
 
-    public SimpleASIPStub getAsipStub() {
+    public ASIPStub getAsipStub() {
         return this.asipStub;
     }
 
