@@ -2,7 +2,7 @@ package net.sharkfw.peer;
 
 import java.io.IOException;
 
-import net.sharkfw.kep.SharkStub;
+import net.sharkfw.asip.SharkStub;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
