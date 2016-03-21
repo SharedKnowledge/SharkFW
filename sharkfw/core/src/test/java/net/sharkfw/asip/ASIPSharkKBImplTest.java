@@ -1,4 +1,4 @@
-package net.sharkfw.asiptests;
+package net.sharkfw.asip;
 
 import java.util.Iterator;
 import junit.framework.Assert;

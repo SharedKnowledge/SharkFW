@@ -21,7 +21,6 @@ import java.security.Signature;
  */
 public class ASIPOutMessage extends ASIPMessage {
 
-    private ByteArrayOutputStream baos = null;
     private Writer osw = null;
 
     public ASIPOutMessage(SharkEngine engine,
@@ -34,7 +33,7 @@ public class ASIPOutMessage extends ASIPMessage {
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            OutputStreamWriter osw = new OutputStreamWriter(baos, "UTF8");
+            osw = new OutputStreamWriter(baos, "UTF8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -43,7 +42,7 @@ public class ASIPOutMessage extends ASIPMessage {
     public void expose(ASIPInterest interest) {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
 
-//        setSecuritySettings();
+//        this.initSecurity();
 
         try {
             this.osw.write(ASIPSerializer.serializeExpose(this, interest).toString());
@@ -60,7 +59,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
         this.setCommand(ASIPMessage.ASIP_INSERT);
 
-//        setSecuritySettings();
+//        this.initSecurity();
 
         try {
             this.osw.write(ASIPSerializer.serializeInsert(this, knowledge).toString());
@@ -76,7 +75,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
         this.setCommand(ASIPMessage.ASIP_RAW);
 
-//        setSecuritySettings();
+//        this.initSecurity();
 
         try {
             this.osw.write(ASIPSerializer.serializeRaw(this, stream).toString());
@@ -87,10 +86,5 @@ public class ASIPOutMessage extends ASIPMessage {
             e.printStackTrace();
         }
     }
-
-    public void setSecuritySettings(String encryptedSessionKey, String signature) {
-        // TODO
-    }
-
 
 }

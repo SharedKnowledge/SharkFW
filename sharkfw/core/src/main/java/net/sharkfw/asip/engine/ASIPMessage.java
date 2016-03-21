@@ -234,4 +234,47 @@ public abstract class ASIPMessage {
     public void setSigned(boolean signed) {
         this.signed = signed;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ASIPMessage)) return false;
+
+        ASIPMessage that = (ASIPMessage) o;
+
+        if (encrypted != that.encrypted) return false;
+        if (signed != that.signed) return false;
+        if (ttl != that.ttl) return false;
+        if (command != that.command) return false;
+        if (!version.equals(that.version)) return false;
+        if (!format.equals(that.format)) return false;
+        if (encryptedSessionKey != null ? !encryptedSessionKey.equals(that.encryptedSessionKey) : that.encryptedSessionKey != null)
+            return false;
+        if (signature != null ? !signature.equals(that.signature) : that.signature != null) return false;
+        if (sender != null ? !sender.equals(that.sender) : that.sender != null) return false;
+        if (receivers != null ? !receivers.equals(that.receivers) : that.receivers != null) return false;
+        if (receiverPeer != null ? !receiverPeer.equals(that.receiverPeer) : that.receiverPeer != null) return false;
+        if (receiverSpatial != null ? !receiverSpatial.equals(that.receiverSpatial) : that.receiverSpatial != null)
+            return false;
+        return receiverTime != null ? receiverTime.equals(that.receiverTime) : that.receiverTime == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = version.hashCode();
+        result = 31 * result + format.hashCode();
+        result = 31 * result + (encrypted ? 1 : 0);
+        result = 31 * result + (encryptedSessionKey != null ? encryptedSessionKey.hashCode() : 0);
+        result = 31 * result + (signed ? 1 : 0);
+        result = 31 * result + (signature != null ? signature.hashCode() : 0);
+        result = 31 * result + (int) (ttl ^ (ttl >>> 32));
+        result = 31 * result + command;
+        result = 31 * result + (sender != null ? sender.hashCode() : 0);
+        result = 31 * result + (receivers != null ? receivers.hashCode() : 0);
+        result = 31 * result + (receiverPeer != null ? receiverPeer.hashCode() : 0);
+        result = 31 * result + (receiverSpatial != null ? receiverSpatial.hashCode() : 0);
+        result = 31 * result + (receiverTime != null ? receiverTime.hashCode() : 0);
+        return result;
+    }
 }
