@@ -6,10 +6,16 @@ import net.sharkfw.asip.SharkStub;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.system.L;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 import net.sharkfw.asip.ASIPStub;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.system.SharkSecurityException;
@@ -30,7 +36,10 @@ public class ASIPInMessage extends ASIPMessage{
     private String parsedString;
     
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
+
         super(se, con);
+
+        L.d("ASIPInMessage Constructor");
         this.se = se;
         this.con = con;
         // Get java.io.inputstream not shark.inputstream
@@ -43,9 +52,20 @@ public class ASIPInMessage extends ASIPMessage{
     }
 
     public void parse() throws IOException, SharkSecurityException {
+        L.d("parse triggered");
+//        Reader reader = new InputStreamReader(this.is, StandardCharsets.UTF_8);
+//        this.parsedString = reader.read()
+
+
+//        this.parsedString  = new Scanner(this.is,"UTF-8").useDelimiter("\\A").next();
+
         this.parsedString = IOUtils.toString(this.is, "UTF-8");
 
+        L.d(this.parsedString);
+
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
+
+        L.d("Inputstream serialized");
 
     }
 

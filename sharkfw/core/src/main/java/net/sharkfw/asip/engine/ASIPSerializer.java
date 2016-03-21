@@ -28,8 +28,10 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.*;
 import net.sharkfw.protocols.SharkInputStream;
+import net.sharkfw.system.L;
 import net.sharkfw.system.Util;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.maven.doxia.logging.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +46,8 @@ import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
  * @author msc
  */
 public class ASIPSerializer {
+
+    private static final String CLASS = "ASIPSERIALIZER: ";
 
     public static final String CONTENT = "CONTENT";
     public static final String LOGICALSENDER = "LOGICALSENDER";
@@ -460,25 +464,70 @@ public class ASIPSerializer {
 //    }
 
     public static void deserializeInMessage(ASIPInMessage message, String parsedStream){
-        if(parsedStream.isEmpty()) return;
+        if(parsedStream.isEmpty()){
+            L.d(CLASS + "Stream is empty.");
+            return;
+        }
 
-        JSONObject object = new JSONObject(parsedStream);
+        L.d(CLASS + "Start parsing the stream.");
 
-        String version = object.getString(ASIPMessage.VERSION);
-        String format = object.getString(ASIPMessage.FORMAT);
-        boolean encrypted = object.getBoolean(ASIPMessage.ENCRYPTED);
-        String encryptedSessionKey = object.getString(ASIPMessage.ENCRYPTEDSESSIONKEY);
-        boolean signed = object.getBoolean(ASIPMessage.SIGNED);
-        long ttl = object.getLong(ASIPMessage.TTL);
-        int command = object.getInt(ASIPMessage.COMMAND);
+        JSONObject object = null;
+
+        try{
+            object = new JSONObject(parsedStream);
+        } catch(Exception e){
+            L.d(CLASS + e);
+        }
+
+        L.d(CLASS + "JSONObject created");
+
+
+        String version = "";
+        String format = "";
+        boolean encrypted = false;
+        String encryptedSessionKey = "";
+        boolean signed = false;
+        long ttl = -1;
+        int command = -1;
         PeerSemanticTag sender = null;
         STSet receivers = null;
+
+        if(object.has(ASIPMessage.VERSION))
+            version = object.getString(ASIPMessage.VERSION);
+        L.d(version);
+        if(object.has(ASIPMessage.FORMAT))
+            format = object.getString(ASIPMessage.FORMAT);
+        if(object.has(ASIPMessage.ENCRYPTED))
+            encrypted = object.getBoolean(ASIPMessage.ENCRYPTED);
+        if(object.has(ASIPMessage.ENCRYPTEDSESSIONKEY))
+            encryptedSessionKey = object.getString(ASIPMessage.ENCRYPTEDSESSIONKEY);
+        if(object.has(ASIPMessage.SIGNED))
+            signed = object.getBoolean(ASIPMessage.SIGNED);
+        if(object.has(ASIPMessage.TTL))
+            ttl = object.getLong(ASIPMessage.TTL);
+        if(object.has(ASIPMessage.COMMAND))
+            command = object.getInt(ASIPMessage.COMMAND);
+        L.d(version + " " +
+                format + " " +
+                encrypted + " " +
+                encryptedSessionKey + " " +
+                signed + " " +
+                ttl + " " +
+                command
+        );
         try {
-            sender = deserializePeerTag(object.getString(ASIPMessage.SENDER));
-            receivers = deserializeAnySTSet(null, object.getString(ASIPMessage.RECEIVERS));
+            if(object.has(ASIPMessage.SENDER))
+                sender = deserializePeerTag(object.getString(ASIPMessage.SENDER));
+            L.d("sender");
+            if(object.has(ASIPMessage.RECEIVERS))
+                receivers = deserializeAnySTSet(null, object.getString(ASIPMessage.RECEIVERS));
+            L.d("receiver");
         } catch (SharkKBException e) {
+            L.d(CLASS + e);
             e.printStackTrace();
         }
+
+        L.d(CLASS + "everything is parsed.");
 
         message.setEncrypted(encrypted);
         message.setEncryptedSessionKey(encryptedSessionKey);

@@ -9,8 +9,10 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.system.Base64;
+import net.sharkfw.system.L;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.Signature;
 
 /**
@@ -30,13 +32,13 @@ public class ASIPOutMessage extends ASIPMessage {
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverSpatial,
                           TimeSemanticTag receiverTime) throws SharkKBException {
+
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            osw = new OutputStreamWriter(baos, "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+
+        L.d("ASIPOutMessage Constructor");
+
+        osw = new OutputStreamWriter(connection.getOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+        L.d("Created OutputStreamWriter");
     }
 
     public void expose(ASIPInterest interest) {
@@ -73,16 +75,21 @@ public class ASIPOutMessage extends ASIPMessage {
 
     public void raw(InputStream stream) {
 
+        L.d("Send Raw");
+
         this.setCommand(ASIPMessage.ASIP_RAW);
 
 //        this.initSecurity();
 
         try {
+            L.d("Write RAW");
             this.osw.write(ASIPSerializer.serializeRaw(this, stream).toString());
             this.osw.close();
         } catch (SharkKBException e) {
+            L.d("Serialize failed");
             e.printStackTrace();
         } catch (IOException e) {
+            L.d("Write failed");
             e.printStackTrace();
         }
     }

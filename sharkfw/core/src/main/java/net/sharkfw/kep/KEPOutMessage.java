@@ -27,7 +27,6 @@ import net.sharkfw.system.Utils;
  * @see net.sharkfw.kep.KnowledgeSerializer
  * @see net.sharkfw.kep.format.XMLSerializer
  * @see net.sharkfw.kep.KEPMessage
- * @see net.sharkfw.peer.KEPRequest
  *
  *
  * @author thsc
@@ -50,7 +49,7 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
     private String sendingPeerSIString = null;
     private boolean sign;
 
-    /** 
+    /**
      * Message will be sent via message based protocol
      */
     public KEPOutMessage(SharkEngine se, MessageStub outStub, KnowledgeSerializer ks, String address) {
@@ -60,11 +59,9 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
         this.recipientAddress = address;
         this.baos = new ByteArrayOutputStream();
         this.os = new UTF8SharkOutputStream(baos);
-        
-        
     }
 
-    /** 
+    /**
      * Message will be send over a already created output stream
      */
     public KEPOutMessage(SharkEngine se, StreamConnection con, KnowledgeSerializer ks) {
@@ -74,7 +71,7 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
 //        L.d("Trying to get output stream", this);
         this.os = this.con.getOutputStream();
 //        L.d("Success.", this);
-        this.ks = ks;        
+        this.ks = ks;
         this.recipientAddress = con.getReceiverAddressString();
     }
 
@@ -306,7 +303,6 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
      * Create an insert command containing the <code>Knowledge</code> passed.
      *
      * @param k The <code>Knowledge</code> to send
-     * @param kepHandler The <code>KEPHandler</code> to use.
      */
     public void insert(Knowledge k) throws IOException {
         /*
@@ -383,8 +379,6 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
      * Create an expose command with the <code>ExposedInterest</code> passed.
      *
      * @param interest The <code>Interest</code> that shall be sent inside the expose command.
-     * 
-     * @param kp The <code>KEPHandler</code>
      */
     @Override
     public void expose(SharkCS interest) throws IOException {

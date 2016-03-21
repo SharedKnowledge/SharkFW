@@ -7,9 +7,11 @@ package net.sharkfw.asip.engine;
 
 import java.security.PrivateKey;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
+import net.sharkfw.system.L;
 
 /**
  * @author msc, thsc
@@ -43,9 +45,9 @@ public abstract class ASIPMessage {
     private int command;
     private PeerSemanticTag sender;
     private STSet receivers;
-    private PeerSemanticTag receiverPeer;
-    private SpatialSemanticTag receiverSpatial;
-    private TimeSemanticTag receiverTime;
+    private PeerSemanticTag receiverPeer = null;
+    private SpatialSemanticTag receiverSpatial = null;
+    private TimeSemanticTag receiverTime = null;
     private PrivateKey privateKey;
     private SharkPkiStorage sharkPkiStorage;
     private SharkEngine.SecurityLevel signatureLevel;
@@ -56,6 +58,7 @@ public abstract class ASIPMessage {
     public ASIPMessage(SharkEngine engine, StreamConnection connection) {
         this.engine = engine;
         this.connection = connection;
+        L.d("ASIPMessage Constructor");
     }
 
     public ASIPMessage(SharkEngine engine,
@@ -65,44 +68,14 @@ public abstract class ASIPMessage {
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
                        TimeSemanticTag receiverTime) throws SharkKBException {
+
+        L.d("ASIPMessage Constructor");
+
         this.engine = engine;
         this.connection = connection;
         this.ttl = ttl;
 
-        this.sender = sender;
-        if (receiverPeer != null) {
-            this.receiverPeer = receiverPeer;
-            this.receivers.merge(receiverPeer);
-        }
-        if (receiverSpatial != null) {
-            this.receiverSpatial = receiverSpatial;
-            this.receivers.merge(receiverSpatial);
-        }
-        if (receiverTime != null) {
-            this.receiverTime = receiverTime;
-            this.receivers.merge(receiverTime);
-        }
-    }
-
-    public ASIPMessage(SharkEngine engine,
-                       StreamConnection connection,
-                       boolean encrypted,
-                       String encryptedSessionKey,
-                       boolean signed,
-                       String signature,
-                       long ttl,
-                       PeerSemanticTag sender,
-                       PeerSemanticTag receiverPeer,
-                       SpatialSemanticTag receiverSpatial,
-                       TimeSemanticTag receiverTime) throws SharkKBException {
-        this.engine = engine;
-        this.connection = connection;
-
-        this.encrypted = encrypted;
-        this.encryptedSessionKey = encryptedSessionKey;
-        this.signed = signed;
-        this.signature = signature;
-        this.ttl = ttl;
+        this.receivers = InMemoSharkKB.createInMemoSTSet();
 
         this.sender = sender;
         if (receiverPeer != null) {
