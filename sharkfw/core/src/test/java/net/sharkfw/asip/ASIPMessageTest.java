@@ -123,7 +123,8 @@ public class ASIPMessageTest {
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
         inMessage.parse();
 
-        Assert.assertTrue(true);
+        L.d("true");
 
+        Assert.assertTrue(SharkAlgebra.identical(space, inMessage.getInterest()));
     }
 }

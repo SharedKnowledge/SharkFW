@@ -6,6 +6,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
 /**
  *
@@ -354,6 +355,61 @@ public class SharkAlgebra {
         }
         
         // no missing tag found in context - context is in target.
+        return true;
+    }
+
+    public static boolean identical(ASIPInterest int1, ASIPInterest int2) throws SharkKBException {
+
+        // both null means both any which is identical
+        if(int1 == null && int2 == null) {
+            return true;
+        }
+
+        if( (int1 == null && int2 != null) || (int1 != null && int2 == null)) {
+            return false;
+        }
+
+        // we ignore semantics and make a direct test, e.g. IN != INOUT here
+        if(int1.getDirection() != int2.getDirection()) {
+            return false;
+        }
+
+        // topics identical ?
+        if(!SharkCSAlgebra.identical(int1.getTopics(), int2.getTopics())) {
+            return false;
+        }
+
+        // types identical ?
+        if(!SharkCSAlgebra.identical(int1.getTypes(), int2.getTypes())) {
+            return false;
+        }
+
+        // sender identical ?
+        if(!SharkCSAlgebra.identical(int1.getSender(), int2.getSender())) {
+            return false;
+        }
+
+        // approvers identical ?
+        if(!SharkCSAlgebra.identical(int1.getApprovers(), int2.getApprovers())) {
+            return false;
+        }
+
+        // receivers identical ?
+        if(!SharkCSAlgebra.identical(int1.getReceivers(), int2.getReceivers())) {
+            return false;
+        }
+
+        // locations identical ?
+        if(!SharkCSAlgebra.identical(int1.getLocations(), int2.getLocations())) {
+            return false;
+        }
+
+        // times identical ?
+        if(!SharkCSAlgebra.identical(int1.getTimes(), int2.getTimes())) {
+            return false;
+        }
+
+        // anythings got a match
         return true;
     }
 }

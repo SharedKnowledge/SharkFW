@@ -19,15 +19,7 @@ public class TestConnection implements StreamConnection {
     }
 
     public void createInputStream(){
-
-        try {
-            L.d(this.os.toString("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         this.is = new ByteArrayInputStream(this.os.toByteArray());
-
-        L.d("new IS created " + (this.is.available() > 0));
     }
 
     @Override

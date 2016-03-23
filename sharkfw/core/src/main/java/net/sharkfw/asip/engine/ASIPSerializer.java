@@ -1,9 +1,5 @@
 package net.sharkfw.asip.engine;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -19,7 +15,6 @@ import net.sharkfw.knowledgeBase.SNSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticNet;
 import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
@@ -28,11 +23,7 @@ import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.*;
-import net.sharkfw.protocols.SharkInputStream;
 import net.sharkfw.system.L;
-import net.sharkfw.system.Util;
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.maven.doxia.logging.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -553,7 +544,7 @@ public class ASIPSerializer {
         switch (command){
             case ASIPMessage.ASIP_EXPOSE:
                 try {
-                    ASIPSpace interest = deserializeASIPSpace(content.getString(ASIPSerializer.INTEREST));
+                    ASIPInterest interest = deserializeASIPInterest(content.getString(ASIPSerializer.INTEREST));
                     message.setInterest(interest);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
@@ -561,7 +552,7 @@ public class ASIPSerializer {
                 break;
             case ASIPMessage.ASIP_INSERT:
                 try {
-                    ASIPKnowledge knowledge = deserializeKnowledge(content.getString(ASIPSerializer.KNOWLEDGE));
+                    ASIPKnowledge knowledge = deserializeASIPKnowledge(content.getString(ASIPSerializer.KNOWLEDGE));
                     message.setKnowledge(knowledge);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
@@ -574,19 +565,13 @@ public class ASIPSerializer {
         }
     }
 
-
-    
-    public static ASIPSpace deserializeInterest(String interestString) throws SharkKBException {
-        return deserializeASIPSpace(interestString);
-    }
-    
     /**
      * TODO SharkInputStream as param
      * Deserializes knowledge and return a newly created knowledge object..
      * @return
      * @throws SharkKBException 
      */
-    public static ASIPKnowledge deserializeKnowledge(String string) throws SharkKBException {
+    public static ASIPKnowledge deserializeASIPKnowledge(String string) throws SharkKBException {
         
         if(string==null) return null;
         
@@ -615,7 +600,7 @@ public class ASIPSerializer {
         }
         while(infoPointIterator.hasNext()){
             JSONObject infoObject = (JSONObject) infoPointIterator.next();
-            ASIPSpace space = ASIPSerializer.deserializeASIPSpace(infoObject.getString(ASIPPointInformation.ASIPSPACE));
+            ASIPSpace space = ASIPSerializer.deserializeASIPInterest(infoObject.getString(ASIPPointInformation.ASIPSPACE));
 
             Iterator infoDataIterator;
             try{
@@ -637,40 +622,6 @@ public class ASIPSerializer {
             }
         }
         return kb;
-    }
-    
-    /**
-     * Deserializes and merges knowledge into an existing knowledge base
-     * @param target
-     * @param knowledgeString
-     * @throws SharkKBException 
-     */
-    public void deserializeAndMergeKnowledge(SharkKB target, String knowledgeString) throws SharkKBException {
-        // deserialize vocabulary and merge into target
-        SharkCS vocabulary = null; // shouldn't be null after deserialization
-        Util.merge(target, vocabulary);
-        
-        // deserialize context
-        
-        /*
-        LASP exchanges knowledge which contains semantically annotated 
-        information. Each information is attached to a context space (!) not 
-        only a single context point as in KEP. That actually is one major
-        difference (enhancements) compared to KEP. Thus, we can deserialize
-        ContextSpace objects and add information later...
-        */
-        
-        /* we use deserializeASIPSpace in that class to create a context space out
-            of a string */
-        ASIPSpace cs = deserializeASIPSpace(target, knowledgeString);
-        
-        /* infos can be added now - tja und das muss man schlau machen
-        wegen der eventuell großen Datenmengen. Man kann ein Infoobjekt
-        eibnhängen, das aber nicht sofort alle Daten aus dem stream liest...
-        Da InfoSpace nicht implementiert ist, kann man sich noch alles
-        wünschen... ;)
-        */
-        // infoSpace.addInformation(??)
     }
     
     public static SemanticTag deserializeTag(STSet targetSet, String tagString) throws SharkKBException {
@@ -884,25 +835,30 @@ public class ASIPSerializer {
         
         return null;
     }
-    
+
     public static STSet deserializeSTSet(STSet target, String stSetString) throws SharkKBException{
-        
+
+        if(target==null){
+            target = InMemoSharkKB.createInMemoSTSet();
+        }
+
         // SemanticNet
         JSONObject jsonObject = new JSONObject(stSetString);
         JSONArray jsonArray = null;
         try{
             jsonArray = jsonObject.getJSONArray(STSet.STSET);
         } catch (JSONException e){
+            L.d(""+e);
             return null;
         }
         Iterator stIterator = jsonArray.iterator();
         while(stIterator.hasNext()){
             JSONObject tag = (JSONObject) stIterator.next();
-            if(jsonObject.has(PeerSemanticTag.ADDRESSES)){
+            if(tag.has(PeerSemanticTag.ADDRESSES)){
                 deserializePeerTag(target, tag.toString());
-            } else if(jsonObject.has(SpatialSemanticTag.GEOMETRY)){
+            } else if(tag.has(SpatialSemanticTag.GEOMETRY)){
                 deserializeSpatialTag(target, tag.toString());
-            } else if(jsonObject.has(TimeSemanticTag.DURATION) || jsonObject.has(TimeSemanticTag.FROM)){
+            } else if(tag.has(TimeSemanticTag.DURATION) || jsonObject.has(TimeSemanticTag.FROM)){
                 deserializeTimeTag(target, tag.toString());
             } else{
                 deserializeTag(target, tag.toString());
@@ -911,22 +867,23 @@ public class ASIPSerializer {
         return target;
     }
     
-    public static PeerSTSet deserializePeerSTSet(STSet stSet, String stSetString) throws SharkKBException{
-        STSet set = stSet;
+    public static PeerSTSet deserializePeerSTSet(STSet set, String stSetString) throws SharkKBException{
         if(set==null) set = InMemoSharkKB.createInMemoPeerSTSet();
-        return (PeerSTSet) ASIPSerializer.deserializeSTSet(set, stSetString);
+        PeerSTSet peerSTSet = (PeerSTSet) set;
+        L.d("ho");
+        return (PeerSTSet) ASIPSerializer.deserializeSTSet(peerSTSet, stSetString);
     }
     
-    public static TimeSTSet deserializeTimeSTSet(STSet stSet, String stSetString) throws SharkKBException{
-        STSet set = stSet;
+    public static TimeSTSet deserializeTimeSTSet(STSet set, String stSetString) throws SharkKBException{
         if(set==null) set = InMemoSharkKB.createInMemoTimeSTSet();
-        return (TimeSTSet) ASIPSerializer.deserializeSTSet(set, stSetString);
+        TimeSTSet timeSTSet = (TimeSTSet) set;
+        return (TimeSTSet) ASIPSerializer.deserializeSTSet(timeSTSet, stSetString);
     }
     
-    public static SpatialSTSet deserializeSpatialSTSet(STSet stSet, String stSetString) throws SharkKBException{
-        STSet set = stSet;
+    public static SpatialSTSet deserializeSpatialSTSet(STSet set, String stSetString) throws SharkKBException{
         if(set==null) set = InMemoSharkKB.createInMemoSpatialSTSet();
-        return (SpatialSTSet) ASIPSerializer.deserializeSTSet(set, stSetString);
+        SpatialSTSet spatialSTSet = (SpatialSTSet) set;
+        return (SpatialSTSet) ASIPSerializer.deserializeSTSet(spatialSTSet, stSetString);
     }
     
     public static STSet deserializeSTSet(String stSetString) throws SharkKBException{
@@ -1040,7 +997,7 @@ public class ASIPSerializer {
     
     }
         
-    public static ASIPSpace deserializeASIPSpace(SharkKB kb, String spaceString) throws SharkKBException {
+    public static ASIPInterest deserializeASIPInterest(SharkKB kb, String spaceString) throws SharkKBException {
 
         String topicsString = null;
         String typesString = null;
@@ -1054,6 +1011,8 @@ public class ASIPSerializer {
         ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest();
 
         JSONObject parsed = new JSONObject(spaceString);
+
+        L.d(parsed.toString(4));
 
         try {
             if(parsed.has(ASIPSpace.TOPICS)) topicsString = parsed.getString(ASIPSpace.TOPICS);
@@ -1071,32 +1030,32 @@ public class ASIPSerializer {
 
         STSet topics;
         if(topicsString != null) {
-            topics = deserializeSTSet(interest.getTopics(), topicsString);
+            topics = deserializeSTSet(null, topicsString);
             interest.setTopics(topics);
         }
         STSet types;
         if(typesString != null) {
-            types = deserializeSTSet(interest.getTypes(), typesString);
+            types = deserializeSTSet(null, typesString);
             interest.setTypes(types);
         }
         PeerSTSet approvers;
         if(approversString != null) {
-            approvers = deserializePeerSTSet(interest.getApprovers(), approversString);
+            approvers = deserializePeerSTSet(null, approversString);
             interest.setApprovers(approvers);
         }
         PeerSTSet receivers;
         if(receiverString!=null){
-            receivers = deserializePeerSTSet(interest.getReceivers(), receiverString);
+            receivers = deserializePeerSTSet(null, receiverString);
             interest.setReceivers(receivers);
         }
         SpatialSTSet locations;
         if(locationsString!=null){
-            locations = deserializeSpatialSTSet(interest.getLocations(), locationsString);
+            locations = deserializeSpatialSTSet(null, locationsString);
             interest.setLocations(locations);
         }
         TimeSTSet times;
         if(timesString!=null){
-            times = deserializeTimeSTSet(interest.getTimes(), timesString);
+            times = deserializeTimeSTSet(null, timesString);
             interest.setTimes(times);
         }
         if(senderString != null){
@@ -1108,9 +1067,9 @@ public class ASIPSerializer {
         return interest;
     }
     
-    public static ASIPSpace deserializeASIPSpace(String sharkCS) throws SharkKBException {
+    public static ASIPInterest deserializeASIPInterest(String sharkCS) throws SharkKBException {
         InMemoSharkKB imkb = new InMemoSharkKB();
-        return ASIPSerializer.deserializeASIPSpace(imkb, sharkCS);
+        return ASIPSerializer.deserializeASIPInterest(imkb, sharkCS);
     }
     
     private SemanticNet cast2SN(STSet stset) throws SharkKBException {

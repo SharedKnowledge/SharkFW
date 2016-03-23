@@ -1,8 +1,6 @@
 package net.sharkfw.asip.engine;
 
-import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.asip.SharkStub;
+import net.sharkfw.asip.*;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
@@ -16,7 +14,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-import net.sharkfw.asip.ASIPStub;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.system.SharkSecurityException;
 
@@ -31,7 +28,7 @@ public class ASIPInMessage extends ASIPMessage{
     private InputStream is;
     private SharkStub sharkStub;
     private ASIPKnowledge knowledge;
-    private ASIPSpace interest;
+    private ASIPInterest interest;
     private byte[] raw;
     private String parsedString;
     
@@ -54,8 +51,6 @@ public class ASIPInMessage extends ASIPMessage{
 
         this.parsedString = IOUtils.toString(this.is, "UTF-8");
 
-        L.d(this.parsedString);
-
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
     }
 
@@ -67,11 +62,11 @@ public class ASIPInMessage extends ASIPMessage{
         this.knowledge = knowledge;
     }
 
-    public ASIPSpace getInterest() {
+    public ASIPInterest getInterest() {
         return interest;
     }
 
-    public void setInterest(ASIPSpace interest) {
+    public void setInterest(ASIPInterest interest) {
         this.interest = interest;
     }
 
