@@ -35,10 +35,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
 
-        L.d("ASIPOutMessage Constructor");
-
         osw = new OutputStreamWriter(connection.getOutputStream().getOutputStream(), StandardCharsets.UTF_8);
-        L.d("Created OutputStreamWriter");
     }
 
     public void expose(ASIPInterest interest) {
@@ -73,17 +70,14 @@ public class ASIPOutMessage extends ASIPMessage {
         }
     }
 
-    public void raw(InputStream stream) {
-
-        L.d("Send Raw");
+    public void raw(byte[] raw) {
 
         this.setCommand(ASIPMessage.ASIP_RAW);
 
 //        this.initSecurity();
 
         try {
-            L.d("Write RAW");
-            this.osw.write(ASIPSerializer.serializeRaw(this, stream).toString());
+            this.osw.write(ASIPSerializer.serializeRaw(this, raw).toString());
             this.osw.close();
         } catch (SharkKBException e) {
             L.d("Serialize failed");

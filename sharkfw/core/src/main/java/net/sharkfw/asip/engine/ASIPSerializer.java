@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -80,24 +81,15 @@ public class ASIPSerializer {
         return object;
     }
 
-    public static JSONObject serializeRaw(ASIPMessage header, InputStream raw) throws SharkKBException {
+    public static JSONObject serializeRaw(ASIPMessage header, byte[] raw) throws SharkKBException {
 
         JSONObject object = serializeHeader(header);
         JSONObject content = new JSONObject();
         content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
-        // TODO Possible to put byte[] in json object?
-        try {
-            object.put(RAW, IOUtils.toByteArray(raw));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                raw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        L.d(CLASS + "raw bytes " + raw);
+        L.d(CLASS + "raw bytes as string" + new String(raw, StandardCharsets.UTF_8));
+        content.put(RAW, new String(raw, StandardCharsets.UTF_8));
         object.put(CONTENT, content);
         return object;
     }
@@ -433,50 +425,12 @@ public class ASIPSerializer {
         
         return jsonObject;
     }
-    
-    // Deserialize
-
-//    TODO
-//    public static ASIPMessage deserializeMessage(String string) throws SharkKBException{
-//        ASIPInMessage message = new ASIPInMessage(null, null, null);
-//        JSONObject jsonObject = new JSONObject(string);
-//
-//        message.
-//
-//        message.setEncrypted(jsonObject.getBoolean(ASIPMessage.ENCRYPTED));
-//        message.setEncryptedSessionKey(jsonObject.getString(ASIPMessage.ENCRYPTEDSESSIONKEY));
-//        message.setVersion(jsonObject.getString(ASIPMessage.VERSION));
-//        message.setFormat(jsonObject.getString(ASIPMessage.FORMAT));
-//        message.setCommand(jsonObject.getInt(ASIPMessage.COMMAND));
-//
-//        String senderString = jsonObject.getString(ASIPMessage.SENDER);
-//        message.setSenders(deserializePeerTag(senderString));
-//
-//        String receiverString = jsonObject.getString(ASIPMessage.RECEIVERS);
-//        STSet set = deserializeSTSet(receiverString);
-//        message.setReceivers(set);
-//
-//        message.setSignature(jsonObject.getString(ASIPMessage.SIGNATURE));
-//
-//        JSONObject content = (JSONObject) jsonObject.get(CONTENT);
-//
-//        if(content.has(INTEREST)){
-//            message.setInterest(deserializeInterest(content.getString(INTEREST)));
-//        } else if (content.has(KNOWLEDGE)){
-//            message.setKnowledge(deserializeKnowledge(content.getString(KNOWLEDGE)));
-//        } else if(content.has(RAW)){
-//            // TODO RAW
-//        }
-//        return message;
-//    }
 
     public static void deserializeInMessage(ASIPInMessage message, String parsedStream){
         if(parsedStream.isEmpty()){
             L.d(CLASS + "Stream is empty.");
             return;
         }
-
-        L.d(CLASS + "Start parsing the stream.");
 
         JSONObject object = null;
 
@@ -485,8 +439,6 @@ public class ASIPSerializer {
         } catch(Exception e){
             L.d(CLASS + e);
         }
-
-        L.d(CLASS + "JSONObject created");
 
 
         String version = "";
@@ -537,7 +489,6 @@ public class ASIPSerializer {
             } catch (SharkKBException e) {
                 e.printStackTrace();
             }
-            L.d(CLASS + "SENDER");
         }
         if(object.has(ASIPMessage.RECEIVERPEER)){
             receiverPeerString = object.getString(ASIPMessage.RECEIVERPEER);
@@ -568,7 +519,6 @@ public class ASIPSerializer {
             receiverString = object.getString(ASIPMessage.RECEIVERS);
 //            receivers = ASIPSerializer.deserializeAnySTSet(null, receiverString);
         }
-        L.d(CLASS + "receiver");
 
         message.setEncrypted(encrypted);
         message.setEncryptedSessionKey(encryptedSessionKey);
@@ -581,7 +531,6 @@ public class ASIPSerializer {
         message.setReceiverTime(receiverTime);
         message.setReceivers(receivers);
 
-        L.d(CLASS + "iterating through receivers");
 //
 //        try {
 //            L.d(CLASS + receivers.size());
@@ -603,10 +552,11 @@ public class ASIPSerializer {
         ASIPSpace interest = null;
         ASIPKnowledge knowledge = null;
         L.d(CLASS + command);
+        JSONObject content = object.getJSONObject(ASIPSerializer.CONTENT);
         switch (command){
             case ASIPMessage.ASIP_EXPOSE:
                 try {
-                    interest = deserializeASIPSpace(object.getString(ASIPSerializer.INTEREST));
+                    interest = deserializeASIPSpace(content.getString(ASIPSerializer.INTEREST));
                     message.setInterest(interest);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
@@ -614,22 +564,17 @@ public class ASIPSerializer {
                 break;
             case ASIPMessage.ASIP_INSERT:
                 try {
-                    knowledge = deserializeKnowledge(object.getString(ASIPSerializer.KNOWLEDGE));
+                    knowledge = deserializeKnowledge(content.getString(ASIPSerializer.KNOWLEDGE));
                     message.setKnowledge(knowledge);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
                 }
                 break;
             case ASIPMessage.ASIP_RAW:
-                L.d(CLASS + "RAW");
-                L.d(CLASS + object.has(ASIPSerializer.RAW));
-                byte[] raw = object.get(ASIPSerializer.RAW).toString().getBytes();
-                L.d(CLASS + "RAW1");
+                byte[] raw = content.getString(ASIPSerializer.RAW).getBytes(StandardCharsets.UTF_8);
                 message.setRaw(raw);
-                L.d(CLASS + "RAW2");
                 break;
         }
-        L.d(CLASS + "finished");
     }
 
 
@@ -732,8 +677,7 @@ public class ASIPSerializer {
     }
     
     public static SemanticTag deserializeTag(STSet targetSet, String tagString) throws SharkKBException {
-        
-        // TODO What if targetSet equals null
+
         // TODO Types of SemanticTags?
         if(targetSet == null)
             targetSet = InMemoSharkKB.createInMemoSTSet();
@@ -770,9 +714,6 @@ public class ASIPSerializer {
      * @throws SharkKBException 
      */
     public static SemanticTag deserializeTag(String tag) throws SharkKBException {
-        // there is no specific set - create one
-
-        L.d(CLASS + "deserializeTag()");
 
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
         return ASIPSerializer.deserializeTag(stSet, tag);
@@ -821,8 +762,6 @@ public class ASIPSerializer {
         PeerSemanticTag tag = ((PeerSTSet) targetSet).createPeerSemanticTag(name, sis, addresses);
 
         deserializeProperties(tag, tagString);
-
-        L.d(CLASS + "props finished");
 
         return tag;
     }
@@ -1001,7 +940,6 @@ public class ASIPSerializer {
     
     public static void deserializeProperties(SystemPropertyHolder target, String properties) throws SharkKBException{
 
-        L.d(CLASS + "deserializeProperties");
 
         if(target == null){
             L.d(CLASS + "target == null");
@@ -1019,7 +957,6 @@ public class ASIPSerializer {
             try{
                 jsonArray = jsonObject.getJSONArray(PropertyHolder.PROPERTIES);
             } catch( JSONException e){
-                L.d(CLASS + e);
                 return;
             }
 
@@ -1037,7 +974,6 @@ public class ASIPSerializer {
     }
     
     public static void deserializeRelations(Taxonomy target, String relations){
-        // TODO deserializeRelations
         if(target==null) return;
         if(relations==null) return;
         JSONObject jsonObject = new JSONObject(relations);
@@ -1045,7 +981,6 @@ public class ASIPSerializer {
         try{
             jsonArray = jsonObject.getJSONArray(Taxonomy.SUBSUPERTAGS);
         } catch (JSONException e){
-            L.d(CLASS + e);
             return;
         }
         Iterator iterator = jsonArray.iterator();
@@ -1072,7 +1007,6 @@ public class ASIPSerializer {
     }
     
     public static void deserializeRelations(SemanticNet target, String relations){
-        // TODO deserializeRelations
         if(target==null) return;
         if(relations==null) return;
         JSONObject jsonObject = new JSONObject(relations);
@@ -1080,7 +1014,6 @@ public class ASIPSerializer {
         try{
             jsonArray = jsonObject.getJSONArray(SemanticNet.PREDICATES);
         } catch (JSONException e){
-            L.d(CLASS + e);
             return;
         }
         Iterator iterator = jsonArray.iterator();

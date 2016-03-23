@@ -13,13 +13,17 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.tcp.TCPConnection;
 import net.sharkfw.system.L;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.junit.*;
 import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -69,17 +73,14 @@ public class ASIPMessageTest {
 
         String rawInput = "Hello ASIP.";
         L.d(rawInput);
-        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
+        L.d("" + rawInput.getBytes(StandardCharsets.UTF_8));
+//        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
 
         ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
-        outMessage.raw(is);
+        outMessage.raw(rawInput.getBytes(StandardCharsets.UTF_8));
         this.connection.createInputStream();
 
-//        is.close();
-
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
-
-        L.d("InMessage created");
 
         inMessage.parse();
 
@@ -87,6 +88,21 @@ public class ASIPMessageTest {
         L.d(inMessage.toString());
 
         Assert.assertEquals(inMessage, outMessage);
+    }
 
+    @Test
+    public void ASIPMessage_CompareInToOutMessageRaw_success() throws Exception {
+        L.setLogLevel(L.LOGLEVEL_ALL);
+
+        String rawInput = "Hello ASIP.";
+
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
+        outMessage.raw(rawInput.getBytes(StandardCharsets.UTF_8));
+        this.connection.createInputStream();
+
+        ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
+        inMessage.parse();
+
+        Assert.assertEquals(new String(inMessage.getRaw(), StandardCharsets.UTF_8), rawInput);
     }
 }

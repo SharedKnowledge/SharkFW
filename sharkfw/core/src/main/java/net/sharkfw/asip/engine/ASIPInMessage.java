@@ -39,7 +39,6 @@ public class ASIPInMessage extends ASIPMessage{
 
         super(se, con);
 
-        L.d("ASIPInMessage Constructor");
         this.se = se;
         this.con = con;
         // Get java.io.inputstream not shark.inputstream
@@ -52,15 +51,12 @@ public class ASIPInMessage extends ASIPMessage{
     }
 
     public void parse() throws IOException, SharkSecurityException {
-        L.d("parse triggered");
 
         this.parsedString = IOUtils.toString(this.is, "UTF-8");
 
         L.d(this.parsedString);
 
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
-
-        L.d("Inputstream serialized");
     }
 
     public ASIPKnowledge getKnowledge() {

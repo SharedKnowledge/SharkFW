@@ -61,7 +61,6 @@ public abstract class ASIPMessage {
     public ASIPMessage(SharkEngine engine, StreamConnection connection) {
         this.engine = engine;
         this.connection = connection;
-        L.d("ASIPMessage Constructor");
     }
 
     public ASIPMessage(SharkEngine engine,
@@ -71,8 +70,6 @@ public abstract class ASIPMessage {
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
                        TimeSemanticTag receiverTime) throws SharkKBException {
-
-        L.d("ASIPMessage Constructor");
 
         this.engine = engine;
         this.connection = connection;
