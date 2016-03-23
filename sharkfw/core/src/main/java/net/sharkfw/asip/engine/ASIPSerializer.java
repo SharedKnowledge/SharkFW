@@ -76,7 +76,7 @@ public class ASIPSerializer {
         JSONObject content = new JSONObject();
         content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
-        object.put(KNOWLEDGE, serializeKnowledge(knowledge).toString());
+        content.put(KNOWLEDGE, serializeKnowledge(knowledge).toString());
         object.put(CONTENT, content);
         return object;
     }
@@ -87,8 +87,6 @@ public class ASIPSerializer {
         JSONObject content = new JSONObject();
         content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
-        L.d(CLASS + "raw bytes " + raw);
-        L.d(CLASS + "raw bytes as string" + new String(raw, StandardCharsets.UTF_8));
         content.put(RAW, new String(raw, StandardCharsets.UTF_8));
         object.put(CONTENT, content);
         return object;
@@ -378,18 +376,18 @@ public class ASIPSerializer {
             return null;
         
         JSONObject jsonObject = new JSONObject();
-         
+
         STSet topics = space.getTopics();
         if(topics != null && !topics.isEmpty()) {
             jsonObject.put(ASIPSpace.TOPICS, serializeSTSet(topics).toString());
         }
-        
+
         // types
         STSet types = space.getTypes();
         if(types != null && !types.isEmpty()) {
             jsonObject.put(ASIPSpace.TYPES, serializeSTSet(types).toString());
         }
-        
+
         // sender
         PeerSemanticTag sender = space.getSender();
         if(sender != null) {
@@ -401,7 +399,7 @@ public class ASIPSerializer {
         if(approvers != null && !approvers.isEmpty()) {
             jsonObject.put(ASIPSpace.APPROVERS, serializeSTSet(approvers).toString());
         }
-        
+
         // receivers
         PeerSTSet receivers = space.getReceivers();
         if(receivers != null && !receivers.isEmpty()) {
@@ -413,7 +411,7 @@ public class ASIPSerializer {
         if(locations != null && !locations.isEmpty()) {
             jsonObject.put(ASIPSpace.LOCATIONS, serializeSTSet(locations).toString());
         }
-        
+
         // times
         TimeSTSet times = space.getTimes();
         if(times != null && !times.isEmpty()) {
@@ -531,9 +529,10 @@ public class ASIPSerializer {
         message.setReceiverTime(receiverTime);
         message.setReceivers(receivers);
 
-//
+//      TODO
 //        try {
 //            L.d(CLASS + receivers.size());
+//        Iterator<SemanticTag> tags = receivers.stTags();
 //            while(receivers.stTags().hasNext()) {
 //                SemanticTag tag = receivers.stTags().next();
 //                L.d(CLASS + tag.getClass());
@@ -549,14 +548,12 @@ public class ASIPSerializer {
 //            e.printStackTrace();
 //        }
 
-        ASIPSpace interest = null;
-        ASIPKnowledge knowledge = null;
-        L.d(CLASS + command);
         JSONObject content = object.getJSONObject(ASIPSerializer.CONTENT);
+
         switch (command){
             case ASIPMessage.ASIP_EXPOSE:
                 try {
-                    interest = deserializeASIPSpace(content.getString(ASIPSerializer.INTEREST));
+                    ASIPSpace interest = deserializeASIPSpace(content.getString(ASIPSerializer.INTEREST));
                     message.setInterest(interest);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
@@ -564,7 +561,7 @@ public class ASIPSerializer {
                 break;
             case ASIPMessage.ASIP_INSERT:
                 try {
-                    knowledge = deserializeKnowledge(content.getString(ASIPSerializer.KNOWLEDGE));
+                    ASIPKnowledge knowledge = deserializeKnowledge(content.getString(ASIPSerializer.KNOWLEDGE));
                     message.setKnowledge(knowledge);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
@@ -1044,78 +1041,70 @@ public class ASIPSerializer {
     }
         
     public static ASIPSpace deserializeASIPSpace(SharkKB kb, String spaceString) throws SharkKBException {
-        
+
+        String topicsString = null;
+        String typesString = null;
+        String senderString = null;
+        String approversString = null;
+        String receiverString = null;
+        String locationsString = null;
+        String timesString = null;
+        int direction = -1;
+
         ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest();
-        
-        JSONObject deserialized = new JSONObject(spaceString);
-        JSONArray topicsArray = null;
-        try{
-            topicsArray = deserialized.getJSONArray(ASIPSpace.TOPICS);
-        } catch (JSONException e){ }
 
-        JSONArray typesArray = null;
-        try{
-            typesArray = deserialized.getJSONArray(ASIPSpace.TYPES);
-        } catch (JSONException e){ }
+        JSONObject parsed = new JSONObject(spaceString);
 
-        JSONArray approversArray = null;
-        try{
-            approversArray = deserialized.getJSONArray(ASIPSpace.APPROVERS);
-        } catch (JSONException e){ }
+        try {
+            if(parsed.has(ASIPSpace.TOPICS)) topicsString = parsed.getString(ASIPSpace.TOPICS);
+            if(parsed.has(ASIPSpace.TYPES)) typesString = parsed.getString(ASIPSpace.TYPES);
+            if(parsed.has(ASIPSpace.SENDER)) senderString = parsed.getString(ASIPSpace.SENDER);
+            if(parsed.has(ASIPSpace.APPROVERS)) approversString = parsed.getString(ASIPSpace.APPROVERS);
+            if(parsed.has(ASIPSpace.RECEIVERS)) receiverString = parsed.getString(ASIPSpace.RECEIVERS);
+            if(parsed.has(ASIPSpace.LOCATIONS)) locationsString = parsed.getString(ASIPSpace.LOCATIONS);
+            if(parsed.has(ASIPSpace.TIMES)) timesString = parsed.getString(ASIPSpace.TIMES);
+            if(parsed.has(ASIPSpace.DIRECTION)) direction = parsed.getInt(ASIPSpace.DIRECTION);
+        } catch (JSONException e){
+            L.d("" +e);
+        }
 
-        JSONArray receiversArray = null;
-        try{
-            receiversArray = deserialized.getJSONArray(ASIPSpace.RECEIVERS);
-        } catch (JSONException e){ }
-
-        JSONArray locationsArray = null;
-        try{
-            locationsArray = deserialized.getJSONArray(ASIPSpace.LOCATIONS);
-        } catch (JSONException e){ }
-
-        JSONArray timesArray = null;
-        try{
-            timesArray = deserialized.getJSONArray(ASIPSpace.TIMES);
-        } catch (JSONException e){ }
-        JSONObject senderObject = deserialized.getJSONObject(ASIPSpace.SENDER);
-        int direction = deserialized.getInt(ASIPSpace.DIRECTION);
 
         STSet topics;
-        if(topicsArray != null) {
-            topics = deserializeSTSet(interest.getTopics(), topicsArray.toString());
+        if(topicsString != null) {
+            topics = deserializeSTSet(interest.getTopics(), topicsString);
             interest.setTopics(topics);
         }
         STSet types;
-        if(typesArray!=null) {
-            types = deserializeSTSet(interest.getTypes(), typesArray.toString());
+        if(typesString != null) {
+            types = deserializeSTSet(interest.getTypes(), typesString);
             interest.setTypes(types);
         }
         PeerSTSet approvers;
-        if(approversArray!=null) {
-            approvers = deserializePeerSTSet(interest.getApprovers(), approversArray.toString());
+        if(approversString != null) {
+            approvers = deserializePeerSTSet(interest.getApprovers(), approversString);
             interest.setApprovers(approvers);
         }
         PeerSTSet receivers;
-        if(receiversArray!=null){
-            receivers = deserializePeerSTSet(interest.getReceivers(), receiversArray.toString());
+        if(receiverString!=null){
+            receivers = deserializePeerSTSet(interest.getReceivers(), receiverString);
             interest.setReceivers(receivers);
         }
         SpatialSTSet locations;
-        if(locationsArray!=null){
-            locations = deserializeSpatialSTSet(interest.getLocations(), locationsArray.toString());
+        if(locationsString!=null){
+            locations = deserializeSpatialSTSet(interest.getLocations(), locationsString);
             interest.setLocations(locations);
         }
         TimeSTSet times;
-        if(timesArray!=null){
-            times = deserializeTimeSTSet(interest.getTimes(), timesArray.toString());
+        if(timesString!=null){
+            times = deserializeTimeSTSet(interest.getTimes(), timesString);
             interest.setTimes(times);
         }
-        // TODO Casting okay?
-        PeerSemanticTag sender = deserializePeerTag(null, senderObject.toString());
+        if(senderString != null){
+            PeerSemanticTag sender = deserializePeerTag(null, senderString);
+            interest.setSender(sender);
+        }
+        if(direction != -1) interest.setDirection(direction);
 
-        interest.setSender(sender);
-        interest.setDirection(direction);
-        
         return interest;
     }
     

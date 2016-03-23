@@ -46,10 +46,15 @@ public class ASIPMessageTest {
     SpatialSTSet locations;
     TimeSTSet times;
 
+    STSet topics;
+    STSet types;
+
     @Before
     public void setUp() throws Exception {
         engine = new J2SEAndroidSharkEngine();
         connection = new TestConnection();
+
+        L.setLogLevel(L.LOGLEVEL_ALL);
 
         sis = new String[]{"www.test.de", "www.test1.de"};
         addresses = new String[]{"tcp://test.de", "tcp://test1.de"};
@@ -58,6 +63,16 @@ public class ASIPMessageTest {
 
         sender = peers.createPeerSemanticTag("SENDER", "www.si1.de", "tcp://addr1.de");
         receiverPeer = peers.createPeerSemanticTag("RECEIEVER", "www.si2.de", "tcp://addr2.de");
+
+        topics = InMemoSharkKB.createInMemoSTSet();
+        topics.createSemanticTag("Topcic1", "www.topic1.de");
+        topics.createSemanticTag("Topcic2", "www.topic2.de");
+
+        types = InMemoSharkKB.createInMemoSTSet();
+        types.createSemanticTag("Types1", "www.types1.de");
+        types.createSemanticTag("Types2", "www.types2.de");
+
+
     }
 
     @After
@@ -69,30 +84,20 @@ public class ASIPMessageTest {
     @Test
     public void ASIPMessage_CompareInToOutMessage_success() throws Exception {
 
-        L.setLogLevel(L.LOGLEVEL_ALL);
-
         String rawInput = "Hello ASIP.";
-        L.d(rawInput);
-        L.d("" + rawInput.getBytes(StandardCharsets.UTF_8));
-//        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
 
         ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
         outMessage.raw(rawInput.getBytes(StandardCharsets.UTF_8));
         this.connection.createInputStream();
 
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
-
         inMessage.parse();
-
-        L.d(outMessage.toString());
-        L.d(inMessage.toString());
 
         Assert.assertEquals(inMessage, outMessage);
     }
 
     @Test
     public void ASIPMessage_CompareInToOutMessageRaw_success() throws Exception {
-        L.setLogLevel(L.LOGLEVEL_ALL);
 
         String rawInput = "Hello ASIP.";
 
@@ -104,5 +109,21 @@ public class ASIPMessageTest {
         inMessage.parse();
 
         Assert.assertEquals(new String(inMessage.getRaw(), StandardCharsets.UTF_8), rawInput);
+    }
+
+    @Test
+    public void ASIPMessage_CompareInToOutMessageExpose_success() throws Exception {
+
+        ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, sender, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
+
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
+        outMessage.expose(space);
+        this.connection.createInputStream();
+
+        ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
+        inMessage.parse();
+
+        Assert.assertTrue(true);
+
     }
 }

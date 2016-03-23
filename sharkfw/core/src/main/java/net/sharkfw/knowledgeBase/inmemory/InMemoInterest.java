@@ -82,9 +82,10 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
             PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
             SpatialSTSet locations, int direction) throws SharkKBException {
         
-        this(topics, types, (PeerSTSet) null, approvers, receivers, times, 
+        this(topics, types, (PeerSTSet) null, approvers, receivers, times,
                 locations, direction);
-        
+
+        this.originator = sender;
         this.senders = InMemoSharkKB.createInMemoPeerSTSet();
         this.senders.merge(sender);
     }
