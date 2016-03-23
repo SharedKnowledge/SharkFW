@@ -54,9 +54,6 @@ public class ASIPMessageTest {
 
         sender = peers.createPeerSemanticTag("SENDER", "www.si1.de", "tcp://addr1.de");
         receiverPeer = peers.createPeerSemanticTag("RECEIEVER", "www.si2.de", "tcp://addr2.de");
-
-
-
     }
 
     @After
@@ -69,8 +66,6 @@ public class ASIPMessageTest {
     public void ASIPMessage_CompareInToOutMessage_success() throws Exception {
 
         L.setLogLevel(L.LOGLEVEL_ALL);
-
-        L.d("");
 
         String rawInput = "Hello ASIP.";
         L.d(rawInput);
@@ -88,7 +83,9 @@ public class ASIPMessageTest {
 
         inMessage.parse();
 
-        L.d("");
+        L.d(outMessage.toString());
+        L.d(inMessage.toString());
+
         Assert.assertEquals(inMessage, outMessage);
 
     }

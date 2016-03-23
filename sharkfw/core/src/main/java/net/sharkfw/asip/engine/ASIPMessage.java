@@ -31,6 +31,9 @@ public abstract class ASIPMessage {
     public static final String SENDER = "SENDER";
     public static final String RECEIVERS = "RECEIVERS";
     public static final String SIGNATURE = "SIGNATURE";
+    public static final String RECEIVERPEER = "RECEIVERPEER";
+    public static final String RECEIVERLOCATION = "RECEIVERLOCATION";
+    public static final String RECEIVERTIME = "RECEIVERTIME";
 
     private SharkEngine engine;
     private StreamConnection connection;
@@ -225,7 +228,7 @@ public abstract class ASIPMessage {
             return false;
         if (signature != null ? !signature.equals(that.signature) : that.signature != null) return false;
         if (sender != null ? !sender.equals(that.sender) : that.sender != null) return false;
-        if (receivers != null ? !receivers.equals(that.receivers) : that.receivers != null) return false;
+//        if (receivers != null ? !receivers.equals(that.receivers) : that.receivers != null) return false;
         if (receiverPeer != null ? !receiverPeer.equals(that.receiverPeer) : that.receiverPeer != null) return false;
         if (receiverSpatial != null ? !receiverSpatial.equals(that.receiverSpatial) : that.receiverSpatial != null)
             return false;
@@ -244,10 +247,29 @@ public abstract class ASIPMessage {
         result = 31 * result + (int) (ttl ^ (ttl >>> 32));
         result = 31 * result + command;
         result = 31 * result + (sender != null ? sender.hashCode() : 0);
-        result = 31 * result + (receivers != null ? receivers.hashCode() : 0);
+//        result = 31 * result + (receivers != null ? receivers.hashCode() : 0);
         result = 31 * result + (receiverPeer != null ? receiverPeer.hashCode() : 0);
         result = 31 * result + (receiverSpatial != null ? receiverSpatial.hashCode() : 0);
         result = 31 * result + (receiverTime != null ? receiverTime.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ASIPMessage{" +
+                "version='" + version + '\'' +
+                ", format='" + format + '\'' +
+                ", encrypted=" + encrypted +
+                ", encryptedSessionKey='" + encryptedSessionKey + '\'' +
+                ", signed=" + signed +
+                ", signature='" + signature + '\'' +
+                ", ttl=" + ttl +
+                ", command=" + command +
+                ", sender=" + sender +
+//                ", receivers=" + receivers +
+                ", receiverPeer=" + receiverPeer +
+                ", receiverSpatial=" + receiverSpatial +
+                ", receiverTime=" + receiverTime +
+                '}';
     }
 }

@@ -53,11 +53,6 @@ public class ASIPInMessage extends ASIPMessage{
 
     public void parse() throws IOException, SharkSecurityException {
         L.d("parse triggered");
-//        Reader reader = new InputStreamReader(this.is, StandardCharsets.UTF_8);
-//        this.parsedString = reader.read()
-
-
-//        this.parsedString  = new Scanner(this.is,"UTF-8").useDelimiter("\\A").next();
 
         this.parsedString = IOUtils.toString(this.is, "UTF-8");
 
@@ -66,7 +61,6 @@ public class ASIPInMessage extends ASIPMessage{
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
 
         L.d("Inputstream serialized");
-
     }
 
     public ASIPKnowledge getKnowledge() {
