@@ -263,7 +263,25 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
           STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
           PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction)
             throws SharkKBException;
-  
+
+    /**
+     *
+     * @param topics
+     * @param types
+     * @param approvers
+     * @param sender
+     * @param receiver
+     * @param times
+     * @param locations
+     * @param direction
+     * @return
+     * @throws SharkKBException
+     */
+    public ASIPSpace createASIPSpace(
+        STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender,
+        PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction)
+        throws SharkKBException;
+
   /**
    * Create an set of semantic annotations (space) which can be used to add
    * information into the knowledge base. Each parameter describes a facet, a

@@ -425,6 +425,11 @@ public class SyncKB implements SharkKB {
     }
 
     @Override
+    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        return this._localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
+    }
+
+    @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
         return this._localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
     }

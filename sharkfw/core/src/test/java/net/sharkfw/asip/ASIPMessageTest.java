@@ -5,6 +5,7 @@ import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
+import net.sharkfw.knowledgeBase.inmemory.InMemoASIPKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.GeoSensor;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
@@ -39,6 +40,10 @@ public class ASIPMessageTest {
     SpatialSemanticTag receiverSpatial;
     TimeSemanticTag receiverTime;
 
+    SemanticNet topicNet;
+    SemanticNet typeNet;
+    PeerTaxonomy peerTax;
+
     String[] sis;
     String[] addresses;
 
@@ -72,7 +77,18 @@ public class ASIPMessageTest {
         types.createSemanticTag("Types1", "www.types1.de");
         types.createSemanticTag("Types2", "www.types2.de");
 
+        topicNet = InMemoSharkKB.createInMemoSemanticNet();
+        SNSemanticTag topicTag1 = topicNet.createSemanticTag("Topcic1", "www.topic1.de");
+        SNSemanticTag topicTag2 = topicNet.createSemanticTag("Topcic2", "www.topic2.de");
+        topicNet.setPredicate(topicTag1, topicTag2, "pairs");
 
+        typeNet = InMemoSharkKB.createInMemoSemanticNet();
+        SNSemanticTag typeTag1 = typeNet.createSemanticTag("Types1", "www.types1.de");
+        SNSemanticTag typeTag2 = typeNet.createSemanticTag("Types2", "www.types2.de");
+        typeNet.setPredicate(typeTag1, typeTag2, "pairs");
+
+        peerTax = InMemoSharkKB.createInMemoPeerTaxonomy();
+        peerTax.createPeerTXSemanticTag("SENDER", "www.si1.de", "tcp://addr1.de");
     }
 
     @After
@@ -81,6 +97,7 @@ public class ASIPMessageTest {
 
     }
 
+    @Ignore
     @Test
     public void ASIPMessage_CompareInToOutMessage_success() throws Exception {
 
@@ -96,6 +113,7 @@ public class ASIPMessageTest {
         Assert.assertEquals(inMessage, outMessage);
     }
 
+    @Ignore
     @Test
     public void ASIPMessage_CompareInToOutMessageRaw_success() throws Exception {
 
@@ -111,6 +129,7 @@ public class ASIPMessageTest {
         Assert.assertEquals(new String(inMessage.getRaw(), StandardCharsets.UTF_8), rawInput);
     }
 
+    @Ignore
     @Test
     public void ASIPMessage_CompareInToOutMessageExpose_success() throws Exception {
 
@@ -123,8 +142,33 @@ public class ASIPMessageTest {
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
         inMessage.parse();
 
-        L.d("true");
-
         Assert.assertTrue(SharkAlgebra.identical(space, inMessage.getInterest()));
+    }
+
+    @Ignore
+    @Test
+    public void ASIPMessage_CompareInToOutMessageInsert_success() throws Exception{
+
+        String rawInput = "Hello ASIP.";
+
+        L.d("before k");
+        SharkKB kb = new InMemoSharkKB();
+        ASIPSpace space = kb.createASIPSpace(topics, types, peers, sender, peers, null, null, ASIPSpace.DIRECTION_INOUT);
+        ASIPKnowledge knowledge = new InMemoASIPKnowledge(kb.getVocabulary());
+        L.d("after creation");
+        knowledge.addInformation(rawInput, space);
+        L.d("created");
+
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
+        L.d("insert");
+        // TODO serializeKnowledge
+        outMessage.insert(knowledge);
+        this.connection.createInputStream();
+
+        ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
+        inMessage.parse();
+
+        L.d("parsed;");
+
     }
 }

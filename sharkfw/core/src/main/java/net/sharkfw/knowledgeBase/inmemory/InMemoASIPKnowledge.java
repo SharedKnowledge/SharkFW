@@ -55,6 +55,7 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() {
+        // TODO
 //        return this.informationSpaces.iterator();
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

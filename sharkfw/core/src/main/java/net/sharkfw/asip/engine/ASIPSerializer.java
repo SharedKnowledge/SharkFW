@@ -110,15 +110,17 @@ public class ASIPSerializer {
     
     public static JSONObject serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException{
         if(knowledge==null) return null;
-        
+
+
         JSONObject object = new JSONObject();
         SharkVocabulary vocabulary = knowledge.getVocabulary();
-        
+        L.d("serializeInsert");
         object.put(ASIPKnowledge.VOCABULARY, serializeVocabulary(vocabulary).toString());
-        
+
         ASIPInfoDataManager manager = new ASIPInfoDataManager(knowledge.informationSpaces());
         Iterator pointInformations = manager.getPointInfromations();
         JSONArray pointInfoArray = new JSONArray();
+        L.d("serialize STSet");
         while(pointInformations.hasNext()){
             JSONObject pointInfoJSON = new JSONObject();
             ASIPPointInformation pointInformation = (ASIPPointInformation) pointInformations.next();
@@ -144,7 +146,9 @@ public class ASIPSerializer {
     
     public static JSONObject serializeVocabulary(SharkVocabulary vocabulary) throws SharkKBException{ 
         JSONObject jsonObject = new JSONObject();
-        
+
+
+
         jsonObject.put(SharkVocabulary.TOPICS, serializeSTSet(vocabulary.getTopicSTSet()).toString());
         jsonObject.put(SharkVocabulary.TYPES, serializeSTSet(vocabulary.getTypeSTSet()).toString());
         jsonObject.put(SharkVocabulary.PEERS, serializeSTSet(vocabulary.getPeerSTSet()).toString());
@@ -203,7 +207,6 @@ public class ASIPSerializer {
         if(stset == null){
             return null;
         }
-        
         JSONObject jsonObject = new JSONObject();
         String type = "";
         if(stset instanceof PeerSTSet)
@@ -214,22 +217,20 @@ public class ASIPSerializer {
             type = STSet.SPATIALSTSET;
         else if(stset instanceof STSet)
             type = STSet.ANYSTSET;
-        
+
         jsonObject.put(STSet.TYPE, type);
-        
+
         JSONArray set = new JSONArray();
         Enumeration<SemanticTag> tags = stset.tags();
         while(tags.hasMoreElements()) {
             set.put(ASIPSerializer.serializeTag(tags.nextElement()));
         }
-        
         jsonObject.put(STSet.STSET, set);
-        
-        Enumeration<SemanticTag> tagEnum = stset.tags();
+
         if(stset instanceof SemanticNet || stset instanceof Taxonomy) {
-            jsonObject.put(STSet.RELATIONS, serializeRelations(tagEnum).toString());
+            if(stset.tags().hasMoreElements())
+                jsonObject.put(STSet.RELATIONS, serializeRelations(stset.tags()).toString());
         }
-        
         return jsonObject;
     }
     
@@ -260,20 +261,24 @@ public class ASIPSerializer {
     }
     
     public static JSONObject serializeRelations(Enumeration<SemanticTag> tagEnum){
-        
-        if(tagEnum == null || !tagEnum.hasMoreElements())
+
+
+        if(tagEnum == null || !tagEnum.hasMoreElements()){
             return null;
+        }
 
         SemanticTag tag = tagEnum.nextElement();
         boolean semanticNet;
-        
+
         if(tag instanceof SNSemanticTag) {
             semanticNet = true;
         } else if(tag instanceof TXSemanticTag) {
             semanticNet = false;
-        } else
+        } else {
             return null;
-        
+        }
+
+
         JSONArray predicates = new JSONArray();
         JSONArray subSuperTags = new JSONArray();
         JSONObject jsonObject = new JSONObject();
@@ -463,14 +468,6 @@ public class ASIPSerializer {
             ttl = object.getLong(ASIPMessage.TTL);
         if(object.has(ASIPMessage.COMMAND))
             command = object.getInt(ASIPMessage.COMMAND);
-        L.d(CLASS + version + " " +
-                format + " " +
-                encrypted + " " +
-                encryptedSessionKey + " " +
-                signed + " " +
-                ttl + " " +
-                command
-        );
         if(object.has(ASIPMessage.SENDER)){
             senderString = object.getString(ASIPMessage.SENDER);
             try {
@@ -870,7 +867,6 @@ public class ASIPSerializer {
     public static PeerSTSet deserializePeerSTSet(STSet set, String stSetString) throws SharkKBException{
         if(set==null) set = InMemoSharkKB.createInMemoPeerSTSet();
         PeerSTSet peerSTSet = (PeerSTSet) set;
-        L.d("ho");
         return (PeerSTSet) ASIPSerializer.deserializeSTSet(peerSTSet, stSetString);
     }
     
@@ -1011,8 +1007,6 @@ public class ASIPSerializer {
         ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest();
 
         JSONObject parsed = new JSONObject(spaceString);
-
-        L.d(parsed.toString(4));
 
         try {
             if(parsed.has(ASIPSpace.TOPICS)) topicsString = parsed.getString(ASIPSpace.TOPICS);
