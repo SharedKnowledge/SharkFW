@@ -235,6 +235,11 @@ public class RDFSharkKB extends AbstractSharkKB implements SharkKB {
 	}
 
 	@Override
+	public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+		return null;
+	}
+
+	@Override
 	public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
 		return null;
 	}

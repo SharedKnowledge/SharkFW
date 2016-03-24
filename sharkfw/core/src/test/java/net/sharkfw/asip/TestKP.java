@@ -23,25 +23,25 @@ public class TestKP extends KnowledgePort{
     }
 
     @Override
-    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
+    protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
 
     }
 
     @Override
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
 
     }
 
     @Override
-    protected void doExpose(ASIPSpace interest, ASIPConnection asipConnection) throws SharkKBException {
+    protected void handleExpose(ASIPSpace interest, ASIPConnection asipConnection) throws SharkKBException {
         L.d("Port so und so");
 //        asipConnection.
-        super.doExpose(interest, asipConnection);
+        super.handleExpose(interest, asipConnection);
     }
 
     @Override
-    protected void doInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
-        super.doInsert(asipKnowledge, asipConnection);
+    protected void handleInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
+        super.handleInsert(asipKnowledge, asipConnection);
     }
 
     public String getName() {

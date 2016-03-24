@@ -145,13 +145,13 @@ class BasicSecurityTestKP extends KnowledgePort {
     }
 
     @Override
-    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
+    protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
         System.out.println("Security Test Knowledge received.");
         this.notifyKnowledgeAssimilated(this, knowledge.contextPoints().nextElement());
     }
 
     @Override
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
 
     }
 }

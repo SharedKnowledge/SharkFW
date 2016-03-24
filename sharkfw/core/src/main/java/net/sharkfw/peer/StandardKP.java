@@ -127,8 +127,8 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @param response KEPResponse to create a response to this insert request
      */
     @Override
-    protected void doInsert(Knowledge k, KEPConnection response) {
-          L.d("\n******************************************\n\t\tKP doInsert\n******************************************\n", this);
+    protected void handleInsert(Knowledge k, KEPConnection response) {
+          L.d("\n******************************************\n\t\tKP handleInsert\n******************************************\n", this);
 
         if(!this.isIKP()) { 
             L.d("insert called but KP has no incomming interest - don't do anything", this);
@@ -156,11 +156,11 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         
         SharkCS background = context.asSharkCS();
         
-        L.d("doInsert reached. Found content in request:\n ", this); 
+        L.d("handleInsert reached. Found content in request:\n ", this);
 //        L.d(L.kbSpace2String(k.getBackgroundKnowledge()), this);
         
         try {
-            L.d("doInsert: local interest:\n ", this); 
+            L.d("handleInsert: local interest:\n ", this);
             L.d(L.contextSpace2String(this.getInterest()), this);
 
             this.notifyKnowledgeReceived(k);
@@ -178,7 +178,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
                 return;
             }
 
-            L.d("doInsert: effective interest:\n ", this); 
+            L.d("handleInsert: effective interest:\n ", this);
             L.d(L.contextSpace2String(effectiveInterest), this);
 
 			/* dead code removed */
@@ -188,7 +188,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
                                             this.getFP(), k, this.learn, 
                                             this.deleteAssimilated);
             
-            L.d("doInsert: knowledge base after assimilation:\n " + 
+            L.d("handleInsert: knowledge base after assimilation:\n " +
                     L.kb2String(this.getKB()), this); 
             
             // notify 
@@ -220,17 +220,17 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @param response
      */
     @Override
-    protected void doExpose(SharkCS receivedInterest, KEPConnection response) {        
-          L.d("\n******************************************\n\t\tKP doExpose\n******************************************\n", this);
+    protected void handleExpose(SharkCS receivedInterest, KEPConnection response) {
+          L.d("\n******************************************\n\t\tKP handleExpose\n******************************************\n", this);
 
       try {
           // an interest has been retrieved from remote peer
-          L.d("doExpose: \n receivedInterest interest is:\n"+ L.contextSpace2String(receivedInterest), this);
-          L.d("doExpose: \n my Interest interest is:\n"+ L.contextSpace2String(this.getInterest()), this);
+          L.d("handleExpose: \n receivedInterest interest is:\n"+ L.contextSpace2String(receivedInterest), this);
+          L.d("handleExpose: \n my Interest interest is:\n"+ L.contextSpace2String(this.getInterest()), this);
           
           // check if internals would be revealed which isn't allowed.
           if(!this.revealingAndAllowed(receivedInterest, this.getInterest())) {
-              L.d("stop executing doExpose: received interest contains "
+              L.d("stop executing handleExpose: received interest contains "
                       + "unspecified (any) dimension which are defined in "
                       + "local interest - revealing of details "
                       + "not permitted", this);
@@ -262,7 +262,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
               return;
           }
           
-          L.d("doExpose: \n mutual interest is:\n"+ L.contextSpace2String(mutualInterest), this);
+          L.d("handleExpose: \n mutual interest is:\n"+ L.contextSpace2String(mutualInterest), this);
 
           int effectiveDirection = mutualInterest.getDirection();
 
@@ -296,14 +296,14 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 //                  this.getKB().asSharkCS(), mutualInterest, this.getOTP());
 
 //              Interest extractionInterest = InMemoSharkKB.createInMemoCopy(mutualInterest);
-//              L.d("doExpose: \n extraction interest is:\n"+ L.contextSpace2String(extractionInterest), this);
+//              L.d("handleExpose: \n extraction interest is:\n"+ L.contextSpace2String(extractionInterest), this);
               
               // set direction: we take all cps that are explicitely set to out
 //              extractionInterest.setDirection(SharkCS.DIRECTION_INOUT);
               
               mutualInterest.setDirection(SharkCS.DIRECTION_INOUT);
               
-              L.d("doExpose: \n extraction interest is:\n"+ L.contextSpace2String(mutualInterest), this);
+              L.d("handleExpose: \n extraction interest is:\n"+ L.contextSpace2String(mutualInterest), this);
               
             // Effective interest = sending interest. Extract knowledge.
             InMemoSharkKB tempKB = new InMemoSharkKB();

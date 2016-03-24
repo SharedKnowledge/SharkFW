@@ -21,15 +21,15 @@ public class DummyKP extends KnowledgePort {
     }
 
     @Override
-    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
-        L.d("DummyKP: doInsert reached - remember that knowledge:");
+    protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
+        L.d("DummyKP: handleInsert reached - remember that knowledge:");
         L.d(L.knowledge2String(knowledge));
         this.lastKnowledge = knowledge;
     }
 
     @Override
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
-        L.d("DummyKP: doExpose reached - remember that interest:");
+    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
+        L.d("DummyKP: handleExpose reached - remember that interest:");
         L.d(L.contextSpace2String(interest));
         this.lastInterest = interest;
     }

@@ -54,7 +54,7 @@ public class BrokerKP extends KnowledgePort {
     }
     
     @Override
-    protected void doInsert(Knowledge k, KEPConnection responseFactory) {
+    protected void handleInsert(Knowledge k, KEPConnection responseFactory) {
         // Do nothing. We don't process inserts. The hub only matches interests.
     }
     
@@ -79,7 +79,7 @@ public class BrokerKP extends KnowledgePort {
     }
 
     @Override
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
         
         L.d("interest received: " + L.contextSpace2String(interest), this);
         try {

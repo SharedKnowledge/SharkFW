@@ -41,7 +41,7 @@ public class SharkPkiKP extends KnowledgePort {
     }
 
     @Override //incoming knowledge
-    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
+    protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             try {
                 if (isValidPKIContextCoordinateAndTrustLevel(cp) && isFromTrustedIssuerIfAny(cp)){
@@ -100,7 +100,7 @@ public class SharkPkiKP extends KnowledgePort {
     }
 
     @Override //outgoing knowledge
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
         try {
             ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
             for (SemanticTag topic : listOfTopics) {

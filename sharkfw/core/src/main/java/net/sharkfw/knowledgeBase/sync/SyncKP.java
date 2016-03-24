@@ -182,9 +182,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     @Override
-    protected void doExpose(SharkCS interest, KEPConnection kepConnection) {
+    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
 //        handleWifiDirect(interest, kepConnection);
-        L.e(" --------------------- SYNC doExpose started");
+        L.e(" --------------------- SYNC handleExpose started");
         try {
             // Retrieve the general sync KP synchronization identification tag
             SemanticTag synchronizationTag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
@@ -285,7 +285,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     @Override
-    protected void doInsert(Knowledge knowledge, KEPConnection kepConnection) {
+    protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
         try {
             Enumeration<ContextPoint> cps = knowledge.contextPoints();
             while (cps.hasMoreElements()) {
@@ -471,7 +471,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }    
 
     @Override
-    protected void doInsert(ASIPKnowledge knowledge, ASIPConnection kepConnection) {
+    protected void handleInsert(ASIPKnowledge knowledge, ASIPConnection kepConnection) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

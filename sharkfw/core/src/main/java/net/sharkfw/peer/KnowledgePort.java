@@ -28,8 +28,8 @@ import net.sharkfw.asip.engine.ASIPMessage;
  * It will process incoming requests and call the appropriate mehtods
  * for handling them. Right now there are two possible methods which can be called:
  * <ul>
- * <li><code>doExpose()</code> if an expose command has been received</li>
- * <li><code>doInsert()</code> if an insert command has been received</li>
+ * <li><code>handleExpose()</code> if an expose command has been received</li>
+ * <li><code>handleInsert()</code> if an insert command has been received</li>
  * </ul>
  *
  * These methods are <code>abstract</code> and need to be implemented in subclasses.
@@ -201,15 +201,12 @@ abstract public class KnowledgePort {
      * It determines the way of communication that is being used to transmit
      * the message and checks the received command to call
      * <ul>
-     * <li><code>doExpose()</code> or</li>
-     * <li><code>doInsert()</code></li>
+     * <li><code>handleExpose()</code> or</li>
+     * <li><code>handleInsert()</code></li>
      * </ul>
      * accordingly.
      *
      * It also gives some debug information.
-     * 
-     * @see #doExpose(net.sharkfw.peer.KEPRequest)
-     * @see #doInsert(net.sharkfw.peer.KEPRequest)
      *
      * @param msg Request retrieved by a KEP Stub
      */
@@ -266,14 +263,14 @@ abstract public class KnowledgePort {
         switch (cmd) {
             case KEPInMessage.KEP_INSERT:
                 try {
-                    this.doInsert(msg.getKnowledge(), msg);
+                    this.handleInsert(msg.getKnowledge(), msg);
                 } catch (Exception ex) {
                     L.e("Error while handling insert request:\n" + ex.getMessage(), this);
                 }
                 break;
             case KEPInMessage.KEP_EXPOSE:
                 try {
-                    this.doExpose(msg.getInterest(), msg);
+                    this.handleExpose(msg.getInterest(), msg);
                 } catch (Exception ex) {
                     L.e("Error while handling expose request:\n" + ex.getMessage(), this);
                 }
@@ -291,30 +288,26 @@ abstract public class KnowledgePort {
      *
      * @param knowledge
      * @param kepConnection
-     * @see net.sharkfw.kep.KEPResponse
-     * @see net.sharkfw.peer.KEPRequest
      * @deprecated 
      */
-    protected abstract void doInsert(Knowledge knowledge, KEPConnection kepConnection);
+    protected abstract void handleInsert(Knowledge knowledge, KEPConnection kepConnection);
 
     /**
      * Place logic for handling an insert command in this method.
      *
      * @param asipKnowledge
      * @param asipConnection
-     * @see net.sharkfw.kep.KEPResponse
-     * @see net.sharkfw.peer.KEPRequest
      */
-    protected void doInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
+    protected void handleInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
         // legacy wrapper
         // create knowledge object
         try {
             Knowledge k = InMemoSharkKB.legacyCreateKEPKnowledge(asipKnowledge);
 
-            this.doInsert(k, (KEPConnection) asipConnection);
+            this.handleInsert(k, (KEPConnection) asipConnection);
         }
         catch(SharkKBException e) {
-            L.w("problems when performing legacy wrapper doInsert: " + e.getMessage());
+            L.w("problems when performing legacy wrapper handleInsert: " + e.getMessage());
         }
     }
 
@@ -330,21 +323,21 @@ abstract public class KnowledgePort {
         switch (msg.getCommand()) {
             case ASIPMessage.ASIP_INSERT:
                 try {
-                    this.doInsert(msg.getKnowledge(), con);
+                    this.handleInsert(msg.getKnowledge(), con);
                 } catch (Exception ex) {
                     L.e("Error while handling insert request:\n" + ex.getMessage(), this);
                 }
                 break;
             case ASIPMessage.ASIP_EXPOSE:
                 try {
-                    this.doExpose(msg.getInterest(), con);
+                    this.handleExpose(msg.getInterest(), con);
                 } catch (Exception ex) {
                     L.e("Error while handling expose request:\n" + ex.getMessage(), this);
                 }
                 break;
             case ASIPMessage.ASIP_RAW:
                 try {
-                    this.doRaw(con.getInputStream(), con);
+                    this.handleRaw(con.getInputStream(), con);
                 } catch (Exception ex) {
                     L.e("Error while handling expose request:\n" + ex.getMessage(), this);
                 }
@@ -358,19 +351,17 @@ abstract public class KnowledgePort {
      *
      * @param interest
      * @param kepConnection
-     * @see net.sharkfw.kep.KEPResponse
-     * @see net.sharkfw.peer.KEPRequest
      * @deprecated 
      */
-    protected abstract void doExpose(SharkCS interest, KEPConnection kepConnection);
+    protected abstract void handleExpose(SharkCS interest, KEPConnection kepConnection);
     
     /**
-     * standard behaviour: map to doExpose variant of KEP to provide backward
+     * standard behaviour: map to handleExpose variant of KEP to provide backward
      * compatibility 
      * @param interest
      * @param asipConnection 
      */
-    protected void doExpose(ASIPSpace interest, ASIPConnection asipConnection) throws SharkKBException {
+    protected void handleExpose(ASIPSpace interest, ASIPConnection asipConnection) throws SharkKBException {
         // produce a KEP interest based on LASP-interest
         
         STSet topics = interest.getTopics();
@@ -398,15 +389,14 @@ abstract public class KnowledgePort {
         SharkCS kepInterest = InMemoSharkKB.createInMemoInterest(topics, originator, peers, 
                 remotePeers, times, locations, direction);
         
-        this.doExpose(kepInterest, asipConnection.asKepConnection());
+        this.handleExpose(kepInterest, asipConnection.asKepConnection());
     }
     
     /**
      * Standard behaviour: do nothing
      * @param is
-     * @param kepConnection 
      */
-    protected void doRaw(InputStream is, ASIPConnection asipConnection) {
+    protected void handleRaw(InputStream is, ASIPConnection asipConnection) {
     }
     
     /**
@@ -502,7 +492,7 @@ abstract public class KnowledgePort {
     /**
      * send knowledge to all recipients - this call is delegated to shark engine
      * @param k knowledge to be sent
-     * @param recipientAddresses addresses in Shark format. mail://... tcp://... etc.
+     * @param recipient addresses in Shark format. mail://... tcp://... etc.
      */
     public void sendKnowledge(Knowledge k, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         /*
@@ -520,12 +510,7 @@ abstract public class KnowledgePort {
     public void publish(PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         this.sendInterest(this.getInterest(), recipient);
     }
-   
-    /**
-     * send knowledge to all recipients - this call is delegated to shark engine
-     * @param k knowledge to be sent
-     * @param recipientAddresses addresses in Shark format. mail://... tcp://... etc.
-     */
+
     @SuppressWarnings("deprecation")
     public void sendInterest(SharkCS interest, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         this.se.sendInterest(interest, recipient, this);
