@@ -29,7 +29,7 @@ public class ASIPInMessage extends ASIPMessage{
     private SharkStub sharkStub;
     private ASIPKnowledge knowledge;
     private ASIPInterest interest;
-    private byte[] raw;
+    private InputStream raw;
     private String parsedString;
     
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
@@ -70,11 +70,11 @@ public class ASIPInMessage extends ASIPMessage{
         this.interest = interest;
     }
 
-    public byte[] getRaw() {
+    public InputStream getRaw() {
         return raw;
     }
 
-    public void setRaw(byte[] raw) {
+    public void setRaw(InputStream raw) {
         this.raw = raw;
     }
 

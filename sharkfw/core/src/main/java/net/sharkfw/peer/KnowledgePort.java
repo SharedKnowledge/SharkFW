@@ -497,10 +497,14 @@ abstract public class KnowledgePort {
     public void sendKnowledge(Knowledge k, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         /*
         String[] addresses = recipient.getAddresses();
-        this.sendKnowledge(k, addresses);
+        this.sendKEPKnowledge(k, addresses);
         */
         
-        this.se.sendKnowledge(k, recipient, this);
+        this.se.sendKEPKnowledge(k, recipient, this);
+    }
+
+    public void sendKnowledge(ASIPKnowledge k, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException{
+        this.se.sendASIPKnowledge(k, recipient, this);
     }
     
     /**
@@ -513,7 +517,7 @@ abstract public class KnowledgePort {
 
     @SuppressWarnings("deprecation")
     public void sendInterest(SharkCS interest, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
-        this.se.sendInterest(interest, recipient, this);
+        this.se.sendKEPInterest(interest, recipient, this);
     }
     
     /**

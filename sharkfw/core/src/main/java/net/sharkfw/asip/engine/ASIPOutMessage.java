@@ -88,4 +88,21 @@ public class ASIPOutMessage extends ASIPMessage {
         }
     }
 
+    public  void raw(InputStream inputStream){
+        this.setCommand(ASIPMessage.ASIP_RAW);
+
+//        this.initSecurity();
+
+        try {
+            this.osw.write(ASIPSerializer.serializeRaw(this, inputStream).toString());
+            this.osw.close();
+        } catch (SharkKBException e) {
+            L.d("Serialize failed");
+            e.printStackTrace();
+        } catch (IOException e) {
+            L.d("Write failed");
+            e.printStackTrace();
+        }
+    }
+
 }

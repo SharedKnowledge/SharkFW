@@ -1,6 +1,7 @@
 package net.sharkfw.peer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -9,6 +10,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPStub;
 
 import net.sharkfw.asip.engine.SimpleASIPStub;
@@ -779,16 +783,68 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @throws java.io.IOException
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
-    public void publishKP(KnowledgePort kp, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
-        this.sendInterest(kp.getInterest(), recipient, kp);
+    public void publishKP(KnowledgePort kp, PeerSemanticTag recipient)
+            throws SharkSecurityException, SharkKBException, IOException {
+
+        this.sendKEPInterest(kp.getInterest(), recipient, kp);
     }
-    
-    public void sendInterest(SharkCS interest, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
+
+    public void sendASIPInterest(ASIPInterest interest, PeerSemanticTag recipient, KnowledgePort kp)
+            throws SharkSecurityException, SharkKBException, IOException {
+
+        this.sendASIPCommand(interest, null, null, kp, recipient);
+    }
+
+    public void sendRaw(InputStream is, PeerSemanticTag recipient, KnowledgePort kp)
+            throws SharkSecurityException, SharkKBException, IOException {
+
+        this.sendASIPCommand(null, null, is, kp, recipient);
+    }
+
+    public void sendKEPInterest(SharkCS interest, PeerSemanticTag recipient, KnowledgePort kp)
+            throws SharkSecurityException, SharkKBException, IOException {
+
         this.sendKEPCommand(interest, null, kp, recipient);
     }
-    
-    public void sendKnowledge(Knowledge k, PeerSemanticTag recipient, KnowledgePort kp) throws SharkSecurityException, SharkKBException, IOException {
+
+    public void sendASIPKnowledge(ASIPKnowledge knowledge, PeerSemanticTag recipient, KnowledgePort kp)
+            throws SharkSecurityException, SharkKBException, IOException {
+
+        this.sendASIPCommand(null, knowledge, null, kp, recipient);
+    }
+
+    public void sendKEPKnowledge(Knowledge k, PeerSemanticTag recipient, KnowledgePort kp)
+            throws SharkSecurityException, SharkKBException, IOException {
+
         this.sendKEPCommand(null, k, kp, recipient);
+    }
+
+    private void sendASIPCommand(ASIPInterest interest, ASIPKnowledge knowledge, InputStream is, KnowledgePort kp, PeerSemanticTag recipient)
+            throws SharkSecurityException, SharkKBException, IOException {
+
+
+        String[] addresses = recipient.getAddresses();
+
+        if (addresses == null) {
+            L.e("KP cannot send ASIP message: No address in remote peer dimension in interest and no address set in publish found. Aborting.", this);
+            return;
+        }
+
+        ASIPOutMessage response = this.createASIPOutMessage(addresses, recipient);
+
+        if(response != null) {
+            if(interest != null){
+                response.expose(interest);
+            }
+            if(knowledge != null){
+                response.insert(knowledge);
+            }
+            if(is != null){
+                response.raw(is);
+            }
+        }
+
+        L.d("<<<<<<<<<<<<<<<<<< End sending knowledge, interest or raw to recipient", this);
     }
 
     @SuppressWarnings("unused")
@@ -905,6 +961,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return false;
     }
 
+    public ASIPOutMessage createASIPOutMessage(String[] addresses, PeerSemanticTag receiver){
+        return this.createASIPOutMessage(addresses, this.engineOwnerPeer, receiver, null, null, 10);
+    }
+
+
     public ASIPOutMessage createASIPOutMessage(
             String[] addresses,
             PeerSemanticTag sender,
@@ -928,7 +989,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         Enumeration addrEnum = Util.array2Enum(addresses);
         while (addrEnum.hasMoreElements()) {
             String address = (String) addrEnum.nextElement();
-            L.d("sendInterest: try address:"+address, this);
+            L.d("sendKEPInterest: try address:"+address, this);
             //boolean fromPool = false;
             try {
                 /*
@@ -956,7 +1017,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     //  }
                     message = new ASIPOutMessage(this, sConn, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
                 } else {
-                    // TODO necessary?
+                    // TODO MessageStub necessary?
                     mStub = (MessageStub) protocolStub;
 //                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
                 }
@@ -978,6 +1039,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             }
 
             if (sConn != null /*&& !fromPool*/) {
+                // TODO asipStub.handleStream
                 this.kepStub.handleStream(sConn);
             }
 
@@ -1015,7 +1077,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         Enumeration addrEnum = Util.array2Enum(addresses);
         while (addrEnum.hasMoreElements()) {            
             String address = (String) addrEnum.nextElement();
-            L.d("sendInterest: try address:"+address, this);
+            L.d("sendKEPInterest: try address:"+address, this);
             //boolean fromPool = false;
             try {
                 /*

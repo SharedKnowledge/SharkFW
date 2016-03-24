@@ -113,9 +113,8 @@ public class ASIPMessageTest {
         Assert.assertEquals(inMessage, outMessage);
     }
 
-    @Ignore
     @Test
-    public void ASIPMessage_CompareInToOutMessageRaw_success() throws Exception {
+    public void ASIPMessage_CompareInToOutMessageRawByteArray_success() throws Exception {
 
         String rawInput = "Hello ASIP.";
 
@@ -126,10 +125,25 @@ public class ASIPMessageTest {
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
         inMessage.parse();
 
-        Assert.assertEquals(new String(inMessage.getRaw(), StandardCharsets.UTF_8), rawInput);
+        Assert.assertEquals(rawInput, IOUtils.toString(inMessage.getRaw(), "UTF-8"));
     }
 
-    @Ignore
+    @Test
+    public void ASIPMessage_CompareInToOutMessageRawInputStream_success() throws Exception {
+
+        String rawInput = "Hello ASIP.";
+        ByteArrayInputStream stream = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
+
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
+        outMessage.raw(stream);
+        this.connection.createInputStream();
+
+        ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
+        inMessage.parse();
+
+        Assert.assertEquals(rawInput, IOUtils.toString(inMessage.getRaw(), "UTF-8"));
+    }
+
     @Test
     public void ASIPMessage_CompareInToOutMessageExpose_success() throws Exception {
 
@@ -161,7 +175,7 @@ public class ASIPMessageTest {
 
         ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
         L.d("insert");
-        // TODO serializeKnowledge
+        // FIXME serializeKnowledge
         outMessage.insert(knowledge);
         this.connection.createInputStream();
 

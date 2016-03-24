@@ -835,7 +835,7 @@ public class ExchangeTests {
         InMemoKnowledge k = new InMemoKnowledge();
         k.addContextPoint(aliceCP);
 
-//        aliceKP.sendKnowledge(k, new String[] {bobAddress});
+//        aliceKP.sendKEPKnowledge(k, new String[] {bobAddress});
         aliceKP.sendKnowledge(k, bobOwnerTag);
         
         

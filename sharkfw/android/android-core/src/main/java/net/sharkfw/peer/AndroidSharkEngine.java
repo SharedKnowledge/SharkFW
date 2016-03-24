@@ -60,15 +60,15 @@ public class AndroidSharkEngine extends J2SEAndroidSharkEngine {
     }
 
 	@Override
-    public void sendKnowledge(Knowledge k, PeerSemanticTag recipient,
-    		KnowledgePort kp) throws SharkSecurityException, SharkKBException,
+    public void sendKEPKnowledge(Knowledge k, PeerSemanticTag recipient,
+                                 KnowledgePort kp) throws SharkSecurityException, SharkKBException,
     		IOException {
 
     	if (_wifi != null){
     		recipient.setAddresses(new String[] {_wifi.getConnectionStr()});
     	}
 
-    	super.sendKnowledge(k, recipient, kp);
+    	super.sendKEPKnowledge(k, recipient, kp);
     }
 
 }

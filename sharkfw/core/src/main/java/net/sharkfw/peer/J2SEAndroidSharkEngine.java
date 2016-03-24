@@ -235,9 +235,6 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
 
     /**
      * Start mail stub with the given server addresses.
-     *
-     * @param smtpServer The smtp server to use.
-     * @param popServer The popserver to use.
      */
     @Override
     public void startMail() throws IOException {
@@ -337,7 +334,6 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
      * @param smtppwd password on SMTP host: This passwort is never made 
      * persistent in the Shark code. Application developers must ensure that their
      * applications handle passwords with the required care.
-     * @param maxOutgoingMessageLength
      * @param sslSMTP use ssl for SMTP 
      * @param pop3Host POP3 host to get mails
      * @param pop3user POP3 user name
@@ -825,7 +821,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
 //                while(recipients.hasNext()) {
 //                    try {
 //                        PeerSemanticTag recipient = recipients.next();
-//                        this.sendKnowledge(k, recipient, senderKP);
+//                        this.sendKEPKnowledge(k, recipient, senderKP);
 //                    }
 //                    catch(SharkException e) {
 //                        // ignore and try next

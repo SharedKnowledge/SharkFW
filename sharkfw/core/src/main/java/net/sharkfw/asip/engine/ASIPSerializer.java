@@ -1,5 +1,8 @@
 package net.sharkfw.asip.engine;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -24,6 +27,7 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.*;
 import net.sharkfw.system.L;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,6 +86,28 @@ public class ASIPSerializer {
         object.put(CONTENT, content);
         return object;
     }
+
+    public static JSONObject serializeRaw(ASIPMessage header, InputStream raw) throws SharkKBException {
+
+            JSONObject object = serializeHeader(header);
+            JSONObject content = new JSONObject();
+            content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+            content.put(SIGNED, false); // If signed or not
+            try {
+                content.put(RAW, IOUtils.toString(raw, "UTF-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    raw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            object.put(CONTENT, content);
+            return object;
+        }
+
 
     public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
         return new JSONObject()
@@ -557,7 +583,7 @@ public class ASIPSerializer {
                 break;
             case ASIPMessage.ASIP_RAW:
                 byte[] raw = content.getString(ASIPSerializer.RAW).getBytes(StandardCharsets.UTF_8);
-                message.setRaw(raw);
+                message.setRaw(new ByteArrayInputStream(raw));
                 break;
         }
     }

@@ -1,6 +1,5 @@
 package net.sharkfw.security;
 
-import junit.framework.*;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.kp.KPListener;
@@ -13,7 +12,6 @@ import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.SharkCertificate;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
-import net.sharkfw.system.L;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -115,7 +113,7 @@ public class BasicSecurityTests implements KPListener {
 
         knowledgeReceived = false;
 
-        aliceSe.sendKnowledge(knowledge, bob, aliceSimpleKP);
+        aliceSe.sendKEPKnowledge(knowledge, bob, aliceSimpleKP);
 
         Thread.sleep(1000);
 

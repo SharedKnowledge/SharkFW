@@ -123,7 +123,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
         Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
         bobSe.startTCP(bobPort);
         aliceSe.startTCP(alicePort);
-        aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
+        aliceSe.sendKEPKnowledge(knowledge, bob, alicePkiKP);
 
         Thread.sleep(1000);
 
@@ -147,7 +147,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
         Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
         aliceSe.startTCP(alicePort);
         malorySe.startTCP(maloryPort);
-        aliceSe.sendKnowledge(knowledge, malory, alicePkiKP);
+        aliceSe.sendKEPKnowledge(knowledge, malory, alicePkiKP);
 
         Thread.sleep(1000);
 
@@ -172,7 +172,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
         Knowledge knowledge = SharkCSAlgebra.extract(alicePkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
         bobSe.startTCP(bobPort);
         aliceSe.startTCP(alicePort);
-        aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
+        aliceSe.sendKEPKnowledge(knowledge, bob, alicePkiKP);
 
         Thread.sleep(1000);
 
@@ -195,7 +195,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
 
         bobSe.startTCP(bobPort);
         aliceSe.startTCP(alicePort);
-        aliceSe.sendKnowledge(knowledge, bob, alicePkiKP);
+        aliceSe.sendKEPKnowledge(knowledge, bob, alicePkiKP);
 
         Thread.sleep(1000);
 
@@ -239,7 +239,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
             SharkCS.DIRECTION_OUT       //Direction
         );
 
-        aliceSe.sendInterest(interest, bob, alicePkiKP);
+        aliceSe.sendKEPInterest(interest, bob, alicePkiKP);
 
         Thread.sleep(1000);
 
@@ -286,7 +286,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
                 SharkCS.DIRECTION_OUT       //Direction
         );
 
-        aliceSe.sendInterest(interest, bob, alicePkiKP);
+        aliceSe.sendKEPInterest(interest, bob, alicePkiKP);
 
         Thread.sleep(1000);
 
