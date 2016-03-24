@@ -30,14 +30,14 @@ import net.sharkfw.system.*;
  *
  * First: Protocol version and format is parsed.
  * Second: Sender information are parsed.
- * Third: Context Space, Context Map and Certificate are parsed (if interest, offer, accept)
+ * Third: Context Space, Context Map and Certificate are parsed (if kepInterest, offer, accept)
  * or Knowledge is parsed.
  *
  * Context Space, Context Map and Certificate are created as in memory
  * objects. Knowledge objects tend to become large. ....
  *
  * This class should become immutable soon. Some KPs are messing around
- * with the interest and knowledge from inside this class, thereby changing
+ * with the kepInterest and knowledge from inside this class, thereby changing
  * it permanently also for KPs which will yet get this request. This might
  * be harmful and cause errativ behaviour!
  *
@@ -776,7 +776,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
     }
 
     /**
-     * @param interest The interest to send.
+     * @param interest The kepInterest to send.
      */
     @Override
     public void expose(SharkCS interest) {
@@ -794,7 +794,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
                return;
            }
 
-           // Send interest to every peer
+           // Send kepInterest to every peer
            while (rPeers.hasMoreElements()) {
                 PeerSemanticTag rpst = (PeerSemanticTag) rPeers.nextElement();
                 // try every address of that peer
@@ -814,7 +814,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
 
   /**
    * This method is called by both <code>createInsertResponse(Knowledge k, String receiveraddress)</code> and
-   * <code>createExposeResponse(ExposedInterest interest, String receiveraddress)</code> to create an empty
+   * <code>createExposeResponse(ExposedInterest kepInterest, String receiveraddress)</code> to create an empty
    * <code>KEPResponse</code> with all communication parameters set.
    *
    * @param receiveraddress The address of the peer where the KEPResponse shall go.
@@ -1001,11 +1001,11 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
   }
 
   /**
-   * Sends the interest to the given address.
+   * Sends the kepInterest to the given address.
    * Without chekcing if a connection to that address already exists.
-   * A new connection is established, and the interest is sent.
+   * A new connection is established, and the kepInterest is sent.
    * 
-   * @param interest The interest to send.
+   * @param interest The kepInterest to send.
    * @param receiveraddress The recipient's address
    */
     @Override
@@ -1034,7 +1034,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
 
   /**
    * The sender of this KEPRequest is - if set - the one peer,
-   * that can be found in either the PEER dimension of the interest (if this is an expose command)
+   * that can be found in either the PEER dimension of the kepInterest (if this is an expose command)
    * or inside the PEER dimension of the context map of the knowledge (if this is an insert command).
    * If neither are set we return null.
    *
@@ -1046,7 +1046,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
 
     if(this.receivedInterest != null) {
       try {
-        // We have an interest!
+        // We have an kepInterest!
         peer = (PeerSTSet) this.receivedInterest.getSTSet(SharkCS.DIM_PEER);
       } catch (SharkKBException ex) {
         ex.printStackTrace();
@@ -1079,7 +1079,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
 
   /**
    * Call the method for single addresses subsequently until all addresses have been triggered.
-   * @param interest The interest to send
+   * @param interest The kepInterest to send
    * @param receiveraddresses
      * @throws net.sharkfw.system.SharkException
    */

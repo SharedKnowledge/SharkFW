@@ -36,13 +36,13 @@ public class Dynamics_Notifier_Tests {
      *
      * Switch auto-update on for this kp
      *
-     * Change the KB in a way that must change the interest as well
+     * Change the KB in a way that must change the kepInterest as well
      *
-     * Check if the changes in the KB have also  been updated inside the interest
+     * Check if the changes in the KB have also  been updated inside the kepInterest
      *
      * BUG: The notifications fires right after the new tag has been created,
      * at that time, it does not have an associations, thus the update
-     * can't find the new tag when re-creating the interest.
+     * can't find the new tag when re-creating the kepInterest.
      *
      */
     //FIXME
@@ -73,8 +73,8 @@ public class Dynamics_Notifier_Tests {
 //      StandardKP kp = new StandardKP(aliceSe, dynamicInterest, fps, kb);
       kp.keepInterestInSyncWithKB(true);
 
-      // Check if the interest has been created properly
-      SharkCS original = kp.getInterest();
+      // Check if the kepInterest has been created properly
+      SharkCS original = kp.getKEPInterest();
       STSet originalTopicDim = original.getTopics();
 
       SemanticTag originalTopic1 = originalTopicDim.getSemanticTag(topic1.getSI());
@@ -86,11 +86,11 @@ public class Dynamics_Notifier_Tests {
       Assert.assertNotNull(originalTopic3);
 
 
-      // Now update the KB to see if the changes take effect in the interest
+      // Now update the KB to see if the changes take effect in the kepInterest
       SNSemanticTag topic4 = kb.getTopicsAsSemanticNet().createSemanticTag("topic4", "http://topic4.org");
       topic4.setPredicate(SemanticNet.SUPERTAG, topic2);
 
-      SharkCS updatedInterest = kp.getInterest();
+      SharkCS updatedInterest = kp.getKEPInterest();
       STSet updatedTopics = updatedInterest.getTopics();
 
       SemanticTag updatedTopic1 = updatedTopics.getSemanticTag(topic1.getSI());

@@ -9,7 +9,7 @@ import java.util.Iterator;
 public interface InterestStorage {
     
     /**
-     * Saves this interest into a list of interests
+     * Saves this kepInterest into a list of interests
      * @param interest 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
      * @deprecated 
@@ -17,7 +17,7 @@ public interface InterestStorage {
     public void addInterest(SharkCS interest) throws SharkKBException;
     
     /**
-     * Removes this interest from the storage
+     * Removes this kepInterest from the storage
      * @param interest 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
      * @deprecated 
@@ -26,7 +26,7 @@ public interface InterestStorage {
     
     /**
      * Return iteration of interests stored in the 
-     * interest storage
+     * kepInterest storage
      * 
      * @return 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 

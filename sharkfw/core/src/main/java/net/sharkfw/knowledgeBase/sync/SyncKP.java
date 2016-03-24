@@ -107,11 +107,11 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             L.d("Tag SharkKP_synchronization which is used by SyncKP already exists!");
             throw e;
         } 
-        // And an interest with me as the peer dimension set
+        // And an kepInterest with me as the peer dimension set
         PeerSTSet ownerPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         ownerPeerSTSet.merge(_kb.getOwner());
         _syncInterest = InMemoSharkKB.createInMemoInterest(syncTag, null, ownerPeerSTSet, null, null, null, SharkCS.DIRECTION_OUT);
-        this.setInterest(_syncInterest);
+        this.setKepInterest(_syncInterest);
     }
 
     /**
@@ -183,7 +183,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     
     @Override
     protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
-//        handleWifiDirect(interest, kepConnection);
+//        handleWifiDirect(kepInterest, kepConnection);
         L.e(" --------------------- SYNC handleExpose started");
         try {
             // Retrieve the general sync KP synchronization identification tag
@@ -208,8 +208,8 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     List<SyncContextPoint> possibleCCsForPeer = retrieve(_timestamps.getTimestamp(kepConnection.getSender()));
                     this.setStepOffer(possibleCCsForPeer);
                     L.e(_kb.getOwner().getName() + " sent offer expose.");
-                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
-                    this.notifyExposeSent(this, this.getInterest());
+                    kepConnection.expose(this.getKEPInterest(), kepConnection.getSender().getAddresses());
+                    this.notifyExposeSent(this, this.getKEPInterest());
                 }
                 // Is that an offer? Than analyze which CPs I need and send a modified CC list back
                 // ------------------ OFFER ------------------
@@ -231,9 +231,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                     }
                     this.setStepRequest(remoteCCs);     
                     L.e(_kb.getOwner().getName() + " sent request expose.");
-//                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
-                    kepConnection.expose(this.getInterest(), kepConnection.getSender().getAddresses());
-                    this.notifyExposeSent(this, this.getInterest());
+//                    kepConnection.expose(this.getKEPInterest(), kepConnection.getSender().getAddresses());
+                    kepConnection.expose(this.getKEPInterest(), kepConnection.getSender().getAddresses());
+                    this.notifyExposeSent(this, this.getKEPInterest());
                 }
                 // Is that a request? Then send knowledge
                 // ------------------ REQUEST ------------------
@@ -313,7 +313,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     private void handleWifiDirect(SharkCS interest, KEPConnection kepConnection){
         try{
             if (SharkCSAlgebra.isAny(interest)) {
-                L.d("Empty interest received. Sending interest back.");
+                L.d("Empty kepInterest received. Sending kepInterest back.");
                 // Create a topic ST set for wifi direct identification
                 STSet identificationTopic = InMemoSharkKB.createInMemoSTSet();
                 identificationTopic.merge(InMemoSharkKB.createInMemoSemanticTag("Wifi direct identification", Protocols.WIFI_DIRECT_CONNECTION_TOPIC));
@@ -326,9 +326,9 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
                 kepConnection.expose(i);
             }
             else if (interest.getTopics().getSemanticTag(Protocols.WIFI_DIRECT_CONNECTION_TOPIC) != null && interest.getPeers() != null) {
-                L.d("Received wifi direct identification interest. Sending my real interest back.");
+                L.d("Received wifi direct identification kepInterest. Sending my real kepInterest back.");
                 kb.getPeerSTSet().merge(interest.getPeers());
-                kepConnection.expose(this.getInterest());
+                kepConnection.expose(this.getKEPInterest());
             }
         } catch(SharkException e){
             L.d("Error in WifiDirect handler: " + e.getMessage());
@@ -399,26 +399,26 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     protected void setStepDefault() throws SharkKBException{
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).removeProperty(
+        this.getKEPInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).removeProperty(
                 SYNCHRONIZATION_PROTOCOL_STATE
         );
     }
     
     protected void setStepRequest(List<SyncContextPoint> requestCCs) throws SharkKBException{
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
+        this.getKEPInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
                 SYNCHRONIZATION_PROTOCOL_STATE, SYNCHRONIZATION_REQUEST
         );
         String serializedRequestCCs = ContextCoordinatesSerializer.serializeContextCoordinatesList(requestCCs);
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
+        this.getKEPInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
                           .setProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY, serializedRequestCCs);
     }
     
     protected void setStepOffer(List<SyncContextPoint> offerCCs) throws SharkKBException{
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
+        this.getKEPInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME).setProperty(
                 SYNCHRONIZATION_PROTOCOL_STATE, SYNCHRONIZATION_OFFER
         );
         String serializedOfferCCs = ContextCoordinatesSerializer.serializeContextCoordinatesList(offerCCs);
-        this.getInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
+        this.getKEPInterest().getTopics().getSemanticTag(SYNCHRONIZATION_NAME)
                           .setProperty(SYNCHRONIZATION_SERIALIZED_CC_PROPERTY, serializedOfferCCs);
     }
 

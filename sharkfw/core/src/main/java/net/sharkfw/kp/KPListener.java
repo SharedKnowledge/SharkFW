@@ -19,7 +19,7 @@ public interface KPListener {
    * Notify the listener about a sent expose.
    * 
    * @param kp The KP sending the expose.
-   * @param sentMutualInterest The interest that is exposed.
+   * @param sentMutualInterest The kepInterest that is exposed.
    */
   public void exposeSent (KnowledgePort kp, SharkCS sentMutualInterest);
 

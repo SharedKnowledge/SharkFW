@@ -81,7 +81,7 @@ public class BasicGPKPTest {
         GenericProfileImpl levioza = new GenericProfileImpl(kb);
         SharkEngine se;
         GenericProfileKP testKP = new GenericProfileKP(aliceSE, interest, kb, levioza);
-        assertNotNull(testKP.getInterest());
+        assertNotNull(testKP.getKEPInterest());
         assertNotNull(testKP.getGenericProfile());
 
         KEPConnection response = null;

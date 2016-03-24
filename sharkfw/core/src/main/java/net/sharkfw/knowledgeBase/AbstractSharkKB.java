@@ -373,11 +373,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             
             // topic, type, approver, sender, receiver, time, location, direction
             
-            // add prototype OUT interest
+            // add prototype OUT kepInterest
             icList.add(this.createInformationCoordinates(null, null, null, 
                     owner, null, null, null, ASIPSpace.DIRECTION_IN));
             
-            // add prototype OUT interest
+            // add prototype OUT kepInterest
             icList.add(this.createInformationCoordinates(null, null, null, 
                     owner, null, null, null, ASIPSpace.DIRECTION_OUT));
             
@@ -1027,7 +1027,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     /**
      * 
      * @param interests
-     * @return -1 of no such interest in in the list
+     * @return -1 of no such kepInterest in in the list
      */
     private int findInterestIndex(SharkCS interest) throws SharkKBException {
         for(int index = 0; index < this.interestsList.size(); index++) {
@@ -1037,12 +1037,12 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             }
         }
         
-        // no matching interest found
+        // no matching kepInterest found
         return -1;
     }
     
     /**
-     * Saves this interest into a list of interests
+     * Saves this kepInterest into a list of interests
      * @param interest 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
@@ -1057,7 +1057,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
     
     /**
-     * Removes this interest from the storage
+     * Removes this kepInterest from the storage
      * @param interest 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 
      */
@@ -1075,7 +1075,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     /**
      * Return iteration of interests stored in the 
-     * interest storage
+     * kepInterest storage
      * 
      * @return 
      * @throws net.sharkfw.knowledgeBase.SharkKBException 

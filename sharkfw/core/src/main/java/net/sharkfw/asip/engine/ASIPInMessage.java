@@ -89,4 +89,8 @@ public class ASIPInMessage extends ASIPMessage{
     boolean keepOpen() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public ASIPOutMessage convertToASIPOutMessage() throws SharkKBException {
+        return new ASIPOutMessage(this.se, this.con, this);
+    }
 }

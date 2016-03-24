@@ -65,7 +65,7 @@ public class DifferentAddresses {
         L.setLogLevel(L.LOGLEVEL_ALL);
         bobSE.startTCP(bobPort);
         
-        // send interest
+        // send kepInterest
         aliceKP.sendInterest(aliceInterest, aliceBob);
         
         // give receiving thread a while

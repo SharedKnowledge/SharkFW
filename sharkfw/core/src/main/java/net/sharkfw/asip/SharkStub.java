@@ -32,13 +32,13 @@ public interface SharkStub {
     /**
      * Stream was established and can be used for conversion.
      * Something must happen. Best would be to call each knowledge
-     * port with an all interest.
+     * port with an all kepInterest.
      * @param con 
      */
     public void startConversion(StreamConnection con);
     
     /**
-     * Handle an interest which does not necessarily comes over a
+     * Handle an kepInterest which does not necessarily comes over a
      * underlaying protocol.
      * 
      * @param interest

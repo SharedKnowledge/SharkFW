@@ -7,23 +7,23 @@ import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 
 /**
- * <p>An interface defining the interest.</p>
+ * <p>An interface defining the kepInterest.</p>
  *
- * <p>An interest in shark is used to describe the context in which a peer is
- * willing to exchange information. The interest thus is a special {@link ContextSpace}.
- * The {@link SemanicTag}s on the different dimensions of the interest define this
+ * <p>An kepInterest in shark is used to describe the context in which a peer is
+ * willing to exchange information. The kepInterest thus is a special {@link ContextSpace}.
+ * The {@link SemanicTag}s on the different dimensions of the kepInterest define this
  * context.</p>
  *
- * ContextSpace is a general concept whereas interest makes more specific 
- * definitions about the communication context. An interest defines seven aspects
+ * ContextSpace is a general concept whereas kepInterest makes more specific
+ * definitions about the communication context. An kepInterest defines seven aspects
  * (constraints) in which a peer is willing to exchange information.
  * 
- * Each aspect can be set. If set, communication takes place if interest
- * have mutual interest. A mutual interest can be calculated by contextualising
- * a interest with another on (see @link CSAlgebra). 
+ * Each aspect can be set. If set, communication takes place if kepInterest
+ * have mutual kepInterest. A mutual kepInterest can be calculated by contextualising
+ * a kepInterest with another on (see @link CSAlgebra).
  * 
  * Unset aspects are interpreted as no constraints. Anything is allowed.
- * Thus, the most general interest has no aspect set, meaning: any get-methode return
+ * Thus, the most general kepInterest has no aspect set, meaning: any get-methode return
  * nulls. A peer is interested in virtually everything.
  * 
  * Arbitrary combinations are possible. Application can decide just to define 
@@ -37,7 +37,7 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
  * 
  * Interest inherits from AnchorSet. The major difference is in usage of dimensions.
  * AnchorSets only use semantic tags but not their relations. AnchorSets are
- * usually contextualization parameter. An interest is transmitted to other peers.
+ * usually contextualization parameter. An kepInterest is transmitted to other peers.
  * The set in each dimension are not only an enumeration of tags but also
  * their relations - in a taxonomy or a sementic network.
  * 
@@ -63,7 +63,7 @@ public interface ASIPInterest extends ASIPSpace {
   public void setTypes(STSet types);
 
   /**
-   * Return the direction of this interest.
+   * Return the direction of this kepInterest.
    * 
    * ContextSpace defines each dimension to be a set of semantic tags.
    * Yes, there is also an implementation thats wraps the direction into
@@ -81,7 +81,7 @@ public interface ASIPInterest extends ASIPSpace {
   public void setDirection(int direction);
 
   /**
-   * Return the originator dimension of this interest.
+   * Return the originator dimension of this kepInterest.
    * 
    * This peer is the one who can also sign the message.
    * It isn't necessarily part of the peer tag. 
@@ -91,7 +91,7 @@ public interface ASIPInterest extends ASIPSpace {
   public void setSender(PeerSemanticTag originator);
 
   /**
-   * Return the originator dimension of this interest.
+   * Return the originator dimension of this kepInterest.
    * 
    * This peer is the one who can also sign the message.
    * It isn't necessarily part of the peer tag. 
@@ -103,7 +103,7 @@ public interface ASIPInterest extends ASIPSpace {
   public PeerSTSet getSenders();
 
   /**
-   * Return the remotepeer dimension of this interest
+   * Return the remotepeer dimension of this kepInterest
    *
      * @param remotePeers
    */
@@ -115,14 +115,14 @@ public interface ASIPInterest extends ASIPSpace {
   public void setApprovers(PeerSTSet peers);
 
   /**
-   * Return the time dimension of this interest
+   * Return the time dimension of this kepInterest
    *
      * @param times
    */
   public void setTimes(TimeSTSet times);
 
   /**
-   * Return the location dimension of this interest
+   * Return the location dimension of this kepInterest
    *
      * @param location
    */

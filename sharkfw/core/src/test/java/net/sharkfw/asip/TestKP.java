@@ -2,6 +2,7 @@ package net.sharkfw.asip;
 
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.knowledgeBase.Knowledge;
+import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.KEPConnection;
@@ -12,7 +13,7 @@ import net.sharkfw.system.L;
 /**
  * Created by msc on 21.03.16.
  */
-public class TestKP extends KnowledgePort{
+public class TestKP extends KnowledgePort {
 
     private final String name;
 
@@ -24,12 +25,12 @@ public class TestKP extends KnowledgePort{
 
     @Override
     protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
-
+        // UNUSED
     }
 
     @Override
     protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
-
+        // UNUSED
     }
 
     @Override

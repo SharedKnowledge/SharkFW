@@ -205,7 +205,7 @@ public class SimpleKBTest {
      *
      * Create two interests (which are ContextSpaces) to include either the one or the other ContextPoint.
      *
-     * Uses the <code>getContextPoints(ContextSpace cs);</code> method on SharkKB to find the ContextPoint which is covered by either interest.
+     * Uses the <code>getContextPoints(ContextSpace cs);</code> method on SharkKB to find the ContextPoint which is covered by either kepInterest.
      *
      * Checks returnvalue for the correct containing ContextPoint and makes sure that the other ContextPoint is not part of either result.
      *
@@ -234,7 +234,7 @@ public class SimpleKBTest {
       ContextPoint cp2 = kb.createContextPoint(co2);
       // Leaving away information, as they are not needed for testing the method
 
-      // create "ContextSpace" (using an interest as implementation of ContextSpace)
+      // create "ContextSpace" (using an kepInterest as implementation of ContextSpace)
       Interest interest = InMemoSharkKB.createInMemoInterest();
 
       STSet directions = InMemoSharkKB.createInMemoSTSet();
@@ -1118,9 +1118,9 @@ public class SimpleKBTest {
      *
      * Create three CPs.
      *
-     * Create an interest covering one of the CPs.
+     * Create an kepInterest covering one of the CPs.
      *
-     * Use the interest to retrieve that CP.
+     * Use the kepInterest to retrieve that CP.
      *
      * Check if a result has been returned.
      *
@@ -1166,13 +1166,13 @@ public class SimpleKBTest {
       interestRemotepeer.merge(peer2);
 
 
-      // Set the dimensions of the interest
+      // Set the dimensions of the kepInterest
       interest.setTopics(interestTopic);
       interest.setPeers(interestPeer);
       interest.setRemotePeers(interestRemotepeer);
       interest.setDirection(SharkCS.DIRECTION_OUT);
 
-      // Retrieve ContextPoints covered by the interest
+      // Retrieve ContextPoints covered by the kepInterest
       Enumeration cps = kb.getContextPoints(interest);
       Assert.assertNotNull(cps);
       Assert.assertTrue(cps.hasMoreElements());

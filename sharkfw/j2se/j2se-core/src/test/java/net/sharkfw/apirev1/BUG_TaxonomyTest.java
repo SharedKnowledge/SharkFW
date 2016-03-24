@@ -51,7 +51,7 @@ public class BUG_TaxonomyTest {
         ContextPoint cpAlice = kbAlice.createContextPoint(aliceCC);
         cpAlice.addInformation("BVB");
 
-        this._log.info("[ ALICE ] create interest... ");
+        this._log.info("[ ALICE ] create kepInterest... ");
 
         ContextCoordinates interestCCAlice = kbAlice.createContextCoordinates(categorieTagAlice, peerAlice_alice, null, null, null, null, SharkCS.DIRECTION_INOUT);
 
@@ -86,7 +86,7 @@ public class BUG_TaxonomyTest {
 
         int tagCount = this.getEnumCount(kbBob.getTopicSTSet().tags());
 
-        this._log.info("[ BOB ] create interest... ");
+        this._log.info("[ BOB ] create kepInterest... ");
 
         ContextCoordinates interestCCBob = kbBob.createContextCoordinates(categorieTagBob, peerBob_bob, null, null, null, null, SharkCS.DIRECTION_INOUT);
 

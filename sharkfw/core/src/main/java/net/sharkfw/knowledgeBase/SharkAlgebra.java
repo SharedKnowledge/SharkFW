@@ -166,7 +166,7 @@ public class SharkAlgebra {
          * Thus, if no dimension is found either in source or context
          * it means that no constraints at all exists.
          * 
-         * Producing an interest means also:
+         * Producing an kepInterest means also:
          * We look at a source with a focus defined by the context.
          * Note: Context is meant to be declared locally. Source has been
          * retrieved from outside. Thus, we don't want to reveal things from
@@ -177,8 +177,8 @@ public class SharkAlgebra {
          * 
          * What happens if source is empty == null == any?
          * We interpret this situation as follows:
-         * Contextualization is meant to narrow down an interest. A contextualized
-         * interest shall be more specific than the source. We also assume that
+         * Contextualization is meant to narrow down an kepInterest. A contextualized
+         * kepInterest shall be more specific than the source. We also assume that
          * the context can be revealed. Thus, if a source is not
          * specified - context is taken instead. 
          * Note: This is a harsh decision! An any source could triggers a sending
@@ -270,7 +270,7 @@ public class SharkAlgebra {
         
         // if this point is reached - no contextualization failed.
         
-        // lets fill mutual interest
+        // lets fill mutual kepInterest
         mutualInterest.setTopics(mTopics);
         mutualInterest.setTypes(mTypes);
         mutualInterest.setApprovers(mApprovers);

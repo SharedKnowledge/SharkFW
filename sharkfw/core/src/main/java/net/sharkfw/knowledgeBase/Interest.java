@@ -4,23 +4,23 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 
 /**
- * <p>An interface defining the interest.</p>
+ * <p>An interface defining the kepInterest.</p>
  *
- * <p>An interest in shark is used to describe the context in which a peer is
- * willing to exchange information. The interest thus is a special {@link ContextSpace}.
- * The {@link SemanicTag}s on the different dimensions of the interest define this
+ * <p>An kepInterest in shark is used to describe the context in which a peer is
+ * willing to exchange information. The kepInterest thus is a special {@link ContextSpace}.
+ * The {@link SemanicTag}s on the different dimensions of the kepInterest define this
  * context.</p>
  *
- * ContextSpace is a general concept whereas interest makes more specific 
- * definitions about the communication context. An interest defines seven aspects
+ * ContextSpace is a general concept whereas kepInterest makes more specific
+ * definitions about the communication context. An kepInterest defines seven aspects
  * (constraints) in which a peer is willing to exchange information.
  * 
- * Each aspect can be set. If set, communication takes place if interest
- * have mutual interest. A mutual interest can be calculated by contextualising
- * a interest with another on (see @link CSAlgebra). 
+ * Each aspect can be set. If set, communication takes place if kepInterest
+ * have mutual kepInterest. A mutual kepInterest can be calculated by contextualising
+ * a kepInterest with another on (see @link CSAlgebra).
  * 
  * Unset aspects are interpreted as no constraints. Anything is allowed.
- * Thus, the most general interest has no aspect set, meaning: any get-methode return
+ * Thus, the most general kepInterest has no aspect set, meaning: any get-methode return
  * nulls. A peer is interested in virtually everything.
  * 
  * Arbitrary combinations are possible. Application can decide just to define 
@@ -34,7 +34,7 @@ import net.sharkfw.asip.ASIPSpace;
  * 
  * Interest inherits from AnchorSet. The major difference is in usage of dimensions.
  * AnchorSets only use semantic tags but not their relations. AnchorSets are
- * usually contextualization parameter. An interest is transmitted to other peers.
+ * usually contextualization parameter. An kepInterest is transmitted to other peers.
  * The set in each dimension are not only an enumeration of tags but also
  * their relations - in a taxonomy or a sementic network.
  * 
@@ -54,7 +54,7 @@ public interface Interest extends SharkCS {
   public void setTopics(STSet topics);
   
     /**
-   * Return the direction of this interest.
+   * Return the direction of this kepInterest.
    * 
    * ContextSpace defines each dimension to be a set of semantic tags.
    * Yes, there is also an implementation thats wraps the direction into
@@ -68,12 +68,12 @@ public interface Interest extends SharkCS {
    *
    * @see net.sharkfw.knowledgeBase.ContextSpace
    * 
-   * @return An int value denoting the direction of this interest
+   * @return An int value denoting the direction of this kepInterest
    */
   public void setDirection(int direction);
 
   /**
-   * Return the originator dimension of this interest.
+   * Return the originator dimension of this kepInterest.
    * 
    * This peer is the one who can also sign the message.
    * It isn't necessarily part of the peer tag. 
@@ -84,9 +84,9 @@ public interface Interest extends SharkCS {
   public void setOriginator(PeerSemanticTag originator);
 
   /**
-   * Return the remotepeer dimension of this interest
+   * Return the remotepeer dimension of this kepInterest
    *
-   * @return A stset containing all remotepeers of this interest
+   * @return A stset containing all remotepeers of this kepInterest
    * @deprecated 
    */
   public void setRemotePeers(PeerSTSet remotePeers);
@@ -98,23 +98,23 @@ public interface Interest extends SharkCS {
   public void setPeers(PeerSTSet peers);
 
   /**
-   * Return the time dimension of this interest
+   * Return the time dimension of this kepInterest
    *
-   * @return A stset containing all time tags of this interest
+   * @return A stset containing all time tags of this kepInterest
    */
   public void setTimes(TimeSTSet times);
 
   /**
-   * Return the location dimension of this interest
+   * Return the location dimension of this kepInterest
    *
-   * @return A stset containing all geo tags of this interest
+   * @return A stset containing all geo tags of this kepInterest
    */
   public void setLocations(SpatialSTSet location);
   
   /**
-   * calculates mutual interest. This interest is used as source.
+   * calculates mutual kepInterest. This kepInterest is used as source.
    * @param context Context of the calcuation.
-   * @return Mutual interest or null if there is no match
+   * @return Mutual kepInterest or null if there is no match
    */
   public Interest contextualize(SharkCS context, FragmentationParameter[] fp)
           throws SharkKBException;

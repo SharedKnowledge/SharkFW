@@ -916,8 +916,8 @@
 //            as.addAnchor(ContextSpace.ANYURL, i);
 //        }
 //
-//        LocalInterest interest = lkb.createInterest(as, TestUtil.getFps(true, true, 0));
-//        Knowledge k = lkb.extract(interest, TestUtil.getFps(true, true, 0), TestUtil.getFps(true, true, 0));
+//        LocalInterest kepInterest = lkb.createInterest(as, TestUtil.getFps(true, true, 0));
+//        Knowledge k = lkb.extract(kepInterest, TestUtil.getFps(true, true, 0), TestUtil.getFps(true, true, 0));
 //        Assert.assertNotNull(k);
 //
 //    }
@@ -954,8 +954,8 @@
 //            as.addAnchor(ContextSpace.ANYURL, i);
 //        }
 //
-//        LocalInterest interest = lkb.createInterest(as, TestUtil.getFps(true, true, 0));
-//        Knowledge k = lkb.extract(interest, TestUtil.getFps(true, true, 0), TestUtil.getFps(true, true, 0));
+//        LocalInterest kepInterest = lkb.createInterest(as, TestUtil.getFps(true, true, 0));
+//        Knowledge k = lkb.extract(kepInterest, TestUtil.getFps(true, true, 0), TestUtil.getFps(true, true, 0));
 //        Assert.assertNotNull(k);
 //        Assert.assertEquals(3, k.getNumberContextPoints());
 //
@@ -1107,8 +1107,8 @@
 ////        as.addAnchor(ContextSpace.ANYURL, i);
 ////      }
 //
-//        LocalInterest interest = lkb.createInterest(as, TestUtil.getFps(true, true, 0));
-//        Knowledge k = lkb.extract(interest, TestUtil.getFps(true, true, 0), TestUtil.getFps(true, true, 0));
+//        LocalInterest kepInterest = lkb.createInterest(as, TestUtil.getFps(true, true, 0));
+//        Knowledge k = lkb.extract(kepInterest, TestUtil.getFps(true, true, 0), TestUtil.getFps(true, true, 0));
 //        Assert.assertNotNull(k);
 //        Assert.assertEquals(3, k.getNumberContextPoints());
 //    }

@@ -14,7 +14,7 @@ package net.sharkfw.knowledgeBase;
  * only have the group-peer set as remotepeer. When organizing peers into groups,
  * please use the <code>KnowledgePort.HIDDEN</code> tag, if the organization itself
  * cannot be addressed by network. Otherwise the organization will become part
- * of a created interest (or Knowledge), and thus be addressed, when the KEPMessage is sent.</p>
+ * of a created kepInterest (or Knowledge), and thus be addressed, when the KEPMessage is sent.</p>
  *
  * @see net.sharkfw.knowledgeBase.AssociatedSemanticTag
  * @see net.sharkfw.knowledgeBase.PeerSemanticTag

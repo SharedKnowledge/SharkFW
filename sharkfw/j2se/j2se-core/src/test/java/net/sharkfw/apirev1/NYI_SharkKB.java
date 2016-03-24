@@ -72,9 +72,9 @@ public class NYI_SharkKB {
      *
      * Create three CPs.
      *
-     * Create an interest covering all three of the CPs using "ANY" on the topic dim.
+     * Create an kepInterest covering all three of the CPs using "ANY" on the topic dim.
      *
-     * Use the interest to retrieve the CPs.
+     * Use the kepInterest to retrieve the CPs.
      *
      * Check if a result has been returned.
      *
@@ -122,13 +122,13 @@ public class NYI_SharkKB {
         PeerSTSet interestRemotepeer = InMemoSharkKB.createInMemoPeerSTSet();
         interestRemotepeer.merge(peer2);
 
-        // Set the dimensions of the interest
-        //interest.setTopic(interestTopic);
+        // Set the dimensions of the kepInterest
+        //kepInterest.setTopic(interestTopic);
         interest.setPeers(interestPeer);
         interest.setRemotePeers(interestRemotepeer);
         interest.setDirection(SharkCS.DIRECTION_OUT);
 
-        // Retrieve ContextPoints covered by the interest
+        // Retrieve ContextPoints covered by the kepInterest
         Enumeration cps = kb.getContextPoints(interest);
         // The above method does not take "ANY" into account properly
 

@@ -237,8 +237,8 @@ public interface SharkPublicKeyStorage {
 //    public int getCertificateReceiveMode();
 //    
 //    /**
-//     * Issues an interest to submit (trusted) certificates to all
-//     * trusted peers. Peer can send in incomming interest as reply
+//     * Issues an kepInterest to submit (trusted) certificates to all
+//     * trusted peers. Peer can send in incomming kepInterest as reply
 //     * which will cause this peer to send those certificates.
 //     * 
 //     * @throws SharkKBException 

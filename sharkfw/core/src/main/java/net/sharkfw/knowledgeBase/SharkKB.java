@@ -40,8 +40,8 @@ import net.sharkfw.asip.ASIPKnowledge;
  * of a communication with other peers. They define about what, when and where an
  * exchange may take place. The creation of these standard interests is handled here.
  * By providing a number of anchor points (in an {@link AnchorSet}) and a number of {@link FragmentationParameter}s,
- * the interest creation extracts parts of the local stsets and puts them into
- * a new interest.
+ * the kepInterest creation extracts parts of the local stsets and puts them into
+ * a new kepInterest.
  * </p>
  * 
  *
@@ -71,7 +71,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    * concept in this dimension. 
    * 
    * <br/> Bob want's to talk with anybody. He can use null as parameter for
-   * remote peer. Each other interest will match in this dimension and will
+   * remote peer. Each other kepInterest will match in this dimension and will
    * try to communicate with Bob. 
    * 
    * It is the same for any other dimension.
@@ -335,7 +335,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
 
   /**
    * Set the standard FragmentationParameter for this SharkKB.
-   * The standard fp will be used in interest creation if no fp is provided otherwise.
+   * The standard fp will be used in kepInterest creation if no fp is provided otherwise.
    *
    * @param fps A FragmentationParameter array with ContextSpace.MAXDIMENSION fields
    */

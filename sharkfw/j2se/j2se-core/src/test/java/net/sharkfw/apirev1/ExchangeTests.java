@@ -53,9 +53,9 @@ public class ExchangeTests {
      * receive information about "tools". It known nothing of shovels, spades,
      * or the the sending peer.
      *
-     * The sending peer publishes its interest to the receiving peer.
+     * The sending peer publishes its kepInterest to the receiving peer.
      *
-     * The receiving peer then must answer with an appropriate interest,
+     * The receiving peer then must answer with an appropriate kepInterest,
      * which must lead to knowledge being sent by the sending peer.
      *
      * The receiving peer must assimilate that knowledge and learn the tag
@@ -102,7 +102,7 @@ public class ExchangeTests {
       ContextPoint toolsCp = aliceKB.createContextPoint(toolCoords);
       toolsCp.addInformation("Tools are cool!");
 
-      // Now create an interest to speak about shovels!
+      // Now create an kepInterest to speak about shovels!
 
       SharkCS anchor = aliceKB.createContextCoordinates(shovel, alicePeer, null, null, null, null, SharkCS.DIRECTION_OUT);
 
@@ -113,7 +113,7 @@ public class ExchangeTests {
 
       SharkCS interest = aliceKB.contextualize(anchor, fpArray);
 
-      // Create a standard knowledgeport (and interest) from this information
+      // Create a standard knowledgeport (and kepInterest) from this information
       StandardKP aliceKp = new StandardKP(alice, interest, fpArray, aliceKB);
       aliceKp.setOtp(fpArray); // Send infos on related tags as well
 
@@ -222,14 +222,14 @@ public class ExchangeTests {
       ContextPoint shovelCp = aliceKB.createContextPoint(shovelCoords);
       shovelCp.addInformation("A shovel is a cool tool!");
 
-      // Now create an interest to speak about shovels!
+      // Now create an kepInterest to speak about shovels!
 
       // Create a FragmentationParameter that allows a depth of 1, and follows SUB/SUPER associations
       FragmentationParameter fp = new FragmentationParameter(true, true, 1);
       FragmentationParameter[] fpArray = KnowledgePort.getZeroFP();
       fpArray[SharkCS.DIM_TOPIC] = fp; // Allow sub/super assocs on topic dimension
 
-      // Create a standard knowledgeport (and interest) from this information
+      // Create a standard knowledgeport (and kepInterest) from this information
       StandardKP aliceKp = new StandardKP(alice, shovelCoords, fpArray, aliceKB);
       aliceKp.setOtp(fpArray); // Send infos on related tags as well
 
@@ -307,10 +307,10 @@ public class ExchangeTests {
      * The sending peer stores its information on a contextpoint which is bound
      * to a hidden tag (a group i.e.). This group has one member (the receiving peer).
      *
-     * The sending peer publishes its interest to the receiving peer without
+     * The sending peer publishes its kepInterest to the receiving peer without
      * sending the grouptag itself.
      *
-     * The receiving peer then must answer with an appropriate interest,
+     * The receiving peer then must answer with an appropriate kepInterest,
      * which must lead to knowledge being sent by the sending peer.
      *
      * The receiving peer must assimilate that knowledge and learn the tag
@@ -356,9 +356,9 @@ public class ExchangeTests {
       ContextPoint shovelCp = aliceKb.createContextPoint(shovelCoords);
       shovelCp.addInformation("A shovel is a cool tool!");
 
-      // Now create an interest to speak about shovels!
+      // Now create an kepInterest to speak about shovels!
 
-      // Create an interest headed for the organization
+      // Create an kepInterest headed for the organization
       SharkCS interest = aliceKb.createContextCoordinates(shovel, alicePeer, bobOrg, null, null, null, SharkCS.DIRECTION_OUT);
 
       // Create a FragmentationParameter that allows a depth of 1, and follows SUB/SUPER associations
@@ -367,7 +367,7 @@ public class ExchangeTests {
       fpArray[SharkCS.DIM_TOPIC] = fp; // Allow sub/super assocs on topic dimension
       fpArray[SharkCS.DIM_REMOTEPEER] = fp; // Allow traversal of peer tags for bobOrg.
 
-      // Create a standard knowledgeport (and interest) from this information
+      // Create a standard knowledgeport (and kepInterest) from this information
       StandardKP aliceKp = new StandardKP(alice, interest, fpArray, aliceKb);
       aliceKp.setOtp(fpArray); // Send infos on related tags as well
 
@@ -443,7 +443,7 @@ public class ExchangeTests {
      * Alice has two contextpoints, with the same coordinates except for the time
      * dimension. One CP is valid today. One CP has been valid yesterday.
      * 
-     * Alice defines an interest is sending something about 'topic' which is valid today,
+     * Alice defines an kepInterest is sending something about 'topic' which is valid today,
      * alice is the peer and the originator.
      * 
      * Alice starts its TCP engine.
@@ -452,7 +452,7 @@ public class ExchangeTests {
      * Bob knows alice from the start.
      * Bob has no ContextPoints.
      * 
-     * Bob creates an interest in 'topic' which is valid today and requests information from alice
+     * Bob creates an kepInterest in 'topic' which is valid today and requests information from alice
      * as a peer and as originator.
      * 
      * Bob starts its tcp engine.
@@ -502,7 +502,7 @@ public class ExchangeTests {
       ContextPoint cp2 = aliceKB.createContextPoint(co2);
       cp2.addInformation("Yesterday was even better!");
       
-      // Create an interest. 
+      // Create an kepInterest.
       Interest interest = InMemoSharkKB.createInMemoInterest();
 
       STSet topics = InMemoSharkKB.createInMemoSTSet();
@@ -541,7 +541,7 @@ public class ExchangeTests {
       
       // No CPs are created, bob only wants to receive information
       
-      // Create interest.
+      // Create kepInterest.
       SharkCS bobAs = bobKB.createContextCoordinates(bobTopic, bob, bobAlice, bobAlice, bobToday, null, SharkCS.DIRECTION_IN);
       
       StandardKP bobKP = new StandardKP(bobSE, bobAs, bobKB);

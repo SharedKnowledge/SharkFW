@@ -29,7 +29,7 @@ public interface SharkCS extends ContextSpace {
 
 
     /**
-     * In interests: Is this a sending or a receiving interest (or both?)
+     * In interests: Is this a sending or a receiving kepInterest (or both?)
      */
     public static final int DIM_DIRECTION = 0;
 
@@ -144,7 +144,7 @@ public interface SharkCS extends ContextSpace {
   public STSet getTopics();
   
     /**
-   * Return the direction of this interest.
+   * Return the direction of this kepInterest.
    * 
    * ContextSpace defines each dimension to be a set of semantic tags.
    * Yes, there is also an implementation thats wraps the direction into
@@ -158,12 +158,12 @@ public interface SharkCS extends ContextSpace {
    *
    * @see net.sharkfw.knowledgeBase.ContextSpace
    * 
-   * @return An int value denoting the direction of this interest
+   * @return An int value denoting the direction of this kepInterest
    */
   public int getDirection();
 
   /**
-   * Return the originator dimension of this interest.
+   * Return the originator dimension of this kepInterest.
    * 
    * This peer is the one who can also sign the message.
    * It isn't necessarily part of the peer tag. 
@@ -174,9 +174,9 @@ public interface SharkCS extends ContextSpace {
   public PeerSemanticTag getOriginator();
 
   /**
-   * Return the remotepeer dimension of this interest
+   * Return the remotepeer dimension of this kepInterest
    *
-   * @return A stset containing all remotepeers of this interest
+   * @return A stset containing all remotepeers of this kepInterest
    * @deprecated 
    */
   public PeerSTSet getRemotePeers();
@@ -188,16 +188,16 @@ public interface SharkCS extends ContextSpace {
   public PeerSTSet getPeers();
 
   /**
-   * Return the time dimension of this interest
+   * Return the time dimension of this kepInterest
    *
-   * @return A stset containing all time tags of this interest
+   * @return A stset containing all time tags of this kepInterest
    */
   public TimeSTSet getTimes();
 
   /**
-   * Return the location dimension of this interest
+   * Return the location dimension of this kepInterest
    *
-   * @return A stset containing all geo tags of this interest
+   * @return A stset containing all geo tags of this kepInterest
    */
   public SpatialSTSet getLocations();
 }

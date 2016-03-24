@@ -70,7 +70,7 @@ public class MailTests implements KPListener {
         // Add a string to the ContextPoint at the given coordinates
         javaAliceCP.addInformation("Java ist toll");
 
-        // Create a KnowledgePort to handle the interest
+        // Create a KnowledgePort to handle the kepInterest
         KnowledgePort kp = new StandardKP(aliceSE, javaAliceContext, aliceKB);
 
         // configure e-mail
@@ -112,7 +112,7 @@ public class MailTests implements KPListener {
         ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(bobJavaST, null, 
                 bobbobPST, null, null, null, SharkCS.DIRECTION_IN);
 
-        // Activate a KnowledgePort using the interest to handle incoming events
+        // Activate a KnowledgePort using the kepInterest to handle incoming events
         StandardKP bobKP = new StandardKP(bobSE, cc, bobKB);
 
         MailTests bobPeer = new MailTests();
@@ -165,7 +165,7 @@ public class MailTests implements KPListener {
         ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(bobJavaST, null, 
                 bobbobPST, null, null, null, SharkCS.DIRECTION_IN);
 
-        // Activate a KnowledgePort using the interest to handle incoming events
+        // Activate a KnowledgePort using the kepInterest to handle incoming events
         StandardKP bobKP = new StandardKP(bobSE, cc, bobKB);
 
         MailTests bobPeer = new MailTests();
@@ -222,7 +222,7 @@ public class MailTests implements KPListener {
         }
         javaAliceCP.addInformation(longContent);
 
-        // Create a KnowledgePort to handle the interest
+        // Create a KnowledgePort to handle the kepInterest
         KnowledgePort kp = new StandardKP(aliceSE, javaAliceContext, aliceKB);
 
         // configure e-mail

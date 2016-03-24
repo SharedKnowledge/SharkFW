@@ -54,8 +54,8 @@ public class ASIPStubTest {
         SharkEngine engineB = new J2SEAndroidSharkEngine();
         KnowledgePort testKPB = new TestKP(engineB, "Port B");
 
-//        engineA.startTCP(7070);
-//        engineB.startTCP(7071);
+        engineA.startTCP(7070);
+        engineB.startTCP(7071);
 
 //        ASIPOutMessage outMessage = engineA.createASIPOutMessage("");
 //        outMessage.expose();

@@ -19,7 +19,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  * anchors. Through the keys the generic information can be accessed.
  *
  * Not only generic information, but also interests can be stored by a generic
- * Profile. Each interest is an additional ContextPoint of the generic Profile,
+ * Profile. Each kepInterest is an additional ContextPoint of the generic Profile,
  * but only the profileCP can store generic information.
  *
  * Of course, generic information and interests of the generic Profile can also
@@ -58,9 +58,9 @@ public class GenericProfileImpl implements GenericProfile {
     }
 
     /**
-     * Adds an interest to the generic profile.
+     * Adds an kepInterest to the generic profile.
      *
-     * @param interest the interest which shall be added
+     * @param interest the kepInterest which shall be added
      * @throws SharkKBException
      */
     @Override
@@ -71,9 +71,9 @@ public class GenericProfileImpl implements GenericProfile {
     }
 
     /**
-     * Removes an interest from the generic profile.
+     * Removes an kepInterest from the generic profile.
      *
-     * @param interest the interest which shall be removed
+     * @param interest the kepInterest which shall be removed
      * @throws SharkKBException
      */
     @Override
@@ -85,10 +85,10 @@ public class GenericProfileImpl implements GenericProfile {
     }
 
     /**
-     * Receives an interest from the genric profile.
+     * Receives an kepInterest from the genric profile.
      *
-     * @param interest the interest which shall be received
-     * @return the requested interest or null
+     * @param interest the kepInterest which shall be received
+     * @return the requested kepInterest or null
      * @throws SharkKBException
      */
     @Override

@@ -159,7 +159,7 @@ public interface STSet {
   
   /**
    * A fragment is made up of copies of semantic tags that a found in
-   * this set and which match to the given interest and/or can be found
+   * this set and which match to the given kepInterest and/or can be found
    * with the given fragmentation parameter.
    * @param anchor
    * @param fp

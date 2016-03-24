@@ -185,13 +185,13 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
    */
     @Override
   public void sentInterest(SharkCS interest) {
-        /* there are two list of interest for two different purposes.
+        /* there are two list of kepInterest for two different purposes.
          * Will be revised soon
          */
         this.rememberInterest(interest);
         
     if(interest == null) {
-      L.e("Can't add 'null' interest to silence table!", this);
+      L.e("Can't add 'null' kepInterest to silence table!", this);
       return;
     }
 
@@ -264,7 +264,7 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
       KnowledgeSerializer ks = KEPMessage.getKnowledgeSerializer(KEPMessage.XML);
       String key = ks.serializeSharkCS(interest);
 
-      // Find out when the interest has been sent last
+      // Find out when the kepInterest has been sent last
       Long timestamp = null;
       timestamp = this.messages.get(key);
 
@@ -368,7 +368,7 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
     private KnowledgeStore unhandledKnowledge = new KnowledgeStore();
     
     /**
-     * Remember that this interest was send now
+     * Remember that this kepInterest was send now
      * @param interest 
      */
     protected void rememberInterest(SharkCS interest) {
@@ -376,7 +376,7 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
     }
     
     /**
-     * Remember that this interest was send now
+     * Remember that this kepInterest was send now
      * @param interest 
      */
     protected void rememberKnowledge(Knowledge k) {
@@ -445,12 +445,12 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
     /**
      * Stream was established and can be used for conversion.
      * Something must happen. Best would be to call each knowledge
-     * port with an all interest.
+     * port with an all kepInterest.
      * @param con 
      */
     @Override
     public final void startConversion(StreamConnection con) {
-        // creates an empty interest - which is interpreted as any interest.
+        // creates an empty kepInterest - which is interpreted as any kepInterest.
         Interest anyInterest = InMemoSharkKB.createInMemoInterest();
         anyInterest.setDirection(SharkCS.DIRECTION_INOUT);
         

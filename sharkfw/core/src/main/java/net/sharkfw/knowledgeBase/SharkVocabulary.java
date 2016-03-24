@@ -34,7 +34,7 @@ public interface SharkVocabulary {
      * the SharkKB interface
      * <li> A direction cannot be set on a SharKB. A SharkKB stores 
      * Context Points which can have each direction in their coordinates.
-     * The SharkKB will claim to have an IN and OUT interest in general.
+     * The SharkKB will claim to have an IN and OUT kepInterest in general.
      * 
      * <br/>Note: This isn't a security hazard. It just offers semantic tags
      * but no context points, no knowledge, no information. They can only be
@@ -42,7 +42,7 @@ public interface SharkVocabulary {
      * during extraction.
      * 
      * <li> Semantic Tags can be set hidden. Those tags will not be visible
-     * in the interest.
+     * in the kepInterest.
      * </ul>
      * 
      * @return this knowledge base as Shark context space
@@ -167,16 +167,16 @@ public interface SharkVocabulary {
   public SpatialSTSet getSpatialSTSet() throws SharkKBException;
 
   /**
-   * <p>Create a new interest from the given AnchorSet, using the kb's default FP.
+   * <p>Create a new kepInterest from the given AnchorSet, using the kb's default FP.
    * This method will use the standard fp set.</p>
    *
-   * <p>During interest creation each dimension of the interest is filled
+   * <p>During kepInterest creation each dimension of the kepInterest is filled
    * with values from the kb. The values are STSets. The STSets are determined
    * by running a fragmentation on every STSet of the kb, using the anchor points
    * from <code>as</code> and the standard fp set.</p>
    *
      * @param cs
-   * @param cs The anchorpoints for the new interest.
+   * @param cs The anchorpoints for the new kepInterest.
    * @return An Interest created from the anchorpoints.
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      * @deprecated 

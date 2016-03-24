@@ -67,12 +67,12 @@ public class BrokerKP extends KnowledgePort {
         while(interestIter.hasNext()) {
             SharkCS storedInterest = interestIter.next();
 
-            // mutual interest?
+            // mutual kepInterest?
             Interest mutualInterest = SharkCSAlgebra.contextualize(
                     storedInterest, interest, fps);
 
             if(mutualInterest != null) {
-                L.d("send mutual interest back to caller: " + L.contextSpace2String(mutualInterest), this);
+                L.d("send mutual kepInterest back to caller: " + L.contextSpace2String(mutualInterest), this);
                 kepConnection.expose(mutualInterest);
             }
         }
@@ -81,9 +81,9 @@ public class BrokerKP extends KnowledgePort {
     @Override
     protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
         
-        L.d("interest received: " + L.contextSpace2String(interest), this);
+        L.d("kepInterest received: " + L.contextSpace2String(interest), this);
         try {
-            // process interest
+            // process kepInterest
             if(interest.getDirection() == SharkCS.DIRECTION_IN || 
                     interest.getDirection() == SharkCS.DIRECTION_INOUT) {
                 this.doProcess(interest, kepConnection, this.outInterests);
@@ -120,7 +120,7 @@ public class BrokerKP extends KnowledgePort {
             }
         }
         catch(SharkException e) {
-            L.l("failure while processing interest in HubKP: " + e.getMessage(), this);
+            L.l("failure while processing kepInterest in HubKP: " + e.getMessage(), this);
         }
         
     }

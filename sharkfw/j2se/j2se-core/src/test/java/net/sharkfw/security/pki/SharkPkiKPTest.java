@@ -217,7 +217,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
         bobSe.startTCP(bobPort);
         aliceSe.startTCP(alicePort);
 
-        //Prepare interest
+        //Prepare kepInterest
         STSet stSetInterest = InMemoSharkKB.createInMemoSTSet();
         stSetInterest.createSemanticTag(Certificate.CERTIFICATE_SEMANTIC_TAG_NAME, Certificate.CERTIFICATE_SEMANTIC_TAG_SI);
 
@@ -264,7 +264,7 @@ public class SharkPkiKPTest extends TestCase implements KPListener {
         bobSe.startTCP(bobPort);
         aliceSe.startTCP(alicePort);
 
-        //Prepare interest
+        //Prepare kepInterest
         STSet stSet = InMemoSharkKB.createInMemoSTSet();
         stSet.createSemanticTag(SharkPkiKP.KP_CERTIFICATE_VALIDATION_TAG_NAME, SharkPkiKP.KP_CERTIFICATE_VALIDATION_TAG_SI);
 

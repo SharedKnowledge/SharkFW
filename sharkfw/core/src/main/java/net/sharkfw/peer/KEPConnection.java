@@ -27,8 +27,8 @@ public interface KEPConnection {
     public boolean receivedMessageSigned();
 
   /**
-   * Send <code>interest</code> via <code>expose</code> to all entities on the
-   * <code>REMOTEPEER</code> dimension of that interest.
+   * Send <code>kepInterest</code> via <code>expose</code> to all entities on the
+   * <code>REMOTEPEER</code> dimension of that kepInterest.
    * 
      * @throws net.sharkfw.system.SharkException
    * @see net.sharkfw.knowledgeBase.ExposedInterest
@@ -40,20 +40,20 @@ public interface KEPConnection {
   public void expose(SharkCS interest) throws SharkException;
 
   /**
-   * Send the <code>interest</code> to a specified address.
+   * Send the <code>kepInterest</code> to a specified address.
    *
    * @see net.sharkfw.knowledgeBase.ExposedInterest
    * @see net.sharkfw.kep.KEPResponse
    *
    * @param interest The <code>ExposedInterest</code> to send.
-   * @param receiveraddress The address to send the interest to.
+   * @param receiveraddress The address to send the kepInterest to.
    */
   public void expose(SharkCS interest, String receiveraddress) throws SharkException;
 
   /**
-   * Send the <code>interest</code> to a number of specified addresses.
+   * Send the <code>kepInterest</code> to a number of specified addresses.
    *
-   * @param interest The interest to send
+   * @param interest The kepInterest to send
    * @param receiveraddresses An Array of String containing receiver's addresses
    */
   public void expose(SharkCS interest, String[] receiveraddresses) throws SharkException;

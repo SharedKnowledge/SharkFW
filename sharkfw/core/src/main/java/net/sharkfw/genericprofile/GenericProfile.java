@@ -20,20 +20,20 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  */
 public interface GenericProfile {
     /**
-     * Adds an interest to the existing interests of the profile. 
-     * @param interest  the interest that shall be added
+     * Adds an kepInterest to the existing interests of the profile.
+     * @param interest  the kepInterest that shall be added
      * @throws SharkKBException 
      */
     public void addInterest(ContextCoordinates interest) throws SharkKBException;
     /**
-     * Deletes an interest of the profile.
-     * @param interest the interest that shall be deleted
+     * Deletes an kepInterest of the profile.
+     * @param interest the kepInterest that shall be deleted
      * @throws SharkKBException 
      */
     public void removeInterest(ContextCoordinates interest) throws SharkKBException;
      /**
-     * Delivers an interest of the profile.
-     * @param interest the interest that shall be delivered
+     * Delivers an kepInterest of the profile.
+     * @param interest the kepInterest that shall be delivered
      * @throws SharkKBException 
      */
     public ContextPoint getInterest(ContextCoordinates interest) throws SharkKBException;

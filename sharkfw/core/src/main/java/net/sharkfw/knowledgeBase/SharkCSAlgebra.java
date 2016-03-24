@@ -700,8 +700,8 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
     }
     
     /**
-     * Implementation of interest contextualization. Result is written into
-     * mutualInterest. MutualInterest will be empty if no mutual interest
+     * Implementation of kepInterest contextualization. Result is written into
+     * mutualInterest. MutualInterest will be empty if no mutual kepInterest
      * at all could be calculated. Even non empty intersection of dimensions
      * will be deleted.
      * 
@@ -715,7 +715,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
      * under which identity she likes to act.
      * 
      * Apparently, the Bobs' remote peer must be checked with Alice' peer
-     * dimension to calculate the mutual interest. It is like an inertial frame 
+     * dimension to calculate the mutual kepInterest. It is like an inertial frame
      * by Einstein. Bob has his view, Alice hers.
      * 
      * This methode assumes to be in the inertial frame of context.
@@ -725,7 +725,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
      * mutualInterest.peer = contextualize(source.peer,context.remotePeer);
      * 
      * We have a related consideration in direction. Contextualization shall
-     * lead to an interest that contains tags which are in the source and which
+     * lead to an kepInterest that contains tags which are in the source and which
      * fit to the context without revealing additional information from context.
      * The result shall be sent back to sender.
      * 
@@ -814,7 +814,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
         if(SharkCSAlgebra.isAny(context.getOriginator())) {
             mutualOriginator = source.getOriginator();
             
-        // source is any - take context. Algebra shall narrow down interest - make them more specific    
+        // source is any - take context. Algebra shall narrow down kepInterest - make them more specific
         } else if (SharkCSAlgebra.isAny(source.getOriginator())) {
             mutualOriginator = context.getOriginator();
         
@@ -843,7 +843,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
          * Thus, if no dimension is found either in source or context
          * it means that no constraints at all exists.
          * 
-         * Producing an interest means also:
+         * Producing an kepInterest means also:
          * We look at a source with a focus defined by the context.
          * Note: Context is meant to be declared locally. Source has been
          * retrieved from outside. Thus, we don't want to reveal things from
@@ -854,8 +854,8 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
          * 
          * What happens if source is empty == null == any?
          * We interpret this situation as follows:
-         * Contextualization is meant to narrow down an interest. A contextualized
-         * interest shall be more specific than the source. We also assume that
+         * Contextualization is meant to narrow down an kepInterest. A contextualized
+         * kepInterest shall be more specific than the source. We also assume that
          * the context can be revealed. Note: This is a harsh decision! Thus,
          * if a source is not specified - context is taken instead. 
          * 
@@ -991,7 +991,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
         
         // if this point is reached - no contextualization failed.
         
-        // construct mutual interest
+        // construct mutual kepInterest
         mutualInterest.setDirection(mutualDirection);
         mutualInterest.setOriginator(mutualOriginator);
         mutualInterest.setTopics(mTopics);
@@ -1413,14 +1413,14 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
     * 
     * Each context points comes with coordinates. There are several cases:
     * 
-    * 1. Coordinates can be found in interest - add it
+    * 1. Coordinates can be found in kepInterest - add it
     * 
-    * 2. Coordinates are not directly in the interest. Now, background
+    * 2. Coordinates are not directly in the kepInterest. Now, background
     * knowledge is used. It comes with the knowledge from the remote
     * peer and describes relations between tag used in cp coordinates
     * and other tags. Thus, a CP can be added if there is a way from 
-    * the semantic tag in the coordinate (which is unknown in the interest) 
-    * to a tag in the background that matches with one in the interest.
+    * the semantic tag in the coordinate (which is unknown in the kepInterest)
+    * to a tag in the background that matches with one in the kepInterest.
     * 
     * Actually, this leads to a contextualization. Coordinates are taken 
     * from context point and used to extract a fragment from background
@@ -1468,8 +1468,8 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
 //        System.out.println("Source: (background from received knowledge):");
 //        System.out.println(L.contextSpace2String(knowledge.getContext().asSharkCS()));
 //
-//        System.out.println("Context: (local interest):");
-//        System.out.println(L.contextSpace2String(interest));
+//        System.out.println("Context: (local kepInterest):");
+//        System.out.println(L.contextSpace2String(kepInterest));
         
         
         // create effective background

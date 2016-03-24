@@ -60,13 +60,13 @@ public class InterestsStorage {
          
          Assert.assertTrue(SharkCSAlgebra.identical(interest, iBack));
          
-         // there must not be another interest in the list due to duplicate supression
+         // there must not be another kepInterest in the list due to duplicate supression
          Assert.assertFalse(interests.hasNext());
          
          // for developers eyes only:
          System.out.println(AbstractSharkKB.INTEREST_PROPERTY_NAME + ":" + is.getProperty(AbstractSharkKB.INTEREST_PROPERTY_NAME));
          
-         // remove the only interest and try again
+         // remove the only kepInterest and try again
          is.removeInterest(interest);
          
          // for developers eyes only:

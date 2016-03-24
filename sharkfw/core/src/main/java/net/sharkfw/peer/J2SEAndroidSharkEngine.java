@@ -646,7 +646,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     private static final String UNSENTMESSAGE_SI = "http://www.sharksystem.net/vocabulary/unsentMesssages";
     private SemanticTag unsentMessagesST = InMemoSharkKB.createInMemoSemanticTag("UnsentMessage", UNSENTMESSAGE_SI);
     
-    private static final String INTEREST_CONTENT_TYPE = "x-shark/interest";
+    private static final String INTEREST_CONTENT_TYPE = "x-shark/kepInterest";
     private static final String KNOWLEDGE_CONTENT_TYPE = "x-shark/knowledge";
     
     public void setUnsentMessagesKB(SharkKB kb) {
@@ -688,7 +688,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
         ContextPoint cp = this.getUnsentMessageCP(recipient);
         
         if(cp == null) {
-            L.w("cannot save unsent interest: ", this);
+            L.w("cannot save unsent kepInterest: ", this);
             return;
         }
         
@@ -699,7 +699,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
             i.setContentType(INTEREST_CONTENT_TYPE);
             
         } catch (SharkKBException ex) {
-            L.d("cannot serialize interest", this);
+            L.d("cannot serialize kepInterest", this);
         }
     }
     
@@ -803,10 +803,10 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
 //        if(kpEnum != null) {
 //            while(kpEnum.hasMoreElements()) {
 //                KnowledgePort kp = kpEnum.nextElement();
-//                SharkCS interest = kp.getInterest();
+//                SharkCS kepInterest = kp.getKEPInterest();
 //                
-//                if(interest != null) {
-//                    if(SharkCSAlgebra.isIn(interest, cc)) {
+//                if(kepInterest != null) {
+//                    if(SharkCSAlgebra.isIn(kepInterest, cc)) {
 //                        // we have a kp found
 //                        senderKP = kp;
 //                        break;

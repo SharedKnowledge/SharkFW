@@ -9,7 +9,7 @@ import net.sharkfw.knowledgeBase.*;
  * 
  * This class just takes semantic tags and sets of semantic tags.
  * It does not copy these tags or sets. Thus, tags or sets used
- * as parameters must not be just after transfering to the interest.
+ * as parameters must not be just after transfering to the kepInterest.
  * Copies can be made with each SharkKB.
  * 
  * This class can be created
@@ -49,20 +49,20 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     private int direction; // both
     
     /**
-     * Creates an any interest.
+     * Creates an any kepInterest.
      */
     public InMemoInterest() {
         this(null, null, (PeerSTSet) null, null, null, null, null, SharkCS.DIRECTION_INOUT); 
     }
     
     /**
-     * Creates an interest.
+     * Creates an kepInterest.
      */
     InMemoInterest(STSet topics, STSet types, PeerSTSet senders, 
             PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
             SpatialSTSet locations, int direction) {
         
-        // that's an ASIP interest
+        // that's an ASIP kepInterest
         super(true);
 
         this.topics = topics;
@@ -76,7 +76,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
     
     /**
-     * Creates an interest.
+     * Creates an kepInterest.
      */
     InMemoInterest(STSet topics, STSet types, PeerSemanticTag sender, 
             PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
@@ -92,7 +92,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
 
     /**
      * New Shark applications must not use this contructor.
-     * creates an any interest.
+     * creates an any kepInterest.
      * @deprecated 
      */
     InMemoInterest(STSet topics, PeerSemanticTag originator, 
@@ -130,7 +130,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
     /**
-     * This interest will use this set as provided as parameter. No copy is made.
+     * This kepInterest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
      * @param topics 
@@ -161,7 +161,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
     /**
-     * This interest will use this set as provided as parameter. No copy is made.
+     * This kepInterest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
      * @deprecated 
@@ -181,7 +181,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
     /**
-     * This interest will use this set as provided as parameter. No copy is made.
+     * This kepInterest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
      * @deprecated 
@@ -201,7 +201,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
     /**
-     * This interest will use this set as provided as parameter. No copy is made.
+     * This kepInterest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
      * @deprecated 
@@ -221,7 +221,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
     /**
-     * This interest will use this set as provided as parameter. No copy is made.
+     * This kepInterest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
      */
@@ -239,7 +239,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
     /**
-     * This interest will use this set as provided as parameter. No copy is made.
+     * This kepInterest will use this set as provided as parameter. No copy is made.
      * Thus, the parameter must not be changed after calling this methode. Make
      * a copy if necessary. Copies can be made with any SharkKB.
      * @param locations
@@ -250,9 +250,9 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
   /**
-   * calculates mutual interest. This interest is used as source.
+   * calculates mutual kepInterest. This kepInterest is used as source.
      * @param fp
-   * @return Mutual interest or null if there is no match
+   * @return Mutual kepInterest or null if there is no match
      * @throws net.sharkfw.knowledgeBase.SharkKBException
      * @deprecated 
    */

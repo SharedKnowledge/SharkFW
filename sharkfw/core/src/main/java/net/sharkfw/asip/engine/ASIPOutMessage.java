@@ -24,6 +24,9 @@ import java.security.Signature;
 public class ASIPOutMessage extends ASIPMessage {
 
     private Writer osw = null;
+    private ASIPInterest interest = null;
+    private ASIPKnowledge knowledge = null;
+    private InputStream raw = null;
 
     public ASIPOutMessage(SharkEngine engine,
                           StreamConnection connection,
@@ -36,6 +39,14 @@ public class ASIPOutMessage extends ASIPMessage {
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
 
         osw = new OutputStreamWriter(connection.getOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+    }
+
+    public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
+        super(engine, connection, in.getTtl(), in.getSender(), in.getReceiverPeer(), in.getReceiverSpatial(), in.getReceiverTime());
+        // FIXME Switch sender and receiver.
+        osw = new OutputStreamWriter(connection.getOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+
+        // TODO set kepInterest, knowledge or raw
     }
 
     public void expose(ASIPInterest interest) {

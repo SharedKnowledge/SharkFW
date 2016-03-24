@@ -1,5 +1,6 @@
 package net.sharkfw.peer;
 
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,8 +44,10 @@ import net.sharkfw.asip.engine.ASIPMessage;
  */
 abstract public class KnowledgePort {
 
-    protected SharkCS interest;
-    protected SharkCS receivedInterest; // TODO: Use!
+    protected SharkCS kepInterest;
+    protected SharkCS receivedKEPInterest; // TODO: Use!
+    protected ASIPInterest asipInterest;
+    protected ASIPInterest receiverASIPInterest;
     protected SharkKB kb;
     protected SharkStub sharkStub;
     private boolean isStarted = false;
@@ -103,72 +106,88 @@ abstract public class KnowledgePort {
     /**
      * Set the <code>KEPStub</code> that is used as a protocol engine.
      *
-     * @param kepStub An instance of <code>KEPStub</code> that is used as the protocol engine by the local <code>SharkEngine</code>
+     * @param stub An instance of <code>KEPStub</code> that is used as the protocol engine by the local <code>SharkEngine</code>
      */
-    public void setSharkStub(SharkStub kepStub) {
-        this.sharkStub = kepStub;
+    public void setSharkStub(SharkStub stub) {
+        this.sharkStub = stub;
         this.sharkStub.addListener(this);
     }
 
     /**
-     * Return whether the {@link net.sharkfw.knowledgeBase.Interest} inside the KP is a sending interest.
+     * Return whether the {@link net.sharkfw.knowledgeBase.Interest} inside the KP is a sending kepInterest.
      *
-     * @return <code>true</code> if the interest of this AbstractKP is a sending interest
+     * @return <code>true</code> if the kepInterest of this AbstractKP is a sending kepInterest
      * (has <code>ContextSpace.OUT</code> set on its DIRECTION dimension. <code>false</code> otherwise.
      */
     public boolean isOKP() {
-        SharkCS i = this.getInterest();
-        if(i != null) {
-            int dimension = this.getInterest().getDirection();
-
-            return (dimension == SharkCS.DIRECTION_OUT || 
+        if(getAsipInterest()!=null){
+            int dimension = getAsipInterest().getDirection();
+            return (dimension == SharkCS.DIRECTION_OUT ||
                     dimension == SharkCS.DIRECTION_INOUT);
-        } else {
-            return false;
         }
+        if(getKEPInterest()!=null){
+            int dimension = this.getKEPInterest().getDirection();
+            return (dimension == SharkCS.DIRECTION_OUT ||
+                    dimension == SharkCS.DIRECTION_INOUT);
+        }
+        return false;
     }
 
     /**
      * Return whether the {@ link Interest} inside this AbstractKP is a receiving interest.
      *
-     * @return <code>true</code> if the interest of this AbstractKP is a receiving interest. <code>false</code> otherwise.
+     * @return <code>true</code> if the kepInterest of this AbstractKP is a receiving kepInterest. <code>false</code> otherwise.
      */
     public boolean isIKP() {
-        SharkCS i = this.getInterest();
-        if(i != null) {
-            int dimension = this.getInterest().getDirection();
 
-            return (dimension == SharkCS.DIRECTION_IN || 
+        if(getAsipInterest()!=null){
+            int dimension = getAsipInterest().getDirection();
+            return (dimension == SharkCS.DIRECTION_IN ||
                     dimension == SharkCS.DIRECTION_INOUT);
-        } else {
-            return false;
         }
-        
+        if(getKEPInterest()!=null){
+            int dimension = this.getKEPInterest().getDirection();
+            return (dimension == SharkCS.DIRECTION_IN ||
+                    dimension == SharkCS.DIRECTION_INOUT);
+        }
+        return false;
     }
 
     /**
      * Return the {@link Interest} that this AbstractKP handles.
      * 
-     * @return The interest which is kept inside this AbstractKP.
-     * @return null if no interest was set
+     * @return The kepInterest which is kept inside this AbstractKP.
+     * @return null if no kepInterest was set
      */
-    public SharkCS getInterest() {
-        return this.interest;
+    public SharkCS getKEPInterest() {
+        return this.kepInterest;
     }
     
     /**
-     * Set interest. Knowledge port makes a copy of this interest.
-     * @param interest 
+     * Set kepInterest. Knowledge port makes a copy of this kepInterest.
+     * @param kepInterest
      */
-    protected void setInterest(SharkCS interest) {
+    protected void setKepInterest(SharkCS kepInterest) {
         try {
-            this.interest = InMemoSharkKB.createInMemoCopy(interest);
+            this.kepInterest = InMemoSharkKB.createInMemoCopy(kepInterest);
         } catch (SharkKBException ex) {
-            this.interest = interest;
+            this.kepInterest = kepInterest;
         }
     }
 
-    /** 
+    public ASIPInterest getAsipInterest() {
+        return this.asipInterest;
+    }
+
+    protected void setAsipInterest(ASIPInterest asipInterest){
+        try {
+            this.asipInterest = InMemoSharkKB.createInMemoCopy(asipInterest);
+        } catch (SharkKBException e) {
+            this.asipInterest = asipInterest;
+        }
+    }
+
+    /**
      * Make this AbstractKP stop listening to incoming requests.
      */
     public void stop() {
@@ -254,7 +273,7 @@ abstract public class KnowledgePort {
         SharkCS msgInterest = msg.getInterest();
 
         if (msgInterest != null) {
-            this.receivedInterest = msgInterest;
+            this.receivedKEPInterest = msgInterest;
         }
 
         // set security setting
@@ -311,9 +330,8 @@ abstract public class KnowledgePort {
         }
     }
 
-    protected void doProcess(ASIPInMessage msg, ASIPConnection con){
+    protected void doProcess(ASIPInMessage msg, ASIPConnection con) /*TODO what is here todo?*/{
 
-        // TODO
         L.d("about handling ASIP message");
 
         // Do a lot of other stuff here.. add what is required, see below
@@ -362,7 +380,7 @@ abstract public class KnowledgePort {
      * @param asipConnection 
      */
     protected void handleExpose(ASIPSpace interest, ASIPConnection asipConnection) throws SharkKBException {
-        // produce a KEP interest based on LASP-interest
+        // produce a KEP kepInterest based on LASP-kepInterest
         
         STSet topics = interest.getTopics();
         
@@ -386,7 +404,7 @@ abstract public class KnowledgePort {
         SpatialSTSet locations = interest.getLocations();
         int direction = interest.getDirection();
         
-        SharkCS kepInterest = InMemoSharkKB.createInMemoInterest(topics, originator, peers, 
+        SharkCS kepInterest = InMemoSharkKB.createInMemoInterest(topics, originator, peers,
                 remotePeers, times, locations, direction);
         
         this.handleExpose(kepInterest, asipConnection.asKepConnection());
@@ -434,7 +452,7 @@ abstract public class KnowledgePort {
      * Notifiy all Listeners for event 'expose sent'.
      * 
      * @param kp The kp instance that sent the expose.
-     * @param mutualinterest The interest that has been sent.
+     * @param mutualinterest The kepInterest that has been sent.
      */
     protected void notifyExposeSent(KnowledgePort kp, SharkCS mutualinterest) {
         Iterator listenerIter = this.listeners.iterator();
@@ -494,32 +512,43 @@ abstract public class KnowledgePort {
      * @param k knowledge to be sent
      * @param recipient addresses in Shark format. mail://... tcp://... etc.
      */
-    public void sendKnowledge(Knowledge k, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
-        /*
-        String[] addresses = recipient.getAddresses();
-        this.sendKEPKnowledge(k, addresses);
-        */
-        
+    public void sendKnowledge(Knowledge k, PeerSemanticTag recipient)
+            throws SharkSecurityException, SharkKBException, IOException {
         this.se.sendKEPKnowledge(k, recipient, this);
     }
 
-    public void sendKnowledge(ASIPKnowledge k, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException{
+    public void sendKnowledge(ASIPKnowledge k, PeerSemanticTag recipient)
+            throws SharkSecurityException, SharkKBException, IOException{
+
         this.se.sendASIPKnowledge(k, recipient, this);
     }
     
     /**
-     * Send current interest to recipient
+     * Send current kepInterest to recipient
      * @param recipient 
      */
-    public void publish(PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
-        this.sendInterest(this.getInterest(), recipient);
+    public void publish(PeerSemanticTag recipient)
+            throws SharkSecurityException, SharkKBException, IOException {
+
+        if(getAsipInterest()!=null)
+            this.sendInterest(getAsipInterest(), recipient);
+        else if(getKEPInterest()!=null)
+            this.sendInterest(this.getKEPInterest(), recipient);
     }
 
     @SuppressWarnings("deprecation")
-    public void sendInterest(SharkCS interest, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
+    public void sendInterest(SharkCS interest, PeerSemanticTag recipient)
+            throws SharkSecurityException, SharkKBException, IOException {
+
         this.se.sendKEPInterest(interest, recipient, this);
     }
-    
+
+    public void sendInterest(ASIPInterest interest, PeerSemanticTag recipient)
+            throws SharkSecurityException, SharkKBException, IOException {
+
+        this.se.sendASIPInterest(interest, recipient, this);
+    }
+
     /**
      * Return an Array of FragmentationParameters like:
      * <code>new FragmentationParameter(false, false, 0);</code>

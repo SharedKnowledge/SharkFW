@@ -20,7 +20,7 @@ public interface KEPMessageAccounting {
   public void setSilentPeriod(int millis);
 
   /**
-   * Notify the accounting system of a sent interest.
+   * Notify the accounting system of a sent kepInterest.
    *
    * @param interest The <code>ExposedInterest</code> that was sent.
    */
@@ -34,9 +34,9 @@ public interface KEPMessageAccounting {
   public void sentKnowledge(Knowledge knowledge);
 
   /**
-   * Check if accounting allows to send the interest
-   * @param interest The interest to be sent
-   * @return <code>True</code> if this interest has not been sent before in the silence period. <code>False</code> otherwise.
+   * Check if accounting allows to send the kepInterest
+   * @param interest The kepInterest to be sent
+   * @return <code>True</code> if this kepInterest has not been sent before in the silence period. <code>False</code> otherwise.
    */
   public boolean interestAllowed(SharkCS interest);
 

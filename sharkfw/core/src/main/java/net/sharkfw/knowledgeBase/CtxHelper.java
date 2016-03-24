@@ -27,7 +27,7 @@ class CtxHelper {
             } else {
                 // source and context are not any - contextualize
                 this.result = source.contextualize(context, fp);
-                // that must be not null if mutual interest exists
+                // that must be not null if mutual kepInterest exists
                 if(this.result == null || this.result.isEmpty()) {
                     this.success = false;
                 } else {

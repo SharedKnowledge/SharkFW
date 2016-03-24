@@ -382,7 +382,7 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
      */
     @Override
     public void expose(SharkCS interest) throws IOException {
-//      if(!this.se.getKepStub().interestAllowed(interest)){
+//      if(!this.se.getKepStub().interestAllowed(kepInterest)){
 //        // It is not allowed due to silence period.
 //        L.d("Message not allowed to be sent!", this);
 //        return;
@@ -401,7 +401,7 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
             throw new IOException(e.getMessage());
         }
 
-//        L.d("Wrote interest", this);
+//        L.d("Wrote kepInterest", this);
         // notify we are done with that message
         this.sent();
         

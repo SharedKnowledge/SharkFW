@@ -18,9 +18,9 @@ import net.sharkfw.system.SharkNotSupportedException;
 public interface KnowledgeSerializer {
     
     /**
-     * Serialize an interest unto the given OutputStream.
+     * Serialize an kepInterest unto the given OutputStream.
      *
-     * @param remoteInterest The interest to be serialized
+     * @param remoteInterest The kepInterest to be serialized
      * @param os The OutputStream on which to write.
      * @throws java.io.IOException Thrown if problems with the stream occur.
      */
@@ -46,7 +46,7 @@ public interface KnowledgeSerializer {
     Knowledge parseKnowledge(SharkInputStream is) throws IOException, SharkKBException;
 
     /**
-     * Deserialize an interest from a given InputStream.
+     * Deserialize an kepInterest from a given InputStream.
      *
      * @param is The stream from which to read
      * @return a new Interest as read from the InputStream

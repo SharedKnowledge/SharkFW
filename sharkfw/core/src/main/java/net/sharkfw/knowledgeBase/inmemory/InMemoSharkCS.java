@@ -27,7 +27,7 @@ public abstract class InMemoSharkCS implements SharkCS, ASIPSpace {
     direction   direction
     */
     
-    // flag if this object acts as KEP or LASP interest
+    // flag if this object acts as KEP or LASP kepInterest
     private final boolean isASIP;
     
     boolean isASIPInterest() {

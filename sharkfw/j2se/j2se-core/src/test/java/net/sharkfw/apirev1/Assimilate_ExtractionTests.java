@@ -132,7 +132,7 @@ public class Assimilate_ExtractionTests {
       FragmentationParameter[] fpArray = KnowledgePort.getZeroFP();
       fpArray[SharkCS.DIM_TOPIC] = fp; // Allow sub/super assocs on topic dimension
       
-      // Now create an interest to speak about shovels!
+      // Now create an kepInterest to speak about shovels!
       ContextCoordinates aliceAnchor = aliceKB.createContextCoordinates(shovel, alicePeer, alicePeer, null, null, null, SharkCS.DIRECTION_OUT);
       SharkCS aliceInterest = aliceKB.contextualize(aliceAnchor, fpArray);
       
@@ -149,7 +149,7 @@ public class Assimilate_ExtractionTests {
       Assert.assertNotNull(superTXSt);
       Assert.assertTrue(SharkCSAlgebra.identical(superTXSt, tools));
 
-      // spade must no in the interest
+      // spade must no in the kepInterest
       SemanticTag st = aliceInterestTopics.getSemanticTag(spade.getSI()); 
       Assert.assertNull(st);
       
@@ -183,7 +183,7 @@ public class Assimilate_ExtractionTests {
       //                          Communication                            //
       ///////////////////////////////////////////////////////////////////////
       
-      // Alice sends interest - Bob creates effective interest:
+      // Alice sends kepInterest - Bob creates effective kepInterest:
       SharkCS bobAliceInterest = SharkCSAlgebra.contextualize(aliceInterest, bobInterest, fpArray);
       
       // should be: 
@@ -198,10 +198,10 @@ public class Assimilate_ExtractionTests {
       Assert.assertNotNull(superTXSt);
       Assert.assertTrue(SharkCSAlgebra.identical(superTXSt, tools));
 
-      // this interest is sent back to alice - she contextualizes
+      // this kepInterest is sent back to alice - she contextualizes
       SharkCS aliceBobInterest = SharkCSAlgebra.contextualize(bobAliceInterest, aliceInterest, fpArray);
       
-      System.out.println("Alice extracts with mutual her interest");
+      System.out.println("Alice extracts with mutual her kepInterest");
       System.out.println(L.contextSpace2String(aliceBobInterest));
       
       Knowledge alice2BobKnowledge = SharkCSAlgebra.extract(aliceKB, aliceBobInterest, fpArray); 

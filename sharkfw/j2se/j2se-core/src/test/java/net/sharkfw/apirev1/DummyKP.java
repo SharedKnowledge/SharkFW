@@ -8,7 +8,7 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 
 /**
- * This dummy knowledge ports just remembers the last received knowledge or interest.
+ * This dummy knowledge ports just remembers the last received knowledge or kepInterest.
  * The memory can be reset.
  * @author thsc
  */
@@ -29,7 +29,7 @@ public class DummyKP extends KnowledgePort {
 
     @Override
     protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
-        L.d("DummyKP: handleExpose reached - remember that interest:");
+        L.d("DummyKP: handleExpose reached - remember that kepInterest:");
         L.d(L.contextSpace2String(interest));
         this.lastInterest = interest;
     }
