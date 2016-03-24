@@ -5,6 +5,8 @@
 package net.sharkfw.protocols.http;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -38,7 +40,7 @@ public class HTTPConnection extends TCPConnection {
     }    
     
     private void printRequestHeader() throws IOException {        
-        PrintStream ps = new PrintStream(super.getOutputStream().getOutputStream());
+        PrintStream ps = new PrintStream(super.getSharkOutputStream().getOutputStream());
         ps.print("POST HTTP/1.1");
         ps.write(EOL);
         ps.print("HOST: " + super.getReplyAddressString());
@@ -48,5 +50,4 @@ public class HTTPConnection extends TCPConnection {
         ps.write(EOL);
         // do not flush to send the Header with the message
     }
-
 }

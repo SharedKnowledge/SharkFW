@@ -8,12 +8,10 @@ import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.system.Base64;
 import net.sharkfw.system.L;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.security.Signature;
 
 /**
  * Objects of this class are produced by the framework in order
@@ -38,13 +36,13 @@ public class ASIPOutMessage extends ASIPMessage {
 
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
 
-        osw = new OutputStreamWriter(connection.getOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+        osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
     }
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
         super(engine, connection, in.getTtl(), in.getSender(), in.getReceiverPeer(), in.getReceiverSpatial(), in.getReceiverTime());
         // FIXME Switch sender and receiver.
-        osw = new OutputStreamWriter(connection.getOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+        osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
 
         // TODO set kepInterest, knowledge or raw
     }

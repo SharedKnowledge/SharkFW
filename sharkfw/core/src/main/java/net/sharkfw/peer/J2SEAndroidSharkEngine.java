@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+
+import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.kep.SimpleKEPStub;
 import net.sharkfw.kep.format.XMLSerializer;
@@ -76,6 +78,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
      */
     public J2SEAndroidSharkEngine() {
         super();
+//        this.setASIPStub(new SimpleASIPStub(this)); /*TODO*/
         this.setKEPStub(new SimpleKEPStub(this));
 		tcp = null;
     }

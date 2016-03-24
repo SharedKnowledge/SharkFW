@@ -18,7 +18,6 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine.SecurityLevel;
 import net.sharkfw.peer.SharkEngine.SecurityReplyPolicy;
-import net.sharkfw.pki.SharkPublicKeyStorage;
 import net.sharkfw.protocols.*;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.*;
@@ -150,7 +149,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
       this.se = se;
       this.con = con;
 //      L.d("Trying to get input stream", this);
-      this.is = con.getInputStream();
+      this.is = con.getSharkInputStream();
 
 //      L.d("Trying to get reply address", this);
       /*
@@ -241,7 +240,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
 
         // Check if bytes are available on stream.
         if(is.getInputStream().available() > 0) {
-//          L.d("Available bytes on stream: " + is.getInputStream().available(), this);
+//          L.d("Available bytes on stream: " + is.getSharkInputStream().available(), this);
         } else {
           L.d("No more bytes on stream!", this);          
 //          throw new IOException("No more bytes on Stream!");

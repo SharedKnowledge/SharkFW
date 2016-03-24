@@ -121,11 +121,21 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
         }
     }
 
-    public SharkInputStream getInputStream() {
+    public SharkInputStream getSharkInputStream() {
         return new StandardSharkInputStream(this.in);
     }
 
-    public SharkOutputStream getOutputStream() {
+    @Override
+    public InputStream getInputStream() {
+        return this.in;
+    }
+
+    @Override
+    public OutputStream getOutputStreamOutputStream() {
+        return this.out;
+    }
+
+    public SharkOutputStream getSharkOutputStream() {
         return new UTF8SharkOutputStream(this.out);
     }
 

@@ -403,10 +403,10 @@ abstract public class KnowledgePort {
         TimeSTSet times = interest.getTimes();
         SpatialSTSet locations = interest.getLocations();
         int direction = interest.getDirection();
-        
+
         SharkCS kepInterest = InMemoSharkKB.createInMemoInterest(topics, originator, peers,
                 remotePeers, times, locations, direction);
-        
+
         this.handleExpose(kepInterest, asipConnection.asKepConnection());
     }
     

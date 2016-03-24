@@ -90,14 +90,14 @@ public class KEPSession extends Thread {
                 // no listener handled that request
                 // maybe there is another KEP methode in the stream
                 try {
-                    if(this.con.getInputStream().available() > 0) {
+                    if(this.con.getSharkInputStream().available() > 0) {
                     	L.d("More bytes available on inputstream" , this);
                     	handled = true;
                     } else {
                         // maybe remote peer wasn't fast enough - give it some time
                         L.d("Waiting for remotepeer for: " + se.getConnectionTimeOut(), this);
                         Thread.sleep(se.getConnectionTimeOut());
-                        if(this.con.getInputStream().available() > 0) {
+                        if(this.con.getSharkInputStream().available() > 0) {
                         	handled = true;
                         }
                     }
@@ -109,7 +109,7 @@ public class KEPSession extends Thread {
         } while (handled);
 
         try {
-            final InputStream inputStream = this.con.getInputStream().getInputStream();
+            final InputStream inputStream = this.con.getSharkInputStream().getInputStream();
             if (inputStream.available() > 0) {
                 L.e("Closing TCPConnection although there is more data on the stream: ", this);
                 Streamer.stream(inputStream, System.err, 5);

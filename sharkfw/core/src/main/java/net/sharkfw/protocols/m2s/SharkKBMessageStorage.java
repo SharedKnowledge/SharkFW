@@ -251,7 +251,7 @@ public class SharkKBMessageStorage implements MessageStorage {
     /**
      * Messages have a maximal length. Each stored message for further 
      * transmission remembers those limits. (Parameter are that by creating 
-     * the stored message with getOutputStream)
+     * the stored message with getSharkOutputStream)
      * 
      * @param id
      * @return 

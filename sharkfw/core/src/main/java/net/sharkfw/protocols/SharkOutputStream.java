@@ -11,7 +11,7 @@ import java.io.OutputStream;
  * <p>An output stream wrapping a java native outputstream which allows writing
  * of strings as a primitive (like {@link DataOutputStream}). </p>
  * 
- * <p>The encapsulated {@link OutputStream} can be accessed by calling <code>getOutputStream()</code>,
+ * <p>The encapsulated {@link OutputStream} can be accessed by calling <code>getSharkOutputStream()</code>,
  * when binary data needs to be written to the stream directly.</p>
  * @author mfi
  */

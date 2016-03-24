@@ -8,12 +8,13 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Created by msc on 21.03.16.
  */
-public class ASIPStubTest {
+public class ASIPStubTest extends ASIPBaseTest {
 
 
     PeerSemanticTag sender;
@@ -32,6 +33,8 @@ public class ASIPStubTest {
     @Before
     public void setUp() throws Exception {
 
+        super.setUp();
+
         peers = InMemoSharkKB.createInMemoPeerSTSet();
 
         sender = peers.createPeerSemanticTag("SENDER", "www.si1.de", "tcp://addr1.de");
@@ -41,10 +44,11 @@ public class ASIPStubTest {
 
     @After
     public void tearDown() throws Exception {
-
+        super.tearDown();
 
     }
 
+    @Ignore
     @Test
     public void KPCommunication_replyToIncomingData_success() throws Exception {
 
@@ -56,6 +60,20 @@ public class ASIPStubTest {
 
         engineA.startTCP(7070);
         engineB.startTCP(7071);
+
+        String[] addressA = new String[] { "tcp://localhost:7070" };
+        String[] addressB = new String[] { "tcp://localhost:7071" };
+
+        PeerSemanticTag peerA = InMemoSharkKB.createInMemoPeerSemanticTag("Peer A", "www.peer-a.de", "tcp://localhost:7070");
+        PeerSemanticTag peerB = InMemoSharkKB.createInMemoPeerSemanticTag("Peer B", "www.peer-b.de", "tcp://localhost:7071");
+
+        ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, sender, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
+
+        ASIPOutMessage outMessage = engineA.createASIPOutMessage(addressB, peerA, peerB, null, null, 10);
+        outMessage.expose(space);
+
+        Thread.sleep(10000);
+
 
 //        ASIPOutMessage outMessage = engineA.createASIPOutMessage("");
 //        outMessage.expose();

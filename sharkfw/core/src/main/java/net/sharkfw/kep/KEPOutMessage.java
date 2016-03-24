@@ -69,7 +69,7 @@ public class KEPOutMessage extends KEPMessage implements KEPEngine {
         this.se = se;
         this.con = con;
 //        L.d("Trying to get output stream", this);
-        this.os = this.con.getOutputStream();
+        this.os = this.con.getSharkOutputStream();
 //        L.d("Success.", this);
         this.ks = ks;
         this.recipientAddress = con.getReceiverAddressString();

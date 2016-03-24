@@ -993,7 +993,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         Enumeration addrEnum = Util.array2Enum(addresses);
         while (addrEnum.hasMoreElements()) {
             String address = (String) addrEnum.nextElement();
-            L.d("sendKEPInterest: try address:" + address, this);
+            L.d("sendASIPInterest: try address:" + address, this);
             //boolean fromPool = false;
             try {
                 /*
@@ -1042,8 +1042,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             }
 
             if (sConn != null /*&& !fromPool*/) {
-                // TODO asipStub.handleStream
-                this.kepStub.handleStream(sConn);
+                this.asipStub.handleStream(sConn);
             }
 
             // one kep message is enough
@@ -1362,13 +1361,23 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
          * send the kepInterest to every peer
          * on the REMOTEPEER dimension.
          */
-        SharkCS interest = kp.getKEPInterest();
-        // Return if no kepInterest was set
-        if (interest == null) {
-            return;
-        }
+        SharkCS kepInterest = null;
+        ASIPInterest asipInterest = null;
+        PeerSTSet recipients = null;
+
+        if(kp.getAsipInterest()!=null){
+            asipInterest = kp.getAsipInterest();
+            recipients = asipInterest.getReceivers();
+        } else if(kp.getKEPInterest()!=null){
+            kepInterest = kp.getKEPInterest();
+            try {
+                recipients = (PeerSTSet) kepInterest.getSTSet(SharkCS.DIM_REMOTEPEER);
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+            }
+        } else{ return; }
+
         try {
-            PeerSTSet recipients = (PeerSTSet) interest.getSTSet(SharkCS.DIM_REMOTEPEER);
             Enumeration<SemanticTag> recipientTags = recipients.tags();
             while (recipientTags != null && recipientTags.hasMoreElements()) {
                 PeerSemanticTag ropst = (PeerSemanticTag) recipientTags.nextElement();

@@ -62,7 +62,7 @@ public class M2SConnection extends ConnectionListenerManager implements StreamCo
     }
 
     @Override
-    public SharkInputStream getInputStream() {
+    public SharkInputStream getSharkInputStream() {
         if(sis == null) {
             if(this.bais == null) {
                 this.is = new MessagesToStreamInputStream(this.storage, this.id);
@@ -77,7 +77,17 @@ public class M2SConnection extends ConnectionListenerManager implements StreamCo
     }
 
     @Override
-    public SharkOutputStream getOutputStream() {
+    public InputStream getInputStream() {
+        return this.is;
+    }
+
+    @Override
+    public OutputStream getOutputStreamOutputStream() {
+        return this.os;
+    }
+
+    @Override
+    public SharkOutputStream getSharkOutputStream() {
         if(this.sos == null) {
             
             // give it a new id - an id identifies NOT a session but a message

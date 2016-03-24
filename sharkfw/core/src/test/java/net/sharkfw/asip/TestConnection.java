@@ -23,12 +23,22 @@ public class TestConnection implements StreamConnection {
     }
 
     @Override
-    public SharkInputStream getInputStream() {
+    public SharkInputStream getSharkInputStream() {
         return new StandardSharkInputStream(this.is);
     }
 
     @Override
-    public SharkOutputStream getOutputStream() {
+    public InputStream getInputStream() {
+        return this.is;
+    }
+
+    @Override
+    public OutputStream getOutputStreamOutputStream() {
+        return this.os;
+    }
+
+    @Override
+    public SharkOutputStream getSharkOutputStream() {
         return new UTF8SharkOutputStream(this.os);
     }
 
