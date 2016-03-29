@@ -131,7 +131,7 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
     }
 
     @Override
-    public OutputStream getOutputStreamOutputStream() {
+    public OutputStream getOutputStream() {
         return this.out;
     }
 

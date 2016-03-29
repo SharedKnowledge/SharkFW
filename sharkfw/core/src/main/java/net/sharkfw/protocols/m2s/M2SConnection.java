@@ -82,7 +82,7 @@ public class M2SConnection extends ConnectionListenerManager implements StreamCo
     }
 
     @Override
-    public OutputStream getOutputStreamOutputStream() {
+    public OutputStream getOutputStream() {
         return this.os;
     }
 

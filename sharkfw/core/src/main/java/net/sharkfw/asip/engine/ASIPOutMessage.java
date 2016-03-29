@@ -25,6 +25,7 @@ public class ASIPOutMessage extends ASIPMessage {
     private ASIPInterest interest = null;
     private ASIPKnowledge knowledge = null;
     private InputStream raw = null;
+    private OutputStream os = null;
 
     public ASIPOutMessage(SharkEngine engine,
                           StreamConnection connection,
@@ -36,12 +37,13 @@ public class ASIPOutMessage extends ASIPMessage {
 
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
 
-        osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+        this.os = connection.getOutputStream();
+
+        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
     }
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
-        super(engine, connection, in.getTtl(), in.getSender(), in.getReceiverPeer(), in.getReceiverSpatial(), in.getReceiverTime());
-        // FIXME Switch sender and receiver.
+        super(engine, connection, in.getTtl(), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime());
         osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
 
         // TODO set kepInterest, knowledge or raw
@@ -52,13 +54,22 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
+        if(this.osw == null)
+            osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+
         try {
             this.osw.write(ASIPSerializer.serializeExpose(this, interest).toString());
-            this.osw.close();
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                this.osw.close();
+                this.osw = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -69,13 +80,21 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
+        if(this.osw == null)
+            osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+
         try {
             this.osw.write(ASIPSerializer.serializeInsert(this, knowledge).toString());
-            this.osw.close();
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                this.osw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -85,15 +104,24 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
+        if(this.osw == null)
+            osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+
         try {
             this.osw.write(ASIPSerializer.serializeRaw(this, raw).toString());
-            this.osw.close();
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();
         } catch (IOException e) {
             L.d("Write failed");
             e.printStackTrace();
+        } finally {
+            try {
+                this.osw.close();
+                this.osw = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -104,13 +132,20 @@ public class ASIPOutMessage extends ASIPMessage {
 
         try {
             this.osw.write(ASIPSerializer.serializeRaw(this, inputStream).toString());
-            this.osw.close();
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();
         } catch (IOException e) {
             L.d("Write failed");
             e.printStackTrace();
+        } finally {
+            try {
+                this.osw.close();
+                this.osw = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

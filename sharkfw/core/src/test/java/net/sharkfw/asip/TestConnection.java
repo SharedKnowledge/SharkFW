@@ -33,7 +33,7 @@ public class TestConnection implements StreamConnection {
     }
 
     @Override
-    public OutputStream getOutputStreamOutputStream() {
+    public OutputStream getOutputStream() {
         return this.os;
     }
 

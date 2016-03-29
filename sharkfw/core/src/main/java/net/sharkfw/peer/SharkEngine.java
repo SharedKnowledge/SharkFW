@@ -15,6 +15,8 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPStub;
 
+import net.sharkfw.asip.engine.ASIPConnection;
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.kep.KEPMessage;
@@ -963,6 +965,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
 
         return false;
+    }
+
+    public ASIPOutMessage createASIPOutResponse(StreamConnection connection, String[] receeiverAddress, ASIPInMessage inMessage) throws SharkKBException {
+
+        if(connection != null){
+            return new ASIPOutMessage(this, connection, inMessage);
+        } else {
+            return this.createASIPOutMessage(receeiverAddress, inMessage.getSender());
+        }
     }
 
     public ASIPOutMessage createASIPOutMessage(String[] addresses, PeerSemanticTag receiver) {

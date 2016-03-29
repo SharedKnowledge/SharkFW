@@ -72,7 +72,7 @@ public class ASIPStubTest extends ASIPBaseTest {
         ASIPOutMessage outMessage = engineA.createASIPOutMessage(addressB, peerA, peerB, null, null, 10);
         outMessage.expose(space);
 
-        Thread.sleep(10000);
+        Thread.sleep(2000);
 
 
 //        ASIPOutMessage outMessage = engineA.createASIPOutMessage("");

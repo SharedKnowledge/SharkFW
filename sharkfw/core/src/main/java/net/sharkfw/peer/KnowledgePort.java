@@ -379,7 +379,7 @@ abstract public class KnowledgePort {
      * @param interest
      * @param asipConnection 
      */
-    protected void handleExpose(ASIPSpace interest, ASIPConnection asipConnection) throws SharkKBException {
+    protected void handleExpose(ASIPInterest interest, ASIPConnection asipConnection) throws SharkKBException {
         // produce a KEP kepInterest based on LASP-kepInterest
         
         STSet topics = interest.getTopics();

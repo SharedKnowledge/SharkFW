@@ -23,7 +23,7 @@ public interface StreamConnection {
 
     public InputStream getInputStream();
 
-    public OutputStream getOutputStreamOutputStream();
+    public OutputStream getOutputStream();
 
     /**
      * Return an <code>OutputStream</code> from this connection.

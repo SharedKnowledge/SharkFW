@@ -5,11 +5,13 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 
 import net.sharkfw.system.SharkSecurityException;
 
@@ -89,18 +91,18 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public ASIPOutMessage convertToASIPOutMessage() throws SharkKBException {
-        return new ASIPOutMessage(this.se, this.con, this);
+    public ASIPOutMessage createResponse(String[] address) throws SharkKBException {
+        return this.se.createASIPOutResponse(this.con, address, this);
     }
 
     @Override
     public void sendMessage(ASIPOutMessage msg, String[] addresses) throws SharkException {
-
+        // TODO sendMessage
     }
 
     @Override
     public void sendMessage(ASIPOutMessage msg) throws SharkException {
-
+        // TODO sendMessage
     }
 
     @Override
@@ -120,62 +122,100 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void expose(SharkCS interest) throws SharkException {
-
+        // do nothing
     }
 
     @Override
     public void expose(SharkCS interest, String receiveraddress) throws SharkException {
-
+        // do nothing
     }
 
     @Override
     public void expose(SharkCS interest, String[] receiveraddresses) throws SharkException {
-
+        // do nothing
     }
 
     @Override
     public void insert(Knowledge k, String receiveraddress) throws SharkException {
-
+        // do nothing
     }
 
     @Override
     public void insert(Knowledge k, String[] receiveraddresses) throws SharkException {
-
+        // do nothing
     }
 
     @Override
     public void expose(ASIPInterest interest) throws SharkException {
+        try {
+            STSet remotepeers = interest.getReceivers();
+            Enumeration rPeers = null;
 
+            if(remotepeers != null) {
+                rPeers = remotepeers.tags();
+            }
+
+            if(rPeers == null || !rPeers.hasMoreElements()) {
+                // there are no peer at all - maybe we got it through a stream
+                this.expose(interest, (String[]) null);
+                return;
+            }
+
+            // Send kepInterest to every peer
+            while (rPeers.hasMoreElements()) {
+                PeerSemanticTag rpst = (PeerSemanticTag) rPeers.nextElement();
+                // try every address of that peer
+                String[] adr = rpst.getAddresses();
+                if (adr == null) {
+                    L.e("Peer has no addresses. Unable to proceed.", this);
+                    continue;
+                }
+
+                this.expose(interest, adr);
+            }
+        } catch (SharkException ex) {
+            // KB Error
+            L.e(ex.getMessage(), this);
+        }
     }
 
     @Override
     public void expose(ASIPInterest interest, String receiveraddress) throws SharkException {
-
+        this.expose(interest, new String[]{ receiveraddress });
     }
 
     @Override
     public void expose(ASIPInterest interest, String[] receiveraddresses) throws SharkException {
-
+        ASIPOutMessage outMessage = this.createResponse(receiveraddresses);
+        if(outMessage != null){
+            outMessage.expose(interest);
+        }
     }
 
     @Override
     public void insert(ASIPKnowledge k, String receiveraddress) throws SharkException {
-
+        this.insert(k, new String[] { receiveraddress });
     }
 
     @Override
     public void insert(ASIPKnowledge k, String[] receiveraddresses) throws SharkException {
-
+        ASIPOutMessage outMessage = this.createResponse(receiveraddresses);
+        if(outMessage != null){
+            outMessage.insert(k);
+        }
     }
 
     @Override
     public void raw(InputStream stream, String address) throws SharkException {
-
+        this.raw(stream, new String[] { address });
     }
 
     @Override
     public void raw(InputStream stream, String[] address) throws SharkException {
-
+        ASIPOutMessage outMessage = this.createResponse(address);
+        if(outMessage != null){
+            outMessage.raw(stream);
+        }
     }
 
     @Override
