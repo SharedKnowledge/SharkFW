@@ -30,6 +30,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     private ASIPInterest interest;
     private InputStream raw;
     private String parsedString;
+    private ASIPOutMessage response;
 
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
 
@@ -147,6 +148,9 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void expose(ASIPInterest interest) throws SharkException {
+
+        L.d("Expose called", this);
+
         try {
             STSet remotepeers = interest.getReceivers();
             Enumeration rPeers = null;
@@ -163,6 +167,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
             // Send kepInterest to every peer
             while (rPeers.hasMoreElements()) {
+                L.d("peers", this);
                 PeerSemanticTag rpst = (PeerSemanticTag) rPeers.nextElement();
                 // try every address of that peer
                 String[] adr = rpst.getAddresses();
@@ -177,6 +182,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
             // KB Error
             L.e(ex.getMessage(), this);
         }
+
+
     }
 
     @Override
@@ -186,6 +193,12 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void expose(ASIPInterest interest, String[] receiveraddresses) throws SharkException {
+        if(interest == null)
+            L.d("no interest");
+        if(receiveraddresses.length < 0 )
+            L.d("no address");
+
+        L.d("create Response.");
         ASIPOutMessage outMessage = this.createResponse(receiveraddresses);
         if(outMessage != null){
             outMessage.expose(interest);
@@ -220,7 +233,10 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public boolean responseSent() {
-        return false;
+        if(this.response == null) {
+            return false;
+        }
+        return response.responseSent();
     }
 
     @Override

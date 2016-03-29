@@ -33,6 +33,7 @@ public class ASIPSession extends Thread {
         this.engine = engine;
         this.connection = connection;
         this.stub = stub;
+        L.d("ASIPStub: Session created.", this);
     }
 
     public void initSecurity(PrivateKey privateKey, SharkPkiStorage sharkPkiStorage,
@@ -53,10 +54,11 @@ public class ASIPSession extends Thread {
         boolean handled = false;
 
         do{
+            L.d("ASIPStub: Session loop.", this);
             try {
                 ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
-                inMessage.initSecurity(this.privateKey, this.sharkPkiStorage, this.encryptionLevel,
-                        this.signatureLevel, this.replyPolicy, this.refuseUnverifiably);
+//                inMessage.initSecurity(this.privateKey, this.sharkPkiStorage, this.encryptionLevel,
+//                        this.signatureLevel, this.replyPolicy, this.refuseUnverifiably);
                 inMessage.parse();
 
                 handled = this.stub.callListener(inMessage);

@@ -67,7 +67,8 @@ abstract public class KnowledgePort {
         this.se = se;
         this.kb = kb;
         if (se != null) {
-            this.sharkStub = se.getKepStub();
+            this.sharkStub = se.getAsipStub();
+//            this.sharkStub = se.getKepStub();  /*TODO*/
             se.addKP(this);
         }
     }
@@ -331,8 +332,6 @@ abstract public class KnowledgePort {
     }
 
     protected void doProcess(ASIPInMessage msg, ASIPConnection con) /*TODO what is here todo?*/{
-
-        L.d("about handling ASIP message");
 
         // Do a lot of other stuff here.. add what is required, see below
 

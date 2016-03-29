@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
 import net.sharkfw.protocols.ConnectionListenerManager;
 import net.sharkfw.protocols.SharkInputStream;
 import net.sharkfw.protocols.SharkOutputStream;
@@ -17,12 +18,11 @@ import net.sharkfw.system.Streamer;
 /**
  * TCPConnection is a container Object which is holding a socket with an
  * established connection as well as the own local IP address.
- * 
  *
  * @author thsc
  */
 public class TCPConnection extends ConnectionListenerManager implements StreamConnection {
-    
+
     private int portNo;
     private String localAddress;
     private String recAddress;
@@ -35,13 +35,13 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
     public TCPConnection(String recAddress, int port) throws UnknownHostException, IOException {
         this(recAddress, port, null);
     }
-    
+
     /**
      * Establishes a new connection to the given recAddress. It fails if
      * it fails to connect.
      *
-     * @param recAddress address of the other Peer
-     * @param port port of the other Peer
+     * @param recAddress         address of the other Peer
+     * @param port               port of the other Peer
      * @param replyAddressString reply address which will be send to the other Peer (e.g. if you want to use a different address then the local device address)
      * @throws UnknownHostException
      * @throws IOException
@@ -50,21 +50,20 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
             throws UnknownHostException, IOException {
         this.recAddress = recAddress;
         this.portNo = port;
-        
-        System.out.println("Trying to connect to " + this.recAddress + ":"
-                + this.portNo);
+
+        L.d("Trying to connect to " + this.recAddress + ":"
+                + this.portNo, this);
         try {
             s = new Socket(this.recAddress, this.portNo);
-        }
-        catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new IOException(re.getMessage());
         }
-        
+
         s.setSoTimeout(this.socketTimeout);
         this.out = s.getOutputStream();
         this.in = s.getInputStream();
         L.d("Creating TCPConnection w/ local address of:" + s.getLocalAddress() + ":" + s.getLocalPort(), this);
-        
+
         this.localAddress = replyAddressString;
         this.replyAddressString = replyAddressString;
     }
@@ -72,12 +71,12 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
     /**
      * Saves the given Socket and keeps the Stream open.
      *
-     * @param s Socket with an established connection
+     * @param s                  Socket with an established connection
      * @param replyAddressString replyAddressString reply address which will be send to the other Peer (e.g. if you want to use a different address then the local device address)
      * @throws IOException
      */
     public TCPConnection(Socket s, String replyAddressString) throws IOException {
-      L.d("Using existing socket: '" + s.getInetAddress().getHostAddress() +"'", this);
+        L.d("Using existing socket: '" + s.getInetAddress().getHostAddress() + "'", this);
         this.s = s;
         s.setSoTimeout(this.socketTimeout);
         this.replyAddressString = replyAddressString;
@@ -101,7 +100,7 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
      * @throws IOException
      */
     public void sendMessage(byte[] msg) throws IOException {
-        System.out.println("TCPConnection: sendMessage: " + msg);
+        L.d("TCPConnection: sendMessage: " + msg, this);
         //byte[] byteMsg = msg.getBytes();
         this.out.write(msg);
     }
@@ -144,7 +143,7 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
      */
     public void close() {
 
-      L.d("Closing TCP-Connection from: " + this.getReplyAddressString() + " to: " + this.recAddress, this);
+        L.d("Closing TCP-Connection from: " + this.getReplyAddressString() + " to: " + this.recAddress, this);
         try {
             final InputStream inputStream = s.getInputStream();
             if (inputStream.available() > 0) {
@@ -158,9 +157,9 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
         }
     }
 
-  public String getReceiverAddressString() {
-    return "tcp://" + this.recAddress + ":" + Integer.toString(this.portNo);
-  }
+    public String getReceiverAddressString() {
+        return "tcp://" + this.recAddress + ":" + Integer.toString(this.portNo);
+    }
 
     @Override
     public String getLocalAddressString() {
@@ -171,5 +170,5 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
     public void setLocalAddressString(String localAddress) {
         this.localAddress = localAddress;
     }
-    
+
 }

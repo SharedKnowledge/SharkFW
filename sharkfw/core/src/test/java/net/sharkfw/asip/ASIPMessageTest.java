@@ -42,7 +42,6 @@ public class ASIPMessageTest extends ASIPBaseTest{
         super.tearDown();
     }
 
-    @Ignore
     @Test
     public void ASIPMessage_CompareInToOutMessage_success() throws Exception {
 

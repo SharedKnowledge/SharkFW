@@ -20,6 +20,7 @@ import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.system.InterestStore;
 import net.sharkfw.system.KnowledgeStore;
+import net.sharkfw.system.L;
 
 /**
  * Created by msc on 18.03.16.
@@ -139,7 +140,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
 //        }
 
         // that it - bye
-        msg.finished();
+//        msg.finished();
 
         //    L.d("Having " + this.listener.size() + " listeners.", this);
 

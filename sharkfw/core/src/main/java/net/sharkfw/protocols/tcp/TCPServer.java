@@ -67,7 +67,7 @@ class TCPServer implements SharkServer {
      * @return the IP address of the current device
      */
     protected String getLocalAddress() {
-        System.out.println("Listensocket has: " + this.listen_socket.getLocalSocketAddress().toString());
+        L.d("Listensocket has: " + this.listen_socket.getLocalSocketAddress().toString(), this);
         return this.stub.getLocalAddress();
     }
 

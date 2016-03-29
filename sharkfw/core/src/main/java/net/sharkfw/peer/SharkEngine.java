@@ -967,12 +967,14 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return false;
     }
 
-    public ASIPOutMessage createASIPOutResponse(StreamConnection connection, String[] receeiverAddress, ASIPInMessage inMessage) throws SharkKBException {
+    public ASIPOutMessage createASIPOutResponse(StreamConnection connection, String[] receiverAddress, ASIPInMessage inMessage) throws SharkKBException {
 
         if(connection != null){
+            L.d("w/ con", this);
             return new ASIPOutMessage(this, connection, inMessage);
         } else {
-            return this.createASIPOutMessage(receeiverAddress, inMessage.getSender());
+            L.d("no con", this);
+            return this.createASIPOutMessage(receiverAddress, inMessage.getSender());
         }
     }
 
@@ -1004,7 +1006,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         Enumeration addrEnum = Util.array2Enum(addresses);
         while (addrEnum.hasMoreElements()) {
             String address = (String) addrEnum.nextElement();
-            L.d("sendASIPInterest: try address:" + address, this);
+
+            L.d("CreateASIPOutMessage to " + address, this);
+
+//            L.d("sendASIPInterest: try address:" + address, this);
             //boolean fromPool = false;
             try {
                 /*
@@ -1052,9 +1057,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                 continue;
             }
 
-            if (sConn != null /*&& !fromPool*/) {
-                this.asipStub.handleStream(sConn);
-            }
+//            if (sConn != null /*&& !fromPool*/) {
+//                this.asipStub.handleStream(sConn);
+//            }
 
             // one kep message is enough
             if (message != null) {

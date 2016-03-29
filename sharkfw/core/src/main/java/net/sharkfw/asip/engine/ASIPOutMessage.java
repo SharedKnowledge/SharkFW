@@ -26,6 +26,7 @@ public class ASIPOutMessage extends ASIPMessage {
     private ASIPKnowledge knowledge = null;
     private InputStream raw = null;
     private OutputStream os = null;
+    private boolean responseSent = false;
 
     public ASIPOutMessage(SharkEngine engine,
                           StreamConnection connection,
@@ -38,15 +39,15 @@ public class ASIPOutMessage extends ASIPMessage {
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
 
         this.os = connection.getOutputStream();
-
-        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
     }
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
         super(engine, connection, in.getTtl(), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime());
-        osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+//        osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
 
         // TODO set kepInterest, knowledge or raw
+
+        this.os = connection.getOutputStream();
     }
 
     public void expose(ASIPInterest interest) {
@@ -54,24 +55,31 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
-        if(this.osw == null)
-            osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            this.osw.write(ASIPSerializer.serializeExpose(this, interest).toString());
+            String parse = ASIPSerializer.serializeExpose(this, interest).toString();
+            this.osw.write(parse);
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                this.osw.close();
-                this.osw = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+        this.sent();
+    }
+
+    public boolean responseSent(){
+        return this.responseSent;
+    }
+
+    private void sent(){
+        try {
+            this.osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+        this.responseSent = true;
     }
 
     public void insert(ASIPKnowledge knowledge) {
@@ -89,13 +97,8 @@ public class ASIPOutMessage extends ASIPMessage {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                this.osw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+        this.sent();
     }
 
     public void raw(byte[] raw) {
@@ -104,8 +107,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
-        if(this.osw == null)
-            osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
             this.osw.write(ASIPSerializer.serializeRaw(this, raw).toString());
@@ -115,20 +117,15 @@ public class ASIPOutMessage extends ASIPMessage {
         } catch (IOException e) {
             L.d("Write failed");
             e.printStackTrace();
-        } finally {
-            try {
-                this.osw.close();
-                this.osw = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+        this.sent();
     }
 
     public  void raw(InputStream inputStream){
         this.setCommand(ASIPMessage.ASIP_RAW);
 
 //        this.initSecurity();
+        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
             this.osw.write(ASIPSerializer.serializeRaw(this, inputStream).toString());
@@ -138,15 +135,8 @@ public class ASIPOutMessage extends ASIPMessage {
         } catch (IOException e) {
             L.d("Write failed");
             e.printStackTrace();
-        } finally {
-            try {
-                this.osw.close();
-                this.osw = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
         }
+        this.sent();
     }
 
 }

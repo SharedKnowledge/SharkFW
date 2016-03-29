@@ -48,7 +48,7 @@ public class ASIPStubTest extends ASIPBaseTest {
 
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void KPCommunication_replyToIncomingData_success() throws Exception {
 
@@ -58,7 +58,7 @@ public class ASIPStubTest extends ASIPBaseTest {
         SharkEngine engineB = new J2SEAndroidSharkEngine();
         KnowledgePort testKPB = new TestKP(engineB, "Port B");
 
-        engineA.startTCP(7070);
+//        engineA.startTCP(7070);
         engineB.startTCP(7071);
 
         String[] addressA = new String[] { "tcp://localhost:7070" };
@@ -69,17 +69,12 @@ public class ASIPStubTest extends ASIPBaseTest {
 
         ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, sender, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
 
-        ASIPOutMessage outMessage = engineA.createASIPOutMessage(addressB, peerA, peerB, null, null, 10);
-        outMessage.expose(space);
-
         Thread.sleep(2000);
 
+        ASIPOutMessage outMessage = engineA.createASIPOutMessage(peerB.getAddresses(), peerA, peerB, null, null, 10);
+        outMessage.expose(space);
 
-//        ASIPOutMessage outMessage = engineA.createASIPOutMessage("");
-//        outMessage.expose();
+        Thread.sleep(5000);
 
-
-
-//        Thread.sleep(Integer.MAX_VALUE);
     }
 }

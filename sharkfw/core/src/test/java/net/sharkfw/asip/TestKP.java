@@ -36,21 +36,25 @@ public class TestKP extends KnowledgePort {
     }
 
     @Override
-    protected void doProcess(ASIPInMessage msg, ASIPConnection con) {
-        super.doProcess(msg, con);
-    }
-
-    @Override
     protected void handleExpose(ASIPInterest interest, ASIPConnection asipConnection) throws SharkKBException {
-        L.d(this.name + " says: Ping.");
-        try {
-            asipConnection.expose(interest);
-        } catch (SharkException e) {
-            L.d(e.getMessage());
-            e.printStackTrace();
+        L.d(this.name + " says: Ping.", this);
+
+        if(asipConnection==null){
+            L.d("Connection = null");
         }
-//        asipConnection.
+
+        if(interest==null){
+            L.d("Interest = null");
+        }
+
 //        super.handleExpose(interest, asipConnection);
+
+//        try {
+//            asipConnection.expose(interest);
+//        } catch (SharkException e) {
+//            L.d(e.getMessage());
+//            e.printStackTrace();
+//        }
     }
 
     @Override
