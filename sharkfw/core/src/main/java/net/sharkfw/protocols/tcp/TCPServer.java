@@ -95,13 +95,13 @@ class TCPServer implements SharkServer {
         try {
             //while (this.activ && !isInterrupted()) {
             while (this.activ) {
-                L.d("TCP Server accepts connection requests", this);
+                L.d("TCP Server accepts connection requests on: " + this.port, this);
 
                 Socket client_socket = this.listen_socket.accept();
                 client_socket.setSoTimeout(this.socketTimeout);
                 TCPConnection con = new TCPConnection(client_socket, this.getLocalAddress());
 
-                L.d("Calling handler for stream", this);
+                L.d("Calling handler for stream on: " + this.port, this);
                 handler.handleStream(con);
             }
             //L.d("Closing socket", this);

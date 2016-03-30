@@ -78,9 +78,13 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
      */
     public J2SEAndroidSharkEngine() {
         super();
-//        this.setASIPStub(new SimpleASIPStub(this)); /*TODO*/
         this.setKEPStub(new SimpleKEPStub(this));
 		tcp = null;
+    }
+
+    public void activateASIP(){
+        this.kepStub = null;
+        this.setASIPStub(new SimpleASIPStub(this));
     }
 
     @Override

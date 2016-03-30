@@ -33,7 +33,6 @@ public class ASIPSession extends Thread {
         this.engine = engine;
         this.connection = connection;
         this.stub = stub;
-        L.d("ASIPStub: Session created.", this);
     }
 
     public void initSecurity(PrivateKey privateKey, SharkPkiStorage sharkPkiStorage,
@@ -54,7 +53,6 @@ public class ASIPSession extends Thread {
         boolean handled = false;
 
         do{
-            L.d("ASIPStub: Session loop.", this);
             try {
                 ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
 //                inMessage.initSecurity(this.privateKey, this.sharkPkiStorage, this.encryptionLevel,
@@ -62,6 +60,7 @@ public class ASIPSession extends Thread {
                 inMessage.parse();
 
                 handled = this.stub.callListener(inMessage);
+                handled = handled && inMessage.keepOpen();
             } catch (SharkKBException e) {
                 handled=false;
                 e.printStackTrace();
@@ -105,6 +104,7 @@ public class ASIPSession extends Thread {
         } catch (IOException e) {
             L.l("Closing TCPConnection although there is more data on the stream: " + e.getMessage(), this);
         }
+
         this.connection.close();
     }
 }

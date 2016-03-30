@@ -337,6 +337,11 @@ abstract public class KnowledgePort {
 
         // ...
 
+        if(msg.getTtl() <= 0){
+            L.d("TTL equals 0", this);
+            return;
+        }
+
         switch (msg.getCommand()) {
             case ASIPMessage.ASIP_INSERT:
                 try {

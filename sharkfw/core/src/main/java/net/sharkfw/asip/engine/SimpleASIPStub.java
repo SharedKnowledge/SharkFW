@@ -108,38 +108,9 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
         kpIter = kpList.iterator();
         while (kpIter.hasNext()) {
             KnowledgePort l = kpIter.next();
-            if (l.handleMessage(msg, msg.getConnection())) {
-                handled = true;
-            }
+            handled = l.handleMessage(msg, msg.getConnection());
         }
 
-//        // do we have a final handler for not handled messages ?
-//        if(!handled) {
-//            if(this.notHandledRequestsHandler != null) {
-//                handled = this.notHandledRequestsHandler.handleMessage(msg);
-//            }
-//            else {
-//                // remember unhandled message
-//                SharkCS kepInterest = msg.getKEPInterest();
-//                if(kepInterest != null) {
-//                    this.rememberUnhandledInterest(kepInterest);
-//                } else {
-//                    Knowledge knowledge;
-//                    try {
-//                        knowledge = msg.getKnowledge();
-//                        if(knowledge != null) {
-//                            this.rememberUnhandledKnowledge(knowledge);
-//                        }
-//                    } catch (IOException ex) {
-//                        // ignore
-//                    } catch (SharkKBException ex) {
-//                        // ignore
-//                    }
-//                }
-//            }
-//        }
-
-        // that it - bye
 //        msg.finished();
 
         //    L.d("Having " + this.listener.size() + " listeners.", this);

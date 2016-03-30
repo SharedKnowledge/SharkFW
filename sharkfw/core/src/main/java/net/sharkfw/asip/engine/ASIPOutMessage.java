@@ -27,6 +27,7 @@ public class ASIPOutMessage extends ASIPMessage {
     private InputStream raw = null;
     private OutputStream os = null;
     private boolean responseSent = false;
+    private String recipientAddress = "";
 
     public ASIPOutMessage(SharkEngine engine,
                           StreamConnection connection,
@@ -37,17 +38,31 @@ public class ASIPOutMessage extends ASIPMessage {
                           TimeSemanticTag receiverTime) throws SharkKBException {
 
         super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
-
+        this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
-        super(engine, connection, in.getTtl(), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime());
+        super(engine, connection, (in.getTtl()-1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime());
 //        osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
-
-        // TODO set kepInterest, knowledge or raw
-
+        this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
+    }
+
+    public boolean responseSent(){
+        return this.responseSent;
+    }
+
+    private void sent(){
+
+        try {
+            this.osw.flush();
+//            this.osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.responseSent = true;
     }
 
     public void expose(ASIPInterest interest) {
@@ -55,7 +70,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
-        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
             String parse = ASIPSerializer.serializeExpose(this, interest).toString();
@@ -68,28 +83,13 @@ public class ASIPOutMessage extends ASIPMessage {
         this.sent();
     }
 
-    public boolean responseSent(){
-        return this.responseSent;
-    }
-
-    private void sent(){
-        try {
-            this.osw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        this.responseSent = true;
-    }
-
     public void insert(ASIPKnowledge knowledge) {
 
         this.setCommand(ASIPMessage.ASIP_INSERT);
 
 //        this.initSecurity();
 
-        if(this.osw == null)
-            osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
             this.osw.write(ASIPSerializer.serializeInsert(this, knowledge).toString());
@@ -107,7 +107,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
-        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
             this.osw.write(ASIPSerializer.serializeRaw(this, raw).toString());
@@ -125,7 +125,8 @@ public class ASIPOutMessage extends ASIPMessage {
         this.setCommand(ASIPMessage.ASIP_RAW);
 
 //        this.initSecurity();
-        osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+
+        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
             this.osw.write(ASIPSerializer.serializeRaw(this, inputStream).toString());

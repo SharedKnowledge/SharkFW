@@ -49,12 +49,12 @@ public class TestKP extends KnowledgePort {
 
 //        super.handleExpose(interest, asipConnection);
 
-//        try {
-//            asipConnection.expose(interest);
-//        } catch (SharkException e) {
-//            L.d(e.getMessage());
-//            e.printStackTrace();
-//        }
+        try {
+            asipConnection.expose(interest);
+        } catch (SharkException e) {
+            L.d(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override

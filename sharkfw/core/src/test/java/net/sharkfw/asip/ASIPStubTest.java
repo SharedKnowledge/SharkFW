@@ -52,10 +52,12 @@ public class ASIPStubTest extends ASIPBaseTest {
     @Test
     public void KPCommunication_replyToIncomingData_success() throws Exception {
 
-        SharkEngine engineA = new J2SEAndroidSharkEngine();
+        J2SEAndroidSharkEngine engineA = new J2SEAndroidSharkEngine();
+        engineA.activateASIP();
         KnowledgePort testKPA = new TestKP(engineA, "Port A");
 
-        SharkEngine engineB = new J2SEAndroidSharkEngine();
+        J2SEAndroidSharkEngine engineB = new J2SEAndroidSharkEngine();
+        engineB.activateASIP();
         KnowledgePort testKPB = new TestKP(engineB, "Port B");
 
 //        engineA.startTCP(7070);
@@ -67,14 +69,17 @@ public class ASIPStubTest extends ASIPBaseTest {
         PeerSemanticTag peerA = InMemoSharkKB.createInMemoPeerSemanticTag("Peer A", "www.peer-a.de", "tcp://localhost:7070");
         PeerSemanticTag peerB = InMemoSharkKB.createInMemoPeerSemanticTag("Peer B", "www.peer-b.de", "tcp://localhost:7071");
 
-        ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, sender, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
+        engineA.setEngineOwnerPeer(peerA);
+        engineB.setEngineOwnerPeer(peerB);
+
+        ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, peerA, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
 
         Thread.sleep(2000);
 
         ASIPOutMessage outMessage = engineA.createASIPOutMessage(peerB.getAddresses(), peerA, peerB, null, null, 10);
         outMessage.expose(space);
 
-        Thread.sleep(5000);
+        Thread.sleep(1000);
 
     }
 }
