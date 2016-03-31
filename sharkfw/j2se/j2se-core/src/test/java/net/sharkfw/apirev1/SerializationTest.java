@@ -19,6 +19,7 @@ import org.junit.*;
  *
  * @author mfi
  */
+@Deprecated
 public class SerializationTest {
 
     public SerializationTest() {

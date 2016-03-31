@@ -11,6 +11,7 @@ import org.junit.*;
  *
  * @author thsc
  */
+@Deprecated
 public class Dynamics_Notifier_Tests {
     
     public Dynamics_Notifier_Tests() {

@@ -87,6 +87,7 @@ public class NYI_SharkKB {
      *
      * @throws SharkKBException
      */
+    @Deprecated
     @Test
     public void testContextPointsViaContextSpace() throws SharkKBException {
         J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
