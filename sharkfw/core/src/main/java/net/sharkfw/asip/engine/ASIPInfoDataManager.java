@@ -55,7 +55,7 @@ public class ASIPInfoDataManager {
         }
     }
     
-    public Iterator<ASIPPointInformation> getPointInfromations(){
+    public Iterator<ASIPPointInformation> getPointInformations(){
         return infoPoints.iterator();
     }
     

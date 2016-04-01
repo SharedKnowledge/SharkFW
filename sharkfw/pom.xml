@@ -11,8 +11,8 @@
     <url>http://www.sharksystem.net/</url>
 
     <properties>
-        <compile.source.jdk>1.8</compile.source.jdk>
-        <compile.target.jdk>1.8</compile.target.jdk>
+        <compile.source.jdk>1.7</compile.source.jdk>
+        <compile.target.jdk>1.7</compile.target.jdk>
     </properties>
 
     <profiles>

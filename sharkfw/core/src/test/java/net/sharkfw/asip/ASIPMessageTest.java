@@ -119,7 +119,6 @@ public class ASIPMessageTest extends ASIPBaseTest{
 
         ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
         L.d("insert");
-        // FIXME serializeKnowledge
         outMessage.insert(knowledge);
         this.connection.createInputStream();
 

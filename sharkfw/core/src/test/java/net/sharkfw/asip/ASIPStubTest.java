@@ -48,7 +48,6 @@ public class ASIPStubTest extends ASIPBaseTest {
 
     }
 
-//    @Ignore
     @Test
     public void KPCommunication_replyToIncomingData_success() throws Exception {
 
@@ -60,7 +59,6 @@ public class ASIPStubTest extends ASIPBaseTest {
         engineB.activateASIP();
         KnowledgePort testKPB = new TestKP(engineB, "Port B");
 
-//        engineA.startTCP(7070);
         engineB.startTCP(7071);
 
         String[] addressA = new String[] { "tcp://localhost:7070" };

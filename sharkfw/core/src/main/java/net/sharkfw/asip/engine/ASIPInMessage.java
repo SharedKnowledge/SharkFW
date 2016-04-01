@@ -54,7 +54,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         this.parsedString += new String(buffer).substring(0, charsRead);
 
         L.d("CharsRead " + charsRead, this);
-        L.d("Message: " + parsedString, this);
+//        L.d("Message: " + parsedString, this);
 
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
     }
