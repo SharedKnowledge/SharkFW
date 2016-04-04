@@ -6,8 +6,13 @@ Web 2.0 without WWW: P2P, mobile, secure and private
 
 Shark is an acronym. It stands for Shared Knowledge. Shark applications store user data only on user devices. We don't use any server or cloud architecture. Each Shark application is a peer - an independent and self-contained entity which can directly communicate with others.
 
+Install the SDK
+---------------
+
+ * [How to build the SDK with maven.](INSTALL.md)
+
 Download SDK
--------------
+------------
 
 Subscribe to our [Shark-news- mailing list](https://lists.htw-berlin.de/mailman/listinfo/shark-news) to get announcements about new releases and patches.
 
