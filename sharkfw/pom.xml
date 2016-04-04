@@ -44,7 +44,6 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>2.6</version>
                         <configuration>
-                            <finalName>shark-core</finalName>
                             <!-- get all project dependencies -->
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -98,7 +97,6 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>2.6</version>
                         <configuration>
-                            <finalName>shark-android</finalName>
                             <!-- get all project dependencies -->
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -153,7 +151,6 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>2.6</version>
                         <configuration>
-                            <finalName>shark-j2se</finalName>
                             <!-- get all project dependencies -->
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -253,7 +250,11 @@
                         </archive>
                     </configuration>
                 </plugin>
-
+            		<plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.10</version>
+            		</plugin>
             </plugins>
         </pluginManagement>
 
