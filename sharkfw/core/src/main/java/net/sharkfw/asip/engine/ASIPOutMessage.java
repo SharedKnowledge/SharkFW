@@ -34,10 +34,10 @@ public class ASIPOutMessage extends ASIPMessage {
                           long ttl,
                           PeerSemanticTag sender,
                           PeerSemanticTag receiverPeer,
-                          SpatialSemanticTag receiverSpatial,
+                          SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime) throws SharkKBException {
 
-        super(engine, connection, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
+        super(engine, connection, ttl, sender, receiverPeer, receiverLocation, receiverTime);
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
