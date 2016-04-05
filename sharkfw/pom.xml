@@ -15,172 +15,173 @@
         <compile.target.jdk>1.7</compile.target.jdk>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>shark-core</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <!-- important: when use this profile, uncomment the <modules> upper in the pom, otherwise DuplicateProjectException occurred -->
-            <modules>
-                <module>core</module>
-            </modules>
-            <build>
-                <finalName>shark-core</finalName>
-                <plugins>
-                    <!-- download source code in Eclipse, best practice -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-eclipse-plugin</artifactId>
-                        <version>2.10</version>
-                        <configuration>
-                            <downloadSources>true</downloadSources>
-                            <downloadJavadocs>false</downloadJavadocs>
-                        </configuration>
-                    </plugin>
-                    <!-- Maven Assembly Plugin -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.6</version>
-                        <configuration>
-                            <!-- get all project dependencies -->
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                                <!--<descriptor>src\assembly\shark-j2se.xml</descriptor>-->
-                            </descriptorRefs>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <!-- bind to the packaging phase -->
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+    <modules>
+        <module>core</module>
+        <module>android</module>
+        <module>j2se</module>
+    </modules>
 
-                </plugins>
+    <!--<profiles>-->
+        <!--<profile>-->
+            <!--<id>shark-core</id>-->
+            <!--<activation>-->
+                <!--<activeByDefault>true</activeByDefault>-->
+            <!--</activation>-->
+            <!--&lt;!&ndash; important: when use this profile, uncomment the <modules> upper in the pom, otherwise DuplicateProjectException occurred &ndash;&gt;-->
+            <!--<modules>-->
+                <!--<module>core</module>-->
+            <!--</modules>-->
+            <!--<build>-->
+                <!--<finalName>shark-core</finalName>-->
+                <!--<plugins>-->
+                    <!--&lt;!&ndash; download source code in Eclipse, best practice &ndash;&gt;-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-eclipse-plugin</artifactId>-->
+                        <!--<version>2.10</version>-->
+                        <!--<configuration>-->
+                            <!--<downloadSources>true</downloadSources>-->
+                            <!--<downloadJavadocs>false</downloadJavadocs>-->
+                        <!--</configuration>-->
+                    <!--</plugin>-->
+                    <!--&lt;!&ndash; Maven Assembly Plugin &ndash;&gt;-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-assembly-plugin</artifactId>-->
+                        <!--<version>2.6</version>-->
+                        <!--<configuration>-->
+                            <!--&lt;!&ndash; get all project dependencies &ndash;&gt;-->
+                            <!--<descriptorRefs>-->
+                                <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
+                                <!--&lt;!&ndash;<descriptor>src\assembly\shark-j2se.xml</descriptor>&ndash;&gt;-->
+                            <!--</descriptorRefs>-->
+                            <!--<appendAssemblyId>false</appendAssemblyId>-->
+                        <!--</configuration>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>make-assembly</id>-->
+                                <!--&lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
+                                <!--<phase>package</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>single</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
 
-            </build>
-        </profile>
-        <profile>
-            <id>shark-android</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <!-- important: when use this profile, uncomment the <modules> upper in the pom, otherwise DuplicateProjectException occurred -->
-            <modules>
-                <module>core</module>
-                <module>android/android-core</module>
-                <module>android/android-wifi</module>
-            </modules>
-            <build>
-                <finalName>shark-android</finalName>
-                <plugins>
-                    <!-- download source code in Eclipse, best practice -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-eclipse-plugin</artifactId>
-                        <version>2.10</version>
-                        <configuration>
-                            <downloadSources>true</downloadSources>
-                            <downloadJavadocs>false</downloadJavadocs>
-                        </configuration>
-                    </plugin>
-                    <!-- Maven Assembly Plugin -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.6</version>
-                        <configuration>
-                            <!-- get all project dependencies -->
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                                <!--<descriptor>src\assembly\shark-j2se.xml</descriptor>-->
-                            </descriptorRefs>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <!-- bind to the packaging phase -->
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+                <!--</plugins>-->
 
-                </plugins>
+            <!--</build>-->
+        <!--</profile>-->
+        <!--<profile>-->
+            <!--<id>shark-android</id>-->
+            <!--<activation>-->
+                <!--<activeByDefault>false</activeByDefault>-->
+            <!--</activation>-->
+            <!--&lt;!&ndash; important: when use this profile, uncomment the <modules> upper in the pom, otherwise DuplicateProjectException occurred &ndash;&gt;-->
+            <!--<modules>-->
+                <!--<module>core</module>-->
+                <!--<module>android/android-core</module>-->
+                <!--<module>android/android-wifi</module>-->
+            <!--</modules>-->
+            <!--<build>-->
+                <!--<finalName>shark-android</finalName>-->
+                <!--<plugins>-->
+                    <!--&lt;!&ndash; download source code in Eclipse, best practice &ndash;&gt;-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-eclipse-plugin</artifactId>-->
+                        <!--<version>2.10</version>-->
+                        <!--<configuration>-->
+                            <!--<downloadSources>true</downloadSources>-->
+                            <!--<downloadJavadocs>false</downloadJavadocs>-->
+                        <!--</configuration>-->
+                    <!--</plugin>-->
+                    <!--&lt;!&ndash; Maven Assembly Plugin &ndash;&gt;-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-assembly-plugin</artifactId>-->
+                        <!--<version>2.6</version>-->
+                        <!--<configuration>-->
+                            <!--&lt;!&ndash; get all project dependencies &ndash;&gt;-->
+                            <!--<descriptorRefs>-->
+                                <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
+                                <!--&lt;!&ndash;<descriptor>src\assembly\shark-j2se.xml</descriptor>&ndash;&gt;-->
+                            <!--</descriptorRefs>-->
+                            <!--<appendAssemblyId>false</appendAssemblyId>-->
+                        <!--</configuration>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>make-assembly</id>-->
+                                <!--&lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
+                                <!--<phase>package</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>single</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
 
-            </build>
-        </profile>
-        <profile>
-            <id>shark-j2se</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <!-- important: when use this profile, uncomment the <modules> upper in the pom, otherwise DuplicateProjectException occurred -->
-            <modules>
-                <module>core</module>
-                <module>j2se/j2se-core</module>
-                <module>j2se/jts</module>
-                <module>j2se/rdf</module>
-            </modules>
-            <build>
-                <finalName>shark-j2se</finalName>
-                <plugins>
-                    <!-- download source code in Eclipse, best practice -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-eclipse-plugin</artifactId>
-                        <version>2.10</version>
-                        <configuration>
-                            <downloadSources>true</downloadSources>
-                            <downloadJavadocs>false</downloadJavadocs>
-                        </configuration>
-                    </plugin>
-                    <!-- Maven Assembly Plugin -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.6</version>
-                        <configuration>
-                            <!-- get all project dependencies -->
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                                <!--<descriptor>src\assembly\shark-j2se.xml</descriptor>-->
-                            </descriptorRefs>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <!-- bind to the packaging phase -->
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+                <!--</plugins>-->
 
-                </plugins>
+            <!--</build>-->
+        <!--</profile>-->
+        <!--<profile>-->
+            <!--<id>shark-j2se</id>-->
+            <!--<activation>-->
+                <!--<activeByDefault>false</activeByDefault>-->
+            <!--</activation>-->
+            <!--&lt;!&ndash; important: when use this profile, uncomment the <modules> upper in the pom, otherwise DuplicateProjectException occurred &ndash;&gt;-->
+            <!--<modules>-->
+                <!--<module>core</module>-->
+                <!--<module>j2se/j2se-core</module>-->
+                <!--<module>j2se/jts</module>-->
+                <!--<module>j2se/rdf</module>-->
+            <!--</modules>-->
+            <!--<build>-->
+                <!--<finalName>shark-j2se</finalName>-->
+                <!--<plugins>-->
+                    <!--&lt;!&ndash; download source code in Eclipse, best practice &ndash;&gt;-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-eclipse-plugin</artifactId>-->
+                        <!--<version>2.10</version>-->
+                        <!--<configuration>-->
+                            <!--<downloadSources>true</downloadSources>-->
+                            <!--<downloadJavadocs>false</downloadJavadocs>-->
+                        <!--</configuration>-->
+                    <!--</plugin>-->
+                    <!--&lt;!&ndash; Maven Assembly Plugin &ndash;&gt;-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-assembly-plugin</artifactId>-->
+                        <!--<version>2.6</version>-->
+                        <!--<configuration>-->
+                            <!--&lt;!&ndash; get all project dependencies &ndash;&gt;-->
+                            <!--<descriptorRefs>-->
+                                <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
+                                <!--&lt;!&ndash;<descriptor>src\assembly\shark-j2se.xml</descriptor>&ndash;&gt;-->
+                            <!--</descriptorRefs>-->
+                            <!--<appendAssemblyId>false</appendAssemblyId>-->
+                        <!--</configuration>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>make-assembly</id>-->
+                                <!--&lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
+                                <!--<phase>package</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>single</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
 
-            </build>
-        </profile>
-    </profiles>
+                <!--</plugins>-->
 
-    <!--<modules>-->
-        <!--<module>core</module>-->
-        <!--<module>android</module>-->
-        <!--<module>j2se</module>-->
-    <!--</modules>-->
+            <!--</build>-->
+        <!--</profile>-->
+    <!--</profiles>-->
+
 
     <scm>
         <connection>scm:git:https://github.com/SharedKnowledge/SharkFW.git</connection>
