@@ -14,6 +14,12 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
 
+    <build>
+        <finalName>
+            ${project.parent.artifactId}-${project.artifactId}-${project.parent.version}
+        </finalName>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.json</groupId>

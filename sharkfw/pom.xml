@@ -224,7 +224,6 @@
 
 
     <build>
-        <finalName>sharkfw</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>

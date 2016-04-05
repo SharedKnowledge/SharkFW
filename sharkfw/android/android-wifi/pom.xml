@@ -13,6 +13,12 @@
     <artifactId>android-wifi</artifactId>
     <packaging>jar</packaging>
 
+    <build>
+        <finalName>
+            sharkfw-${project.artifactId}-${project.parent.version}
+        </finalName>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
