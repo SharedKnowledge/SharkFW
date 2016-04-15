@@ -13,8 +13,6 @@ shift $(($OPTIND - 1))
 
 version=$(git describe)
 
-message=$1
-
 # Build array from version string.
 
 a=( ${version//./ } )
@@ -50,7 +48,7 @@ fi
 newversion="${a[0]}.${a[1]}.${a[2]}"
 
 echo $newversion 
-echo $message
+message="New Release with Version ${newversion}"
 
 git tag -a $newversion -m "${message}"
 
