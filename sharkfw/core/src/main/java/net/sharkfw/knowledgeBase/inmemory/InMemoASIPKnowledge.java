@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.asip.ASIPInformation;
@@ -10,39 +11,50 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.FPSet;
-import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.SharkAlgebra;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SharkVocabulary;
+import net.sharkfw.knowledgeBase.*;
 
 /**
  *
  * @author msc
  */
-public class InMemoASIPKnowledge implements ASIPKnowledge {
-    private ArrayList<ASIPInformation> infoList;
-    private SharkVocabulary cm;
+public class InMemoASIPKnowledge implements Knowledge {
+    private ArrayList<ASIPInformationSpace> infoSpacesList;
+    private SharkVocabulary cm = null;
 
-    protected InMemoASIPKnowledge() {
-        this.infoList = new ArrayList<>();
+
+    public InMemoASIPKnowledge() {
+        this.infoSpacesList = new ArrayList<>();
     }
-    
+
     public InMemoASIPKnowledge(SharkVocabulary background) {
         this();
         this.cm = background;
     }
-    
-    InMemoASIPKnowledge(SharkVocabulary cm, InMemoASIPKnowledge k) {
-        this.cm = cm;
-//        this.informationSpaces = k.getInformationSpaces();
-        this.infoList = k.getInfoList();
+
+    public ASIPInformationSpace addInformationSpace(ASIPSpace space) throws SharkKBException {
+        InMemoInformationSpace infoSpace = new InMemoInformationSpace(space);
+        infoSpacesList.add(infoSpace);
+        return infoSpace;
     }
-    
-    /////////////////////////////////////////////////////////////////////////
-    //                        information management                       //
-    /////////////////////////////////////////////////////////////////////////
-    
+
+    private void addInfoToInformationSpace(Information info, ASIPSpace space) throws SharkKBException {
+        InMemoInformationSpace infoSpace = this.createInformationSpace(space);
+        infoSpace.addInformation(info);
+    }
+
+    private InMemoInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
+        while(informationSpaces().hasNext()){
+            ASIPInformationSpace current = informationSpaces().next();
+            if(SharkCSAlgebra.identical(current.getASIPSpace(), space)){
+                return (InMemoInformationSpace) current;
+            }
+        }
+        ASIPInformationSpace infoSpace = new InMemoInformationSpace(space);
+        infoSpacesList.add(infoSpace);
+        return (InMemoInformationSpace) infoSpace;
+    }
+
+
     @Override
     public void removeInformation(ASIPSpace space) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -53,11 +65,19 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public ASIPInformationSpace getInformationSpace(ASIPSpace space) throws SharkKBException {
+        while(informationSpaces().hasNext()){
+            ASIPInformationSpace current = informationSpaces().next();
+            if(SharkCSAlgebra.identical(current.getASIPSpace(), space)){
+                return current;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() {
-        // TODO
-//        return this.informationSpaces.iterator();
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.infoSpacesList.iterator();
     }
 
     @Override
@@ -65,21 +85,21 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         if(infos == null || !infos.hasNext()) throw new SharkKBException("info list must no be null");
 
         ASIPInformationSpace isp = null;
-        
+
         do {
             ASIPInformation info = infos.next();
-            
+
             // copy information object
             InMemoInformation infoCopy = new InMemoInformation();
             infoCopy.setContent(info.getContentAsByte());
-            
+
             // add to internal lists
-            this.infoList.add(info);
-            
+//            this.infoList.add(info);
+
             // TODO: gi ahead here..
 
         } while(infos.hasNext());
-        
+
         return isp;
     }
     
@@ -99,7 +119,7 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         
         List<ASIPInformation> result = new ArrayList<>();
         
-        Iterator<ASIPInformation> infoIter = this.infoList.iterator();
+        Iterator<ASIPInformation> infoIter = this.getInformationSpace(infoSpace).informations();
         while(infoIter.hasNext()) {
             ASIPInformation info = infoIter.next();
             ASIPSpace asipSpace = info.getASIPSpace();
@@ -118,21 +138,43 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
     }
 
     @Override
+    public void addContextPoint(ContextPoint cp) {
+
+    }
+
+    @Override
+    public void removeContextPoint(ContextPoint cp) {
+
+    }
+
+    @Override
+    public Enumeration<ContextPoint> contextPoints() {
+        return null;
+    }
+
+    @Override
     public SharkVocabulary getVocabulary() {
         return this.cm;
     }
 
-    private List<ASIPInformationSpace> getInformationSpaces() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//        return this.informationSpaces;
+    @Override
+    public int getNumberOfContextPoints() {
+        return 0;
     }
 
-    private ArrayList<ASIPInformation> getInfoList() {
-        return this.infoList;
+    @Override
+    public ContextPoint getCP(int i) {
+        return null;
     }
-    
-    private void addInfo(Information i) {
-        this.infoList.add(i);
+
+    @Override
+    public void addListener(KnowledgeListener kListener) {
+
+    }
+
+    @Override
+    public void removeListener(KnowledgeListener kListener) {
+
     }
 
     @Override
@@ -141,7 +183,7 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         
         InMemoInformation info = new InMemoInformation(semanticAnnotations);
         info.setContent(content);
-        this.addInfo(info);
+        this.addInfoToInformationSpace(info, semanticAnnotations);
         
         return info;
     }
@@ -153,7 +195,7 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         
         InMemoInformation info = new InMemoInformation(semanticAnnotations);
         info.setContent(contentIS, numberOfBytes);
-        this.addInfo(info);
+        this.addInfoToInformationSpace(info, semanticAnnotations);
         
         return info;
     }
@@ -164,7 +206,7 @@ public class InMemoASIPKnowledge implements ASIPKnowledge {
         
         InMemoInformation info = new InMemoInformation(semanticAnnotations);
         info.setContent(content);
-        this.addInfo(info);
+        this.addInfoToInformationSpace(info, semanticAnnotations);
         
         return info;
     }

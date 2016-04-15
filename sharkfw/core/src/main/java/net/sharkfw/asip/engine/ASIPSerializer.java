@@ -10,30 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sharkfw.asip.*;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.PeerTaxonomy;
-import net.sharkfw.knowledgeBase.PropertyHolder;
-import net.sharkfw.knowledgeBase.SNSemanticTag;
-import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SemanticNet;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkKB;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SharkVocabulary;
-import net.sharkfw.knowledgeBase.SpatialSTSet;
-import net.sharkfw.knowledgeBase.SystemPropertyHolder;
-import net.sharkfw.knowledgeBase.TimeSTSet;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.*;
 import net.sharkfw.system.L;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.TXSemanticTag;
-import net.sharkfw.knowledgeBase.Taxonomy;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 
@@ -70,8 +53,9 @@ public class ASIPSerializer {
         JSONObject content = new JSONObject();
         content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
-        content.put(KNOWLEDGE, serializeKnowledge(knowledge).toString());
+        content.put(KNOWLEDGE, serializeKnowledge(knowledge));
         object.put(CONTENT, content);
+
         return object;
     }
 
@@ -139,22 +123,21 @@ public class ASIPSerializer {
 
         JSONObject object = new JSONObject();
         SharkVocabulary vocabulary = knowledge.getVocabulary();
-        L.d("serializeInsert");
-        object.put(ASIPKnowledge.VOCABULARY, serializeVocabulary(vocabulary).toString());
+        object.put(ASIPKnowledge.VOCABULARY, serializeVocabulary(vocabulary));
 
         ASIPInfoDataManager manager = new ASIPInfoDataManager(knowledge.informationSpaces());
         Iterator pointInformations = manager.getPointInformations();
         JSONArray pointInfoArray = new JSONArray();
-        L.d("serialize STSet");
         while (pointInformations.hasNext()) {
             JSONObject pointInfoJSON = new JSONObject();
             ASIPPointInformation pointInformation = (ASIPPointInformation) pointInformations.next();
             ASIPSpace space = pointInformation.getSpace();
-            pointInfoJSON.put(ASIPPointInformation.ASIPSPACE, serializeASIPSpace(space).toString());
+            pointInfoJSON.put(ASIPPointInformation.ASIPSPACE, serializeASIPSpace(space));
 
             JSONArray infoMetaDataArray = new JSONArray();
-            while (pointInformation.getInfoData().hasNext()) {
-                ASIPInfoMetaData infoMetaData = pointInformation.getInfoData().next();
+            Iterator<ASIPInfoMetaData> infoIter = pointInformation.getInfoData();
+            while (infoIter.hasNext()) {
+                ASIPInfoMetaData infoMetaData = infoIter.next();
                 JSONObject infoMetaDataJSON = new JSONObject();
                 infoMetaDataJSON.put(ASIPInfoMetaData.NAME, infoMetaData.getName());
                 infoMetaDataJSON.put(ASIPInfoMetaData.OFFSET, infoMetaData.getOffset());
@@ -162,6 +145,7 @@ public class ASIPSerializer {
                 infoMetaDataArray.put(infoMetaDataJSON);
             }
             pointInfoJSON.put(ASIPPointInformation.INFOMETADATA, infoMetaDataArray);
+            pointInfoArray.put(pointInfoJSON);
         }
         object.put(ASIPInfoDataManager.INFODATA, pointInfoArray);
         object.put(ASIPInfoDataManager.INFOCONTENT, manager.getInfoContent());
@@ -573,7 +557,7 @@ public class ASIPSerializer {
                 break;
             case ASIPMessage.ASIP_INSERT:
                 try {
-                    ASIPKnowledge knowledge = deserializeASIPKnowledge(content.getString(ASIPSerializer.KNOWLEDGE));
+                    ASIPKnowledge knowledge = deserializeASIPKnowledge(content.get(ASIPSerializer.KNOWLEDGE).toString());
                     message.setKnowledge(knowledge);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
@@ -599,41 +583,56 @@ public class ASIPSerializer {
 
         JSONObject jsonObject = new JSONObject(string);
 
+        L.d(jsonObject.get(ASIPKnowledge.VOCABULARY).toString());
+
         JSONObject vocabularyJSON = jsonObject.getJSONObject(ASIPKnowledge.VOCABULARY);
 
-        STSet topics = deserializeSTSet(vocabularyJSON.getString(SharkVocabulary.TOPICS));
-        STSet types = deserializeSTSet(vocabularyJSON.getString(SharkVocabulary.TYPES));
-        PeerSTSet peers = deserializePeerSTSet(null, vocabularyJSON.getString(SharkVocabulary.PEERS));
+        SemanticNet topics = InMemoSharkKB.createInMemoSemanticNet();
+        deserializeSTSet(topics, vocabularyJSON.getString(SharkVocabulary.TOPICS));
+        SemanticNet types = InMemoSharkKB.createInMemoSemanticNet();
+        deserializeSTSet(types, vocabularyJSON.getString(SharkVocabulary.TYPES));
+        PeerTaxonomy peers = InMemoSharkKB.createInMemoPeerTaxonomy();
+        deserializePeerSTSet(null, vocabularyJSON.getString(SharkVocabulary.PEERS));
         SpatialSTSet locations = deserializeSpatialSTSet(null, vocabularyJSON.getString(SharkVocabulary.LOCATIONS));
         TimeSTSet times = deserializeTimeSTSet(null, vocabularyJSON.getString(SharkVocabulary.TIMES));
 
-        // TODO Cast do SN and Taxonomy ?!
-
         // create knowledge which actuall IS a SharkKB
-        SharkKB kb = new InMemoSharkKB((SemanticNet) topics, (SemanticNet) types, (PeerTaxonomy) peers, locations, times);
+        InMemoSemanticNet stnet = new InMemoSemanticNet();
+        Knowledge knowledge = new InMemoASIPKnowledge();
+        SharkKB kb = new InMemoSharkKB(topics, types, peers, locations, times, knowledge);
 
-        byte[] infoContent = (byte[]) jsonObject.get(ASIPInfoDataManager.INFOCONTENT);
+//        byte[] infoContent = jsonObject.getJSONArray(ASIPInfoDataManager.INFOCONTENT).toString().getBytes();
+        String contentString = jsonObject.getString(ASIPInfoDataManager.INFOCONTENT);
 
         JSONArray infoDataArray = jsonObject.getJSONArray(ASIPInfoDataManager.INFODATA);
         for (int i = 0; i < infoDataArray.length(); i++) {
 
             JSONObject infoObject = infoDataArray.getJSONObject(i);
-            ASIPSpace space = ASIPSerializer.deserializeASIPInterest(infoObject.getString(ASIPPointInformation.ASIPSPACE));
+            ASIPSpace space = ASIPSerializer.deserializeASIPInterest(infoObject.get(ASIPPointInformation.ASIPSPACE).toString());
 
-            JSONArray infoMetaDataArray = jsonObject.getJSONArray(ASIPPointInformation.INFOMETADATA);
-            for (int k = 0; k < infoDataArray.length(); k++) {
+            JSONArray infoMetaDataArray = infoObject.getJSONArray(ASIPPointInformation.INFOMETADATA);
+            for (int k = 0; k < infoMetaDataArray.length(); k++) {
 
-                JSONObject object = infoDataArray.getJSONObject(k);
+                JSONObject object = infoMetaDataArray.getJSONObject(k);
 
                 int offset = object.getInt(ASIPInfoMetaData.OFFSET);
                 int length = object.getInt(ASIPInfoMetaData.LENGTH);
-                byte[] buff = new byte[length];
+//                byte[] buff = new byte[length];
+                String buff = "";
 
-                System.arraycopy(infoContent, offset, buff, 0, length);
+//                System.arraycopy(contentString.getBytes(), offset, buff, 0, length);
+
+                buff = contentString.substring(offset, length);
 
                 ASIPInformation info = kb.addInformation(buff, space);
-                info.setName(object.getString(ASIPInfoMetaData.NAME));
+                // TODO Info setName poassible?
+                if (object.has(ASIPInfoMetaData.NAME)) {
+                    info.setName(object.getString(ASIPInfoMetaData.NAME));
+                }
             }
+        }
+        if (infoDataArray.length() <= 0 && contentString.length() > 0) {
+            kb.addInformation(contentString, null);
         }
 //    }
         return kb;
@@ -837,7 +836,6 @@ public class ASIPSerializer {
             target = InMemoSharkKB.createInMemoSTSet();
         }
 
-        // SemanticNet
         JSONObject jsonObject = new JSONObject(stSetString);
 
         JSONArray semanticTagsArray = jsonObject.getJSONArray(STSet.STSET);
@@ -853,6 +851,14 @@ public class ASIPSerializer {
                 deserializeTag(target, tag.toString());
             }
         }
+
+        if (target instanceof SemanticNet) {
+            deserializeRelations((SemanticNet) target, stSetString);
+            return target;
+        } else if (target instanceof PeerTaxonomy) {
+            deserializeProperties((SystemPropertyHolder) target, stSetString);
+        }
+
         return target;
     }
 
@@ -860,6 +866,17 @@ public class ASIPSerializer {
         if (set == null) set = InMemoSharkKB.createInMemoPeerSTSet();
         PeerSTSet peerSTSet = (PeerSTSet) set;
         return (PeerSTSet) ASIPSerializer.deserializeSTSet(peerSTSet, stSetString);
+    }
+
+    public static PeerTaxonomy deserializePeerTaxonomy(STSet set, String stSetString) {
+        if (set == null) set = InMemoSharkKB.createInMemoPeerTaxonomy();
+        PeerTaxonomy peerSTSet = (PeerTaxonomy) set;
+        try {
+            ASIPSerializer.deserializeSTSet(peerSTSet, stSetString);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return peerSTSet;
     }
 
     public static TimeSTSet deserializeTimeSTSet(STSet set, String stSetString) throws SharkKBException {
@@ -895,7 +912,7 @@ public class ASIPSerializer {
 
         if (jsonObject.has(PropertyHolder.PROPERTIES) && !jsonObject.isNull(PropertyHolder.PROPERTIES)) {
 
-            if(!(jsonObject.get(PropertyHolder.PROPERTIES) instanceof JSONArray)) return;
+            if (!(jsonObject.get(PropertyHolder.PROPERTIES) instanceof JSONArray)) return;
 
             JSONArray propertiesArray = jsonObject.getJSONArray(PropertyHolder.PROPERTIES);
             for (int i = 0; i < propertiesArray.length(); i++) {
@@ -914,6 +931,8 @@ public class ASIPSerializer {
         if (target == null) return;
         if (relations == null) return;
         JSONObject jsonObject = new JSONObject(relations);
+
+        if (!jsonObject.has(Taxonomy.SUBSUPERTAGS)) return;
         JSONArray propertiesArray = jsonObject.getJSONArray(Taxonomy.SUBSUPERTAGS);
         for (int i = 0; i < propertiesArray.length(); i++) {
             JSONObject relation = propertiesArray.getJSONObject(i);
@@ -940,6 +959,7 @@ public class ASIPSerializer {
         if (relations == null) return;
         JSONObject jsonObject = new JSONObject(relations);
 
+        if (!jsonObject.has(SemanticNet.PREDICATES)) return;
         JSONArray propertiesArray = jsonObject.getJSONArray(SemanticNet.PREDICATES);
         for (int i = 0; i < propertiesArray.length(); i++) {
             JSONObject relation = propertiesArray.getJSONObject(i);
@@ -1036,7 +1056,7 @@ public class ASIPSerializer {
         return ASIPSerializer.deserializeASIPInterest(imkb, sharkCS);
     }
 
-    private SemanticNet cast2SN(STSet stset) throws SharkKBException {
+    private static SemanticNet cast2SN(STSet stset) throws SharkKBException {
         SemanticNet sn;
         try {
             sn = (SemanticNet) stset;

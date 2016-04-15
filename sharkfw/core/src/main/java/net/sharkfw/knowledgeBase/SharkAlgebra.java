@@ -358,7 +358,7 @@ public class SharkAlgebra {
         return true;
     }
 
-    public static boolean identical(ASIPInterest int1, ASIPInterest int2) throws SharkKBException {
+    public static boolean identical(ASIPSpace int1, ASIPSpace int2) throws SharkKBException {
 
         // both null means both any which is identical
         if(int1 == null && int2 == null) {

@@ -12,6 +12,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformationCoordinates;
+import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
 import net.sharkfw.system.EnumerationChain;
@@ -54,7 +55,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.peers = peers;
         this.locations = locations;
         this.times = times;
-        
         
         topics.addListener(this);
         

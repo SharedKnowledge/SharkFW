@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Created by msc on 21.03.16.
@@ -103,29 +104,35 @@ public class ASIPMessageTest extends ASIPBaseTest{
         Assert.assertTrue(SharkAlgebra.identical(space, inMessage.getInterest()));
     }
 
-    @Ignore
     @Test
     public void ASIPMessage_CompareInToOutMessageInsert_success() throws Exception{
 
         String rawInput = "Hello ASIP.";
 
-        L.d("before k");
         SharkKB kb = new InMemoSharkKB();
         ASIPSpace space = kb.createASIPSpace(topics, types, peers, sender, peers, null, null, ASIPSpace.DIRECTION_INOUT);
         ASIPKnowledge knowledge = new InMemoASIPKnowledge(kb.getVocabulary());
-        L.d("after creation");
         knowledge.addInformation(rawInput, space);
-        L.d("created");
 
         ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null);
-        L.d("insert");
         outMessage.insert(knowledge);
         this.connection.createInputStream();
 
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
         inMessage.parse();
 
-        L.d("parsed;");
+        String receivedContent = "";
+        Iterator<ASIPInformationSpace> informationSpaces = inMessage.getKnowledge().informationSpaces();
+        while(informationSpaces.hasNext()){
+            ASIPInformationSpace informationSpace = informationSpaces.next();
+            Iterator<ASIPInformation> infos = informationSpace.informations();
+            while (infos.hasNext()){
+                ASIPInformation info = infos.next();
+                receivedContent = new String(info.getContentAsByte(),StandardCharsets.UTF_8);
+            }
+        }
+
+        Assert.assertTrue(rawInput.equals(receivedContent));
 
     }
 }

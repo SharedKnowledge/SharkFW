@@ -32,24 +32,8 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
     private SpatialSTSet locations;
     private int direction;
     
-    private List<Information> infoList = new ArrayList<>();
+    private List<ASIPInformation> infoList = new ArrayList<>();
 
-    InMemoInformationSpace() {}
-    
-    InMemoInformationSpace(STSet topics, STSet types,
-            PeerSTSet approvers, PeerSTSet senders, PeerSTSet receivers,
-            TimeSTSet times, SpatialSTSet locations, int direction) {
-        
-        this.topics = topics;
-        this.types = types;
-        this.approvers = approvers;
-        this.senders = senders;
-        this. receivers = receivers;
-        this.times = times;
-        this.locations = locations;
-        this. direction = direction;
-    }
-    
     InMemoInformationSpace(STSet topics, STSet types,
             PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receivers,
             TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
@@ -93,11 +77,6 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
         this.direction = direction;
     }
     
-    InMemoInformationSpace(Information info) throws SharkKBException {
-        this(info.getASIPSpace());
-        this.addInformation(info);
-    }
-    
     InMemoInformationSpace(ASIPSpace space) throws SharkKBException {
         this(
                 InMemoSharkKB.createInMemoCopy(space.getTopics()),
@@ -110,11 +89,10 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
                 space.getDirection()
         );
     }
-    
+
+
     final void addInformation(Information info) {
         this.infoList.add(info);
-        
-        // extends space!!! TODO
     }
 
     @Override
@@ -137,7 +115,7 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
 
     @Override
     public Iterator<ASIPInformation> informations() throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return infoList.iterator();
     }
 
     @Override
