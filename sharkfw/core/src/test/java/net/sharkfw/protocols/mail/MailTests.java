@@ -1,6 +1,5 @@
 package net.sharkfw.protocols.mail;
 
-import java.io.IOException;
 import junit.framework.Assert;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -10,7 +9,8 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.StandardKP;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
-import org.junit.Test;
+
+import java.io.IOException;
 
 /**
  *
@@ -140,7 +140,7 @@ public class MailTests implements KPListener {
         }
      }
 
-     @Test
+    //     @Test
      public void largeMailExchange() throws SharkKBException, InterruptedException, IOException, SharkSecurityException {
          L.setLogLevel(L.LOGLEVEL_ALL);
          
