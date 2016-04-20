@@ -29,7 +29,6 @@ public class ASIPOutMessage extends ASIPMessage {
     private OutputStream os = null;
     private boolean responseSent = false;
     private String recipientAddress = "";
-    private ByteArrayOutputStream baos;
     private MessageStub outStub;
 
     public ASIPOutMessage(SharkEngine engine,
@@ -46,8 +45,7 @@ public class ASIPOutMessage extends ASIPMessage {
     }
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
-        super(engine, connection, (in.getTtl()-1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime());
-//        osw = new OutputStreamWriter(connection.getSharkOutputStream().getOutputStream(), StandardCharsets.UTF_8);
+        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime());
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
@@ -68,18 +66,18 @@ public class ASIPOutMessage extends ASIPMessage {
     }
 
 
-    public boolean responseSent(){
+    public boolean responseSent() {
         return this.responseSent;
     }
 
-    private void sent(){
+    private void sent() {
 
         try {
-            if(outStub != null) {
-                this.outStub.sendMessage(( (ByteArrayOutputStream) this.os).toByteArray(), this.recipientAddress);
-            } else {
-                this.osw.flush();
-            }
+            this.osw.flush();
+            if (outStub != null) {
+                final byte[] msg = ((ByteArrayOutputStream) this.os).toByteArray();
+                this.outStub.sendMessage(msg, this.recipientAddress);
+            } 
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,7 +141,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.sent();
     }
 
-    public  void raw(InputStream inputStream){
+    public void raw(InputStream inputStream) {
         this.setCommand(ASIPMessage.ASIP_RAW);
 
 //        this.initSecurity();

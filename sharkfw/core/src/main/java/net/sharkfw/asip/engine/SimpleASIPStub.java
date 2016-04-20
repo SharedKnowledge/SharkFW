@@ -45,7 +45,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     @Override
     public void handleMessage(byte[] msg, MessageStub stub) {
         // TODO implement MessageStub
-        L.d("KEPStub: message received: " + msg, this);
+        L.d("ASIPStub: message received: " + msg, this);
         try {
             ASIPInMessage inMsg = new ASIPInMessage(this.se, msg, stub);
             inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
@@ -54,7 +54,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
             inMsg.parse();
             this.callListener(inMsg);
         } catch (IOException ioe) {
-            L.e("IOException while reading KEP message: " + ioe.getMessage(), this);
+            L.e("IOException while reading ASIP message: " + ioe.getMessage(), this);
             ioe.printStackTrace();
         } catch (SharkSecurityException ioe) {
             // connection closed - bye
