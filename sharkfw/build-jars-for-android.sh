@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-DEST=~/Work/SharkNetNG/app/libs/
+DEST=~/Work/Shark2/SharkNetNG/AndroidSharkFW/libs/
 
-mvn -P clean install
-
-rm -r $DEST*
+mvn clean install
+rm -rf $DEST*
+mkdir -p $DEST
 
 cp ./core/target/*.jar $DEST
-cp ./android/android-core/target/*.jar $DEST
-cp ./android/android-wifi/target/*.jar $DEST
+
+echo "Done"
