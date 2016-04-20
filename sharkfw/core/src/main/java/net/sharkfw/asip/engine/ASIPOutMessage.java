@@ -64,8 +64,7 @@ public class ASIPOutMessage extends ASIPMessage {
         super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime);
         this.outStub = stub;
         this.recipientAddress = address;
-        this.baos = new ByteArrayOutputStream();
-        this.os = this.baos;
+        this.os = new ByteArrayOutputStream();
     }
 
 
@@ -77,7 +76,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
         try {
             if(outStub != null) {
-                this.outStub.sendMessage(this.baos.toByteArray(), this.recipientAddress);
+                this.outStub.sendMessage(( (ByteArrayOutputStream) this.os).toByteArray(), this.recipientAddress);
             } else {
                 this.osw.flush();
             }
