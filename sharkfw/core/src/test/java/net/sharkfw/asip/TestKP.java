@@ -10,10 +10,10 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
-import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 /**
  * Created by msc on 21.03.16.
@@ -71,11 +71,8 @@ public class TestKP extends KnowledgePort {
         //TODO: after fix: use is instead of asipConnection to get InputStream
         ASIPInMessage inMessage = (ASIPInMessage) asipConnection;
         InputStream is2 = inMessage.getRaw();
-        try {
-            rawContent = IOUtils.toString(is2, "UTF-8");
-        } catch (IOException e) {
-            L.d(e.getMessage());
-            e.printStackTrace();
+        try (Scanner scanner = new Scanner(is2, StandardCharsets.UTF_8.name())) {
+            rawContent = scanner.useDelimiter("\\A").next();
         }
 
         super.handleRaw(is, asipConnection);

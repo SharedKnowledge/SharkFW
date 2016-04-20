@@ -1,24 +1,23 @@
 package net.sharkfw.asip.engine;
 
+import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
+import net.sharkfw.knowledgeBase.inmemory.*;
+import net.sharkfw.system.L;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
-import net.sharkfw.asip.*;
-import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.*;
-import net.sharkfw.system.L;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
-import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
+import java.util.*;
 
 /**
  * @author msc
@@ -77,9 +76,11 @@ public class ASIPSerializer {
         content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
         try {
-            content.put(RAW, IOUtils.toString(raw, "UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            String text = null;
+            try (Scanner scanner = new Scanner(raw, StandardCharsets.UTF_8.name())) {
+                text = scanner.useDelimiter("\\A").next();
+            }
+            content.put(RAW, text);
         } finally {
             try {
                 raw.close();

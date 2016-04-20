@@ -2,31 +2,19 @@ package net.sharkfw.asip;
 
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
-import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
-import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
+import net.sharkfw.knowledgeBase.SharkAlgebra;
+import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoASIPKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.GeoSensor;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.peer.PeerSensor;
-import net.sharkfw.peer.SharkEngine;
-import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.protocols.tcp.TCPConnection;
-import net.sharkfw.system.L;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
-import org.junit.*;
-import org.junit.runners.Parameterized;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Scanner;
 
 /**
  * Created by msc on 21.03.16.
@@ -70,7 +58,12 @@ public class ASIPMessageTest extends ASIPBaseTest{
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
         inMessage.parse();
 
-        Assert.assertEquals(rawInput, IOUtils.toString(inMessage.getRaw(), "UTF-8"));
+        String text = null;
+        try (Scanner scanner = new Scanner(inMessage.getRaw(), StandardCharsets.UTF_8.name())) {
+            text = scanner.useDelimiter("\\A").next();
+        }
+
+        Assert.assertEquals(rawInput, text);
     }
 
     @Test
@@ -86,7 +79,12 @@ public class ASIPMessageTest extends ASIPBaseTest{
         ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
         inMessage.parse();
 
-        Assert.assertEquals(rawInput, IOUtils.toString(inMessage.getRaw(), "UTF-8"));
+        String text = null;
+        try (Scanner scanner = new Scanner(inMessage.getRaw(), StandardCharsets.UTF_8.name())) {
+            text = scanner.useDelimiter("\\A").next();
+        }
+
+        Assert.assertEquals(rawInput, text);
     }
 
     @Test
