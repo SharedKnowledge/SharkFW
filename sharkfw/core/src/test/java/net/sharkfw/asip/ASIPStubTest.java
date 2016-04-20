@@ -1,5 +1,6 @@
 package net.sharkfw.asip;
 
+import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
