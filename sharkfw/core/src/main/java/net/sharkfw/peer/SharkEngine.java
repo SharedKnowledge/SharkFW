@@ -1037,7 +1037,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                 } else {
                     // TODO MessageStub necessary?
                     mStub = (MessageStub) protocolStub;
-//                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime);
+                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime, address);
                 }
             } catch (SharkNotSupportedException ex) {
                 L.e(ex.getMessage(), this);

@@ -7,6 +7,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SpatialSemanticTag;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.system.L;
 
@@ -28,6 +29,8 @@ public class ASIPOutMessage extends ASIPMessage {
     private OutputStream os = null;
     private boolean responseSent = false;
     private String recipientAddress = "";
+    private ByteArrayOutputStream baos;
+    private MessageStub outStub;
 
     public ASIPOutMessage(SharkEngine engine,
                           StreamConnection connection,
@@ -49,6 +52,23 @@ public class ASIPOutMessage extends ASIPMessage {
         this.os = connection.getOutputStream();
     }
 
+    public ASIPOutMessage(SharkEngine engine,
+                          MessageStub stub,
+                          long ttl,
+                          PeerSemanticTag sender,
+                          PeerSemanticTag receiverPeer,
+                          SpatialSemanticTag receiverLocation,
+                          TimeSemanticTag receiverTime,
+                          String address) throws SharkKBException {
+
+        super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime);
+        this.outStub = stub;
+        this.recipientAddress = address;
+        this.baos = new ByteArrayOutputStream();
+        this.os = this.baos;
+    }
+
+
     public boolean responseSent(){
         return this.responseSent;
     }
@@ -56,8 +76,11 @@ public class ASIPOutMessage extends ASIPMessage {
     private void sent(){
 
         try {
-            this.osw.flush();
-//            this.osw.close();
+            if(outStub != null) {
+                this.outStub.sendMessage(this.baos.toByteArray(), this.recipientAddress);
+            } else {
+                this.osw.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

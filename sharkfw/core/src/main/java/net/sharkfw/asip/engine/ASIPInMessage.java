@@ -5,6 +5,7 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.protocols.Stub;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 import org.apache.commons.io.IOUtils;
@@ -39,6 +40,13 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         this.se = se;
         this.con = con;
         this.is = con.getInputStream();
+    }
+
+    public ASIPInMessage(SharkEngine se, byte[] msg, Stub stub){
+        super(se, null);
+
+        this.se = se;
+        this.is = new ByteArrayInputStream(msg);
     }
 
     public ASIPInMessage(SharkEngine se, int asipMessageType, Interest anyInterest, StreamConnection con, ASIPStub asipStub) {

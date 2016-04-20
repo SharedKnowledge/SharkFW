@@ -1,5 +1,6 @@
 package net.sharkfw.asip.engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -8,19 +9,14 @@ import java.util.Iterator;
 import net.sharkfw.asip.*;
 import net.sharkfw.kep.AbstractSharkStub;
 import net.sharkfw.kep.KEPMessage;
-import net.sharkfw.knowledgeBase.ContextPoint;
-import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.Interest;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.SharkCS;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.system.InterestStore;
-import net.sharkfw.system.KnowledgeStore;
-import net.sharkfw.system.L;
+import net.sharkfw.system.*;
 
 /**
  * Created by msc on 18.03.16.
@@ -48,7 +44,22 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
 
     @Override
     public void handleMessage(byte[] msg, MessageStub stub) {
-
+        // TODO implement MessageStub
+        L.d("KEPStub: message received: " + msg, this);
+        try {
+            ASIPInMessage inMsg = new ASIPInMessage(this.se, msg, stub);
+            inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+                    this.encryptionLevel, this.signatureLevel,
+                    this.replyPolicy, this.refuseUnverifiably);
+            inMsg.parse();
+            this.callListener(inMsg);
+        } catch (IOException ioe) {
+            L.e("IOException while reading KEP message: " + ioe.getMessage(), this);
+            ioe.printStackTrace();
+        } catch (SharkSecurityException ioe) {
+            // connection closed - bye
+            L.d("Security Exception", this);
+        }
     }
 
     /**

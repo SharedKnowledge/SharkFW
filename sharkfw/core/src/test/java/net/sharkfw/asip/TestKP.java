@@ -40,6 +40,17 @@ public class TestKP extends KnowledgePort {
     }
 
     @Override
+    protected void handleRaw(InputStream is, ASIPConnection asipConnection) {
+        super.handleRaw(is, asipConnection);
+        L.d("Lol");
+        try {
+            IOUtils.toString(is, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     protected void handleExpose(ASIPInterest interest, ASIPConnection asipConnection) throws SharkKBException {
         L.d(this.name + " says: Ping.", this);
 

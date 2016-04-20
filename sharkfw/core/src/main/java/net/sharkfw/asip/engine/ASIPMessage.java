@@ -9,6 +9,7 @@ import java.security.PrivateKey;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;
@@ -34,17 +35,18 @@ public abstract class ASIPMessage {
     public static final String RECEIVERPEER = "RECEIVERPEER";
     public static final String RECEIVERLOCATION = "RECEIVERLOCATION";
     public static final String RECEIVERTIME = "RECEIVERTIME";
-
     private SharkEngine engine;
-    private StreamConnection connection;
 
+    private StreamConnection connection;
     private final String version = "ASIP 1.0";
+
     private final String format = "JSON";
     private boolean encrypted = false;
     private String encryptedSessionKey = "";
     private boolean signed = false;
     private String signature = "";
     private long ttl = -1;
+    private MessageStub stub;
     private int command;
     private PeerSemanticTag sender;
     private STSet receivers;
@@ -73,6 +75,35 @@ public abstract class ASIPMessage {
 
         this.engine = engine;
         this.connection = connection;
+        this.ttl = ttl;
+
+        this.receivers = InMemoSharkKB.createInMemoSTSet();
+
+        this.sender = sender;
+        if (receiverPeer != null) {
+            this.receiverPeer = receiverPeer;
+            this.receivers.merge(receiverPeer);
+        }
+        if (receiverSpatial != null) {
+            this.receiverSpatial = receiverSpatial;
+            this.receivers.merge(receiverSpatial);
+        }
+        if (receiverTime != null) {
+            this.receiverTime = receiverTime;
+            this.receivers.merge(receiverTime);
+        }
+    }
+
+    public ASIPMessage(SharkEngine engine,
+                       MessageStub stub,
+                       long ttl,
+                       PeerSemanticTag sender,
+                       PeerSemanticTag receiverPeer,
+                       SpatialSemanticTag receiverSpatial,
+                       TimeSemanticTag receiverTime) throws SharkKBException {
+
+        this.engine = engine;
+        this.stub = stub;
         this.ttl = ttl;
 
         this.receivers = InMemoSharkKB.createInMemoSTSet();

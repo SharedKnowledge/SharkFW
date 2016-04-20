@@ -69,10 +69,15 @@ public class ASIPStubTest extends ASIPBaseTest {
         ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, peerA, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
         Thread.sleep(2000);
 
-        engineA.sendASIPInterest(space, peerB, testKPA);
 
-//        ASIPOutMessage outMessage = engineA.createASIPOutMessage(peerB.getAddresses(), peerA, peerB, null, null, 10);
-//        outMessage.expose(space);
+        String rawInput = "Hello ASIP.";
+        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
+//        engineA.sendRaw(is, peerB,  testKPA);
+
+//        engineA.sendASIPInterest(space, peerB, testKPA);
+
+        ASIPOutMessage outMessage = engineA.createASIPOutMessage(peerB.getAddresses(), peerA, peerB, null, null, 10);
+        outMessage.expose(space);
 
         Thread.sleep(1000);
     }
