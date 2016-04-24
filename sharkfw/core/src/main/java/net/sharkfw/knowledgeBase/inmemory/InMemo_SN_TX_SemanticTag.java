@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import java.io.Serializable;
 import java.util.*;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -14,8 +15,7 @@ import net.sharkfw.system.Util;
  * @author thsc
  */
 @SuppressWarnings("unchecked")
-public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
-                                implements SNSemanticTag, TXSemanticTag {
+public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag implements SNSemanticTag, TXSemanticTag, Serializable {
     
     // targets means: referenced tags with a given predicate
     private HashMap<String, HashSet<SNSemanticTag>> targets;
@@ -24,7 +24,12 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag
     private HashMap<String, HashSet<SNSemanticTag>> sources;
     
     private boolean refreshed = false;
-    
+
+    //TODO: Serializable only needed because PKI is not migrated to new SharkFW Version
+    public InMemo_SN_TX_SemanticTag() {
+        super();
+    }
+
     public InMemo_SN_TX_SemanticTag(String name, String[] si) {
         super(name, si);
     }

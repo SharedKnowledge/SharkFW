@@ -5,18 +5,24 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.system.Util;
 
+import java.io.Serializable;
+
 /**
  * The implementation for an in-memory SemanticTag, keeping all values in RAM.
  *
  * TODO: Store all values in properties instead of private members?
- * 
+ *
  * @author thsc
  */
-public class InMemoSemanticTag extends AbstractSemanticTag {
+public class InMemoSemanticTag extends AbstractSemanticTag implements Serializable {
 
     private String name;
     private String[] si;
     private InMemoGenericTagStorage storage;
+
+    //TODO: Serializable only needed because PKI is not migrated to new SharkFW Version
+    InMemoSemanticTag() {
+    }
 
     InMemoSemanticTag(String name, String[] si) {
         this(name, si, null);
@@ -29,22 +35,22 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
         this.si = this.checkNullAndDuplicates(si);
         this.storage = storage;
     }
-    
+
     /**
      * Removes null references if any
      * @param sis
-     * @return 
+     * @return
      */
     private String[] checkNullAndDuplicates(String[] sisOrig) {
         // first: check if not empty
         if(sisOrig == null || sisOrig.length == 0) {
             return null;
         }
-        
+
         // copy the whole thing - for those who want to reuse that array
         String[] sis = new String[sisOrig.length];
         System.arraycopy(sisOrig, 0, sis, 0, sisOrig.length);
-        
+
         // remove duplicates first
         for(int origIndex = 0; origIndex < sis.length -1; origIndex++) {
             if(sis[origIndex] != null) {
@@ -57,10 +63,10 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
                 }
             }
         }
-        
+
         // remove null sis
         int nullCounter = 0;
-        
+
         // check if null in there
         for(int i = 0; i < sis.length; i++) {
             String siTmp = sis[i];
@@ -68,7 +74,7 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
                 nullCounter++;
             }
         }
-        
+
         if(nullCounter > 0) {
             // compress
             String[] ret = new String[sis.length - nullCounter];
@@ -79,9 +85,9 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
                     ret[index++] = siTmp;
                 }
             }
-            
+
             return ret;
-            
+
         } else {
             // ok
             return sis;
@@ -103,7 +109,7 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
         if(si == null || si.length == 0) {
             throw new SharkKBException("no SI set at all");
         }
-        
+
         if(si.length == 1) {
             if(si[0].equalsIgnoreCase(deleteSI)) {
                 throw new SharkKBException("removing final si is forbidden. Add another SI before removing this one");
@@ -111,14 +117,14 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
                 return;
             }
         }
-        
+
         this.si = Util.removeSI(this.si, deleteSI);
         if(this.storage != null) {
             this.storage.siRemoved(deleteSI, this);
             super.sisChanged();
         }
     }
-    
+
 //    private void syncStorage() {
 //        if(this.storage != null) {
 //            this.storage.initSi();
@@ -135,7 +141,7 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
                 throw new SharkKBException("si already exists - duplicates not permitted");
             }
         }
-        
+
         this.si = Util.addString(this.si, addSI);
         if(this.storage != null) {
             this.storage.siAdded(addSI, this);
@@ -148,7 +154,7 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
         this.name = newName;
         this.persist();
     }
-    
+
     void setStorage(InMemoGenericTagStorage storage) {
         this.storage = storage;
     }
@@ -160,14 +166,14 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
     //////////////////////////////////////////////////////////
     //              write status into properties            //
     //////////////////////////////////////////////////////////
-    
+
     public static final String ST_NAME = "SemanticTag_Name";
     public static final String ST_SIS = "SemanticTag_SIs";
-    
+
     @Override
     public void persist() {
         super.persist();
-        
+
         // persist name
         this.setSystemProperty(ST_NAME, this.name);
 
@@ -175,14 +181,14 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
         String sisString = Util.array2string(this.si);
         this.setSystemProperty(ST_SIS, sisString);
     }
-    
+
     @Override
     public void refreshStatus() {
         super.refreshStatus();
-        
+
         String newName = this.getSystemProperty(ST_NAME);
         if(newName != null) this.name = newName;
-        
+
         String sisString = this.getSystemProperty(ST_SIS);
         if(sisString != null) {
             String[] newSIs = Util.string2array(sisString);
@@ -191,10 +197,10 @@ public class InMemoSemanticTag extends AbstractSemanticTag {
             }
         }
     }
-    
+
     public InMemoSemanticTag(SystemPropertyHolder persistentHolder) {
         super(persistentHolder);
-        
+
         this.refreshStatus();
     }
 }

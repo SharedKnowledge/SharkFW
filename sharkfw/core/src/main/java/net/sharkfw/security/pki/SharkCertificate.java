@@ -3,6 +3,7 @@ package net.sharkfw.security.pki;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.system.SharkException;
 
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -12,7 +13,12 @@ import java.util.LinkedList;
 /**
  * @author ac
  */
-public class SharkCertificate implements Certificate {
+
+//TODO: Serializable only needed because PKI is not migrated to new SharkFW Version
+
+public class SharkCertificate implements Certificate, Serializable {
+
+    public final static long serialVersionUID = 667;
 
     private PeerSemanticTag subject;
     private PeerSemanticTag issuer;
@@ -20,6 +26,10 @@ public class SharkCertificate implements Certificate {
     private PublicKey subjectPublicKey;
     private TrustLevel trustLevel;
     private Date validity;
+
+    public SharkCertificate() {
+
+    }
 
     /**
      * Constructor
@@ -120,5 +130,30 @@ public class SharkCertificate implements Certificate {
         result = 31 * result + subjectPublicKey.hashCode();
         result = 31 * result + validity.hashCode();
         return result;
+    }
+
+    public byte[] serialize() {
+        try {
+            final ByteArrayOutputStream b = new ByteArrayOutputStream();
+            final ObjectOutputStream o = new ObjectOutputStream(b);
+            o.writeObject(this);
+            return b.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static SharkCertificate deserialize(byte[] bytes) {
+        try {
+            final ByteArrayInputStream b = new ByteArrayInputStream(bytes);
+            final ObjectInputStream o = new ObjectInputStream(b);
+            final Object obj = o.readObject();
+            final SharkCertificate certificate = (SharkCertificate) obj;
+            return certificate;
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

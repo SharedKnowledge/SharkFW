@@ -6,15 +6,23 @@ import net.sharkfw.knowledgeBase.PeerTXSemanticTag;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.system.Util;
 
+import java.io.Serializable;
+
 /**
  *
  * @author thsc
  */
 @SuppressWarnings("unchecked")
 public class InMemo_SN_TX_PeerSemanticTag extends InMemo_SN_TX_SemanticTag 
-    implements PeerSemanticTag, PeerTXSemanticTag, PeerSNSemanticTag {
+    implements PeerSemanticTag, PeerTXSemanticTag, PeerSNSemanticTag, Serializable {
     private String[] addresses;
-    
+
+    //TODO: Serializable only needed because PKI is not migrated to new SharkFW Version
+    public InMemo_SN_TX_PeerSemanticTag() {
+        super();
+
+    }
+
     public InMemo_SN_TX_PeerSemanticTag(String name, String[] si, String[] addresses) {
         super(name, si);
         this.addresses = addresses;
