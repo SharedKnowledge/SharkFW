@@ -14,7 +14,6 @@ letter                  = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
                         | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p'
                         | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w'
                         | 'x' | 'y' | 'z' ;
-alpha                   = letter
 digit                   = '0' | '1' | '2' | '3' | '4'
                         | '5' | '6' | '7' | '8' | '9' ;
 number                  = digit {digit} ;
