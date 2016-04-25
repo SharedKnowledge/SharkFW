@@ -1,10 +1,7 @@
 package net.sharkfw.asip.engine;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.*;
 
 import net.sharkfw.asip.*;
 import net.sharkfw.kep.AbstractSharkStub;
@@ -45,7 +42,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     @Override
     public void handleMessage(byte[] msg, MessageStub stub) {
         // TODO implement MessageStub
-        L.d("ASIPStub: message received: " + msg, this);
+        L.d("ASIPStub: message with length of " + msg.length + " bytes received: " + Arrays.toString(msg), this);
         try {
             ASIPInMessage inMsg = new ASIPInMessage(this.se, msg, stub);
             inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
