@@ -121,7 +121,7 @@ name                    = text ;
 knowledge               = '{'
                             '"vocabulary":' vocabulary ','
                             '"infoData":' '[' infoDatas ']' ','
-                            infoContent
+                            '"infoContent":' infoContent
                           '}' ;
 knowledges              = knowledge { ',' knowledge } ;
 infoData                = '{'
@@ -138,6 +138,7 @@ infoMetaDatas           = infoMetaData { ',' infoMetaData } ;
 infoContent             = '{'
                             '"byteStream":' text
                           '}' ;
+// Todo add '"direction":' 
 infoSpace               = '{'
                             '"topics":' [ semanticTags ] ','
                             '"types":' [ semanticTags ] ','
@@ -145,8 +146,7 @@ infoSpace               = '{'
                             '"sender":' [ peerSemanticTag ]','
                             '"recipients":' [ peerSemanticTags ] ','
                             '"locations":' [ spatialSemanticTags ] ','
-                            '"times":' [ timeSemanticTags ] ','
-                            '"direction":'
+                            '"times":' [ timeSemanticTags ]
                           '}' ;
 
 // TODO: Check Vocabulary
