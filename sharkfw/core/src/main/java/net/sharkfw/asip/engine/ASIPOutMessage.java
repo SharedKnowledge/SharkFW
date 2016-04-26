@@ -77,7 +77,7 @@ public class ASIPOutMessage extends ASIPMessage {
             if (outStub != null) {
                 final byte[] msg = ((ByteArrayOutputStream) this.os).toByteArray();
                 this.outStub.sendMessage(msg, this.recipientAddress);
-            } 
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

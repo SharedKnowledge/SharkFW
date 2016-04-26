@@ -188,7 +188,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         // create
         switch (type) {
             case net.sharkfw.protocols.Protocols.TCP:
-                protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false);
+                if(this.getAsipStub()!=null){
+                    protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false);
+                } else if(this.getKepStub()!=null){
+                    protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false);
+                }
                 break;
 //            case net.sharkfw.protocols.Protocols.UDP:
 //                return this.startUDPMessageStub(handler);
@@ -199,11 +203,19 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 //            case net.sharkfw.protocols.Protocols.HTTP:
 //                return this.createTCPStreamStub(this.getKepStub(), DEFAULT_HTTP_PORT, true);
             case net.sharkfw.protocols.Protocols.MAIL:
-                protocolStub = this.createMailStreamStub(this.getKepStub());
+                if(this.getAsipStub()!=null){
+                    protocolStub = this.createMailStreamStub(this.getAsipStub());
+                } else if(this.getKepStub()!=null){
+                    protocolStub = this.createMailStreamStub(this.getKepStub());
+                }
                 break;
 
             case net.sharkfw.protocols.Protocols.WIFI_DIRECT:
-                protocolStub = this.createWifiDirectStreamStub(this.getKepStub());
+                if(this.getAsipStub()!=null){
+                    protocolStub = this.createWifiDirectStreamStub(this.getAsipStub());
+                } else if(this.getKepStub()!=null){
+                    protocolStub = this.createWifiDirectStreamStub(this.getKepStub());
+                }
                 break;
 
         }
