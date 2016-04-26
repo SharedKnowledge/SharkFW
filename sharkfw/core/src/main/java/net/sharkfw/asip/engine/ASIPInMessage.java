@@ -54,7 +54,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     }
 
     public void parse() throws IOException, SharkSecurityException {
-        char[] buffer = new char[this.is.available()];
+        char[] buffer = new char[4048];
         BufferedReader in = new BufferedReader(new InputStreamReader(this.is, StandardCharsets.UTF_8));
         int charsRead = in.read(buffer);
         this.parsedString += new String(buffer).substring(0, charsRead);
