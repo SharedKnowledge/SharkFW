@@ -45,10 +45,12 @@ public class ASIPStubTest extends ASIPBaseTest {
         engineA = new J2SEAndroidSharkEngine();
         engineA.activateASIP();
         testKPA = new TestKP(engineA, "Port A");
+        testKPA.setText("Pong");
 
         engineB = new J2SEAndroidSharkEngine();
         engineB.activateASIP();
         testKPB = new TestKP(engineB, "Port B");
+        testKPB.setText("Ping");
 
         peerA = InMemoSharkKB.createInMemoPeerSemanticTag("Peer A", "www.peer-a.de", "tcp://localhost:7070");
         peerB = InMemoSharkKB.createInMemoPeerSemanticTag("Peer B", "www.peer-b.de", "tcp://localhost:7071");
@@ -71,8 +73,8 @@ public class ASIPStubTest extends ASIPBaseTest {
         Thread.sleep(2000);
 
 
-        String rawInput = "Hello ASIP.";
-        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
+//        String rawInput = "Hello ASIP.";
+//        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
 //        engineA.sendRaw(is, peerB,  testKPA);
 
 //        engineA.sendASIPInterest(space, peerB, testKPA);

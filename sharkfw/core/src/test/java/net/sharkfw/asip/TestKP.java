@@ -22,11 +22,16 @@ public class TestKP extends KnowledgePort {
 
     private final String name;
     private String rawContent;
+    private String text;
 
     public TestKP(SharkEngine se, String name) {
 
         super(se);
         this.name = name;
+    }
+
+    public void setText(String text){
+        this.text = text;
     }
 
     @Override
@@ -41,7 +46,12 @@ public class TestKP extends KnowledgePort {
 
     @Override
     protected void handleExpose(ASIPInterest interest, ASIPConnection asipConnection) throws SharkKBException {
-        L.d(this.name + " says: Ping.", this);
+        if(this.text.isEmpty()){
+            L.d(this.name + " says: Ping.", this);
+        } else{
+            L.d(this.name + " says: " + this.text, this);
+        }
+
 
         if (asipConnection == null) {
             L.d("Connection = null");
