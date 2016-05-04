@@ -1040,7 +1040,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     try {
                         sConn = sStub.createStreamConnection(address);
                     } catch (RuntimeException re) {
-                        throw new SharkException(re.getMessage());
+                        throw new SharkException(re.getMessage(), re.getCause());
+                    } catch (IOException ioe){
+                        L.e("Message: "+ ioe.getMessage(), this);
                     }
                     //    } else {
                     //  fromPool = true;
@@ -1055,10 +1057,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                 L.e(ex.getMessage(), this);
 //                ex.printStackTrace();
                 continue;
-            } catch (IOException ex) {
-                L.e(ex.getMessage(), this);
-//                ex.printStackTrace();
-                continue;
+//            } catch (IOException ex) {
+//                L.e(ex.getMessage(), this);
+////                ex.printStackTrace();
+//                continue;
             } catch (SharkProtocolNotSupportedException spn) {
                 L.e(spn.getMessage(), this);
 //                spn.printStackTrace();

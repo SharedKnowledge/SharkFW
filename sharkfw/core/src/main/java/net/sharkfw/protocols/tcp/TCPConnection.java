@@ -56,7 +56,7 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
         try {
             s = new Socket(this.recAddress, this.portNo);
         } catch (RuntimeException re) {
-            throw new IOException(re.getMessage());
+            throw new IOException(re.getMessage(), re.getCause());
         }
 
         s.setSoTimeout(this.socketTimeout);
