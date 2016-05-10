@@ -1,0 +1,11 @@
+net/sharkfw/asip/ASIPSerializerTest.class
+net/sharkfw/asip/TestKP.class
+net/sharkfw/protocols/mail/MailTests.class
+net/sharkfw/asip/ASIPSharkKBImplTest.class
+net/sharkfw/protocols/mail/Alice.class
+net/sharkfw/asip/ASIPBaseTest.class
+net/sharkfw/protocols/mail/Settings.class
+net/sharkfw/asip/TestConnection.class
+net/sharkfw/asip/ASIPStubTest.class
+net/sharkfw/protocols/mail/Bob.class
+net/sharkfw/asip/ASIPMessageTest.class

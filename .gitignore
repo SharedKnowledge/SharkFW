@@ -12,4 +12,4 @@ gen
 bin/net/sharkfw/knowledgeBase/sync/TODO
 bin/
 */**/target/
-sharkfw/j2se/j2se-core/Temp
+target
