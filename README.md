@@ -6,6 +6,15 @@ Web 2.0 without WWW: P2P, mobile, secure and private
 
 Shark is an acronym. It stands for Shared Knowledge. Shark applications store user data only on user devices. We don't use any server or cloud architecture. Each Shark application is a peer - an independent and self-contained entity which can directly communicate with others.
 
+## Structure
+With a new protocol in development the project had to get a new Structure.
+Therefor this project got split into multiple repositories. This repository represents the core features of the SharkFW. These core features can be used on all platforms supporting SharkFW. But there is code with need to be written especially for the platform such as for Android.
+
+This leads us to the extending repositories which all have this repository as dependency.
+
+* [SharkFW-Android](https://github.com/SharedKnowledge/SharkFW-Android)
+* [SharkFW-J2SE](https://github.com/SharedKnowledge/SharkFW-J2SE)
+
 Install the SDK
 ---------------
 
