@@ -68,6 +68,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         this.parsedString = response.toString();
 //        L.d("CharsRead " + total, this);
 
+        L.d(parsedString, this);
+
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
     }
 

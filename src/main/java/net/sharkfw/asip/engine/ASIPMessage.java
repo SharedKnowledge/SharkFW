@@ -35,6 +35,7 @@ public abstract class ASIPMessage {
     public static final String RECEIVERPEER = "RECEIVERPEER";
     public static final String RECEIVERLOCATION = "RECEIVERLOCATION";
     public static final String RECEIVERTIME = "RECEIVERTIME";
+    public static final String TOPIC = "TOPIC";
     private SharkEngine engine;
 
     private StreamConnection connection;
