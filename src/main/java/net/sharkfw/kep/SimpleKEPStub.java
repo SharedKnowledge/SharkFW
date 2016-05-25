@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.SharkStub;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;
@@ -18,6 +21,7 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.protocols.Stub;
 import net.sharkfw.system.InterestStore;
 import net.sharkfw.system.KnowledgeStore;
 import net.sharkfw.system.L;
@@ -468,6 +472,11 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
 
     @Override
     public void handleInterest(Interest interest) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void handleASIPInterest(ASIPInterest interest, SharkStub stub) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

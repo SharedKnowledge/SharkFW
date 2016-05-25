@@ -8,6 +8,7 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.protocols.Stub;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 
 /**
@@ -45,5 +46,5 @@ public interface SharkStub {
      */
     public void handleInterest(Interest interest);
     
-    
+    public void handleASIPInterest(ASIPInterest interest, SharkStub stub);
 }

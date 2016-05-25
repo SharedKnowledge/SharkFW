@@ -13,6 +13,7 @@ import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
+import net.sharkfw.protocols.Stub;
 import net.sharkfw.system.*;
 
 /**
@@ -253,5 +254,10 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     @Override
     public void handleInterest(Interest interest) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void handleASIPInterest(ASIPInterest interest, SharkStub stub) {
+        ASIPInMessage inMessage = new ASIPInMessage(this.se, interest, stub);
     }
 }

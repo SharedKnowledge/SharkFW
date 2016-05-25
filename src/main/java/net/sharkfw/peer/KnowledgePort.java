@@ -206,11 +206,12 @@ abstract public class KnowledgePort {
         this.se.addKP(this);
     }
     
-    public synchronized final boolean handleMessage(ASIPInMessage msg, 
-            ASIPConnection con) {
+    public synchronized final boolean handleMessage(ASIPInMessage msg, ASIPConnection con) {
 
         this.doProcess(msg, con);
-        return con.responseSent();
+        if(con!=null)
+            return con.responseSent();
+        return false;
     }
     
     /********************************************************

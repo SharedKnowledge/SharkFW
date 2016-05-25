@@ -422,6 +422,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.getKepStub().handleInterest(interest);
     }
 
+    public void handleASIPInterest(ASIPInterest interest){
+        this.getAsipStub().handleASIPInterest(interest, this.asipStub);
+    }
+
     /**
      * Define a default KP that handles messages that no other KP likes to
      * reply to.

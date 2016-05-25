@@ -53,6 +53,14 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         super(se, con);
     }
 
+    public ASIPInMessage(SharkEngine se, ASIPInterest interest, SharkStub stub){
+        super(se, null);
+
+        this.se = se;
+        this.interest = interest;
+        this.sharkStub = stub;
+    }
+
     public void parse() throws IOException, SharkSecurityException {
         char[] buffer = new char[1024];
         BufferedReader in = new BufferedReader(new InputStreamReader(this.is, StandardCharsets.UTF_8));
