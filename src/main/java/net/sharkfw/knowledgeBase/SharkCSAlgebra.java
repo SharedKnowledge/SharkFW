@@ -1552,6 +1552,49 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
         
         return assimilated;
     }
+
+    public static boolean isIn(ASIPSpace source, ASIPSpace checked) throws SharkKBException {
+        // dimension
+        int sD = source.getDirection();
+        int cD = checked.getDirection();
+
+        if(sD != cD) {
+            // not same direction - should be false but..
+
+            // what works is this:
+            // sd = in/out && cd != nothing
+            // and sd != nothing && cd == in/out
+            if(!(
+                    (sD == SharkCS.DIRECTION_INOUT && cD != SharkCS.DIRECTION_NOTHING)
+                            ||
+                            (cD == SharkCS.DIRECTION_INOUT && sD != SharkCS.DIRECTION_NOTHING)
+            ))
+            {
+                // no way - that doesn't fit
+                return false;
+            }
+        }
+
+        if(!SharkCSAlgebra.identical(source.getSender(), checked.getSender())) return false;
+
+        if(!SharkCSAlgebra.isIn(source.getTopics(), checked.getTopics())) return false;
+        if(!SharkCSAlgebra.isIn(source.getTypes(), checked.getTypes())) return false;
+        if(!SharkCSAlgebra.isIn(source.getApprovers(), checked.getApprovers())) return false;
+        if(!SharkCSAlgebra.isIn(source.getReceivers(), checked.getReceivers())) return false;
+        if(!SharkCSAlgebra.isIn(source.getTimes(), checked.getTimes())) return false;
+        if(!SharkCSAlgebra.isIn(source.getLocations(), checked.getLocations())) return false;
+
+        return true;
+    }
+
+    public static boolean isIn(STSet source, STSet checked) throws SharkKBException {
+        Iterator<SemanticTag> iterator = checked.stTags();
+        boolean isIn = true;
+        while (iterator.hasNext() && isIn){
+            isIn = SharkCSAlgebra.isIn(source, iterator.next());
+        }
+        return isIn;
+    }
     
     /**
      * Check if given coordinates are within the given (sub) space.
@@ -1639,7 +1682,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
      * @return It return true if one of the parameter matches with any or of 
      * tag can be found in source.
      */
-    public static boolean isIn(STSet source, SemanticTag tag) 
+    public static boolean isIn(STSet source, SemanticTag tag)
             throws SharkKBException {
         
         // test on any

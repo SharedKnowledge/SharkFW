@@ -259,5 +259,6 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     @Override
     public void handleASIPInterest(ASIPInterest interest, SharkStub stub) {
         ASIPInMessage inMessage = new ASIPInMessage(this.se, interest, stub);
+        this.callListener(inMessage);
     }
 }
