@@ -2,6 +2,7 @@ package net.sharkfw.kp;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 
 /**
@@ -9,9 +10,7 @@ import net.sharkfw.knowledgeBase.PeerSemanticTag;
  */
 public interface KPNotifier {
 
-    public void notifyInterestReceived(ASIPInterest interest);
+    public void notifyInterestReceived(ASIPInterest interest, ASIPConnection connection);
 
-    public void notifyKnowledgeReceived(ASIPKnowledge knowledge);
-
-    public void notifyPeerReceived(PeerSemanticTag peer);
+    public void notifyKnowledgeReceived(ASIPKnowledge knowledge, ASIPConnection connection);
 }

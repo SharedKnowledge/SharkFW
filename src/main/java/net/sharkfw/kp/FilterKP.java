@@ -28,7 +28,7 @@ public class FilterKP extends KnowledgePort {
 
     @Override
     protected void handleInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
-
+        _notifier.notifyKnowledgeReceived(asipKnowledge, asipConnection);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FilterKP extends KnowledgePort {
 
         if(SharkCSAlgebra.isIn(_filter, interest)){
 
-            _notifier.notifyInterestReceived(interest);
+            _notifier.notifyInterestReceived(interest, asipConnection);
         }
     }
 
