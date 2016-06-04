@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
 import net.sharkfw.kep.SimpleKEPStub;
@@ -88,9 +89,9 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     }
 
     @Override
-    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP) throws SharkProtocolNotSupportedException {
+    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException {
         try {
-            tcp = new TCPStreamStub(handler, port);
+            tcp = new TCPStreamStub(handler, port, knowledge);
             return tcp;
         } catch (IOException ioe) {
 //            ioe.printStackTrace();
@@ -180,7 +181,22 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     @Override
     public void startTCP(int port) throws IOException {
         try {
-            this.start(Protocols.TCP, port);
+            this.start(Protocols.TCP, port, null);
+        } catch (SharkProtocolNotSupportedException ex) {
+            L.e(ex.getMessage(), this);
+        }
+    }
+
+    /**
+     * Start the TCP stub at the given portnumber.
+     *
+     * @param port The portnumber to use for TCP traffic.
+     * @throws java.io.IOException
+     */
+    @Override
+    public void startTCP(int port, ASIPKnowledge knowledge) throws IOException {
+        try {
+            this.start(Protocols.TCP, port, knowledge);
         } catch (SharkProtocolNotSupportedException ex) {
             L.e(ex.getMessage(), this);
         }

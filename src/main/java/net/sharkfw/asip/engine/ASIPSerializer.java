@@ -123,7 +123,13 @@ public class ASIPSerializer {
 
         JSONObject object = new JSONObject();
         SharkVocabulary vocabulary = knowledge.getVocabulary();
-        object.put(ASIPKnowledge.VOCABULARY, serializeVocabulary(vocabulary));
+
+        JSONObject serializedVocabulary = new JSONObject();
+
+        if(vocabulary!=null){
+            serializedVocabulary = serializeVocabulary(vocabulary);
+        }
+        object.put(ASIPKnowledge.VOCABULARY, serializedVocabulary);
 
         ASIPInfoDataManager manager = new ASIPInfoDataManager(knowledge.informationSpaces());
         Iterator pointInformations = manager.getPointInformations();
@@ -156,12 +162,13 @@ public class ASIPSerializer {
     public static JSONObject serializeVocabulary(SharkVocabulary vocabulary) throws SharkKBException {
         JSONObject jsonObject = new JSONObject();
 
-
-        jsonObject.put(SharkVocabulary.TOPICS, serializeSTSet(vocabulary.getTopicSTSet()));
-        jsonObject.put(SharkVocabulary.TYPES, serializeSTSet(vocabulary.getTypeSTSet()));
-        jsonObject.put(SharkVocabulary.PEERS, serializeSTSet(vocabulary.getPeerSTSet()));
-        jsonObject.put(SharkVocabulary.LOCATIONS, serializeSTSet(vocabulary.getSpatialSTSet()));
-        jsonObject.put(SharkVocabulary.TIMES, serializeSTSet(vocabulary.getTimeSTSet()));
+        if(vocabulary!=null){
+            jsonObject.put(SharkVocabulary.TOPICS, serializeSTSet(vocabulary.getTopicSTSet()));
+            jsonObject.put(SharkVocabulary.TYPES, serializeSTSet(vocabulary.getTypeSTSet()));
+            jsonObject.put(SharkVocabulary.PEERS, serializeSTSet(vocabulary.getPeerSTSet()));
+            jsonObject.put(SharkVocabulary.LOCATIONS, serializeSTSet(vocabulary.getSpatialSTSet()));
+            jsonObject.put(SharkVocabulary.TIMES, serializeSTSet(vocabulary.getTimeSTSet()));
+        }
 
         return jsonObject;
     }
@@ -586,13 +593,25 @@ public class ASIPSerializer {
         JSONObject vocabularyJSON = jsonObject.getJSONObject(ASIPKnowledge.VOCABULARY);
 
         SemanticNet topics = InMemoSharkKB.createInMemoSemanticNet();
-        deserializeSTSet(topics, vocabularyJSON.get(SharkVocabulary.TOPICS).toString());
         SemanticNet types = InMemoSharkKB.createInMemoSemanticNet();
-        deserializeSTSet(types, vocabularyJSON.get(SharkVocabulary.TYPES).toString());
         PeerTaxonomy peers = InMemoSharkKB.createInMemoPeerTaxonomy();
-        deserializePeerSTSet(null, vocabularyJSON.get(SharkVocabulary.PEERS).toString());
-        SpatialSTSet locations = deserializeSpatialSTSet(null, vocabularyJSON.get(SharkVocabulary.LOCATIONS).toString());
-        TimeSTSet times = deserializeTimeSTSet(null, vocabularyJSON.get(SharkVocabulary.TIMES).toString());
+        SpatialSTSet locations = InMemoSharkKB.createInMemoSpatialSTSet();
+        TimeSTSet times = InMemoSharkKB.createInMemoTimeSTSet();
+        if(vocabularyJSON.has(SharkVocabulary.TOPICS)){
+            deserializeSTSet(topics, vocabularyJSON.get(SharkVocabulary.TOPICS).toString());
+        }
+        if(vocabularyJSON.has(SharkVocabulary.TYPES)){
+            deserializeSTSet(types, vocabularyJSON.get(SharkVocabulary.TYPES).toString());
+        }
+        if(vocabularyJSON.has(SharkVocabulary.PEERS)){
+            deserializePeerTaxonomy(peers, vocabularyJSON.get(SharkVocabulary.PEERS).toString());
+        }
+        if(vocabularyJSON.has(SharkVocabulary.LOCATIONS)){
+            deserializeSpatialSTSet(locations, vocabularyJSON.get(SharkVocabulary.LOCATIONS).toString());
+        }
+        if(vocabularyJSON.has(SharkVocabulary.TIMES)){
+            deserializeTimeSTSet(times, vocabularyJSON.get(SharkVocabulary.TIMES).toString());
+        }
 
         // create knowledge which actuall IS a SharkKB
         InMemoSemanticNet stnet = new InMemoSemanticNet();
@@ -854,7 +873,7 @@ public class ASIPSerializer {
             deserializeRelations((SemanticNet) target, stSetString);
             return target;
         } else if (target instanceof PeerTaxonomy) {
-            deserializeProperties((SystemPropertyHolder) target, stSetString);
+            deserializeRelations((Taxonomy) target, stSetString);
         }
 
         return target;

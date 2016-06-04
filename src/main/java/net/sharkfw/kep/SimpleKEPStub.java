@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.SharkStub;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
@@ -68,6 +69,13 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
                         this.encryptionLevel, this.signatureLevel,
                         this.replyPolicy, this.refuseUnverifiably);
         session.start();
+    }
+
+    @Override
+    public void handleStream(StreamConnection con, ASIPKnowledge knowledge) {
+        throw new UnsupportedOperationException(
+                "wrong usage of this class: don't wrap a Stream Stub with this class: "
+                        + this.getClass().getName());
     }
 
     /**

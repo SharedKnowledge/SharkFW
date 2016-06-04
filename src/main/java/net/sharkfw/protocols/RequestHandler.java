@@ -1,5 +1,7 @@
 package net.sharkfw.protocols;
 
+import net.sharkfw.asip.ASIPKnowledge;
+
 /**
  * An interface that defines a generic handler for received requests.
  *
@@ -28,7 +30,17 @@ public interface RequestHandler {
    * @param con The <code>StreamConnection</code> to handle.
    */
   public void handleStream(StreamConnection con);
-  
+
+
+  /**
+   * Handle an incoming <code>StreamConnection</code>.
+   *
+   * @see net.sharkfw.protocols.StreamConnection
+   *
+   * @param con The <code>StreamConnection</code> to handle.
+   */
+  public void handleStream(StreamConnection con, ASIPKnowledge knowledge);
+
   /**
    * Ad hoc networks create new connections by their own.
    * Those stubs should use this method to annonce a newly

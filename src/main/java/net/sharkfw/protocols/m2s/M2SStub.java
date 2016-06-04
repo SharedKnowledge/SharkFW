@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.protocols.MessageStub;
@@ -266,6 +268,13 @@ public class M2SStub implements StreamStub, RequestHandler {
         throw new UnsupportedOperationException(
                 "wrong usage of this class: don't wrap a Stream Stub with this class: " 
                 + this.getClass().getName());
+    }
+
+    @Override
+    public void handleStream(StreamConnection con, ASIPKnowledge knowledge) {
+        throw new UnsupportedOperationException(
+                "wrong usage of this class: don't wrap a Stream Stub with this class: "
+                        + this.getClass().getName());
     }
 
     @Override

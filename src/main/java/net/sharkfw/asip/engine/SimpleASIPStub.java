@@ -76,6 +76,21 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     }
 
     /**
+     * this message is called by underlying stream protocols
+     * whenever a new Stream is established.
+     *
+     * @param con The received stream.
+     */
+    @Override
+    public final void handleStream(StreamConnection con, ASIPKnowledge knowledge) {
+        ASIPSession session = new ASIPSession(this.se, con, this);
+        session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+                this.encryptionLevel, this.signatureLevel,
+                this.replyPolicy, this.refuseUnverifiably);
+        session.start();
+    }
+
+    /**
      * This message is to be called when a new connection was establised e.g.
      * in a spontaneous network and this peer shall try to start KEP message
      * exchange.

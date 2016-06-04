@@ -189,9 +189,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         switch (type) {
             case net.sharkfw.protocols.Protocols.TCP:
                 if(this.getAsipStub()!=null){
-                    protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false);
+                    protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false, null);
                 } else if(this.getKepStub()!=null){
-                    protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false);
+                    protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false, null);
                 }
                 break;
 //            case net.sharkfw.protocols.Protocols.UDP:
@@ -257,12 +257,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @see net.sharkfw.protocols.Protocols
      */
     @SuppressWarnings("unused")
-    protected final boolean start(int type, int port) throws SharkProtocolNotSupportedException, IOException {
+    protected final boolean start(int type, int port, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException, IOException {
         Stub stub = null;
         if (this.asipStub != null) {
-            this.startServer(type, this.asipStub, port);
+            this.startServer(type, this.asipStub, port, knowledge);
         } else if (this.kepStub != null) {
-            this.startServer(type, this.kepStub, port);
+            this.startServer(type, this.kepStub, port, null);
         }
 
         return true;
@@ -311,6 +311,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public void startTCP(int port) throws SharkProtocolNotSupportedException, IOException {
+        throw new SharkProtocolNotSupportedException("device does not support tcp");
+    }
+
+    public void startTCP(int port, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException, IOException {
         throw new SharkProtocolNotSupportedException("device does not support tcp");
     }
 
@@ -621,12 +625,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @return A new Stub instance for the given protocol type.
      * @throws SharkProtocolNotSupportedException
      */
-    protected final Stub startServer(int protocol, RequestHandler handler, int port) throws SharkProtocolNotSupportedException, IOException {
+    protected final Stub startServer(int protocol, RequestHandler handler, int port, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException, IOException {
         Stub protocolStub = null;
 
         switch (protocol) {
             case net.sharkfw.protocols.Protocols.TCP:
-                protocolStub = this.createTCPStreamStub(handler, port, false);
+                protocolStub = this.createTCPStreamStub(handler, port, false, knowledge);
                 break;
 
 //            case net.sharkfw.protocols.Protocols.HTTP:
@@ -656,7 +660,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     /***************************************************************
      * following methods should be overwritten in derived classes  *
      ***************************************************************/
-    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP) throws SharkProtocolNotSupportedException {
+    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException {
         if (isHTTP) {
             throw new SharkProtocolNotSupportedException("HTTP no supported");
         } else {
@@ -1046,7 +1050,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     } catch (RuntimeException re) {
                         throw new SharkException(re.getMessage(), re.getCause());
                     } catch (IOException ioe){
-                        L.e("Message: "+ ioe.getMessage(), this);
+                        ioe.printStackTrace();
                     }
                     //    } else {
                     //  fromPool = true;

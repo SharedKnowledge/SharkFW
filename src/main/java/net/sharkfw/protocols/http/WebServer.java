@@ -4,24 +4,20 @@
  */
 package net.sharkfw.protocols.http;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import net.sharkfw.protocols.Protocols;
 import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamStub;
 import net.sharkfw.protocols.tcp.SharkServer;
 import net.sharkfw.system.L;
 
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
- *
  * @author Jacob Zschunke
  */
 public class WebServer implements SharkServer {
@@ -38,6 +34,7 @@ public class WebServer implements SharkServer {
         this.port = port;
         this.handler = handler;
         this.stub = stub;
+
         if (port == Protocols.ARBITRARY_PORT) {
             port = 8080;
             server = new ServerSocket(port);
@@ -51,7 +48,7 @@ public class WebServer implements SharkServer {
     /**
      * The Webserver will listen to any HTTP-Requests. If a Shark Client
      * (identified through the <b>User-Agent: Shark</b> parameter in the Request)
-     * connects to the Webserver, the Request Header will be discarded and the 
+     * connects to the Webserver, the Request Header will be discarded and the
      * Stream will be handled as usual <code>TCPConnection</code>.
      * If a Browser tries to connect to the Webserver it will either redirect the
      * User to a specified Website or show a stored HTML file.
@@ -99,7 +96,7 @@ public class WebServer implements SharkServer {
                 if (request.contains("User-Agent: Shark")) {
                     // ... its a Shark-Client. Handle that stream as TCPConnection
                     HTTPConnection con = new HTTPConnection(sock, this.stub.getLocalAddress(), false);
-                    
+
                     L.d("Calling handler for stream", this);
                     handler.handleStream(con);
                 } else {
@@ -138,6 +135,7 @@ public class WebServer implements SharkServer {
         out.print("Content-type: text/html\r\n\r\n");
         out.flush();
     }
+
     static final byte[] EOL = {(byte) '\r', (byte) '\n'};
 
     private void sendFile(File file, PrintStream ps) throws IOException {

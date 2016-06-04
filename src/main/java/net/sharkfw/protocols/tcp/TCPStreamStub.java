@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 
@@ -30,6 +32,7 @@ import net.sharkfw.system.Util;
  */
 public class TCPStreamStub implements StreamStub {
 
+    private ASIPKnowledge knowledge;
     private SharkServer server;
     private final RequestHandler handler;
     private final int port;
@@ -42,9 +45,10 @@ public class TCPStreamStub implements StreamStub {
      * @param port Port the Server is listening on
      * @throws IOException
      */
-    public TCPStreamStub(RequestHandler handler, int port) throws IOException {
+    public TCPStreamStub(RequestHandler handler, int port, ASIPKnowledge knowledge) throws IOException {
         this.handler = handler;
         this.port = port;
+        this.knowledge = knowledge;
         
         this.uri = null; // TODO - shouldn't be in this class but in a HTTPStub
     }
@@ -52,7 +56,7 @@ public class TCPStreamStub implements StreamStub {
     public final void start() throws IOException {
         if(!this.started()) {
             try {
-                this.server = new TCPServer(this.port, this.handler, this);
+                this.server = new TCPServer(this.port, this.handler, this, this.knowledge);
                 new Thread(server).start();
 
             } catch (IOException ex) {
