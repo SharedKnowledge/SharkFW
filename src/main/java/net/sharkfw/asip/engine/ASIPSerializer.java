@@ -551,6 +551,12 @@ public class ASIPSerializer {
 //            e.printStackTrace();
 //        }
 
+
+        // Check if content isEmpty
+        if(!object.has(ASIPSerializer.CONTENT)){
+            return;
+        }
+
         JSONObject content = object.getJSONObject(ASIPSerializer.CONTENT);
 
         switch (command) {

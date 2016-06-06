@@ -77,7 +77,7 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
      * @throws IOException
      */
     public TCPConnection(Socket s, String replyAddressString) throws IOException {
-        L.d("Using existing socket: '" + s.getInetAddress().getHostAddress() + "'", this);
+        L.d("Using existing socket: '" + s.getInetAddress().getHostAddress() + ":" + this.portNo + "'", this);
         this.s = s;
         s.setSoTimeout(this.socketTimeout);
         this.replyAddressString = replyAddressString;

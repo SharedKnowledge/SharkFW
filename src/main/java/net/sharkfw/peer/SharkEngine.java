@@ -30,14 +30,8 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.protocols.MessageStub;
-import net.sharkfw.protocols.Protocols;
-import net.sharkfw.protocols.RequestHandler;
-import net.sharkfw.protocols.SharkOutputStream;
-import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.protocols.StreamStub;
-import net.sharkfw.protocols.Stub;
-import net.sharkfw.protocols.UTF8SharkOutputStream;
+import net.sharkfw.protocols.*;
+import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -113,6 +107,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private static int DEFAULT_TCP_PORT = 7070;
     @SuppressWarnings("unused")
     private static int DEFAULT_HTTP_PORT = 8080;
+    protected ConnectionStatusListener connectionListener = null;
 
     /**
      * Empty constructor for new API
@@ -991,9 +986,27 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return false;
     }
 
+    public void addConnectionStatusListener(ConnectionStatusListener listener){
+        this.connectionListener = listener;
+    }
+
     public ASIPOutMessage createASIPOutResponse(StreamConnection connection, String[] receiverAddress, ASIPInMessage inMessage) throws SharkKBException {
 
+
         if(connection != null){
+//            L.d("We still have the connection", this);
+            if(this.connectionListener!=null){
+                connection.addConnectionListener(this.connectionListener);
+            }
+            if(inMessage.getSender()==null){
+                String receiver = connection.getReceiverAddressString();
+                int colon = receiver.lastIndexOf(":");
+                String newAddress = receiver.substring(0, colon+1);
+                newAddress+="7071";
+                PeerSemanticTag tag = InMemoSharkKB.createInMemoPeerSemanticTag("receiver", "www.receiver.de", newAddress);
+                inMessage.setSender(tag);
+            }
+
             return new ASIPOutMessage(this, connection, inMessage);
         } else {
             return this.createASIPOutMessage(receiverAddress, inMessage.getSender());
@@ -1047,6 +1060,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     //      if(sConn == null) {
                     try {
                         sConn = sStub.createStreamConnection(address);
+                        if(this.connectionListener!=null){
+                            sConn.addConnectionListener(this.connectionListener);
+                        }
                     } catch (RuntimeException re) {
                         throw new SharkException(re.getMessage(), re.getCause());
                     } catch (IOException ioe){

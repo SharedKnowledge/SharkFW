@@ -11,6 +11,7 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
+import net.sharkfw.protocols.ConnectionStatusListener;
 import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.StreamStub;
@@ -32,6 +33,7 @@ import net.sharkfw.system.Util;
  */
 public class TCPStreamStub implements StreamStub {
 
+    private ConnectionStatusListener listener;
     private ASIPKnowledge knowledge;
     private SharkServer server;
     private final RequestHandler handler;
@@ -45,10 +47,11 @@ public class TCPStreamStub implements StreamStub {
      * @param port Port the Server is listening on
      * @throws IOException
      */
-    public TCPStreamStub(RequestHandler handler, int port, ASIPKnowledge knowledge) throws IOException {
+    public TCPStreamStub(RequestHandler handler, int port, ASIPKnowledge knowledge, ConnectionStatusListener listener) throws IOException {
         this.handler = handler;
         this.port = port;
         this.knowledge = knowledge;
+        this.listener = listener;
         
         this.uri = null; // TODO - shouldn't be in this class but in a HTTPStub
     }
@@ -56,7 +59,7 @@ public class TCPStreamStub implements StreamStub {
     public final void start() throws IOException {
         if(!this.started()) {
             try {
-                this.server = new TCPServer(this.port, this.handler, this, this.knowledge);
+                this.server = new TCPServer(this.port, this.handler, this, this.knowledge, this.listener);
                 new Thread(server).start();
 
             } catch (IOException ex) {

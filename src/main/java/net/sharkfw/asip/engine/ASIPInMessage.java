@@ -32,6 +32,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     private InputStream raw;
     private String parsedString = "";
     private ASIPOutMessage response;
+//    private boolean isEmpty = true;
 
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
 
@@ -65,21 +66,25 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         char[] buffer = new char[1024];
         BufferedReader in = new BufferedReader(new InputStreamReader(this.is, StandardCharsets.UTF_8));
         StringBuilder response= new StringBuilder();
-        int charsRead;
+        int charsRead = 0;
         int total = 0;
-        do{
-            charsRead = in.read(buffer);
-            response.append(buffer ,0 ,charsRead) ;
-            total+=charsRead;
-        } while(charsRead == buffer.length);
 
-        this.parsedString = response.toString();
-//        L.d("CharsRead " + total, this);
+        if(in.ready()){
+            do{
+                charsRead = in.read(buffer);
+                response.append(buffer ,0 ,charsRead) ;
+                total+=charsRead;
+            } while(charsRead == buffer.length);
 
-//        L.d(parsedString, this);
+            this.parsedString = response.toString();
+        }
 
         ASIPSerializer.deserializeInMessage(this, this.parsedString);
     }
+
+//    public boolean isEmpty() {
+//        return isEmpty;
+//    }
 
     public ASIPKnowledge getKnowledge() {
         return knowledge;
@@ -222,9 +227,9 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         if (receiveraddresses.length < 0)
             L.d("no address", this);
 
-        ASIPOutMessage outMessage = this.createResponse(receiveraddresses);
-        if (outMessage != null) {
-            outMessage.expose(interest);
+        this.response = this.createResponse(receiveraddresses);
+        if (this.response != null) {
+            this.response.expose(interest);
         }
     }
 
@@ -235,9 +240,10 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void insert(ASIPKnowledge k, String[] receiveraddresses) throws SharkException {
-        ASIPOutMessage outMessage = this.createResponse(receiveraddresses);
-        if (outMessage != null) {
-            outMessage.insert(k);
+        this.response = this.createResponse(receiveraddresses);
+        if (this.response != null) {
+            L.d("Now go insert!!!", this);
+            this.response.insert(k);
         }
     }
 
@@ -254,13 +260,16 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         }
     }
 
+    public void resetResponse(){
+        this.response = null;
+    }
+
     @Override
     public boolean responseSent() {
-        return true;
-//        if(this.response == null) {
-//            return false;
-//        }
-//        return response.responseSent();
+        if(this.response == null) {
+            return false;
+        }
+        return response.responseSent();
     }
 
     @Override

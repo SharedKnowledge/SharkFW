@@ -68,7 +68,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
      */
     @Override
     public final void handleStream(StreamConnection con) {
-        ASIPSession session = new ASIPSession(this.se, con, this);
+        ASIPSession session = new ASIPSession(this.se, con, this, null);
         session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                 this.encryptionLevel, this.signatureLevel,
                 this.replyPolicy, this.refuseUnverifiably);
@@ -83,10 +83,11 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
      */
     @Override
     public final void handleStream(StreamConnection con, ASIPKnowledge knowledge) {
-        ASIPSession session = new ASIPSession(this.se, con, this);
-        session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
-                this.encryptionLevel, this.signatureLevel,
-                this.replyPolicy, this.refuseUnverifiably);
+        L.d("handleStream called", this);
+        ASIPSession session = new ASIPSession(this.se, con, this, knowledge);
+//        session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+//                this.encryptionLevel, this.signatureLevel,
+//                this.replyPolicy, this.refuseUnverifiably);
         session.start();
     }
 
@@ -104,8 +105,8 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
 
         // a communication
         this.startConversion(con);
-    }
 
+    }
     /**
      * Central method in which all listeners are called
      * This should be the only method in this class which
@@ -135,6 +136,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
             handled = l.handleMessage(msg, msg.getConnection());
         }
 
+        // TODO necessary?
 //        msg.finished();
 
         //    L.d("Having " + this.listener.size() + " listeners.", this);

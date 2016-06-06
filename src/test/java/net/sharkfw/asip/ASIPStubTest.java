@@ -5,10 +5,7 @@ import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -82,9 +79,10 @@ public class ASIPStubTest extends ASIPBaseTest {
         ASIPOutMessage outMessage = engineA.createASIPOutMessage(peerB.getAddresses(), peerA, peerB, null, null, 10);
         outMessage.expose(space);
 
-        Thread.sleep(1000);
+        Thread.sleep(30000);
     }
 
+    @Ignore
     @Test
     public void ASIPMessage_sendRawViaEngine_success() throws Exception {
         InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));

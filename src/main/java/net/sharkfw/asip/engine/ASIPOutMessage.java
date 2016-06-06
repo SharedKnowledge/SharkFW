@@ -112,7 +112,11 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            this.osw.write(ASIPSerializer.serializeInsert(this, knowledge).toString());
+            if(knowledge!=null){
+                this.osw.write(ASIPSerializer.serializeInsert(this, knowledge).toString());
+            } else {
+                this.osw.write(ASIPSerializer.serializeHeader(this).toString());
+            }
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -91,7 +91,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     @Override
     protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException {
         try {
-            tcp = new TCPStreamStub(handler, port, knowledge);
+            tcp = new TCPStreamStub(handler, port, knowledge, this.connectionListener);
             return tcp;
         } catch (IOException ioe) {
 //            ioe.printStackTrace();

@@ -209,8 +209,11 @@ abstract public class KnowledgePort {
     public synchronized final boolean handleMessage(ASIPInMessage msg, ASIPConnection con) {
 
         this.doProcess(msg, con);
-        if(con!=null)
-            return con.responseSent();
+        if(con!=null) {
+            boolean handled = con.responseSent();
+            msg.resetResponse();
+            return handled;
+        }
         return false;
     }
     
@@ -339,7 +342,7 @@ abstract public class KnowledgePort {
         // ...
 
         if(msg.getTtl() <= 0){
-            L.d("TTL equals 0", this);
+//            L.d("TTL equals 0", this);
             return;
         }
 

@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.protocols.ConnectionStatusListener;
 import net.sharkfw.protocols.Protocols;
 import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamStub;
@@ -21,9 +22,10 @@ import net.sharkfw.system.L;
 class TCPServer implements SharkServer {
 
     private final ASIPKnowledge knowledge;
+    private final ConnectionStatusListener listener;
     protected int port;
     protected ServerSocket listen_socket;
-    boolean activ = true;
+    boolean active = true;
     private RequestHandler handler;
     private StreamStub stub;
     private int socketTimeout = 10000;
@@ -36,7 +38,7 @@ class TCPServer implements SharkServer {
      * @param stub the Stub which created the Server (here TCPStreamstub) used to get the local address of the device
      * @throws IOException
      */
-    public TCPServer(int port, RequestHandler handler, StreamStub stub, ASIPKnowledge knowledge)
+    public TCPServer(int port, RequestHandler handler, StreamStub stub, ASIPKnowledge knowledge, ConnectionStatusListener listener)
             throws IOException {
         try {
             if (port == Protocols.ARBITRARY_PORT) {
@@ -52,6 +54,7 @@ class TCPServer implements SharkServer {
         this.handler = handler;
         this.stub = stub;
         this.knowledge = knowledge;
+        this.listener = listener;
 
         L.l("TCP Server is bound to port " + this.port, this);
     }
@@ -83,7 +86,7 @@ class TCPServer implements SharkServer {
      * ist not shut down and can resume anytime through the run() method.
      */
     public void hold() {
-        this.activ = false;
+        this.active = false;
         try {
             this.listen_socket.close();
         } catch (IOException ex) {
@@ -99,13 +102,16 @@ class TCPServer implements SharkServer {
      */
     public void run() {
         try {
-            //while (this.activ && !isInterrupted()) {
-            while (this.activ) {
+            //while (this.active && !isInterrupted()) {
+            while (this.active) {
                 L.d("TCP Server accepts connection requests on: " + this.port, this);
 
                 Socket client_socket = this.listen_socket.accept();
                 client_socket.setSoTimeout(this.socketTimeout);
                 TCPConnection con = new TCPConnection(client_socket, this.getLocalAddress());
+                if(this.listener!=null){
+                    con.addConnectionListener(this.listener);
+                }
 
                 L.d("Calling handler for stream on: " + this.port, this);
                 handler.handleStream(con, this.knowledge);
