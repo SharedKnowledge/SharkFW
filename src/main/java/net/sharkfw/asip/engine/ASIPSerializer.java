@@ -437,7 +437,7 @@ public class ASIPSerializer {
 
     public static void deserializeInMessage(ASIPInMessage message, String parsedStream) {
         if (parsedStream.isEmpty()) {
-            L.d(CLASS + "Stream is empty.");
+//            L.d(CLASS + "Stream is empty.");
             return;
         }
 
@@ -1007,6 +1007,8 @@ public class ASIPSerializer {
     }
 
     public static ASIPInterest deserializeASIPInterest(SharkKB kb, String spaceString) throws SharkKBException {
+
+        if(spaceString == null || spaceString.isEmpty()) return null;
 
         String topicsString = null;
         String typesString = null;
