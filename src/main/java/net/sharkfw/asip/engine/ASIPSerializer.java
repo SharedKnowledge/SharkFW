@@ -208,7 +208,7 @@ public class ASIPSerializer {
         // sst
         if (tag instanceof SpatialSemanticTag) {
             SpatialSemanticTag sst = (SpatialSemanticTag) tag;
-            object.put(SpatialSemanticTag.GEOMETRY, sst.getGeometry());
+            object.put(SpatialSemanticTag.GEOMETRY, sst.getGeometry().getWKT());
         }
 
         object.put(PropertyHolder.PROPERTIES, serializeProperties(tag).toString());
@@ -760,30 +760,34 @@ public class ASIPSerializer {
 
         JSONObject jsonObject = new JSONObject(tagString);
 
-        List<String> list = new ArrayList<>();
-        JSONArray semanticTagArray = jsonObject.getJSONArray(SemanticTag.SI);
-        for (int i = 0; i < semanticTagArray.length(); i++) {
-            list.add(semanticTagArray.get(i).toString());
-        }
-
-        List<String> geometriesList = new ArrayList<>();
-        JSONArray geometriesArray = jsonObject.getJSONArray(SpatialSemanticTag.GEOMETRY);
-        for (int i = 0; i < geometriesArray.length(); i++) {
-            geometriesList.add(geometriesArray.get(i).toString());
-        }
-
+        // Name
         String name = jsonObject.getString(SemanticTag.NAME);
-        String[] sis = new String[geometriesList.size()];
-        sis = geometriesList.toArray(sis);
-        String[] geometries = new String[geometriesList.size()];
-        geometries = geometriesList.toArray(geometries);
 
-        SharkGeometry[] geoms = new SharkGeometry[geometries.length];
-        for (int i = 0; i < geometries.length; i++) {
-            geoms[i] = InMemoSharkGeometry.createGeomByEWKT(geometries[i]);
+        // Sis
+        List<String> siList = new ArrayList<>();
+        JSONArray siArray = jsonObject.getJSONArray(SemanticTag.SI);
+        for (int i = 0; i < siArray.length(); i++) {
+            siList.add(siArray.get(i).toString());
         }
+
+        // Geometrie
+        String geometrieString = (String) jsonObject.get(SpatialSemanticTag.GEOMETRY);
+//        List<String> geometriesList = new ArrayList<>();
+//        for (int i = 0; i < geometriesArray.length(); i++) {
+//            geometriesList.add(geometriesArray.get(i).toString());
+//        }
+
+        String[] sis = new String[siList.size()];
+        sis = siList.toArray(sis);
+//        String[] geometries = new String[geometriesList.size()];
+//        geometries = geometriesList.toArray(geometries);
+
+        SharkGeometry geom = InMemoSharkGeometry.createGeomByWKT(geometrieString);
+//        for (int i = 0; i < geometries.length; i++) {
+//            geoms[i] = InMemoSharkGeometry.createGeomByEWKT(geometries[i]);
+//        }
         // TODO Geometries just adding the first geom
-        SpatialSemanticTag tag = ((SpatialSTSet) targetSet).createSpatialSemanticTag(name, sis, geoms);
+        SpatialSemanticTag tag = ((SpatialSTSet) targetSet).createSpatialSemanticTag(name, sis, geom);
         deserializeProperties(tag, tagString);
         return tag;
     }

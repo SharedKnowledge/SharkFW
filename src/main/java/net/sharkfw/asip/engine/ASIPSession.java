@@ -56,6 +56,8 @@ public class ASIPSession extends Thread {
     public void run() {
         boolean handled = false;
         boolean knowledgeSendTriggered = false;
+        int looper = 3;
+        int currentLoop = 0;
 
         do{
             try {
@@ -66,6 +68,7 @@ public class ASIPSession extends Thread {
 
                 // Used for WifiCommunication.
                 if(this.knowledge!=null && !knowledgeSendTriggered){
+                    L.d("I have a knowledge, I need to reply.", this);
                     // Now create a response with that knowledge
                     final String receiver = this.connection.getReceiverAddressString();
                     knowledgeSendTriggered = true;
@@ -79,7 +82,7 @@ public class ASIPSession extends Thread {
                 handled = this.stub.callListener(inMessage);
                 handled = handled && inMessage.keepOpen();
 
-                if(handled) Thread.sleep(2000);
+                if(handled) Thread.sleep(1000);
 
             } catch (IOException | SharkException e) {
                 handled=false;
@@ -89,7 +92,7 @@ public class ASIPSession extends Thread {
             }
 
             if(!handled) {
-                L.d("Checking for more ASIP Messages", this);
+//                L.d("Checking for more ASIP Messages", this);
                 // no listener handled that request
                 // maybe there is another KEP methode in the stream
                 try {
@@ -98,10 +101,16 @@ public class ASIPSession extends Thread {
                         handled = true;
                     } else {
                         // maybe remote peer wasn't fast enough - give it some time
-                        L.d("Waiting for remotepeer for: " + engine.getConnectionTimeOut(), this);
-                        Thread.sleep(engine.getConnectionTimeOut());
-                        if(this.connection.getInputStream().available() > 0) {
-                            handled = true;
+                        L.d("Waiting for remotepeer for max. : " + engine.getConnectionTimeOut(), this);
+                        long duration = engine.getConnectionTimeOut()/looper;
+                        while(currentLoop < looper){
+                            Thread.sleep(duration);
+                            currentLoop++;
+                            if(this.connection.getInputStream().available() > 0) {
+                                handled = true;
+                                currentLoop=0;
+                                break;
+                            }
                         }
                     }
                 }
