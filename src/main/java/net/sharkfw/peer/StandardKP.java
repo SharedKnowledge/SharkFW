@@ -2,6 +2,11 @@ package net.sharkfw.peer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.engine.ASIPConnection;
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.protocols.PeerAddress;
@@ -119,214 +124,214 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         this(se, interest, fp, fp, kb);
     }
 
-    /**
-     * <p>Initial check for correct IN/OUT dimension. Log information.
-     * Call the actual assimilation afterwards.</p>
-     *
-     * @param k A Knowledge object received from another peer
-     * @param response KEPResponse to create a response to this insert request
-     */
-    @Override
-    protected void handleInsert(Knowledge k, KEPConnection response) {
-          L.d("\n******************************************\n\t\tKP handleInsert\n******************************************\n", this);
+//    /**
+//     * <p>Initial check for correct IN/OUT dimension. Log information.
+//     * Call the actual assimilation afterwards.</p>
+//     *
+//     * @param k A Knowledge object received from another peer
+//     * @param response KEPResponse to create a response to this insert request
+//     */
+//    @Override
+//    protected void handleInsert(Knowledge k, KEPConnection response) {
+//          L.d("\n******************************************\n\t\tKP handleInsert\n******************************************\n", this);
+//
+//        if(!this.isIKP()) {
+//            L.d("insert called but KP has no incomming kepInterest - don't do anything", this);
+//            return;
+//        }
+//        /**
+//         * Note:
+//         * The OTP parameter must be choosen appropriate.
+//         * That's especially for peers and groups.
+//         *
+//         * Usually, users will grant groups rights.
+//         * Groups are usually unknown to remote peers. Thus,
+//         * the matching must take place here.
+//         *
+//         * OTP should allow to follow super predicate with depth e.g.
+//         * 2.
+//         */
+//        // Now all changes (if applicable) have been made. Standard procedure from now on.
+//        SharkVocabulary context = k.getVocabulary();
+//
+//        // there must be a context
+//        if(context == null) {
+//            context = new InMemoSharkKB();
+//        }
+//
+//        SharkCS background = context.asSharkCS();
+//
+//        L.d("handleInsert reached. Found content in request:\n ", this);
+////        L.d(L.kbSpace2String(k.getBackgroundKnowledge()), this);
+//
+//        try {
+//            L.d("handleInsert: local kepInterest:\n ", this);
+//            L.d(L.contextSpace2String(this.getKEPInterest()), this);
+//
+//            this.notifyKnowledgeReceived(k);
+//
+////            // calculate effective kepInterest
+//            SharkCS effectiveInterest;
+//
+//            effectiveInterest =
+//                SharkCSAlgebra.contextualize(background,
+//                this.getKEPInterest(), this.getFP());
+//
+//            // is there a mutual kepInterest ?
+//            if(effectiveInterest == null) {
+//                L.d("no mutual kepInterest", this);
+//                return;
+//            }
+//
+//            L.d("handleInsert: effective kepInterest:\n ", this);
+//            L.d(L.contextSpace2String(effectiveInterest), this);
+//
+//			/* dead code removed */
+//            // assimilate this knowledge
+//            ArrayList<ContextCoordinates> assimilatedCC =
+//                    SharkCSAlgebra.assimilate(this.getKB(), effectiveInterest,
+//                                            this.getFP(), k, this.learn,
+//                                            this.deleteAssimilated);
+//
+//            L.d("handleInsert: knowledge base after assimilation:\n " +
+//                    L.kb2String(this.getKB()), this);
+//
+//            // notify
+//            if(assimilatedCC != null) {
+//                Iterator<ContextCoordinates> ccIter = assimilatedCC.iterator();
+//                while(ccIter.hasNext()) {
+//                    ContextCoordinates cc = ccIter.next();
+//                    ContextPoint cp = this.getKB().getContextPoint(cc);
+//                    if(cp != null) {
+//                        this.notifyKnowledgeAssimilated(this, cp);
+//                    }
+//                }
+//            }
+//
+//        }
+//        catch(SharkKBException e) {
+//            L.d("assimilation failed: " + e.getMessage(), this);
+//        }
+//    }
 
-        if(!this.isIKP()) { 
-            L.d("insert called but KP has no incomming kepInterest - don't do anything", this);
-            return; 
-        }
-        /**
-         * Note:
-         * The OTP parameter must be choosen appropriate.
-         * That's especially for peers and groups.
-         * 
-         * Usually, users will grant groups rights.
-         * Groups are usually unknown to remote peers. Thus, 
-         * the matching must take place here.
-         * 
-         * OTP should allow to follow super predicate with depth e.g.
-         * 2.
-         */
-        // Now all changes (if applicable) have been made. Standard procedure from now on.
-        SharkVocabulary context = k.getVocabulary();
-        
-        // there must be a context
-        if(context == null) {
-            context = new InMemoSharkKB();
-        }
-        
-        SharkCS background = context.asSharkCS();
-        
-        L.d("handleInsert reached. Found content in request:\n ", this);
-//        L.d(L.kbSpace2String(k.getBackgroundKnowledge()), this);
-        
-        try {
-            L.d("handleInsert: local kepInterest:\n ", this);
-            L.d(L.contextSpace2String(this.getKEPInterest()), this);
-
-            this.notifyKnowledgeReceived(k);
-            
-//            // calculate effective kepInterest
-            SharkCS effectiveInterest;
-            
-            effectiveInterest = 
-                SharkCSAlgebra.contextualize(background,
-                this.getKEPInterest(), this.getFP());
-            
-            // is there a mutual kepInterest ?
-            if(effectiveInterest == null) {
-                L.d("no mutual kepInterest", this);
-                return;
-            }
-
-            L.d("handleInsert: effective kepInterest:\n ", this);
-            L.d(L.contextSpace2String(effectiveInterest), this);
-
-			/* dead code removed */
-            // assimilate this knowledge
-            ArrayList<ContextCoordinates> assimilatedCC = 
-                    SharkCSAlgebra.assimilate(this.getKB(), effectiveInterest, 
-                                            this.getFP(), k, this.learn, 
-                                            this.deleteAssimilated);
-            
-            L.d("handleInsert: knowledge base after assimilation:\n " +
-                    L.kb2String(this.getKB()), this); 
-            
-            // notify 
-            if(assimilatedCC != null) {
-                Iterator<ContextCoordinates> ccIter = assimilatedCC.iterator();
-                while(ccIter.hasNext()) {
-                    ContextCoordinates cc = ccIter.next();
-                    ContextPoint cp = this.getKB().getContextPoint(cc);
-                    if(cp != null) {
-                        this.notifyKnowledgeAssimilated(this, cp);
-                    }
-                }
-            }
-
-        }
-        catch(SharkKBException e) {
-            L.d("assimilation failed: " + e.getMessage(), this);
-        }
-    }
-
-    /**
-     * <p>Check whether to answer with insert or expose.<br />
-     * If answering with insert call extraction to extract {@link Knowledge} from the local KB.
-     * In case the extraction was successfull, send the resulting Knowledge back.</p>
-     *
-     * If answering with expose, send the contextualized kepInterest back.
-     *
-     * @param receivedInterest The SimpleInterest received by another peer
-     * @param response
-     */
-    @Override
-    protected void handleExpose(SharkCS receivedInterest, KEPConnection response) {
-          L.d("\n******************************************\n\t\tKP handleExpose\n******************************************\n", this);
-
-      try {
-          // an kepInterest has been retrieved from remote peer
-          L.d("handleExpose: \n receivedKEPInterest kepInterest is:\n"+ L.contextSpace2String(receivedInterest), this);
-          L.d("handleExpose: \n my Interest kepInterest is:\n"+ L.contextSpace2String(this.getKEPInterest()), this);
-          
-          // check if internals would be revealed which isn't allowed.
-          if(!this.revealingAndAllowed(receivedInterest, this.getKEPInterest())) {
-              L.d("stop executing handleExpose: received kepInterest contains "
-                      + "unspecified (any) dimension which are defined in "
-                      + "local kepInterest - revealing of details "
-                      + "not permitted", this);
-              return;
-          }
-          
-          // refresh kepInterest
-          SharkCS localInterest = this.getKEPInterest();
-          
-          /*
-            * Remote kepInterest has passed the door. Now we enrich the
-            * kepInterest with background knowledge - to teach remote
-            * peer. Thus, local kb becomes source, mutualInterest becomes context.
-            * 
-            * Result can be more general, larger, than the local kepInterest.
-          */
-          SharkCS effectiveInterest = this.getKB().contextualize(localInterest, this.getOTP());
-          
-          // check it with the guarding kepInterest first
-          // local kepInterest is context, retrieved is source
-//          SharkCS mutualInterest = SharkCSAlgebra.contextualize(
-//                  receivedKEPInterest, this.getKEPInterest(), this.getFP());
-
-          Interest mutualInterest = SharkCSAlgebra.contextualize(
-                  receivedInterest, effectiveInterest, this.getFP());
-
-          if(mutualInterest == null) {
-              L.d("no mutual kepInterest - knowledge port stops executing", this);
-              return;
-          }
-          
-          L.d("handleExpose: \n mutual kepInterest is:\n"+ L.contextSpace2String(mutualInterest), this);
-
-          int effectiveDirection = mutualInterest.getDirection();
-
-          /////////////////////////////////////////////////////////////////
-          //                    expose mutual kepInterest                   //
-          /////////////////////////////////////////////////////////////////
-          
-          // remote peer wants to send something?
-          if(effectiveDirection == SharkCS.DIRECTION_INOUT || 
-                  effectiveDirection == SharkCS.DIRECTION_IN) {
-            // Effective kepInterest = receiving kepInterest. Send response.
-            L.d("Answering with expose", this);
-
-            response.expose(mutualInterest);
-            this.notifyExposeSent(this, mutualInterest);
-          }
-          
-          /* Note: Don't change the order of expose and send.
-           * We are ging to manipulate mutual kepInterest in the next few lines
-          */
-
-          /////////////////////////////////////////////////////////////////
-          //                       send knowledge                        //
-          /////////////////////////////////////////////////////////////////
-          
-          // remote peer wants to get something?
-          if(effectiveDirection == SharkCS.DIRECTION_INOUT || 
-                  effectiveDirection == SharkCS.DIRECTION_OUT) {
-              
-//              Interest extractionInterest = SharkCSAlgebra.contextualize(
-//                  this.getKB().asSharkCS(), mutualInterest, this.getOTP());
-
-//              Interest extractionInterest = InMemoSharkKB.createInMemoCopy(mutualInterest);
-//              L.d("handleExpose: \n extraction kepInterest is:\n"+ L.contextSpace2String(extractionInterest), this);
-              
-              // set direction: we take all cps that are explicitely set to out
-//              extractionInterest.setDirection(SharkCS.DIRECTION_INOUT);
-              
-              mutualInterest.setDirection(SharkCS.DIRECTION_INOUT);
-              
-              L.d("handleExpose: \n extraction kepInterest is:\n"+ L.contextSpace2String(mutualInterest), this);
-              
-            // Effective kepInterest = sending kepInterest. Extract knowledge.
-            InMemoSharkKB tempKB = new InMemoSharkKB();
-            
-            Knowledge k = SharkCSAlgebra.extract(tempKB, 
-                    this.getKB(), mutualInterest, 
-                    this.getFP(), true);
-            
-            if(k != null) {
-                L.d("extracted non-empty knowledge", this);
-                
-                // send it back
-                response.insert(k, (String) null);
-                this.notifyInsertSent(this, k);
-            } else {
-                L.d("no knowledge found with those extraction cs", this);
-            }
-          }
-
-      } catch (SharkException ex) {
-          L.e(ex.getMessage(), this);
-      }
-    }
+//    /**
+//     * <p>Check whether to answer with insert or expose.<br />
+//     * If answering with insert call extraction to extract {@link Knowledge} from the local KB.
+//     * In case the extraction was successfull, send the resulting Knowledge back.</p>
+//     *
+//     * If answering with expose, send the contextualized kepInterest back.
+//     *
+//     * @param receivedInterest The SimpleInterest received by another peer
+//     * @param response
+////     */
+//    @Override
+//    protected void handleExpose(SharkCS receivedInterest, KEPConnection response) {
+//          L.d("\n******************************************\n\t\tKP handleExpose\n******************************************\n", this);
+//
+//      try {
+//          // an kepInterest has been retrieved from remote peer
+//          L.d("handleExpose: \n receivedKEPInterest kepInterest is:\n"+ L.contextSpace2String(receivedInterest), this);
+//          L.d("handleExpose: \n my Interest kepInterest is:\n"+ L.contextSpace2String(this.getKEPInterest()), this);
+//
+//          // check if internals would be revealed which isn't allowed.
+//          if(!this.revealingAndAllowed(receivedInterest, this.getKEPInterest())) {
+//              L.d("stop executing handleExpose: received kepInterest contains "
+//                      + "unspecified (any) dimension which are defined in "
+//                      + "local kepInterest - revealing of details "
+//                      + "not permitted", this);
+//              return;
+//          }
+//
+//          // refresh kepInterest
+//          SharkCS localInterest = this.getKEPInterest();
+//
+//          /*
+//            * Remote kepInterest has passed the door. Now we enrich the
+//            * kepInterest with background knowledge - to teach remote
+//            * peer. Thus, local kb becomes source, mutualInterest becomes context.
+//            *
+//            * Result can be more general, larger, than the local kepInterest.
+//          */
+//          SharkCS effectiveInterest = this.getKB().contextualize(localInterest, this.getOTP());
+//
+//          // check it with the guarding kepInterest first
+//          // local kepInterest is context, retrieved is source
+////          SharkCS mutualInterest = SharkCSAlgebra.contextualize(
+////                  receivedKEPInterest, this.getKEPInterest(), this.getFP());
+//
+//          Interest mutualInterest = SharkCSAlgebra.contextualize(
+//                  receivedInterest, effectiveInterest, this.getFP());
+//
+//          if(mutualInterest == null) {
+//              L.d("no mutual kepInterest - knowledge port stops executing", this);
+//              return;
+//          }
+//
+//          L.d("handleExpose: \n mutual kepInterest is:\n"+ L.contextSpace2String(mutualInterest), this);
+//
+//          int effectiveDirection = mutualInterest.getDirection();
+//
+//          /////////////////////////////////////////////////////////////////
+//          //                    expose mutual kepInterest                   //
+//          /////////////////////////////////////////////////////////////////
+//
+//          // remote peer wants to send something?
+//          if(effectiveDirection == SharkCS.DIRECTION_INOUT ||
+//                  effectiveDirection == SharkCS.DIRECTION_IN) {
+//            // Effective kepInterest = receiving kepInterest. Send response.
+//            L.d("Answering with expose", this);
+//
+//            response.expose(mutualInterest);
+//            this.notifyExposeSent(this, mutualInterest);
+//          }
+//
+//          /* Note: Don't change the order of expose and send.
+//           * We are ging to manipulate mutual kepInterest in the next few lines
+//          */
+//
+//          /////////////////////////////////////////////////////////////////
+//          //                       send knowledge                        //
+//          /////////////////////////////////////////////////////////////////
+//
+//          // remote peer wants to get something?
+//          if(effectiveDirection == SharkCS.DIRECTION_INOUT ||
+//                  effectiveDirection == SharkCS.DIRECTION_OUT) {
+//
+////              Interest extractionInterest = SharkCSAlgebra.contextualize(
+////                  this.getKB().asSharkCS(), mutualInterest, this.getOTP());
+//
+////              Interest extractionInterest = InMemoSharkKB.createInMemoCopy(mutualInterest);
+////              L.d("handleExpose: \n extraction kepInterest is:\n"+ L.contextSpace2String(extractionInterest), this);
+//
+//              // set direction: we take all cps that are explicitely set to out
+////              extractionInterest.setDirection(SharkCS.DIRECTION_INOUT);
+//
+//              mutualInterest.setDirection(SharkCS.DIRECTION_INOUT);
+//
+//              L.d("handleExpose: \n extraction kepInterest is:\n"+ L.contextSpace2String(mutualInterest), this);
+//
+//            // Effective kepInterest = sending kepInterest. Extract knowledge.
+//            InMemoSharkKB tempKB = new InMemoSharkKB();
+//
+//            Knowledge k = SharkCSAlgebra.extract(tempKB,
+//                    this.getKB(), mutualInterest,
+//                    this.getFP(), true);
+//
+//            if(k != null) {
+//                L.d("extracted non-empty knowledge", this);
+//
+//                // send it back
+//                response.insert(k, (String) null);
+//                this.notifyInsertSent(this, k);
+//            } else {
+//                L.d("no knowledge found with those extraction cs", this);
+//            }
+//          }
+//
+//      } catch (SharkException ex) {
+//          L.e(ex.getMessage(), this);
+//      }
+//    }
     
     private boolean revealLocalInterest = false;
     
@@ -571,5 +576,15 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
     @Override
     public void tagChanged(SemanticTag tag) {
         this.syncInterest();
+    }
+
+    @Override
+    protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
+        // Do things
+    }
+
+    @Override
+    protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
+        // Do things
     }
 }

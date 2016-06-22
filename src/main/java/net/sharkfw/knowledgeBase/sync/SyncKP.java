@@ -5,8 +5,11 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.FragmentationParameter;
 import net.sharkfw.knowledgeBase.Interest;
@@ -181,7 +184,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         _timestamps.setTimestampNull(peer);
     }
     
-    @Override
+//    @Override
     protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
 //        handleWifiDirect(kepInterest, kepConnection);
         L.e(" --------------------- SYNC handleExpose started");
@@ -284,7 +287,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
 //        }
     }
     
-    @Override
+//    @Override
     protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
         try {
             Enumeration<ContextPoint> cps = knowledge.contextPoints();
@@ -468,10 +471,15 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
 
     @Override
     public void tagChanged(SemanticTag tag) {
-    }    
+    }
 
     @Override
-    protected void handleInsert(ASIPKnowledge knowledge, ASIPConnection kepConnection) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
+
+    }
+
+    @Override
+    protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
+
     }
 }

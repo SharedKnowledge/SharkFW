@@ -1,5 +1,9 @@
 package net.sharkfw.security.pki;
 
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.engine.ASIPConnection;
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
@@ -22,6 +26,7 @@ import static net.sharkfw.security.utility.SharkCertificateHelper.getByteArrayFr
 import static net.sharkfw.security.utility.SharkCertificateHelper.getLinkedListFromByteArray;
 
 /**
+ * TODO Rework to ASIP
  * @author ac
  */
 public class SharkPkiKP extends KnowledgePort {
@@ -40,7 +45,7 @@ public class SharkPkiKP extends KnowledgePort {
         this.peerSTSet = trustedIssuer;
     }
 
-    @Override //incoming knowledge
+//    @Override //incoming knowledge
     protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             try {
@@ -99,7 +104,7 @@ public class SharkPkiKP extends KnowledgePort {
         return peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer());
     }
 
-    @Override //outgoing knowledge
+//    @Override //outgoing knowledge
     protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
         try {
             ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
@@ -225,5 +230,15 @@ public class SharkPkiKP extends KnowledgePort {
         }
 
         return Certificate.TrustLevel.NONE;
+    }
+
+    @Override
+    protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
+
+    }
+
+    @Override
+    protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
+
     }
 }

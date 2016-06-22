@@ -3,6 +3,8 @@ package net.sharkfw.kp;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
+import net.sharkfw.asip.engine.ASIPInMessage;
+import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
@@ -27,12 +29,12 @@ public class FilterKP extends KnowledgePort {
     }
 
     @Override
-    protected void handleInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
+    protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
         _notifier.notifyKnowledgeReceived(asipKnowledge, asipConnection);
     }
 
     @Override
-    protected void handleExpose(ASIPInterest interest, ASIPConnection asipConnection) throws SharkKBException {
+    protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
         if(interest==null) {
             L.d("Interest should not be empty.", this);
             return;
@@ -42,15 +44,5 @@ public class FilterKP extends KnowledgePort {
 
             _notifier.notifyInterestReceived(interest, asipConnection);
         }
-    }
-
-    @Override
-    protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
-
-    }
-
-    @Override
-    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
-
     }
 }

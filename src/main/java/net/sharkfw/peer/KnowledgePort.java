@@ -42,7 +42,7 @@ import net.sharkfw.asip.engine.ASIPMessage;
  * @author thsc
  * @author mfi
  */
-abstract public class KnowledgePort {
+public abstract class KnowledgePort extends ContentPort {
 
     protected SharkCS kepInterest;
     protected SharkCS receivedKEPInterest; // TODO: Use!
@@ -206,16 +206,16 @@ abstract public class KnowledgePort {
         this.se.addKP(this);
     }
     
-    public synchronized final boolean handleMessage(ASIPInMessage msg, ASIPConnection con) {
-
-        this.doProcess(msg, con);
-        if(con!=null) {
-            boolean handled = con.responseSent();
-            msg.resetResponse();
-            return handled;
-        }
-        return false;
-    }
+//    public synchronized final boolean handleMessage(ASIPInMessage msg, ASIPConnection con) {
+//
+//        this.doProcess(msg, con);
+//        if(con!=null) {
+//            boolean handled = con.responseSent();
+//            msg.resetResponse();
+//            return handled;
+//        }
+//        return false;
+//    }
     
     /********************************************************
      *   parse KEP message - call KEPEngine for handling    *
@@ -234,78 +234,78 @@ abstract public class KnowledgePort {
      *
      * @param msg Request retrieved by a KEP Stub
      */
-    public synchronized final boolean handleMessage(KEPInMessage msg) {
-        L.d("KP.handleMessage()", this);
-        
-        // check black-/white list
-        PeerSemanticTag sender = null;
-        try {
-            sender = msg.getSender();
-        } catch (SharkKBException ex) {
-            //
-        }
-        
-        // check access list management
-        
-        // has got this k its own access manager
-        WhiteAndBlackListManager accessManager = this.getAccessListManager();
-        if(accessManager == null) {
-            // no - take engine
-            accessManager = this.se;
-        }
-        
-        if(!accessManager.isAccepted(sender)) {
-            // not allowed to access this kp or engine in general
-            
-            // create log message
-            String senderSI = "sender not transmitted";
-            if(sender != null) {
-                senderSI = sender.getSI()[0];
-            }
-            
-            L.l("stop handling request because sender is not welcome due to black/white list: " + senderSI, this);
-            return false;
-        }
-        // end access list management
-
-        // Let the request know which handler is holding it
-        msg.setKEPHandler(this);
-
-        // get kep command
-        int cmd = msg.getCmd();
-
-        // debugging:
-        SharkCS msgInterest = msg.getInterest();
-
-        if (msgInterest != null) {
-            this.receivedKEPInterest = msgInterest;
-        }
-
-        // set security setting
-        this.se.initSecurity(msg);
-        
-        switch (cmd) {
-            case KEPInMessage.KEP_INSERT:
-                try {
-                    this.handleInsert(msg.getKnowledge(), msg);
-                } catch (Exception ex) {
-                    L.e("Error while handling insert request:\n" + ex.getMessage(), this);
-                }
-                break;
-            case KEPInMessage.KEP_EXPOSE:
-                try {
-                    this.handleExpose(msg.getInterest(), msg);
-                } catch (Exception ex) {
-                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
-                }
-                break;
-        }
-
-        boolean responded = msg.responseSent();
-        msg.resetResponse();
-
-        return responded;
-    }
+//    public synchronized final boolean handleMessage(KEPInMessage msg) {
+//        L.d("KP.handleMessage()", this);
+//
+//        // check black-/white list
+//        PeerSemanticTag sender = null;
+//        try {
+//            sender = msg.getSender();
+//        } catch (SharkKBException ex) {
+//            //
+//        }
+//
+//        // check access list management
+//
+//        // has got this k its own access manager
+//        WhiteAndBlackListManager accessManager = this.getAccessListManager();
+//        if(accessManager == null) {
+//            // no - take engine
+//            accessManager = this.se;
+//        }
+//
+//        if(!accessManager.isAccepted(sender)) {
+//            // not allowed to access this kp or engine in general
+//
+//            // create log message
+//            String senderSI = "sender not transmitted";
+//            if(sender != null) {
+//                senderSI = sender.getSI()[0];
+//            }
+//
+//            L.l("stop handling request because sender is not welcome due to black/white list: " + senderSI, this);
+//            return false;
+//        }
+//        // end access list management
+//
+//        // Let the request know which handler is holding it
+//        msg.setKEPHandler(this);
+//
+//        // get kep command
+//        int cmd = msg.getCmd();
+//
+//        // debugging:
+//        SharkCS msgInterest = msg.getInterest();
+//
+//        if (msgInterest != null) {
+//            this.receivedKEPInterest = msgInterest;
+//        }
+//
+//        // set security setting
+//        this.se.initSecurity(msg);
+//
+//        switch (cmd) {
+//            case KEPInMessage.KEP_INSERT:
+//                try {
+//                    this.handleInsert(msg.getKnowledge(), msg);
+//                } catch (Exception ex) {
+//                    L.e("Error while handling insert request:\n" + ex.getMessage(), this);
+//                }
+//                break;
+//            case KEPInMessage.KEP_EXPOSE:
+//                try {
+//                    this.handleExpose(msg.getInterest(), msg);
+//                } catch (Exception ex) {
+//                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
+//                }
+//                break;
+//        }
+//
+//        boolean responded = msg.responseSent();
+//        msg.resetResponse();
+//
+//        return responded;
+//    }
 
     /**
      * Place logic for handling an insert command in this method.
@@ -314,7 +314,7 @@ abstract public class KnowledgePort {
      * @param kepConnection
      * @deprecated 
      */
-    protected abstract void handleInsert(Knowledge knowledge, KEPConnection kepConnection);
+//    protected abstract void handleInsert(Knowledge knowledge, KEPConnection kepConnection);
 
     /**
      * Place logic for handling an insert command in this method.
@@ -322,18 +322,15 @@ abstract public class KnowledgePort {
      * @param asipKnowledge
      * @param asipConnection
      */
-    protected void handleInsert(ASIPKnowledge asipKnowledge, ASIPConnection asipConnection) {
-        // legacy wrapper
-        // create knowledge object
-        try {
-            Knowledge k = InMemoSharkKB.legacyCreateKEPKnowledge(asipKnowledge);
+    protected abstract void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge);
 
-            this.handleInsert(k, (KEPConnection) asipConnection);
-        }
-        catch(SharkKBException e) {
-            L.w("problems when performing legacy wrapper handleInsert: " + e.getMessage());
-        }
-    }
+    /**
+     * standard behaviour: map to handleExpose variant of KEP to provide backward
+     * compatibility
+     * @param interest
+     * @param asipConnection
+     */
+    protected abstract void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException;
 
     protected void doProcess(ASIPInMessage msg, ASIPConnection con) /*TODO what is here todo?*/{
 
@@ -349,21 +346,14 @@ abstract public class KnowledgePort {
         switch (msg.getCommand()) {
             case ASIPMessage.ASIP_INSERT:
                 try {
-                    this.handleInsert(msg.getKnowledge(), con);
+                    this.handleInsert(msg, con, msg.getKnowledge());
                 } catch (Exception ex) {
                     L.e("Error while handling insert request:\n" + ex.getMessage(), this);
                 }
                 break;
             case ASIPMessage.ASIP_EXPOSE:
                 try {
-                    this.handleExpose(msg.getInterest(), con);
-                } catch (Exception ex) {
-                    L.e("Error while handling expose request:\n" + ex.getMessage(), this);
-                }
-                break;
-            case ASIPMessage.ASIP_RAW:
-                try {
-                    this.handleRaw(con.getInputStream(), con);
+                    this.handleExpose(msg, con, msg.getInterest());
                 } catch (Exception ex) {
                     L.e("Error while handling expose request:\n" + ex.getMessage(), this);
                 }
@@ -372,59 +362,17 @@ abstract public class KnowledgePort {
 
     }
 
-    /**
-     * Place logic for handling an expose command in this method.
-     *
-     * @param interest
-     * @param kepConnection
-     * @deprecated 
-     */
-    protected abstract void handleExpose(SharkCS interest, KEPConnection kepConnection);
-    
-    /**
-     * standard behaviour: map to handleExpose variant of KEP to provide backward
-     * compatibility 
-     * @param interest
-     * @param asipConnection 
-     */
-    protected void handleExpose(ASIPInterest interest, ASIPConnection asipConnection) throws SharkKBException {
-        // produce a KEP kepInterest based on LASP-kepInterest
-        
-        STSet topics = interest.getTopics();
-        
-        // we take the first approver - rest is lost..
-        PeerSemanticTag originator = null;
-        PeerSTSet approvers = interest.getApprovers();
-        if(approvers != null) {
-            originator = approvers.peerTags().nextElement();
+    @Override
+    protected final boolean handleRaw(ASIPInMessage message, ASIPConnection connection, InputStream inputStream) {
+        this.doProcess(message, connection);
+        if(connection!=null) {
+            boolean handled = connection.responseSent();
+            message.resetResponse();
+            return handled;
         }
-        
-        PeerSTSet peers = null;
-        
-        PeerSemanticTag sender = interest.getSender();
-        if(sender != null) {
-            peers = InMemoSharkKB.createInMemoPeerSTSet();
-            peers.merge(sender);
-        }
-        
-        PeerSTSet remotePeers = interest.getReceivers();
-        TimeSTSet times = interest.getTimes();
-        SpatialSTSet locations = interest.getLocations();
-        int direction = interest.getDirection();
-
-        SharkCS kepInterest = InMemoSharkKB.createInMemoInterest(topics, originator, peers,
-                remotePeers, times, locations, direction);
-
-        this.handleExpose(kepInterest, asipConnection.asKepConnection());
+        return false;
     }
-    
-    /**
-     * Standard behaviour: do nothing
-     * @param is
-     */
-    protected void handleRaw(InputStream is, ASIPConnection asipConnection) {
-    }
-    
+
     /**
      * Has this AbstractKP been started to handle requests?
      * @return <code>true</code> if active , <code>false</code> if stopped.

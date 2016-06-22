@@ -9,6 +9,7 @@ import java.util.Iterator;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.SharkStub;
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;
@@ -34,6 +35,7 @@ import net.sharkfw.system.SharkSecurityException;
  * 
  * @author thsc
  * @author mfi
+ * @deprecated
  */
 
 public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
@@ -145,15 +147,17 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         kpIter = kpList.iterator();
         while (kpIter.hasNext()) {
           KnowledgePort l = kpIter.next();
-          if (l.handleMessage(msg)) {
-            handled = true;
-          }
+//            TODO deactivated KEPStub
+//          if (l.handleMessage(msg., null)) {
+//            handled = true;
+//          }
         }
         
         // do we have a final handler for not handled messages ?
         if(!handled) {
             if(this.notHandledRequestsHandler != null) {
-                handled = this.notHandledRequestsHandler.handleMessage(msg);
+//                  TODO deactivated KEPStub
+//                handled = this.notHandledRequestsHandler.handleMessage(msg);
             }
             else {
                 // remember unhandled message
@@ -389,7 +393,7 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
     
     /**
      * Remember that this kepInterest was send now
-     * @param interest 
+     * @param  
      */
     protected void rememberKnowledge(Knowledge k) {
         this.sentKnowledge.addKnowledge(k);

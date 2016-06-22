@@ -3,6 +3,11 @@ package net.sharkfw.kp;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.engine.ASIPConnection;
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
@@ -16,6 +21,7 @@ import net.sharkfw.system.SharkException;
  * and contextualizes them to all already known ones.
  * 
  * @author mfi
+ * @deprecated
  */
 public class BrokerKP extends KnowledgePort {
 
@@ -53,77 +59,77 @@ public class BrokerKP extends KnowledgePort {
         this.restore();
     }
     
-    @Override
-    protected void handleInsert(Knowledge k, KEPConnection responseFactory) {
-        // Do nothing. We don't process inserts. The hub only matches interests.
-    }
-    
-    private void doProcess(SharkCS interest, KEPConnection kepConnection, 
-            InterestStore storedInterests) throws SharkKBException, 
-            SharkException {
-        
-        Iterator<SharkCS> interestIter = storedInterests.getInterests();
-        
-        while(interestIter.hasNext()) {
-            SharkCS storedInterest = interestIter.next();
+//    @Override
+//    protected void handleInsert(Knowledge k, KEPConnection responseFactory) {
+//        // Do nothing. We don't process inserts. The hub only matches interests.
+//    }
+//
+//    private void doProcess(SharkCS interest, KEPConnection kepConnection,
+//            InterestStore storedInterests) throws SharkKBException,
+//            SharkException {
+//
+//        Iterator<SharkCS> interestIter = storedInterests.getInterests();
+//
+//        while(interestIter.hasNext()) {
+//            SharkCS storedInterest = interestIter.next();
+//
+//            // mutual kepInterest?
+//            Interest mutualInterest = SharkCSAlgebra.contextualize(
+//                    storedInterest, interest, fps);
+//
+//            if(mutualInterest != null) {
+//                L.d("send mutual kepInterest back to caller: " + L.contextSpace2String(mutualInterest), this);
+//                kepConnection.expose(mutualInterest);
+//            }
+//        }
+//    }
 
-            // mutual kepInterest?
-            Interest mutualInterest = SharkCSAlgebra.contextualize(
-                    storedInterest, interest, fps);
-
-            if(mutualInterest != null) {
-                L.d("send mutual kepInterest back to caller: " + L.contextSpace2String(mutualInterest), this);
-                kepConnection.expose(mutualInterest);
-            }
-        }
-    }
-
-    @Override
-    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
-        
-        L.d("kepInterest received: " + L.contextSpace2String(interest), this);
-        try {
-            // process kepInterest
-            if(interest.getDirection() == SharkCS.DIRECTION_IN || 
-                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
-                this.doProcess(interest, kepConnection, this.outInterests);
-            }
-            if(interest.getDirection() == SharkCS.DIRECTION_OUT || 
-                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
-
-                this.doProcess(interest, kepConnection, this.inInterests);
-            }
-            
-            // finally save it
-            if(interest.getDirection() == SharkCS.DIRECTION_IN || 
-                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
-
-                this.inInterests.addInterest(interest);
-
-                // persist
-                if(this.ph != null) {
-                    String serialized = this.inInterests.serialize();
-                    this.ph.setProperty(RECEIVING_INTEREST_LIST, serialized, false);
-                }
-            }
-
-            if(interest.getDirection() == SharkCS.DIRECTION_OUT || 
-                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
-
-                this.outInterests.addInterest(interest);
-
-                // persist
-                if(this.ph != null) {
-                    String serialized = this.outInterests.serialize();
-                    this.ph.setProperty(SENDING_INTEREST_LIST, serialized, false);
-                }
-            }
-        }
-        catch(SharkException e) {
-            L.l("failure while processing kepInterest in HubKP: " + e.getMessage(), this);
-        }
-        
-    }
+//    @Override
+//    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
+//
+//        L.d("kepInterest received: " + L.contextSpace2String(interest), this);
+//        try {
+//            // process kepInterest
+//            if(interest.getDirection() == SharkCS.DIRECTION_IN ||
+//                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
+//                this.doProcess(interest, kepConnection, this.outInterests);
+//            }
+//            if(interest.getDirection() == SharkCS.DIRECTION_OUT ||
+//                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
+//
+//                this.doProcess(interest, kepConnection, this.inInterests);
+//            }
+//
+//            // finally save it
+//            if(interest.getDirection() == SharkCS.DIRECTION_IN ||
+//                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
+//
+//                this.inInterests.addInterest(interest);
+//
+//                // persist
+//                if(this.ph != null) {
+//                    String serialized = this.inInterests.serialize();
+//                    this.ph.setProperty(RECEIVING_INTEREST_LIST, serialized, false);
+//                }
+//            }
+//
+//            if(interest.getDirection() == SharkCS.DIRECTION_OUT ||
+//                    interest.getDirection() == SharkCS.DIRECTION_INOUT) {
+//
+//                this.outInterests.addInterest(interest);
+//
+//                // persist
+//                if(this.ph != null) {
+//                    String serialized = this.outInterests.serialize();
+//                    this.ph.setProperty(SENDING_INTEREST_LIST, serialized, false);
+//                }
+//            }
+//        }
+//        catch(SharkException e) {
+//            L.l("failure while processing kepInterest in HubKP: " + e.getMessage(), this);
+//        }
+//
+//    }
     
     /**
      * @param ph 
@@ -150,5 +156,15 @@ public class BrokerKP extends KnowledgePort {
                 Logger.getLogger(BrokerKP.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    @Override
+    protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
+
+    }
+
+    @Override
+    protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
+
     }
 }
