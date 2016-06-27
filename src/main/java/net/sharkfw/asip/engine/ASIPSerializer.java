@@ -110,7 +110,9 @@ public class ASIPSerializer {
                 .put(ASIPMessage.RECEIVERLOCATION, (header.getReceiverSpatial() != null) ?
                         serializeTag(header.getReceiverSpatial()) : "")
                 .put(ASIPMessage.RECEIVERTIME, (header.getReceiverTime() != null) ?
-                        serializeTag(header.getReceiverTime()) : "");
+                        serializeTag(header.getReceiverTime()) : "")
+                .put(ASIPMessage.TOPIC, (header.getTopic() != null) ?
+                        serializeTag(header.getTopic()) : "");
     }
 
     public static JSONObject serializeInterest(ASIPSpace space) throws SharkKBException, JSONException {
@@ -462,11 +464,14 @@ public class ASIPSerializer {
         SpatialSemanticTag receiverLocation = null;
         TimeSemanticTag receiverTime = null;
         STSet receivers = null;
+        SemanticTag topic = null;
+
         String senderString = "";
         String receiverString = "";
         String receiverPeerString = "";
         String receiverLocationString = "";
         String receiverTimeString = "";
+        String topicString = "";
 
 
         if (object.has(ASIPMessage.VERSION))
@@ -515,6 +520,15 @@ public class ASIPSerializer {
                 e.printStackTrace();
             }
         }
+        if(object.has(ASIPMessage.TOPIC)){
+            topicString = object.get(ASIPMessage.TOPIC).toString();
+            try {
+                topic = ASIPSerializer.deserializeTag(topicString);
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+            }
+        }
+
         // TODO obsolete?
         if (object.has(ASIPMessage.RECEIVERS)) {
             receiverString = object.getString(ASIPMessage.RECEIVERS);
@@ -531,6 +545,7 @@ public class ASIPSerializer {
         message.setReceiverSpatial(receiverLocation);
         message.setReceiverTime(receiverTime);
         message.setReceivers(receivers);
+        message.setTopic(topic);
 
 //      TODO
 //        try {

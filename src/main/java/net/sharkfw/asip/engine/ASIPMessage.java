@@ -54,6 +54,8 @@ public abstract class ASIPMessage {
     private PeerSemanticTag receiverPeer = null;
     private SpatialSemanticTag receiverSpatial = null;
     private TimeSemanticTag receiverTime = null;
+    private SemanticTag topic;
+
     private PrivateKey privateKey;
     private SharkPkiStorage sharkPkiStorage;
     private SharkEngine.SecurityLevel signatureLevel;
@@ -72,7 +74,8 @@ public abstract class ASIPMessage {
                        PeerSemanticTag sender,
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
-                       TimeSemanticTag receiverTime) throws SharkKBException {
+                       TimeSemanticTag receiverTime,
+                       SemanticTag topic) throws SharkKBException {
 
         this.engine = engine;
         this.connection = connection;
@@ -93,6 +96,8 @@ public abstract class ASIPMessage {
             this.receiverTime = receiverTime;
             this.receivers.merge(receiverTime);
         }
+
+        this.topic = topic;
     }
 
     public ASIPMessage(SharkEngine engine,
@@ -101,7 +106,8 @@ public abstract class ASIPMessage {
                        PeerSemanticTag sender,
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
-                       TimeSemanticTag receiverTime) throws SharkKBException {
+                       TimeSemanticTag receiverTime,
+                       SemanticTag topic) throws SharkKBException {
 
         this.engine = engine;
         this.stub = stub;
@@ -122,6 +128,7 @@ public abstract class ASIPMessage {
             this.receiverTime = receiverTime;
             this.receivers.merge(receiverTime);
         }
+        this.topic = topic;
     }
     
     public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
@@ -189,6 +196,10 @@ public abstract class ASIPMessage {
         return receiverTime;
     }
 
+    public SemanticTag getTopic(){
+        return this.topic;
+    }
+
     public void setCommand(int command) {
         this.command = command;
     }
@@ -240,6 +251,10 @@ public abstract class ASIPMessage {
         this.signed = signed;
     }
 
+    public void setTopic(SemanticTag topic){
+        this.topic = topic;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -259,6 +274,7 @@ public abstract class ASIPMessage {
         if (sender != null ? !sender.equals(that.sender) : that.sender != null) return false;
 //        if (receivers != null ? !receivers.equals(that.receivers) : that.receivers != null) return false;
         if (receiverPeer != null ? !receiverPeer.equals(that.receiverPeer) : that.receiverPeer != null) return false;
+        if (topic != null ? !topic.equals(that.topic) : that.topic != null) return false;
         if (receiverSpatial != null ? !receiverSpatial.equals(that.receiverSpatial) : that.receiverSpatial != null)
             return false;
         return receiverTime != null ? receiverTime.equals(that.receiverTime) : that.receiverTime == null;
@@ -299,6 +315,7 @@ public abstract class ASIPMessage {
                 ", receiverPeer=" + receiverPeer +
                 ", receiverSpatial=" + receiverSpatial +
                 ", receiverTime=" + receiverTime +
+                ", topic=" + topic +
                 '}';
     }
 }

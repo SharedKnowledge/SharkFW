@@ -2,10 +2,7 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
@@ -37,15 +34,16 @@ public class ASIPOutMessage extends ASIPMessage {
                           PeerSemanticTag sender,
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverLocation,
-                          TimeSemanticTag receiverTime) throws SharkKBException {
+                          TimeSemanticTag receiverTime,
+                          SemanticTag topic) throws SharkKBException {
 
-        super(engine, connection, ttl, sender, receiverPeer, receiverLocation, receiverTime);
+        super(engine, connection, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic);
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
-        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime());
+        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime(), in.getTopic());
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
@@ -57,9 +55,10 @@ public class ASIPOutMessage extends ASIPMessage {
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime,
+                          SemanticTag topic,
                           String address) throws SharkKBException {
 
-        super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime);
+        super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic);
         this.outStub = stub;
         this.recipientAddress = address;
         this.os = new ByteArrayOutputStream();
