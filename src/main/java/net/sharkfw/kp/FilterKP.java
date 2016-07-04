@@ -4,33 +4,53 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.asip.engine.ASIPMessage;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
+
+import java.util.ArrayList;
 
 /**
  * Created by msc on 25.05.16.
  */
 public class FilterKP extends KnowledgePort {
 
-    private final ASIPInterest _filter;
-    private final KPNotifier _notifier;
+    private final ASIPInterest filter;
+    private ArrayList<KPNotifier> notifiers;
 
     public FilterKP(SharkEngine se, ASIPInterest filter, KPNotifier notifier) {
         super(se);
-        _filter = filter;
-        _notifier = notifier;
+        this.filter = filter;
+        this.notifiers = new ArrayList<>();
+
+        this.notifiers.add(notifier);
+    }
+
+    public FilterKP(SharkEngine engine, ASIPInterest filter){
+        this(engine, filter, null);
+    }
+
+    public final void addNotifier(KPNotifier notifier){
+        if(!this.notifiers.contains(notifier) && notifier != null){
+            this.notifiers.add(notifier);
+        }
+    }
+
+    public final void removeNotifier(KPNotifier notifier){
+        if(this.notifiers.contains(notifier) && notifier != null){
+            this.notifiers.remove(notifier);
+        }
     }
 
     @Override
     protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
-        _notifier.notifyKnowledgeReceived(asipKnowledge, asipConnection);
+        if(!this.notifiers.isEmpty()){
+            for (KPNotifier notifier : this.notifiers){
+                notifier.notifyKnowledgeReceived(asipKnowledge, asipConnection);
+            }
+        }
     }
 
     @Override
@@ -40,9 +60,13 @@ public class FilterKP extends KnowledgePort {
             return;
         }
 
-        if(SharkCSAlgebra.isIn(_filter, interest)){
+        if(SharkCSAlgebra.isIn(filter, interest)){
 
-            _notifier.notifyInterestReceived(interest, asipConnection);
+            if(!this.notifiers.isEmpty()){
+                for (KPNotifier notifier : this.notifiers){
+                    notifier.notifyInterestReceived(asipInterest, asipConnection);
+                }
+            }
         }
     }
 }
