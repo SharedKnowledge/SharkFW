@@ -144,8 +144,7 @@ infoSpace               = '{'
                             '"sender":' [ peerSemanticTag ]','
                             '"recipients":' [ peerSemanticTags ] ','
                             '"locations":' [ spatialSemanticTags ] ','
-                            '"times":' [ timeSemanticTags ] ','
-                            '"direction":'
+                            '"times":' [ timeSemanticTags ]
                           '}' ;
 
 // TODO: Check Vocabulary
