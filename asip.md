@@ -35,7 +35,8 @@ cmd | message | unit    = '{'
                             '"receiver":' '[' optionalSemanticTags ']' ','
                             '"signed":' bool ','
                             '"ttl":' number','
-                            '"content":' content
+                            '"content":' content','
+                            '"contentSignature":' signature
                           '}' signature ;
 optionalSemanticTag     = peerSemanticTag | spatialSemanticTag | timeSemanticTag ;
 optionalSemanticTags    = optionalSemanticTag { ',' optionalSemanticTag } ;
@@ -43,7 +44,7 @@ content                 = '{'
                             '"logSender":' logicalSender ','
                             '"signed":' bool ','
                             insert | expose | raw
-                          '}' signature ;
+                          '}';
 signature               = text ;
 insert                  = '"insert":' '[' {knowledges} ']' ;
 expose                  = '"expose":' '[' {interests} ']' ;
