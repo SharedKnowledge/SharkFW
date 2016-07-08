@@ -27,6 +27,17 @@
         <url>https://github.com/SharedKnowledge/SharkFW</url>
     </scm>
 
+    <issueManagement>
+        <url>https://github.com/SharedKnowledge/SharkFW/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+        </license>
+    </licenses>
 
     <distributionManagement>
         <!-- TODO -->
