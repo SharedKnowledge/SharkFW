@@ -39,17 +39,23 @@
         </license>
     </licenses>
 
-    <distributionManagement>
+    <repositories>
         <!-- TODO -->
-    </distributionManagement>
+    </repositories>
 
+     <distributionManagement>
+        <repository>
+            <id>bintray-sharedknowledge-maven</id>
+            <name>sharedknowledge-maven</name>
+            <url>https://api.bintray.com/maven/sharedknowledge/maven/SharkFW/;publish=1</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
             <!-- TODO -->
         </dependencies>
     </dependencyManagement>
-
 
     <dependencies>
         <dependency>
@@ -162,9 +168,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <!-- TODO -->
-    </repositories>
 
     <pluginRepositories>
         <!-- TODO -->
