@@ -108,7 +108,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * The KnowledgePort will handle all incoming requests for the kepInterest.
      * </p><p>
      * When using this constructor however, the KnowledgePort is unable
-     * to keep the kepInterest in sync with the KB as it lacks access to the
+     * to keep the kepInterest in syncObsolete with the KB as it lacks access to the
      * AnchorSet, that has been used to create the kepInterest.
      * </p>
      * @param se The SharkEngine that handles the KnowledgePort.
@@ -451,7 +451,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * Upon each received change, the KnowledgePort will call its
      * <code>refreshInterest()</code> method to update the kepInterest.</p>
      *
-     * <p>Thus the KP needs not be updated manually but will keep in sync with
+     * <p>Thus the KP needs not be updated manually but will keep in syncObsolete with
      * the knowledgebase automatically.</p>
      *
      * @param sync <code>true</code> to start syncing, <code>false</code> to stop syncing.

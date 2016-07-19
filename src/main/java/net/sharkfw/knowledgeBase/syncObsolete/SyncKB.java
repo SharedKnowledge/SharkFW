@@ -1,7 +1,6 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.syncObsolete;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import net.sharkfw.asip.ASIPSpace;
 import java.util.Enumeration;

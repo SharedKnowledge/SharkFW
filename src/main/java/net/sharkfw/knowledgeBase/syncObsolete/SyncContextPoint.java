@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.syncObsolete;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,8 +8,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.ContextPointListener;

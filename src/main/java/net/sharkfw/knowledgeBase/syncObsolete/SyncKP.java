@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.syncObsolete;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,7 +91,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
             return;
         }
         
-        // Create a sync queue for all known peers
+        // Create a syncObsolete queue for all known peers
         PeerSTSet peersToSyncWith = _kb.getPeerSTSet();
         try {
             peersToSyncWith.removeSemanticTag(_kb.getOwner());
@@ -168,7 +168,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     /**
-     * Explicitly sync the entire knowledge base again with all peers.
+     * Explicitly syncObsolete the entire knowledge base again with all peers.
      * Will cause huge traffic with big knowledge bases.
      */
     public void syncAllKnowledge() {
@@ -176,7 +176,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
     }
     
     /**
-     * Explicitly sync the entire knowledge base again with a peer.
+     * Explicitly syncObsolete the entire knowledge base again with a peer.
      * This can be used when a new peer is added to the knowledge base to get her or him "up to date".
      * @param peer The peer the knowledge base will be completely synced with
      */
@@ -189,10 +189,10 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
 //        handleWifiDirect(kepInterest, kepConnection);
         L.e(" --------------------- SYNC handleExpose started");
         try {
-            // Retrieve the general sync KP synchronization identification tag
+            // Retrieve the general syncObsolete KP synchronization identification tag
             SemanticTag synchronizationTag = interest.getTopics().getSemanticTag(SYNCHRONIZATION_NAME);
             
-            // Check if the other peer is a sync KP
+            // Check if the other peer is a syncObsolete KP
             if (synchronizationTag != null) {
                 
                 // Find out in which state of the protocol we are
@@ -375,7 +375,7 @@ public class SyncKP extends KnowledgePort implements KnowledgeBaseListener {
         try {
              all = _kb.getAllContextPoints();
         } catch (SharkKBException e) {
-            L.e("Could not get context points from knowledge base used by sync KP!");
+            L.e("Could not get context points from knowledge base used by syncObsolete KP!");
             throw e;
         }
         

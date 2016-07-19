@@ -1,12 +1,11 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.syncObsolete;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -118,7 +117,7 @@ public class TimestampList {
     
     /**
      * Sets the time of last meeting with this peer to 01,01,1970!
-     * This will probably sync ALL knowledge with this peer again, so use with caution.
+     * This will probably syncObsolete ALL knowledge with this peer again, so use with caution.
      * @param peer 
      */
     public void setTimestampNull(PeerSemanticTag peer) {
@@ -131,7 +130,7 @@ public class TimestampList {
     
     /**
      * Sets the time of last meeting with ALL peers to 01,01,1970!
-     * This will probably sync ALL knowledge with ALL peers again, so use with caution.
+     * This will probably syncObsolete ALL knowledge with ALL peers again, so use with caution.
      * @param peer 
      */
     public void setAllTimestampsNull() {

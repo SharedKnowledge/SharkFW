@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.syncObsolete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ContextCoordinatesSerializer {
     protected static String endTag(String tag) { return "</" + tag + ">"; }
     
     /**
-     * Serializes sync context points to a list of context coordinates with their version included.
+     * Serializes syncObsolete context points to a list of context coordinates with their version included.
      * Context points have to be used to communicate without losing the version.
      * @param l
      * @return
@@ -65,7 +65,7 @@ public class ContextCoordinatesSerializer {
     }
     
     /**
-     * Deserializes sync context points from a string.
+     * Deserializes syncObsolete context points from a string.
      * @param serialized - the input string
      * @return a list of context coordinates
      * @throws SharkKBException
@@ -83,7 +83,7 @@ public class ContextCoordinatesSerializer {
             // Extract the exact substring of one <item></item>
             int end = serialized.indexOf(endTag(ITEM_TAG), index) + endTag(ITEM_TAG).length();
             String substr = serialized.substring(index, end);
-            // Create a new sync context poin from that information
+            // Create a new syncObsolete context poin from that information
             try {
                 SyncContextPoint cp = new SyncContextPoint(new InMemoContextPoint(extractCC(substr)));
                 cp.setVersion(extractVersion(substr));
