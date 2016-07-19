@@ -181,14 +181,14 @@ public class SyncInformation implements Information{
         
         /* Listeners */
         private Collection<InformationListener> listeners = new ArrayList<>();
-        
+
         public void addListener(InformationListener l) {
             listeners.add(l);
         }
         public void removeListener(InformationListener l) {
             listeners.remove(l);
         }
-        
+
         private void notifyContentChanged() {
             for (InformationListener l : listeners) {
                 l.contentChanged();

@@ -7,22 +7,13 @@ import java.util.List;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SpatialSTSet;
-import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.TimeSTSet;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.*;
 
 /**
  *
  * @author thsc
  */
-public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
+public class InMemoInformationSpace extends PropertyHolderDelegate implements ASIPInformationSpace, ASIPSpace {
     private STSet topics;
     private STSet types;
     private PeerSTSet approvers;
@@ -31,28 +22,29 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
     private TimeSTSet times;
     private SpatialSTSet locations;
     private int direction;
-    
+
     private List<ASIPInformation> infoList = new ArrayList<>();
 
+    public InMemoInformationSpace() {}
+
     InMemoInformationSpace(STSet topics, STSet types,
-            PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receivers,
-            TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        
+                           PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receivers,
+                           TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         this.topics = topics;
         this.types = types;
         this.approvers = approvers;
         this.senders = InMemoSharkKB.createInMemoPeerSTSet();
         this.senders.merge(sender);
-        this. receivers = receivers;
+        this.receivers = receivers;
         this.times = times;
         this.locations = locations;
-        this. direction = direction;
+        this.direction = direction;
     }
     
     InMemoInformationSpace(SemanticTag topic, SemanticTag type,
             PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver,
             TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        
+
         this.topics = InMemoSharkKB.createInMemoSTSet();
         this.topics.merge(topic);
         
@@ -164,5 +156,5 @@ public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
     public SpatialSTSet getLocations() {
         return this.locations;
     }
-    
+
 }

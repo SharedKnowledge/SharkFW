@@ -5,6 +5,7 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,9 +18,28 @@ import java.util.Iterator;
 public class SyncKB implements SharkKB {
 
     private SharkKB localKB;
+    public final static String TIME_PROPERTY_NAME = "time_property";
 
     public SyncKB(SharkKB localKB) throws SharkKBException {
         this.localKB = localKB;
+    }
+
+    public SyncKB() {
+        this.localKB = new InMemoSharkKB();
+    }
+
+    private void setCurrentTimeAsProperty(STSet set){
+        Iterator<SemanticTag> iterator = null;
+        try {
+            iterator = set.stTags();
+            while (iterator.hasNext()){
+                SemanticTag tag = iterator.next();
+                tag.setProperty(TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
+                set.merge(tag);
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -228,16 +248,34 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        setCurrentTimeAsProperty(topics);
+        setCurrentTimeAsProperty(types);
+        setCurrentTimeAsProperty(approvers);
+        setCurrentTimeAsProperty(sender);
+        setCurrentTimeAsProperty(times);
+        setCurrentTimeAsProperty(locations);
         return this.localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        setCurrentTimeAsProperty(topics);
+        setCurrentTimeAsProperty(types);
+        setCurrentTimeAsProperty(approvers);
+        sender.setProperty(TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
+        setCurrentTimeAsProperty(times);
+        setCurrentTimeAsProperty(locations);
         return this.localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
+        setCurrentTimeAsProperty(topics);
+        setCurrentTimeAsProperty(types);
+        setCurrentTimeAsProperty(approvers);
+        setCurrentTimeAsProperty(sender);
+        setCurrentTimeAsProperty(times);
+        setCurrentTimeAsProperty(locations);
         return this.localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
     }
 

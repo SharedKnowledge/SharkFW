@@ -1,7 +1,10 @@
 package net.sharkfw.asip;
 
 import java.util.Iterator;
+
+import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 
 /**
  * Information can be annotated with semantic tags. It plural, e.g.
@@ -17,7 +20,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  * </ul>
  * @author thsc
  */
-public interface ASIPInformationSpace {
+public interface ASIPInformationSpace extends SystemPropertyHolder {
     
     public final static String ASIPSPACE = "ASIPSPACE";
     public final static String INFORMATIONS = "INFORMATIONS";

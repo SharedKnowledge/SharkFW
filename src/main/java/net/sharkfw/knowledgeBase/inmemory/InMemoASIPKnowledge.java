@@ -12,6 +12,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.sync.SyncKB;
 
 /**
  *
@@ -46,10 +47,12 @@ public class InMemoASIPKnowledge implements Knowledge {
         while(informationSpaces().hasNext()){
             ASIPInformationSpace current = informationSpaces().next();
             if(SharkCSAlgebra.identical(current.getASIPSpace(), space)){
+//                current.setProperty(SyncKB.TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
                 return (InMemoInformationSpace) current;
             }
         }
         ASIPInformationSpace infoSpace = new InMemoInformationSpace(space);
+//        infoSpace.setProperty(SyncKB.TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
         infoSpacesList.add(infoSpace);
         return (InMemoInformationSpace) infoSpace;
     }

@@ -108,7 +108,7 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public ContextPoint createContextPoint(ContextCoordinates coordinates) 
           throws SharkKBException;
 
-    public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, 
+    public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest,
             FragmentationParameter[] backgroundFP, Knowledge knowledge, 
             boolean learnTags, boolean deleteAssimilated) throws SharkKBException;
   

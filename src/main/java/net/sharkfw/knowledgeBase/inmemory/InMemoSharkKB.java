@@ -1301,12 +1301,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet senders, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        // merge dimensions
-        STSet set = this.getTopicSTSet();
-        if(set != null) {
-            set.merge(topics);
-        }
-        
         return new InMemoInterest(topics, types, approvers, senders, receiver, 
                 times, locations, direction);
     }
