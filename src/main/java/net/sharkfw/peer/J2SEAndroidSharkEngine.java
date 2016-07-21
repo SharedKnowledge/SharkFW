@@ -822,7 +822,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
 //        
 //        KnowledgePort senderKP = null;
 //        
-//        Enumeration<KnowledgePort> kpEnum = this.getKPs();
+//        Enumeration<KnowledgePort> kpEnum = this.getPorts();
 //        if(kpEnum != null) {
 //            while(kpEnum.hasMoreElements()) {
 //                KnowledgePort kp = kpEnum.nextElement();

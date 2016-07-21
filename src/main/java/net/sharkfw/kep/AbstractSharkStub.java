@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.knowledgeBase.Interest;
+import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
@@ -17,7 +18,7 @@ import net.sharkfw.security.pki.storage.SharkPkiStorage;
  * @author thsc
  */
 public abstract class AbstractSharkStub implements SharkStub {
-    private final List<KnowledgePort> kps = new ArrayList<>();
+    private final List<ASIPPort> ports = new ArrayList<>();
     protected KnowledgePort notHandledRequestsHandler;
     protected SharkEngine se;
     private final HashMap<String, StreamConnection> table = new HashMap<>();
@@ -27,9 +28,9 @@ public abstract class AbstractSharkStub implements SharkStub {
     }
     
     @Override
-    public final void addListener(KnowledgePort newListener) {
+    public final void addListener(ASIPPort newListener) {
         // already in there?
-        Iterator<KnowledgePort> kpIter = kps.iterator();
+        Iterator<ASIPPort> kpIter = ports.iterator();
         while(kpIter.hasNext()) {
             if(newListener == kpIter.next()) {
                 return; // already in - do nothing
@@ -37,17 +38,17 @@ public abstract class AbstractSharkStub implements SharkStub {
         }
         
         // not found - add
-        this.kps.add(newListener);
+        this.ports.add(newListener);
     };
 
     @Override
-    public final void withdrawListener(KnowledgePort listener) {
-        this.kps.remove(listener);
+    public final void withdrawListener(ASIPPort listener) {
+        this.ports.remove(listener);
     };
     
     @Override
-    public Iterator<KnowledgePort> getListener() {
-        return this.kps.iterator();
+    public Iterator<ASIPPort> getListener() {
+        return this.ports.iterator();
     }
     
     // security stuff

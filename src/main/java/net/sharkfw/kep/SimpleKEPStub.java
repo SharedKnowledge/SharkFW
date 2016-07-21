@@ -18,6 +18,7 @@ import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
@@ -131,12 +132,12 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
   */
   @Override
     final synchronized public boolean callListener(KEPInMessage msg) {
-        Iterator<KnowledgePort> kpIter = this.getListener();
+        Iterator<ASIPPort> kpIter = this.getListener();
         /* make a copy of listener - kp can be added or withdrawn during message handling
          * which can cause strange side effects.
          */
         
-        ArrayList<KnowledgePort> kpList = new ArrayList<>();
+        ArrayList<ASIPPort> kpList = new ArrayList<>();
         while(kpIter.hasNext()) {
             kpList.add(kpIter.next());
         }
@@ -146,7 +147,7 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         
         kpIter = kpList.iterator();
         while (kpIter.hasNext()) {
-          KnowledgePort l = kpIter.next();
+          ASIPPort l = kpIter.next();
 //            TODO deactivated KEPStub
 //          if (l.handleMessage(msg., null)) {
 //            handled = true;
@@ -470,10 +471,10 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         Interest anyInterest = InMemoSharkKB.createInMemoInterest();
         anyInterest.setDirection(SharkCS.DIRECTION_INOUT);
         
-        Iterator<KnowledgePort> kpIter = this.getListener();
+        Iterator<ASIPPort> kpIter = this.getListener();
         
         while(kpIter.hasNext()) {
-            KnowledgePort kp = kpIter.next();
+            ASIPPort kp = kpIter.next();
         
             KEPInMessage internalMessage = new KEPInMessage(this.se, 
                     KEPMessage.KEP_EXPOSE, anyInterest, con, this);

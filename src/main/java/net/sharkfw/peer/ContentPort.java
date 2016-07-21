@@ -1,6 +1,5 @@
 package net.sharkfw.peer;
 
-import net.sharkfw.asip.SharkStub;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPMessage;
@@ -12,15 +11,18 @@ import java.io.InputStream;
  */
 public abstract class ContentPort extends ASIPPort {
 
-    private SharkStub sharkStub;
-
     public ContentPort(SharkEngine se) {
-
+        super(se);
     }
 
     @Override
     public final boolean handleMessage(ASIPInMessage message, ASIPConnection connection) {
-        return handleRaw(message, connection, message.getInputStream());
+        if(message.getCommand() == ASIPMessage.ASIP_EXPOSE ||
+                message.getCommand() == ASIPMessage.ASIP_INSERT ||
+                message.getCommand() == ASIPMessage.ASIP_RAW){
+            return handleRaw(message, connection, message.getRaw());
+        }
+        return false;
     }
 
     protected abstract boolean handleRaw(ASIPInMessage message, ASIPConnection connection, InputStream inputStream);

@@ -4,6 +4,7 @@ import java.security.PrivateKey;
 import java.util.Iterator;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.Interest;
+import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
@@ -16,11 +17,11 @@ import net.sharkfw.security.pki.storage.SharkPkiStorage;
  * @author mfi
  */
 public interface SharkStub {
-    Iterator<KnowledgePort> getListener();
+    Iterator<ASIPPort> getListener();
     
-    void addListener(KnowledgePort newListener);
+    void addListener(ASIPPort newListener);
 
-    void withdrawListener(KnowledgePort listener);
+    void withdrawListener(ASIPPort listener);
     
     void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
             SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel, 

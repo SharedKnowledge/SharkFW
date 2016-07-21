@@ -49,11 +49,11 @@ public abstract class KnowledgePort extends ContentPort {
     protected ASIPInterest asipInterest;
     protected ASIPInterest receiverASIPInterest;
     protected SharkKB kb;
-    protected SharkStub sharkStub;
-    private boolean isStarted = false;
-    protected ArrayList<KPListener> listeners = new ArrayList();
+//    protected SharkStub sharkStub;
+//    private boolean isStarted = false;
+//    protected ArrayList<KPListener> listeners = new ArrayList();
     private String id = null;
-    protected SharkEngine se;
+//    protected SharkEngine se;
     private PrivateKey privateKey;
     private AccessListManager accessList;
 
@@ -65,13 +65,7 @@ public abstract class KnowledgePort extends ContentPort {
      */
     protected KnowledgePort(SharkEngine se, SharkKB kb) {
         super(se);
-        this.se = se;
         this.kb = kb;
-        if (se != null) {
-            this.sharkStub = se.getAsipStub();
-//            this.sharkStub = se.getKepStub();  /*TODO*/
-            se.addKP(this);
-        }
     }
     
     public KnowledgePort(SharkEngine se) {
@@ -110,10 +104,10 @@ public abstract class KnowledgePort extends ContentPort {
      *
      * @param stub An instance of <code>KEPStub</code> that is used as the protocol engine by the local <code>SharkEngine</code>
      */
-    public void setSharkStub(SharkStub stub) {
-        this.sharkStub = stub;
-        this.sharkStub.addListener(this);
-    }
+//    public void setSharkStub(SharkStub stub) {
+//        this.sharkStub = stub;
+//        this.sharkStub.addListener(this);
+//    }
 
     /**
      * Return whether the {@link net.sharkfw.knowledgeBase.Interest} inside the KP is a sending kepInterest.
@@ -189,23 +183,23 @@ public abstract class KnowledgePort extends ContentPort {
         }
     }
 
-    /**
-     * Make this AbstractKP stop listening to incoming requests.
-     */
-    public void stop() {
-        this.sharkStub.withdrawListener(this);
-        this.isStarted = false;
-    }
-
-    /**
-     * Make this AbstractKP start listening to incoming requests, by registering it on the KEPStub.
-     */
-    public void start() {
-        // listen again
-        this.sharkStub.addListener(this);
-        this.isStarted = true;
-        this.se.addKP(this);
-    }
+//    /**
+//     * Make this AbstractKP stop listening to incoming requests.
+//     */
+//    public void stop() {
+//        this.sharkStub.withdrawListener(this);
+//        this.isStarted = false;
+//    }
+//
+//    /**
+//     * Make this AbstractKP start listening to incoming requests, by registering it on the KEPStub.
+//     */
+//    public void start() {
+//        // listen again
+//        this.sharkStub.addListener(this);
+//        this.isStarted = true;
+//        this.se.addKP(this);
+//    }
     
 //    public synchronized final boolean handleMessage(ASIPInMessage msg, ASIPConnection con) {
 //
@@ -365,11 +359,13 @@ public abstract class KnowledgePort extends ContentPort {
 
     @Override
     protected final boolean handleRaw(ASIPInMessage message, ASIPConnection connection, InputStream inputStream) {
-        this.doProcess(message, connection);
-        if(connection!=null) {
-            boolean handled = connection.responseSent();
-            message.resetResponse();
-            return handled;
+        if(message.getCommand() == ASIPMessage.ASIP_EXPOSE || message.getCommand() == ASIPMessage.ASIP_INSERT){
+            this.doProcess(message, connection);
+            if(connection!=null) {
+                boolean handled = connection.responseSent();
+                message.resetResponse();
+                return handled;
+            }
         }
         return false;
     }
@@ -378,30 +374,27 @@ public abstract class KnowledgePort extends ContentPort {
      * Has this AbstractKP been started to handle requests?
      * @return <code>true</code> if active , <code>false</code> if stopped.
      */
-    public boolean isStarted() {
-        return this.isStarted;
-    }
+//    public boolean isStarted() {
+//        return this.isStarted;
+//    }
 
     /**
      * Add a KPListener to this Knowledge Port.
-     *
-     * @param listener Listener impl to be added
-     * 
      */
 
 	@SuppressWarnings("unchecked")
-    public final void addListener(KPListener listener) {
-        this.listeners.add(listener);
-    }
+//    public final void addListener(KPListener listener) {
+//        this.listeners.add(listener);
+//    }
 
     /**
      * Withdraw the given listener from this Knowledge Port.
      *
      * @param listener Listener impl to be removed
      */
-    public void removeListener(KPListener listener) {
-        this.listeners.remove(listener);
-    }
+//    public void removeListener(KPListener listener) {
+//        this.listeners.remove(listener);
+//    }
 
     // ==========================================================================
     // Notification helper methods

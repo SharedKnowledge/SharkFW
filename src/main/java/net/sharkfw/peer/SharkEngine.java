@@ -11,11 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.asip.ASIPStub;
+import net.sharkfw.asip.*;
 
-import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.ASIPOutMessage;
@@ -24,14 +21,12 @@ import net.sharkfw.kep.KEPOutMessage;
 import net.sharkfw.kep.KEPStub;
 import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
-import net.sharkfw.asip.SharkStub;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.protocols.*;
-import net.sharkfw.security.pki.Certificate;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.Iterator2Enumeration;
@@ -84,7 +79,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
      * in <code>KnowledgePort</code>s.
      */
-    protected List<KnowledgePort> kps;
+    protected List<ASIPPort> ports;
     /**
      * Storage for opened stubs to certain underlying protocols.
      */
@@ -114,7 +109,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public SharkEngine() {
-        this.kps = new ArrayList<>();
+        this.ports = new ArrayList<>();
     }
 
     protected void setKEPStub(KEPStub kepStub) {
@@ -384,12 +379,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @param kp The instance of <code>KnowledgePort</code> to add.
      * @see net.sharkfw.peer.KnowledgePort
      */
-    void addKP(KnowledgePort kp) {
+    void addKP(ASIPPort kp) {
         if (this.asipStub != null)
             kp.setSharkStub(this.asipStub);
         else if (this.kepStub != null)
             kp.setSharkStub(this.kepStub);
-        kps.add(kp);
+        ports.add(kp);
     }
 
     /**
@@ -442,7 +437,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
 //    public void setDefaultKP(KnowledgePort kp) {
 //        // remove this kp from usual KP list
-//        this.kps.remove(kp);
+//        this.ports.remove(kp);
 //        
 //        // add as default
 //        this.kepStub.setNotHandledRequestKP(kp);
@@ -458,16 +453,16 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * @return enumeration of objects of class KP
      * @deprecated
      */
-    public Enumeration<KnowledgePort> getKPs() {
-        return new Iterator2Enumeration(this.kps.iterator());
+    public Enumeration<ASIPPort> getPorts() {
+        return new Iterator2Enumeration(this.ports.iterator());
     }
 
     /**
      * @return
      */
-    public Iterator<KnowledgePort> getAllKP() {
-        EnumerationChain<KnowledgePort> kpIter = new EnumerationChain<>();
-        kpIter.addEnumeration(this.getKPs());
+    public Iterator<ASIPPort> getAllPorts() {
+        EnumerationChain<ASIPPort> kpIter = new EnumerationChain<>();
+        kpIter.addEnumeration(this.getPorts());
         return kpIter;
     }
 
@@ -476,21 +471,21 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      *
      * @param kp The <code>KnowledgePort</code> to remove.
      */
-    public void deleteKP(KnowledgePort kp) {
+    public void deleteKP(ASIPPort kp) {
         kp.stop();
-        this.kps.remove(kp);
+        this.ports.remove(kp);
     }
 
     /**
      * Runs <code>deleteKP()</code> for every <code>KnowledgePort</code> in
      * this <code>SharkEngine</code>
      *
-     * @see net.sharkfw.peer.SharkEngine#deleteKP(net.sharkfw.peer.KnowledgePort)
+     * @see net.sharkfw.peer.SharkEngine#deleteKP(net.sharkfw.peer.ASIPPort)
      */
     public void deleteAllKP() {
 
-        while (!this.kps.isEmpty()) {
-            KnowledgePort kp = (KnowledgePort) this.kps.get(0);
+        while (!this.ports.isEmpty()) {
+            ASIPPort kp = this.ports.get(0);
             this.deleteKP(kp);
         }
     }
@@ -1448,13 +1443,13 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public void publishAllKP() throws SharkSecurityException, IOException {
         L.d("Publishing all KPs", this);
         // Find all KPs
-        Iterator<KnowledgePort> kpIter = this.kps.iterator();
+        Iterator<ASIPPort> kpIter = this.ports.iterator();
 
         // publish one by one to the environment
         while (kpIter.hasNext()) {
-            KnowledgePort kp = kpIter.next();
+            ASIPPort kp = kpIter.next();
 
-            this.publishKP(kp);
+            this.publishKP((KnowledgePort) kp);
         }
 
     }
@@ -1463,12 +1458,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         L.d("Publishing all KPs", this);
 
         // Find all KPs
-        Iterator<KnowledgePort> kpEnum = this.kps.iterator();
+        Iterator<ASIPPort> kpEnum = this.ports.iterator();
 
         // Publish them one by one to the recipient
         while (kpEnum.hasNext()) {
-            KnowledgePort kp = kpEnum.next();
-            this.publishKP(kp, recipient);
+            ASIPPort kp = kpEnum.next();
+            this.publishKP((KnowledgePort) kp, recipient);
         }
     }
 

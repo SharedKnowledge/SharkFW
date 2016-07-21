@@ -48,7 +48,7 @@ public abstract class ASIPMessage {
     private String signature = "";
     private long ttl = -1;
     private MessageStub stub;
-    private int command;
+    private int command = -1;
     private PeerSemanticTag sender;
     private STSet receivers;
     private PeerSemanticTag receiverPeer = null;

@@ -8,6 +8,7 @@ import net.sharkfw.kep.AbstractSharkStub;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.KEPInMessage;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
@@ -117,22 +118,22 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
      */
     @Override
     final synchronized public boolean callListener(ASIPInMessage msg) {
-        Iterator<KnowledgePort> kpIter = this.getListener();
+        Iterator<ASIPPort> kpIter = this.getListener();
         /* make a copy of listener - kp can be added or withdrawn during message handling
          * which can cause strange side effects.
          */
 
-        ArrayList<KnowledgePort> kpList = new ArrayList<>();
+        ArrayList<ASIPPort> portList = new ArrayList<>();
         while (kpIter.hasNext()) {
-            kpList.add(kpIter.next());
+            portList.add(kpIter.next());
         }
 
         // iterate copied list now
         boolean handled = false;
 
-        kpIter = kpList.iterator();
+        kpIter = portList.iterator();
         while (kpIter.hasNext()) {
-            KnowledgePort l = kpIter.next();
+            ASIPPort l = kpIter.next();
             handled = l.handleMessage(msg, msg.getConnection());
         }
 
@@ -256,15 +257,15 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
         Interest anyInterest = InMemoSharkKB.createInMemoInterest();
         anyInterest.setDirection(SharkCS.DIRECTION_INOUT);
 
-        Iterator<KnowledgePort> kpIter = this.getListener();
+        Iterator<ASIPPort> kpIter = this.getListener();
 
         while (kpIter.hasNext()) {
-            KnowledgePort kp = kpIter.next();
+            ASIPPort kp = kpIter.next();
 
             ASIPInMessage internalMessage = new ASIPInMessage(this.se,
                     KEPMessage.KEP_EXPOSE, anyInterest, con, this);
 
-            this.handleMessage(internalMessage);
+            kp.handleMessage(internalMessage, null);
         }
     }
 

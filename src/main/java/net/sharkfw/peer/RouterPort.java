@@ -8,6 +8,10 @@ import net.sharkfw.asip.engine.ASIPInMessage;
  */
 public class RouterPort extends ASIPPort {
 
+    public RouterPort(SharkEngine se) {
+        super(se);
+    }
+
     @Override
     public final boolean handleMessage(ASIPInMessage message, ASIPConnection connection) {
         return true;
