@@ -25,7 +25,9 @@ public class FilterKP extends KnowledgePort {
         this.filter = filter;
         this.notifiers = new ArrayList<>();
 
-        this.notifiers.add(notifier);
+        if(notifier!=null){
+            this.notifiers.add(notifier);
+        }
     }
 
     public FilterKP(SharkEngine engine, ASIPInterest filter){
@@ -64,7 +66,7 @@ public class FilterKP extends KnowledgePort {
 
             if(!this.notifiers.isEmpty()){
                 for (KPNotifier notifier : this.notifiers){
-                    notifier.notifyInterestReceived(asipInterest, asipConnection);
+                    notifier.notifyInterestReceived(interest, asipConnection);
                 }
             }
         }

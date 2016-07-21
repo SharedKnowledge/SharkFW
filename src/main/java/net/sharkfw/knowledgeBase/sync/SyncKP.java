@@ -4,6 +4,7 @@ import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.ContentPort;
+import net.sharkfw.peer.SharkEngine;
 
 import java.io.InputStream;
 
@@ -11,6 +12,10 @@ import java.io.InputStream;
  * Created by msc on 19.07.16.
  */
 public class SyncKP extends ContentPort implements KnowledgeBaseListener{
+    public SyncKP(SharkEngine se) {
+        super(se);
+    }
+
     @Override
     public void topicAdded(SemanticTag tag) {
 

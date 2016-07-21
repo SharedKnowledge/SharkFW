@@ -64,6 +64,7 @@ public abstract class KnowledgePort extends ContentPort {
      * @param kb
      */
     protected KnowledgePort(SharkEngine se, SharkKB kb) {
+        super(se);
         this.se = se;
         this.kb = kb;
         if (se != null) {

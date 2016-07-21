@@ -11,6 +11,10 @@ import java.io.InputStream;
  */
 public class SimpleContentPort extends ContentPort {
 
+    public SimpleContentPort(SharkEngine se) {
+        super(se);
+    }
+
     @Override
     protected boolean handleRaw(ASIPInMessage message, ASIPConnection connection, InputStream inputStream) {
         return false;
