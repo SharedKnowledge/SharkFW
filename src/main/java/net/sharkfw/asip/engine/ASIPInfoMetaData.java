@@ -7,7 +7,7 @@ package net.sharkfw.asip.engine;
 
 /**
  *
- * @author msc
+ * @author j4rvis
  */
 public class ASIPInfoMetaData {
     

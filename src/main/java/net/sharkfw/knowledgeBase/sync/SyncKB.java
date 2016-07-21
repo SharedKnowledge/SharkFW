@@ -13,7 +13,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
- * Created by msc on 19.07.16.
+ * Created by j4rvis on 19.07.16.
  */
 public class SyncKB implements SharkKB {
 

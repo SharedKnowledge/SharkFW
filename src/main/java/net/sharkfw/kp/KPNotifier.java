@@ -8,7 +8,7 @@ import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import java.io.InputStream;
 
 /**
- * Created by msc on 25.05.16.
+ * Created by j4rvis on 25.05.16.
  */
 public interface KPNotifier {
 

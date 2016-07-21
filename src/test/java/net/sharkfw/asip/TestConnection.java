@@ -7,7 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by msc on 21.03.16.
+ * Created by j4rvis on 21.03.16.
  */
 public class TestConnection implements StreamConnection {
 

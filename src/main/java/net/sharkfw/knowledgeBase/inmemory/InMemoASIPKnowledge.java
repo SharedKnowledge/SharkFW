@@ -16,7 +16,7 @@ import net.sharkfw.knowledgeBase.sync.SyncKB;
 
 /**
  *
- * @author msc
+ * @author j4rvis
  */
 public class InMemoASIPKnowledge implements Knowledge {
     private ArrayList<ASIPInformationSpace> infoSpacesList;

@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
- * Created by msc on 21.03.16.
+ * Created by j4rvis on 21.03.16.
  */
 public class TestKP extends KnowledgePort {
 

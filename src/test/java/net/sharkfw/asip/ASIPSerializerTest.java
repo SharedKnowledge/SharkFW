@@ -29,7 +29,7 @@ import org.junit.*;
  * When - MethodName, or many methods names if needed, or action without associated with specific method
  * Given - state at test moment
  * Then - excepted result.
- * @author msc
+ * @author j4rvis
  */
 public class ASIPSerializerTest {
     

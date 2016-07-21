@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * @author msc
+ * @author j4rvis
  */
 public class ASIPSerializer {
 

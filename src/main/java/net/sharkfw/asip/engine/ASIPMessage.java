@@ -15,7 +15,7 @@ import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;
 
 /**
- * @author msc, thsc
+ * @author j4rvis, thsc
  */
 public abstract class ASIPMessage {
     public static final int ASIP_EXPOSE = 0;

@@ -19,7 +19,7 @@ import java.util.Scanner;
 
 
 /**
- * Created by msc on 21.03.16.
+ * Created by j4rvis on 21.03.16.
  */
 public class ASIPMessageTest extends ASIPBaseTest{
 

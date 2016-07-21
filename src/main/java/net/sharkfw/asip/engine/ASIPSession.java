@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.security.PrivateKey;
 
 /**
- * Created by msc on 21.03.16.
+ * Created by j4rvis on 21.03.16.
  */
 public class ASIPSession extends Thread {
 

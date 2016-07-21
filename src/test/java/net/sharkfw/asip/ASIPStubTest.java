@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by msc on 21.03.16.
+ * Created by j4rvis on 21.03.16.
  */
 public class ASIPStubTest extends ASIPBaseTest {
 

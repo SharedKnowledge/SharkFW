@@ -7,7 +7,7 @@ import net.sharkfw.asip.engine.ASIPMessage;
 import java.io.InputStream;
 
 /**
- * Created by msc on 22.06.16.
+ * Created by j4rvis on 22.06.16.
  */
 public abstract class ContentPort extends ASIPPort {
 

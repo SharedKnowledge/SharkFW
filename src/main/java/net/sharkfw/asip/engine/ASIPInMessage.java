@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
  * Objects of this class are result of the scanning process
  * of imcomming messages from underlying protocols
  *
- * @author thsc, msc
+ * @author thsc, j4rvis
  */
 public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     private SharkEngine se;

@@ -9,7 +9,7 @@ import net.sharkfw.peer.SharkEngine;
 import java.io.InputStream;
 
 /**
- * Created by msc on 19.07.16.
+ * Created by j4rvis on 19.07.16.
  */
 public class SyncKP extends ContentPort implements KnowledgeBaseListener{
     public SyncKP(SharkEngine se) {

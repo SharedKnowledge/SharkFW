@@ -18,7 +18,7 @@ import net.sharkfw.protocols.Stub;
 import net.sharkfw.system.*;
 
 /**
- * Created by msc on 18.03.16.
+ * Created by j4rvis on 18.03.16.
  */
 public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     /**

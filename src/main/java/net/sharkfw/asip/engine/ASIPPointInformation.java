@@ -12,7 +12,7 @@ import net.sharkfw.asip.ASIPSpace;
 
 /**
  *
- * @author msc
+ * @author j4rvis
  */
 public class ASIPPointInformation {
     

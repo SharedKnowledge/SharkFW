@@ -4,7 +4,7 @@ import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 
 /**
- * Created by msc on 22.06.16.
+ * Created by j4rvis on 22.06.16.
  */
 public class RouterPort extends ASIPPort {
 

@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 
 /**
- * Created by msc on 24.03.16.
+ * Created by j4rvis on 24.03.16.
  */
 public class ASIPBaseTest {
 

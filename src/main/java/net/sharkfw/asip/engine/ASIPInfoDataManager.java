@@ -15,7 +15,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 
 /**
  *
- * @author msc
+ * @author j4rvis
  */
 public class ASIPInfoDataManager {
     

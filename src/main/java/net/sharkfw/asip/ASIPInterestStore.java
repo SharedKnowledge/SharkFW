@@ -6,7 +6,7 @@ import net.sharkfw.system.MessageStore;
 import java.util.Iterator;
 
 /**
- * Created by msc on 24.03.16.
+ * Created by j4rvis on 24.03.16.
  */
 public class ASIPInterestStore extends MessageStore<ASIPInterest> {
 

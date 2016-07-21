@@ -13,7 +13,7 @@ import net.sharkfw.system.L;
 import java.util.ArrayList;
 
 /**
- * Created by msc on 25.05.16.
+ * Created by j4rvis on 25.05.16.
  */
 public class FilterKP extends KnowledgePort {
 
