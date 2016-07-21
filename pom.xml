@@ -2,18 +2,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.sharkfw</groupId>
+    <groupId>net.sharksystem</groupId>
     <artifactId>sharkfw-core</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-
-    <name>sharkfw-core</name>
-    <url>http://www.sharksystem.net/</url>
 
     <properties>
         <compile.source.jdk>1.7</compile.source.jdk>
         <compile.target.jdk>1.7</compile.target.jdk>
     </properties>
+
+    <name>sharkfw-core</name>
+    <description>
+        Shark - Semantic P2P Framework
+
+        Shark is an acronym. It stands for Shared Knowledge. Shark applications store user data only on user devices. We don't use any server or cloud architecture. Each Shark application is a peer - an independent and self-contained entity which can directly communicate with others.
+    </description>
+    <url>http://www.sharksystem.net/</url>
 
     <scm>
         <connection>scm:git:https://github.com/SharedKnowledge/SharkFW.git</connection>
@@ -22,18 +27,35 @@
         <url>https://github.com/SharedKnowledge/SharkFW</url>
     </scm>
 
+    <issueManagement>
+        <url>https://github.com/SharedKnowledge/SharkFW/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
 
-    <distributionManagement>
+    <licenses>
+        <license>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+        </license>
+    </licenses>
+
+    <repositories>
         <!-- TODO -->
-    </distributionManagement>
+    </repositories>
 
+     <distributionManagement>
+        <repository>
+            <id>bintray-sharedknowledge-maven</id>
+            <name>sharedknowledge-maven</name>
+            <url>https://api.bintray.com/maven/sharedknowledge/maven/SharkFW/;publish=1</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
             <!-- TODO -->
         </dependencies>
     </dependencyManagement>
-
 
     <dependencies>
         <dependency>
@@ -146,9 +168,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <!-- TODO -->
-    </repositories>
 
     <pluginRepositories>
         <!-- TODO -->
