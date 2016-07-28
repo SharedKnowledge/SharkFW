@@ -39,7 +39,7 @@ import net.sharkfw.asip.ASIPKnowledge;
  * Standard interests are used in {@link net.sharkfw.peer.KnowledgePort} to define the details
  * of a communication with other peers. They define about what, when and where an
  * exchange may take place. The creation of these standard interests is handled here.
- * By providing a number of anchor points (in an {@link AnchorSet}) and a number of {@link FragmentationParameter}s,
+ * By providing a number of anchor points (in an AnchorSet) and a number of {@link FragmentationParameter}s,
  * the kepInterest creation extracts parts of the local stsets and puts them into
  * a new kepInterest.
  * </p>
@@ -120,7 +120,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
    /**
      * Most simple version of extraction: Zero fragmentation parameter are used,
      * no recipient or groups are used
-     * @param source
      * @param context
      * @return
      * @throws SharkKBException 
@@ -262,6 +261,24 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
   public ASIPSpace createASIPSpace(
           STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
           PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction)
+          throws SharkKBException;
+
+    /**
+     * Convience method: create a space which is actually a single point
+     * @param topic
+     * @param type
+     * @param approver
+     * @param sender
+     * @param receiver
+     * @param time
+     * @param location
+     * @param direction
+     * @return
+     * @throws SharkKBException
+     */
+    public ASIPSpace createASIPSpace(
+            SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender,
+            PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction)
             throws SharkKBException;
 
     /**

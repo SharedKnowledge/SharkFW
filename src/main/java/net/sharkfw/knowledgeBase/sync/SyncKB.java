@@ -14,18 +14,22 @@ import java.util.Iterator;
 
 /**
  * Created by j4rvis on 19.07.16.
+ *
+ * A reasonable part of code is written by
+ * @author simonArnold
+ * @author hellerve
+ *
+ * It adopted to Shark 3.0 by
+ * @author thsc42
+
  */
 public class SyncKB implements SharkKB {
 
     private SharkKB localKB;
-    public final static String TIME_PROPERTY_NAME = "time_property";
+    public final static String TIME_PROPERTY_NAME = "syncKB_time_property";
 
     public SyncKB(SharkKB localKB) throws SharkKBException {
         this.localKB = localKB;
-    }
-
-    public SyncKB() {
-        this.localKB = new InMemoSharkKB();
     }
 
     private void setCurrentTimeAsProperty(STSet set){
@@ -255,6 +259,11 @@ public class SyncKB implements SharkKB {
         setCurrentTimeAsProperty(times);
         setCurrentTimeAsProperty(locations);
         return this.localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
+    }
+
+    @Override
+    public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        return this.localKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
     }
 
     @Override

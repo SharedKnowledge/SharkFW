@@ -1098,7 +1098,56 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         ContextCoordinates cc = InMemoSharkKB.getAnyCoordinates();
         return this.getContextPoints(cc);
     }
-    
+
+    @Override
+    public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver,
+                                     PeerSemanticTag sender, PeerSemanticTag receiver,
+                                     TimeSemanticTag time, SpatialSemanticTag location,
+                                     int direction) throws SharkKBException {
+
+        STSet topicSet = null, typeSet = null;
+        PeerSTSet approverSet = null, senderSet = null, receiverSet = null;
+        TimeSTSet timeSet = null;
+        SpatialSTSet locationSet = null;
+
+        if(topic != null) {
+            topicSet = this.createInMemoSTSet();
+            topicSet.merge(topic);
+        }
+
+        if(type != null) {
+            typeSet = this.createInMemoSTSet();
+            typeSet.merge(type);
+        }
+
+        if(approver != null) {
+            approverSet = this.createInMemoPeerSTSet();
+            approverSet.merge(approver);
+        }
+
+        if(sender != null) {
+            senderSet = this.createInMemoPeerSTSet();
+            senderSet.merge(sender);
+        }
+
+        if(receiver != null) {
+            receiverSet = this.createInMemoPeerSTSet();
+            receiverSet.merge(receiver);
+        }
+
+        if(time != null) {
+            timeSet = this.createInMemoTimeSTSet();
+            timeSet.merge(time);
+        }
+
+        if(location != null) {
+            locationSet = this.createInMemoSpatialSTSet();
+            locationSet.merge(location);
+        }
+
+        return this.createASIPSpace(topicSet, typeSet, approverSet, senderSet, receiverSet, timeSet, locationSet, direction);
+    }
+
     @Override
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
         return this.knowledge.informationSpaces();
