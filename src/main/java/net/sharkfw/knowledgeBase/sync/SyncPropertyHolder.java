@@ -10,10 +10,9 @@ import java.util.Enumeration;
  * Created by thsc on 28.07.16.
  */
 class SyncPropertyHolder implements SystemPropertyHolder {
+    private final SystemPropertyHolder target;
 
-    private final PropertyHolder target;
-
-    SyncPropertyHolder(PropertyHolder target) {
+    SyncPropertyHolder(SystemPropertyHolder target) {
         this.target = target;
     }
 
@@ -23,41 +22,55 @@ class SyncPropertyHolder implements SystemPropertyHolder {
 
     @Override
     public void setProperty(String name, String value) throws SharkKBException {
-
+        this.target.setProperty(name, value);
     }
 
     @Override
     public String getProperty(String name) throws SharkKBException {
-        return null;
+        return this.target.getProperty(name);
     }
 
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-
+        this.target.setProperty(name, value, transfer);
     }
 
     @Override
     public void removeProperty(String name) throws SharkKBException {
-
+        this.target.removeProperty(name);
     }
 
     @Override
     public Enumeration<String> propertyNames() throws SharkKBException {
-        return null;
+        return this.target.propertyNames();
     }
 
     @Override
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return null;
+        return this.target.propertyNames(all);
     }
 
     @Override
     public void setSystemProperty(String name, String value) {
-
+        this.target.setSystemProperty(name, value);
     }
 
     @Override
     public String getSystemProperty(String name) {
-        return null;
+        return this.target.getSystemProperty(name);
+    }
+    
+    protected void setTimeStamp() {
+        String timeString = Long.toString(System.currentTimeMillis());
+        this.target.setSystemProperty(SyncKB.TIME_PROPERTY_NAME, timeString);
+    }
+    
+    protected long getTimeStamp() {
+        String timeString = this.target.getSystemProperty(SyncKB.TIME_PROPERTY_NAME);
+        if(timeString == null) {
+            return Long.MIN_VALUE;
+        }
+        
+        return Long.parseLong(timeString);
     }
 }

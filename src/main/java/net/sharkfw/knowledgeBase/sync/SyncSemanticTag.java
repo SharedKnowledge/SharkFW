@@ -3,7 +3,6 @@ package net.sharkfw.knowledgeBase.sync;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
-import java.util.Enumeration;
 
 /**
  * Created by thsc42 on 28.07.16.
