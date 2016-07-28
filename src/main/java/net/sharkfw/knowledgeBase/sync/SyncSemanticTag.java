@@ -13,6 +13,7 @@ class SyncSemanticTag extends SyncPropertyHolder implements SemanticTag {
         super(target);
     }
 
+    @Override
     protected SyncSemanticTag getTarget() {
         return (SyncSemanticTag) super.getTarget();
     }

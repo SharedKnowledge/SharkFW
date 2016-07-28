@@ -39,11 +39,20 @@ public class SyncKB implements SharkKB {
         }
     }
 
+    /**
+     * Not additional activities required here
+     * @param owner
+     */
     @Override
     public void setOwner(PeerSemanticTag owner) {
         this.targetKB.setOwner(owner);
     }
 
+    /**
+     * Not additional activities required here
+     * @param owner
+     * @return owner
+     */
     @Override
     public PeerSemanticTag getOwner() {
         return this.targetKB.getOwner();
@@ -61,19 +70,43 @@ public class SyncKB implements SharkKB {
         return this.targetKB.asInterest();
     }
 
+    /**
+     * Not additional activities required here. Return value is
+     * supposed to be copy of data. Changes on that have no 
+     * effect on knowledge base.
+     * @return
+     * @throws SharkKBException 
+     */
     @Override
     public ASIPSpace asASIPSpace() throws SharkKBException {
         return this.targetKB.asASIPSpace();
     }
 
+    /**
+     * Not additional activities required here. Return value is
+     * supposed to be copy of data. Changes on that have no 
+     * effect on knowledge base.
+     * @return
+     * @throws SharkKBException 
+     */
     @Override
     public ASIPInterest asASIPInterest() throws SharkKBException {
         return this.targetKB.asASIPInterest();
     }
 
+    /**
+     * Taht set must be wrapped. That set can be used to
+     * add, change or remove tags which has impact on knowledge base.
+     * @return
+     * @throws SharkKBException 
+     */
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
-        return this.targetKB.getTopicSTSet();
+        STSet set = this.targetKB.getTopicSTSet();
+        if(set == null) return null;
+        
+        // wrap it
+        return new SyncSTSet(set);
     }
 
     @Override
