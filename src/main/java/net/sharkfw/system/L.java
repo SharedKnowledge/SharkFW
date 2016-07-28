@@ -5,11 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+
+import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 
 /**
@@ -163,9 +163,16 @@ public class L {
         buf.append("+++++++ SharkKB ++++++++++++++++++++\n");
 
         buf.append(vocabulary2String(kb));
-        
+/*
         try {
             buf.append(L.cps2String(kb.getAllContextPoints()));
+        }
+        catch(SharkKBException e) {
+            return e.getMessage();
+        }
+*/
+        try {
+            buf.append(L.infoSpaces2String(kb.getAllInformationSpaces()));
         }
         catch(SharkKBException e) {
             return e.getMessage();
@@ -174,7 +181,114 @@ public class L {
         buf.append("+++++++ End SharkKB ++++++++++++++++\n");
         return buf.toString();
     }
-    
+
+    private static String infoSpaces2String(Iterator<ASIPInformationSpace> infoSpacesIter) throws SharkKBException {
+        StringBuilder buf = new StringBuilder();
+
+        buf.append("\n+++++++ InformationSpaces ++++++++++++++++++++\n");
+
+        if(infoSpacesIter == null || !infoSpacesIter.hasNext()) {
+            buf.append("\nempty - no information spaces");
+            return buf.toString();
+        }
+
+        int i = 0;
+
+        while(infoSpacesIter.hasNext()) {
+            ASIPInformationSpace infoSpace = infoSpacesIter.next();
+
+            buf.append("\nInfoSpace #");
+            buf.append(i++);
+            int infoNumber = infoSpace.numberOfInformations();
+            buf.append(" has ");
+            buf.append(infoNumber);
+            buf.append(" information object(s)\n");
+
+            ASIPSpace asipSpace = infoSpace.getASIPSpace();
+
+            buf.append("+++ ASIPSpace\n");
+            buf.append(L.asipSpace2String(asipSpace));
+            buf.append("+++ ASIPSpace END");
+            buf.append("\n");
+            if(infoNumber > 0) {
+                int index = 0;
+                Iterator<ASIPInformation> infoIter = infoSpace.informations();
+                while(infoIter.hasNext()) {
+                    ASIPInformation info = infoIter.next();
+                    String name = info.getName();
+                    String contentType = info.getContentType();
+                    long len = info.getContentLength();
+
+                    buf.append(index++);
+                    buf.append(": name: ");
+                    buf.append(name);
+                    buf.append("; contentType: ");
+                    buf.append(contentType);
+                    buf.append("; size: ");
+                    buf.append(len);
+                    buf.append("; content: ");
+                    try {
+                        buf.append(info.getContentAsString());
+                    } catch (SharkKBException e) {
+                        buf.append("No string representation");
+
+                    }
+                    buf.append("\n");
+                }
+            }
+            buf.append("-------------------------\n");
+        }
+
+        buf.append(i);
+        buf.append(" info spaces total\n");
+        buf.append("+++++++ End InformationSpaces ++++++++++++++++\n");
+
+        return buf.toString();
+    }
+
+    public static String asipSpace2String(ASIPSpace asipSpace) throws SharkKBException {
+        StringBuffer buf = new StringBuffer();
+
+        buf.append("+++++++ Topics: ");
+        L.dimension2StringBuffer(asipSpace.getTopics(), buf);
+
+        buf.append("+++++++ Types: ");
+        L.dimension2StringBuffer(asipSpace.getTypes(), buf);
+
+        buf.append("+++++++ Approvers: ");
+        L.dimension2StringBuffer(asipSpace.getApprovers(), buf);
+
+        buf.append("+++++++ Sender: ");
+        PeerSemanticTag sender = asipSpace.getSender();
+        if(sender != null) {
+            buf.append(L.semanticTag2String(sender));
+        } else {
+            buf.append("empty (means any)");
+        }
+        buf.append("\n");
+
+        buf.append("+++++++ Receiver: ");
+        L.dimension2StringBuffer(asipSpace.getReceivers(), buf);
+
+        buf.append("+++++++ Times: ");
+        L.dimension2StringBuffer(asipSpace.getTimes(), buf);
+
+        buf.append("+++++++ Locations: ");
+        L.dimension2StringBuffer(asipSpace.getLocations(), buf);
+
+        buf.append("Direction:\t");
+        switch(asipSpace.getDirection()) {
+            case SharkCS.DIRECTION_IN : buf.append("in"); break;
+            case SharkCS.DIRECTION_OUT : buf.append("out"); break;
+            case SharkCS.DIRECTION_INOUT : buf.append("in/out"); break;
+            case SharkCS.DIRECTION_NOTHING : buf.append("nothing"); break;
+            default: buf.append("L.asipSpace2String: unknown (shouldn't be here"); break;
+        }
+        buf.append("\n");
+
+        return buf.toString();
+    }
+
     public static String vocabulary2String(SharkVocabulary v) {
         if(v == null) return "";
         
@@ -382,6 +496,10 @@ public class L {
     }
     
     public static void semanticTag2StringBuffer(SemanticTag st, StringBuffer buf) throws SharkKBException {
+        if(st == null) {
+            return;
+        }
+
         buf.append("\n\ttag: \"" + st.getName() + "\"\n");
         String[] sis = st.getSI();
         for(int j = 0; j < sis.length; j++) {
@@ -433,13 +551,13 @@ public class L {
         
         return buf.toString();
     }
-    
+
     public static void dimension2StringBuffer(STSet stSet, StringBuffer buf) throws SharkKBException {
         if(stSet == null)  {
             buf.append("empty (means any)\n");
             return;
-        } 
-        
+        }
+
         Enumeration<SemanticTag> e = stSet.tags();
         if(!e.hasMoreElements()) {
             buf.append("empty (means any)\n");
@@ -450,7 +568,7 @@ public class L {
             }
         }
     }
-    
+
     public static void printByte(byte[] b, String label) {
         L.out.print(L.byteArrayToString(b,label));
         L.out.flush();

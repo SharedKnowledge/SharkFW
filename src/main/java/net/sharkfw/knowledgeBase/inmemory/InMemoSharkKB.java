@@ -1350,7 +1350,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet senders, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        return new InMemoInterest(topics, types, approvers, senders, receiver, 
+        return new InMemoInterest(topics, types,  senders, approvers,receiver,
                 times, locations, direction);
     }
 

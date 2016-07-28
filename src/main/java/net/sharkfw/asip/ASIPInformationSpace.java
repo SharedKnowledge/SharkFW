@@ -26,6 +26,8 @@ public interface ASIPInformationSpace extends SystemPropertyHolder {
     public final static String INFORMATIONS = "INFORMATIONS";
     
     ASIPSpace getASIPSpace() throws SharkKBException;
+
+    int numberOfInformations();
     
     Iterator<ASIPInformation> informations() throws SharkKBException;
 }

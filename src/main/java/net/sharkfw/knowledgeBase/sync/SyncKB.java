@@ -5,7 +5,6 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -15,21 +14,15 @@ import java.util.Iterator;
 /**
  * Created by j4rvis on 19.07.16.
  *
- * A reasonable part of code is written by
- * @author simonArnold
- * @author hellerve
- *
- * It adopted to Shark 3.0 by
  * @author thsc42
-
  */
 public class SyncKB implements SharkKB {
 
-    private SharkKB localKB;
-    public final static String TIME_PROPERTY_NAME = "syncKB_time_property";
+    private SharkKB targetKB;
+    public final static String TIME_PROPERTY_NAME = "shark_sync_time_property";
 
     public SyncKB(SharkKB localKB) throws SharkKBException {
-        this.localKB = localKB;
+        this.targetKB = localKB;
     }
 
     private void setCurrentTimeAsProperty(STSet set){
@@ -48,206 +41,206 @@ public class SyncKB implements SharkKB {
 
     @Override
     public void setOwner(PeerSemanticTag owner) {
-        this.localKB.setOwner(owner);
+        this.targetKB.setOwner(owner);
     }
 
     @Override
     public PeerSemanticTag getOwner() {
-        return this.localKB.getOwner();
+        return this.targetKB.getOwner();
     }
 
     @Deprecated
     @Override
     public SharkCS asSharkCS() {
-        return this.localKB.asSharkCS();
+        return this.targetKB.asSharkCS();
     }
 
     @Deprecated
     @Override
     public Interest asInterest() {
-        return this.localKB.asInterest();
+        return this.targetKB.asInterest();
     }
 
     @Override
     public ASIPSpace asASIPSpace() throws SharkKBException {
-        return this.localKB.asASIPSpace();
+        return this.targetKB.asASIPSpace();
     }
 
     @Override
     public ASIPInterest asASIPInterest() throws SharkKBException {
-        return this.localKB.asASIPInterest();
+        return this.targetKB.asASIPInterest();
     }
 
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
-        return this.localKB.getTopicSTSet();
+        return this.targetKB.getTopicSTSet();
     }
 
     @Override
     public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-        return this.localKB.getTopicsAsSemanticNet();
+        return this.targetKB.getTopicsAsSemanticNet();
     }
 
     @Override
     public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
-        return this.localKB.getTopicsAsTaxonomy();
+        return this.targetKB.getTopicsAsTaxonomy();
     }
 
     @Override
     public STSet getTypeSTSet() throws SharkKBException {
-        return this.localKB.getTypeSTSet();
+        return this.targetKB.getTypeSTSet();
     }
 
     @Override
     public SemanticNet getTypesAsSemanticNet() throws SharkKBException {
-        return this.localKB.getTypesAsSemanticNet();
+        return this.targetKB.getTypesAsSemanticNet();
     }
 
     @Override
     public Taxonomy getTypesAsTaxonomy() throws SharkKBException {
-        return this.localKB.getTypesAsTaxonomy();
+        return this.targetKB.getTypesAsTaxonomy();
     }
 
     @Override
     public PeerSTSet getPeerSTSet() throws SharkKBException {
-        return this.localKB.getPeerSTSet();
+        return this.targetKB.getPeerSTSet();
     }
 
     @Override
     public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
-        return this.localKB.getPeersAsSemanticNet();
+        return this.targetKB.getPeersAsSemanticNet();
     }
 
     @Override
     public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
-        return this.localKB.getPeersAsTaxonomy();
+        return this.targetKB.getPeersAsTaxonomy();
     }
 
     @Override
     public TimeSTSet getTimeSTSet() throws SharkKBException {
-        return this.localKB.getTimeSTSet();
+        return this.targetKB.getTimeSTSet();
     }
 
     @Override
     public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-        return this.localKB.getSpatialSTSet();
+        return this.targetKB.getSpatialSTSet();
     }
 
     @Deprecated
     @Override
     public Interest contextualize(SharkCS cs) throws SharkKBException {
-        return this.localKB.contextualize(cs);
+        return this.targetKB.contextualize(cs);
     }
 
     @Override
     public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
-        return this.localKB.contextualize(as);
+        return this.targetKB.contextualize(as);
     }
 
     @Deprecated
     @Override
     public Interest contextualize(SharkCS as, FragmentationParameter[] fp) throws SharkKBException {
-        return this.localKB.contextualize(as, fp);
+        return this.targetKB.contextualize(as, fp);
     }
 
     @Override
     public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
-        return this.localKB.contextualize(as, fps);
+        return this.targetKB.contextualize(as, fps);
     }
 
     @Deprecated
     @Override
     public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        return this.localKB.getContextPoint(coordinates);
+        return this.targetKB.getContextPoint(coordinates);
     }
 
     @Deprecated
     @Override
     public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotepeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        return this.localKB.createContextCoordinates(topic, originator, peer,remotepeer, time, location, direction);
+        return this.targetKB.createContextCoordinates(topic, originator, peer,remotepeer, time, location, direction);
     }
 
     @Deprecated
     @Override
     public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        return this.localKB.createContextPoint(coordinates);
+        return this.targetKB.createContextPoint(coordinates);
     }
 
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
-        return this.localKB.assimilate(target, interest, backgroundFP, knowledge, learnTags, deleteAssimilated);
+        return this.targetKB.assimilate(target, interest, backgroundFP, knowledge, learnTags, deleteAssimilated);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context) throws SharkKBException {
-        return this.localKB.extract(context);
+        return this.targetKB.extract(context);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] fp) throws SharkKBException {
-        return this.localKB.extract(context, fp);
+        return this.targetKB.extract(context, fp);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) throws SharkKBException {
-        return this.localKB.extract(context, backgroundFP, recipient);
+        return this.targetKB.extract(context, backgroundFP, recipient);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups) throws SharkKBException {
-        return this.localKB.extract(context, backgroundFP, cutGroups);
+        return this.targetKB.extract(context, backgroundFP, cutGroups);
     }
 
     @Override
     public Knowledge extract(SharkKB target, ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups, PeerSemanticTag recipient) throws SharkKBException {
-        return this.localKB.extract(target, context, backgroundFP, cutGroups, recipient);
+        return this.targetKB.extract(target, context, backgroundFP, cutGroups, recipient);
     }
 
     @Deprecated
     @Override
     public Knowledge createKnowledge() {
-        return this.localKB.createKnowledge();
+        return this.targetKB.createKnowledge();
     }
 
     @Deprecated
     @Override
     public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        this.localKB.removeContextPoint(coordinates);
+        this.targetKB.removeContextPoint(coordinates);
     }
 
     @Deprecated
     @Override
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException {
-        return this.localKB.getContextPoints(cs);
+        return this.targetKB.getContextPoints(cs);
     }
 
     @Deprecated
     @Override
     public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
-        return this.localKB.contextPoints(cs);
+        return this.targetKB.contextPoints(cs);
     }
 
     @Deprecated
     @Override
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
-        return this.localKB.getContextPoints(cs, matchAny);
+        return this.targetKB.getContextPoints(cs, matchAny);
     }
 
     @Deprecated
     @Override
     public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
-        return this.localKB.contextPoints(cs, matchAny);
+        return this.targetKB.contextPoints(cs, matchAny);
     }
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException {
-        return this.localKB.informationSpaces(as, matchAny);
+        return this.targetKB.informationSpaces(as, matchAny);
     }
 
     @Deprecated
     @Override
     public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
-        return this.localKB.getAllContextPoints();
+        return this.targetKB.getAllContextPoints();
     }
 
     @Override
@@ -258,12 +251,12 @@ public class SyncKB implements SharkKB {
         setCurrentTimeAsProperty(sender);
         setCurrentTimeAsProperty(times);
         setCurrentTimeAsProperty(locations);
-        return this.localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
+        return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        return this.localKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
+        return this.targetKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
     }
 
     @Override
@@ -274,7 +267,7 @@ public class SyncKB implements SharkKB {
         sender.setProperty(TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
         setCurrentTimeAsProperty(times);
         setCurrentTimeAsProperty(locations);
-        return this.localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
+        return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
@@ -285,159 +278,159 @@ public class SyncKB implements SharkKB {
         setCurrentTimeAsProperty(sender);
         setCurrentTimeAsProperty(times);
         setCurrentTimeAsProperty(locations);
-        return this.localKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
+        return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
     }
 
     @Override
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
-        return this.localKB.getAllInformationSpaces();
+        return this.targetKB.getAllInformationSpaces();
     }
 
     @Override
     public void addListener(KnowledgeBaseListener kbl) {
-        this.localKB.addListener(kbl);
+        this.targetKB.addListener(kbl);
     }
 
     @Override
     public void removeListener(KnowledgeBaseListener kbl) {
-        this.localKB.removeListener(kbl);
+        this.targetKB.removeListener(kbl);
     }
 
     @Override
     public void setStandardFPSet(FragmentationParameter[] fps) {
-        this.localKB.setStandardFPSet(fps);
+        this.targetKB.setStandardFPSet(fps);
     }
 
     @Override
     public FragmentationParameter[] getStandardFPSet() {
-        return this.localKB.getStandardFPSet();
+        return this.targetKB.getStandardFPSet();
     }
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        return this.localKB.mergeInformation(information, space);
+        return this.targetKB.mergeInformation(information, space);
     }
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return this.localKB.addInformation(content, semanticAnnotations);
+        return this.targetKB.addInformation(content, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return this.localKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
+        return this.targetKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return this.localKB.addInformation(content, semanticAnnotations);
+        return this.targetKB.addInformation(content, semanticAnnotations);
     }
 
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
-        this.localKB.removeInformation(info, infoSpace);
+        this.targetKB.removeInformation(info, infoSpace);
     }
 
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
-        return this.localKB.getInformation(infoSpace);
+        return this.targetKB.getInformation(infoSpace);
     }
 
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
-        return this.localKB.getInformation(infoSpace, fullyInside, matchAny);
+        return this.targetKB.getInformation(infoSpace, fullyInside, matchAny);
     }
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
-        return this.localKB.informationSpaces();
+        return this.targetKB.informationSpaces();
     }
 
     @Override
     public void removeInformation(ASIPSpace space) throws SharkKBException {
-        this.localKB.removeInformation(space);
+        this.targetKB.removeInformation(space);
     }
 
     @Override
     public SharkVocabulary getVocabulary() {
-        return this.localKB.getVocabulary();
+        return this.targetKB.getVocabulary();
     }
 
     @Override
     public int getNumberInformation() throws SharkKBException {
-        return this.localKB.getNumberInformation();
+        return this.targetKB.getNumberInformation();
     }
 
     @Deprecated
     @Override
     public void addInterest(SharkCS interest) throws SharkKBException {
-        this.localKB.addInterest(interest);
+        this.targetKB.addInterest(interest);
     }
 
     @Deprecated
     @Override
     public void removeInterest(SharkCS interest) throws SharkKBException {
-        this.localKB.removeInterest(interest);
+        this.targetKB.removeInterest(interest);
     }
 
     @Deprecated
     @Override
     public Iterator<SharkCS> interests() throws SharkKBException {
-        return this.localKB.interests();
+        return this.targetKB.interests();
     }
 
     @Override
     public void setProperty(String name, String value) throws SharkKBException {
-        this.localKB.setProperty(name, value);
+        this.targetKB.setProperty(name, value);
     }
 
     @Override
     public String getProperty(String name) throws SharkKBException {
-        return this.localKB.getProperty(name);
+        return this.targetKB.getProperty(name);
     }
 
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        this.localKB.setProperty(name, value, transfer);
+        this.targetKB.setProperty(name, value, transfer);
     }
 
     @Override
     public void removeProperty(String name) throws SharkKBException {
-        this.localKB.removeProperty(name);
+        this.targetKB.removeProperty(name);
     }
 
     @Override
     public Enumeration<String> propertyNames() throws SharkKBException {
-        return this.localKB.propertyNames();
+        return this.targetKB.propertyNames();
     }
 
     @Override
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return this.localKB.propertyNames(all);
+        return this.targetKB.propertyNames(all);
     }
 
     @Override
     public void semanticTagCreated(SemanticTag tag, STSet stset) {
-        this.localKB.semanticTagCreated(tag, stset);
+        this.targetKB.semanticTagCreated(tag, stset);
     }
 
     @Override
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
-        this.localKB.semanticTagRemoved(tag, stset);
+        this.targetKB.semanticTagRemoved(tag, stset);
     }
 
     @Override
     public void semanticTagChanged(SemanticTag tag, STSet stset) {
-        this.localKB.semanticTagChanged(tag, stset);
+        this.targetKB.semanticTagChanged(tag, stset);
     }
 
     @Override
     public void setSystemProperty(String name, String value) {
-        this.localKB.setSystemProperty(name, value);
+        this.targetKB.setSystemProperty(name, value);
     }
 
     @Override
     public String getSystemProperty(String name) {
-        return this.localKB.getSystemProperty(name);
+        return this.targetKB.getSystemProperty(name);
     }
 }

@@ -12,77 +12,30 @@ import java.util.Iterator;
 
 /**
  * Created by j4rvis on 19.07.16.
+ * author thsc42
  */
-public class SyncInformationSpace implements ASIPInformationSpace, InformationListener{
+class SyncInformationSpace extends SyncPropertyHolder implements ASIPInformationSpace {
 
-    private ASIPInformationSpace informationSpace;
-
-    public SyncInformationSpace(ASIPInformationSpace space) {
-        this.informationSpace = informationSpace;
+    SyncInformationSpace(ASIPInformationSpace target) {
+        super(target);
     }
 
-    @Override
-    public void contentChanged() {
-
-    }
-
-    @Override
-    public void contentRemoved() {
-
-    }
-
-    @Override
-    public void contentTypeChanged() {
-
+    protected SyncInformationSpace getTarget() {
+        return (SyncInformationSpace) super.getTarget();
     }
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {
-        return informationSpace.getASIPSpace();
+        return this.getTarget().getASIPSpace();
+    }
+
+    @Override
+    public int numberOfInformations() {
+        return this.getTarget().numberOfInformations();
     }
 
     @Override
     public Iterator<ASIPInformation> informations() throws SharkKBException {
-        return informationSpace.informations();
-    }
-
-    @Override
-    public void setSystemProperty(String name, String value) {
-        informationSpace.setSystemProperty(name, value);
-    }
-
-    @Override
-    public String getSystemProperty(String name) {
-        return informationSpace.getSystemProperty(name);
-    }
-
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return null;
+        return this.getTarget().informations();
     }
 }

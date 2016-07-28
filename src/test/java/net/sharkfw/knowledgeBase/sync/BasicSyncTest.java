@@ -7,6 +7,7 @@ import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import org.junit.Test;
  * Created by thsc on 28.07.16.
  */
 public class BasicSyncTest {
+
     @Before
     public void setUp() throws Exception {
     }
@@ -44,6 +46,10 @@ public class BasicSyncTest {
                 ASIPSpace.DIRECTION_INOUT);
 
         syncKB1.addInformation("Test data", asipSpace);
+
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        L.d(L.kb2String(target1));
+        L.d(L.kb2String(target2));
 
         Knowledge spaces2 = syncKB2.extract(asipSpace);
 

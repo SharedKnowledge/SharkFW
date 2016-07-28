@@ -92,6 +92,11 @@ public class InMemoInformationSpace extends PropertyHolderDelegate implements AS
         return this;
     }
 
+    @Override
+    public int numberOfInformations() {
+        return this.infoList.size();
+    }
+
 //    @Override
 //    public void setASIPSpace(ASIPSpace space) throws SharkKBException {
 //        this.topics = InMemoSharkKB.createInMemoCopy(space.getTopics());
