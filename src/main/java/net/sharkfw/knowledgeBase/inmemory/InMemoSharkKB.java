@@ -142,7 +142,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     /**
      * Create an in memory implementation of a semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
+     * part of a knowledge base. Use merge() for that task.
      * @param name
      * @param sis
      * @return
@@ -171,7 +171,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     
     /**
      * Create an in memory implementation of a semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
+     * part of a knowledge base. Use merge() for that task.
      * @param name
      * @param si
      * @return 
@@ -182,7 +182,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     
     /**
      * Create an in memory implementation of a peer semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
+     * part of a knowledge base. Use merge() for that task.
      * @param name
      * @param sis
      * @param addresses
@@ -195,7 +195,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     
     /**
      * Create an in memory implementation of a peer semantic tag. This tag won't be
-     * part of a knowledge base. Use {@link merge()} for that task.
+     * part of a knowledge base. Use merge() for that task.
      * @param name
      * @param si
      * @param address
@@ -587,8 +587,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * mess up this methode with a similiar one in Shark algebra. If you don't
      * see the difference use shark algebra.
      *
-     * @param co
-     * @param coordinates
+     * @param cc1
+     * @param cc2
      * @return
      * @deprecated 
      */
@@ -997,7 +997,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             return new InMemoKnowledge(this, imk);
         } 
         
-        throw new SharkKBException("InMemoSharkKB cannot be handled like knowledge - knowledge isn't stored as InMemoKnowledge - developers need a workaroung if this exception is thrown");
+        throw new SharkKBException("InMemoSharkKB cannot be handled like knowledge - knowledge isn't stored as InMemoKnowledge - developers need a workaround if this exception is thrown");
     }
 
     @Override

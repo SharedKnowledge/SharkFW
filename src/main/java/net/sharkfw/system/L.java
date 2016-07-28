@@ -180,11 +180,12 @@ public class L {
         
         StringBuffer buf = new StringBuffer();
         
-        STSet t, p, lo, ti;
+        STSet t, ty, p, lo, ti;
         SemanticTag o;
         
         try {
             t = v.getTopicsAsSemanticNet();
+            ty = v.getTypeSTSet();
             p = v.getPeersAsSemanticNet();
             ti = v.getTimeSTSet();
             lo = v.getSpatialSTSet();
@@ -202,17 +203,24 @@ public class L {
             } else {
                 buf.append("empty (means any)\n");
             }
-            
+
             // topic
             buf.append("\nTopics: ");
             L.dimension2StringBuffer(t, buf);
-            
+
+            // type
+            buf.append("\nTypes: ");
+            L.dimension2StringBuffer(ty, buf);
+
+            // peers
             buf.append("Peers: ");
             L.dimension2StringBuffer(p, buf);
-            
+
+            // locations
             buf.append("Location: ");
             L.dimension2StringBuffer(lo, buf);
-    
+
+            // time
             buf.append("Time: ");
             L.dimension2StringBuffer(ti, buf);
     
