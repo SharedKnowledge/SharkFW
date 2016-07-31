@@ -21,6 +21,6 @@ package net.sharkfw.knowledgeBase;
  * 
  * @author mfi
  */
-public interface PeerSNSemanticTag extends SNSemanticTag, PeerSemanticTag, PeerTXSemanticTag{
+public interface PeerSNSemanticTag extends SNSemanticTag, PeerSemanticTag, PeerTXSemanticTag {
   
 }

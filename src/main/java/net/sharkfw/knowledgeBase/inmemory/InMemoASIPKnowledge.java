@@ -1,7 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -9,10 +8,8 @@ import java.util.List;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.sync.SyncKB;
 
 /**
  *
@@ -64,8 +61,22 @@ public class InMemoASIPKnowledge implements Knowledge {
     }
 
     @Override
-    public int getNumberInformation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getNumberInformation() throws SharkKBException {
+        int infoCount = 0;
+        Iterator<ASIPInformationSpace> spaceIter = this.infoSpacesList.iterator();
+        
+        while(spaceIter.hasNext()) {
+            ASIPInformationSpace space = spaceIter.next();
+            Iterator<ASIPInformation> infoIter = space.informations();
+            if(infoIter != null) {
+                while(infoIter.hasNext()) {
+                    infoIter.next();
+                    infoCount++;
+                }
+            }
+        }
+        
+        return infoCount;
     }
 
     public ASIPInformationSpace getInformationSpace(ASIPSpace space) throws SharkKBException {

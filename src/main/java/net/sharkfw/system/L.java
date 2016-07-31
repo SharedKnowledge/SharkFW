@@ -153,16 +153,20 @@ public class L {
       return sdf.format(new Date(currentTime));
     }
     
+    public static String kb2String(SharkKB kb) {
+        return L.kb2String(kb, false);
+    }
+    
     /**
      * @param kb
      * @return 
      */
-    public static String kb2String(SharkKB kb) {
+    public static String kb2String(SharkKB kb, boolean showProperties) {
         StringBuilder buf = new StringBuilder();
         
         buf.append("+++++++ SharkKB ++++++++++++++++++++\n");
 
-        buf.append(vocabulary2String(kb));
+        buf.append(vocabulary2String(kb, showProperties));
 /*
         try {
             buf.append(L.cps2String(kb.getAllContextPoints()));
@@ -172,7 +176,8 @@ public class L {
         }
 */
         try {
-            buf.append(L.infoSpaces2String(kb.getAllInformationSpaces()));
+            buf.append(L.infoSpaces2String(kb.getAllInformationSpaces(), 
+                    showProperties));
         }
         catch(SharkKBException e) {
             return e.getMessage();
@@ -182,7 +187,16 @@ public class L {
         return buf.toString();
     }
 
-    private static String infoSpaces2String(Iterator<ASIPInformationSpace> infoSpacesIter) throws SharkKBException {
+    public static String infoSpaces2String(
+            Iterator<ASIPInformationSpace> infoSpacesIter) 
+            throws SharkKBException {
+        return L.infoSpaces2String(infoSpacesIter, false);
+    }
+    
+    public static String infoSpaces2String(
+            Iterator<ASIPInformationSpace> infoSpacesIter,
+            boolean showProperties) throws SharkKBException {
+        
         StringBuilder buf = new StringBuilder();
 
         buf.append("\n+++++++ InformationSpaces ++++++++++++++++++++\n");
@@ -207,7 +221,7 @@ public class L {
             ASIPSpace asipSpace = infoSpace.getASIPSpace();
 
             buf.append("+++ ASIPSpace\n");
-            buf.append(L.asipSpace2String(asipSpace));
+            buf.append(L.asipSpace2String(asipSpace, showProperties));
             buf.append("+++ ASIPSpace END");
             buf.append("\n");
             if(infoNumber > 0) {
@@ -233,6 +247,13 @@ public class L {
                         buf.append("No string representation");
 
                     }
+                    if(showProperties) {
+                        if(info instanceof Information) {
+                            Information infoinfo = (Information) info;
+                            buf.append(L.properties2String(infoinfo));
+                        }
+                    }
+                    
                     buf.append("\n");
                 }
             }
@@ -247,34 +268,40 @@ public class L {
     }
 
     public static String asipSpace2String(ASIPSpace asipSpace) throws SharkKBException {
+        return L.asipSpace2String(asipSpace, false);
+    }
+    
+    public static String asipSpace2String(ASIPSpace asipSpace, 
+            boolean showProperties) throws SharkKBException {
+        
         StringBuffer buf = new StringBuffer();
 
         buf.append("+++++++ Topics: ");
-        L.dimension2StringBuffer(asipSpace.getTopics(), buf);
+        L.dimension2StringBuffer(asipSpace.getTopics(), buf, showProperties);
 
         buf.append("+++++++ Types: ");
-        L.dimension2StringBuffer(asipSpace.getTypes(), buf);
+        L.dimension2StringBuffer(asipSpace.getTypes(), buf, showProperties);
 
         buf.append("+++++++ Approvers: ");
-        L.dimension2StringBuffer(asipSpace.getApprovers(), buf);
+        L.dimension2StringBuffer(asipSpace.getApprovers(), buf, showProperties);
 
         buf.append("+++++++ Sender: ");
         PeerSemanticTag sender = asipSpace.getSender();
         if(sender != null) {
-            buf.append(L.semanticTag2String(sender));
+            buf.append(L.semanticTag2String(sender, showProperties));
         } else {
             buf.append("empty (means any)");
         }
         buf.append("\n");
 
         buf.append("+++++++ Receiver: ");
-        L.dimension2StringBuffer(asipSpace.getReceivers(), buf);
+        L.dimension2StringBuffer(asipSpace.getReceivers(), buf, showProperties);
 
         buf.append("+++++++ Times: ");
-        L.dimension2StringBuffer(asipSpace.getTimes(), buf);
+        L.dimension2StringBuffer(asipSpace.getTimes(), buf, showProperties);
 
         buf.append("+++++++ Locations: ");
-        L.dimension2StringBuffer(asipSpace.getLocations(), buf);
+        L.dimension2StringBuffer(asipSpace.getLocations(), buf, showProperties);
 
         buf.append("Direction:\t");
         switch(asipSpace.getDirection()) {
@@ -290,6 +317,10 @@ public class L {
     }
 
     public static String vocabulary2String(SharkVocabulary v) {
+        return L.vocabulary2String(v, false);
+    }
+    
+    public static String vocabulary2String(SharkVocabulary v, boolean showProperties) {
         if(v == null) return "";
         
         StringBuffer buf = new StringBuffer();
@@ -313,30 +344,30 @@ public class L {
         try {
             buf.append("\nKB-Owner: ");
             if(o != null) {
-                L.semanticTag2StringBuffer(o, buf);
+                L.semanticTag2StringBuffer(o, buf, showProperties);
             } else {
                 buf.append("empty (means any)\n");
             }
 
             // topic
             buf.append("\nTopics: ");
-            L.dimension2StringBuffer(t, buf);
+            L.dimension2StringBuffer(t, buf, showProperties);
 
             // type
             buf.append("\nTypes: ");
-            L.dimension2StringBuffer(ty, buf);
+            L.dimension2StringBuffer(ty, buf, showProperties);
 
             // peers
             buf.append("Peers: ");
-            L.dimension2StringBuffer(p, buf);
+            L.dimension2StringBuffer(p, buf, showProperties);
 
             // locations
             buf.append("Location: ");
-            L.dimension2StringBuffer(lo, buf);
+            L.dimension2StringBuffer(lo, buf, showProperties);
 
             // time
             buf.append("Time: ");
-            L.dimension2StringBuffer(ti, buf);
+            L.dimension2StringBuffer(ti, buf, showProperties);
     
             buf.append("\n");
         }
@@ -495,7 +526,15 @@ public class L {
         return buf.toString();
     }
     
-    public static void semanticTag2StringBuffer(SemanticTag st, StringBuffer buf) throws SharkKBException {
+    public static void semanticTag2StringBuffer(SemanticTag st, StringBuffer buf) 
+            throws SharkKBException {
+        
+        L.semanticTag2StringBuffer(st, buf, false);
+    }
+    
+    public static void semanticTag2StringBuffer(SemanticTag st, 
+            StringBuffer buf, boolean showProperties) throws SharkKBException {
+        
         if(st == null) {
             return;
         }
@@ -512,12 +551,14 @@ public class L {
             PeerSemanticTag pst = (PeerSemanticTag)st;
             String[] addresses = pst.getAddresses();
             if(addresses.length > 0) {
-                buf.append("\taddress:\n");
+                buf.append("\taddress:");
                 for(int i = 0; i < addresses.length; i++) {
-                    buf.append("\t");
-                    buf.append(addresses[i]);
-                    buf.append("\n");
+                    if(addresses[i] != null && addresses[i].length() > 0) {
+                        buf.append("\n\t");
+                        buf.append(addresses[i]);
+                    }
                 }
+                buf.append("\n");
             }
         }
         
@@ -542,17 +583,76 @@ public class L {
                 }
             }
         }
+        
+        if(showProperties) {
+            L.properties2StringBuffer(st, buf);
+        }
+    }
+    
+    public static String properties2String(SystemPropertyHolder ph) throws SharkKBException {
+        StringBuffer buf = new StringBuffer();
+        L.properties2StringBuffer(ph, buf);
+        return buf.toString();
+    }
+        
+    public static void properties2StringBuffer(SystemPropertyHolder ph, 
+            StringBuffer buf) throws SharkKBException {
+        
+        buf.append("\n\tproperties:");
+        
+        Enumeration<String> propNamesEnum = ph.propertyNames(true);
+        if(propNamesEnum == null || !propNamesEnum.hasMoreElements()) {
+            buf.append("<none>\n");
+            return;
+        }
+        
+        while(propNamesEnum.hasMoreElements()) {
+            String propName = propNamesEnum.nextElement();
+            
+            buf.append("\n\tname:");
+            buf.append(propName);
+            buf.append("\n\t\tproperty / system property: ");
+            
+            String propValue = ph.getProperty(propName);
+            if(propValue != null) {
+                buf.append(propValue);
+            } else {
+                buf.append("<none>");
+            }
+            
+            buf.append("  /  ");
+            
+            propValue = ph.getSystemProperty(propName);
+            if(propValue != null) {
+                buf.append(propValue);
+            } else {
+                buf.append("<none>");
+            }
+        }
+        buf.append("\n");
     }
     
     public static String semanticTag2String(SemanticTag st) throws SharkKBException {
+        return L.semanticTag2String(st, false);
+    }
+    
+    public static String semanticTag2String(SemanticTag st, 
+            boolean showProperties) throws SharkKBException {
+        
         StringBuffer buf = new StringBuffer();
         
-        L.semanticTag2StringBuffer(st, buf);
+        L.semanticTag2StringBuffer(st, buf, showProperties);
         
         return buf.toString();
     }
 
     public static void dimension2StringBuffer(STSet stSet, StringBuffer buf) throws SharkKBException {
+        L.dimension2StringBuffer(stSet, buf, false);
+    }
+    
+    public static void dimension2StringBuffer(STSet stSet, 
+            StringBuffer buf, boolean showProperties) throws SharkKBException {
+        
         if(stSet == null)  {
             buf.append("empty (means any)\n");
             return;
@@ -564,7 +664,7 @@ public class L {
         } else {
             while(e.hasMoreElements()) {
                 SemanticTag st = e.nextElement();
-                L.semanticTag2StringBuffer(st, buf);
+                L.semanticTag2StringBuffer(st, buf, showProperties);
             }
         }
     }

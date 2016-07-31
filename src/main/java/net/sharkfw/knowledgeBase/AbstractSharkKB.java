@@ -1170,6 +1170,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     @Override
     public int getNumberInformation() throws SharkKBException {
+        if(this.knowledge == null) return 0;
         return this.knowledge.getNumberInformation();
     }
     

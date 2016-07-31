@@ -848,6 +848,10 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             TimeSTSet times) throws SharkKBException {
         
         super(topics, types, peers, locations, times);
+        
+        Knowledge k = new InMemoKnowledge(this);
+        
+        this.setKnowledge(k);
     }
 
     /**
@@ -1010,7 +1014,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * It's bit messy.
      * @param knowledge
      */
-    protected void setKnowledge(Knowledge knowledge) {
+    protected final void setKnowledge(Knowledge knowledge) {
         this.knowledge = knowledge;
         this.knowledge.addListener(this);
     }
@@ -1150,6 +1154,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     @Override
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
+        if(this.knowledge == null) return null;
+        
         return this.knowledge.informationSpaces();
     }
 

@@ -7,17 +7,23 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
  * Created by thsc42 on 28.07.16.
  */
 class SyncSpatialSemanticTag extends SyncSemanticTag implements SpatialSemanticTag {
-
+    private final SpatialSemanticTag target;
+    
     SyncSpatialSemanticTag(SpatialSemanticTag target) {
         super(target);
+        
+        this.target = target;
     }
-
-    protected SyncSpatialSemanticTag getTarget() {
-        return (SyncSpatialSemanticTag) super.getTarget();
+    
+    SyncSpatialSemanticTag wrapSyncObject(SpatialSemanticTag sst) {
+        if(sst != null) {
+            return new SyncSpatialSemanticTag(sst);
+        }
+        return null;
     }
 
     @Override
     public SharkGeometry getGeometry() {
-        return this.getTarget().getGeometry();
+        return this.target.getGeometry();
     }
 }

@@ -96,11 +96,13 @@ public class InMemo_SN_TX_PeerSemanticTag extends InMemo_SN_TX_SemanticTag
 
         boolean found = false;
         for(int i = 0; i < oldAddresses.length; i++) {
-            if(oldAddresses[i].equalsIgnoreCase(address)) {
-                found = true;
-                break;
-            } else {
-                newAddresses[i] = oldAddresses[i];
+            if(oldAddresses[i] != null) {
+                if(oldAddresses[i].equalsIgnoreCase(address)) {
+                    found = true;
+                    break;
+                } else {
+                    newAddresses[i] = oldAddresses[i];
+                }
             }
         }
         

@@ -3,11 +3,7 @@ package net.sharkfw.knowledgeBase.sync;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.InformationListener;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.inmemory.InMemoInformationSpace;
-
-import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
@@ -20,6 +16,11 @@ class SyncInformationSpace extends SyncPropertyHolder implements ASIPInformation
         super(target);
     }
 
+    SyncInformationSpace wrapSyncObject(ASIPInformationSpace target) {
+        return new SyncInformationSpace((ASIPInformationSpace) target);
+    }
+
+    @Override
     protected SyncInformationSpace getTarget() {
         return (SyncInformationSpace) super.getTarget();
     }

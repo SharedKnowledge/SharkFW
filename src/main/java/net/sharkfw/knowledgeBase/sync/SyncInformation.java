@@ -16,6 +16,11 @@ class SyncInformation extends SyncPropertyHolder implements Information {
         super(target);
     }
 
+    SyncInformation wrapSyncObject(Information target) {
+        return new SyncInformation((Information) target);
+    }
+    
+    @Override
     protected SyncInformation getTarget() {
         return (SyncInformation) super.getTarget();
     }

@@ -5,15 +5,25 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 
 import java.util.Enumeration;
+import net.sharkfw.system.L;
 
 /**
  * Created by thsc on 28.07.16.
  */
-class SyncPropertyHolder implements SystemPropertyHolder {
+abstract class SyncPropertyHolder extends Sync implements SystemPropertyHolder {
     private final SystemPropertyHolder target;
+    public static final Long UNKNOWN_TIME = Long.MIN_VALUE;
 
     SyncPropertyHolder(SystemPropertyHolder target) {
         this.target = target;
+        try {
+            if(this.getTimeStamp() == SyncPropertyHolder.UNKNOWN_TIME) {
+                this.changed();
+            }
+        }
+        catch(SharkKBException e) {
+            L.e("cannot write time stampf to properties");
+        }
     }
 
     protected PropertyHolder getTarget() {
@@ -60,17 +70,21 @@ class SyncPropertyHolder implements SystemPropertyHolder {
         return this.target.getSystemProperty(name);
     }
     
-    protected void setTimeStamp() {
+    /**
+     * Taht method is to be called whenever a change occurred on that entity.
+     */
+    protected final void changed() {
         String timeString = Long.toString(System.currentTimeMillis());
-        this.target.setSystemProperty(SyncKB.TIME_PROPERTY_NAME, timeString);
+        
+        try {
+            this.target.setProperty(SyncKB.TIME_PROPERTY_NAME, timeString);
+        } 
+        catch(SharkKBException e) {
+            L.e("cannot write time stamp - sync won't work accordingly");
+        }
     }
     
-    protected long getTimeStamp() {
-        String timeString = this.target.getSystemProperty(SyncKB.TIME_PROPERTY_NAME);
-        if(timeString == null) {
-            return Long.MIN_VALUE;
-        }
-        
-        return Long.parseLong(timeString);
+    protected final long getTimeStamp() throws SharkKBException {
+        return SyncKB.getTimeStamp(this.target);
     }
 }

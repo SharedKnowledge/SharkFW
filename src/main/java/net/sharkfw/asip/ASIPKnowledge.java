@@ -1,9 +1,7 @@
 package net.sharkfw.asip;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.List;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;

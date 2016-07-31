@@ -30,8 +30,8 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     public static final String INFO_CONTENT_TYPE = "info_content_type";
     public static final String INFO_DEFAULT_CONTENT_TYPE = "application/unknown";
-    public static final String INFO_CREATION_TIME = "info_creation_time";
-    public static final String INFO_LAST_MODIFED = "info_last_modified";
+    public static final String INFO_CREATION_TIME = Information.CREATIONTIME;
+    public static final String INFO_LAST_MODIFED = Information.LASTMODIFIED;
     public static final String INFO_NAME = "info_name";
     public static final String INFO_ORIGINATOR = "info_originator";
     public static final String INFO_ID_PROPERTY_NAME = "SharkNet_InfoID";

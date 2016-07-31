@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 /**
  * Created by j4rvis on 19.07.16.
@@ -17,28 +19,186 @@ import java.util.Iterator;
  * @author thsc42
  */
 public class SyncKB implements SharkKB {
+    private final SyncSTSet topics;
+    private final SyncSemanticNet snTopics;
+    private final SyncTaxonomy txTopics;
+    
+    private final SyncSTSet types;
+    private final SyncSemanticNet snTypes;
+    private final SyncTaxonomy txTypes;
+    
+    private final SyncPeerSTSet peers;
+    private final SyncPeerSemanticNet snPeers;
+    private final SyncPeerTaxonomy txPeers;
+    
+    private final SyncSpatialSTSet locations;
+    private final SyncTimeSTSet times;
+    
+    private final SharkKB targetKB;
+    public final static String TIME_PROPERTY_NAME = "Shark_System_Last_Modified";
 
-    private SharkKB targetKB;
-    public final static String TIME_PROPERTY_NAME = "shark_sync_time_property";
+    public SyncKB(SharkKB target) throws SharkKBException {
+        this.targetKB = target;
+        
+        /* we make a decomposition of target knowledge base into
+        its dimensions and information spaces and wrap it
+        
+        Note: We only work with stSets here because we do not keep track of
+        changes in tag relations. That must be implemented asap.
+        */
+        
+        // topics
+        this.topics = new SyncSTSet(target.getTopicSTSet());
+        this.snTopics = new SyncSemanticNet(target.getTopicsAsSemanticNet());
+        this.txTopics = new SyncTaxonomy(target.getTopicsAsTaxonomy());
+        
+        // types
+        this.types = new SyncSTSet(target.getTypeSTSet());
+        this.snTypes = new SyncSemanticNet(target.getTypesAsSemanticNet());
+        this.txTypes = new SyncTaxonomy(target.getTypesAsTaxonomy());
+        
+        // peers
+        this.peers = new SyncPeerSTSet(target.getPeerSTSet());
+        this.snPeers = new SyncPeerSemanticNet(target.getPeersAsSemanticNet());
+        this.txPeers = new SyncPeerTaxonomy(target.getPeersAsTaxonomy());
+        
+        // locations
+        this.locations = new SyncSpatialSTSet(target.getSpatialSTSet());
+        
+        // times
+        this.times = new SyncTimeSTSet(target.getTimeSTSet());
+        
+        /* NOTE also: We don't wrap information at all. Information alread
+        get a last modified tag at least in its in memo implementation.
+        
+        TODO: We have to wrap information as well here. We cannot ensure that
+        any kb implementation implements that modified time setting correctly.
+        */
+    }
+    
+    /**
+     * That methode return all data (tags and information) that has
+     * changed since a date. Note: We don't keep track of relations between
+     * tags. We only keep track if tags and information are changed.
+     * 
+     * The resulting knowledge will contain semantic tag sets only but 
+     * not semantic nets or taxonomies. Thus, relations won't be harmed
+     * when merging those changes into another knowledge base.
+     * 
+     * That's not a feature. That's a bug. TODO: Must be fixed.
+     * 
+     * 
+     * @param since
+     * @return 
+     * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     */
+    public SharkKB getChanges(Long since) throws SharkKBException {
+        // get changes from topics
+        SemanticNet cTopics = this.topics.getChangesAsSemanticNet(since);
+        
+        // get changes from topics
+        SemanticNet cTypes = this.types.getChangesAsSemanticNet(since);
+        
+        // get changes from peers
+        PeerTaxonomy cPeers = this.txPeers.getChangesAsTaxonomy(since);
+        
+        // get changes from locations
+        SpatialSTSet cLocations = (SpatialSTSet) this.locations.getChanges(since);
+        
+        // get changes from times
+        TimeSTSet cTimes = (TimeSTSet) this.times.getChanges(since);
+        
+        // Merge all together - we have a kb containing changed items
+        InMemoSharkKB changes = new InMemoSharkKB(cTopics, cTypes, cPeers,
+                 cLocations, cTimes);
 
-    public SyncKB(SharkKB localKB) throws SharkKBException {
-        this.targetKB = localKB;
+        // add information
+        int infoNumber = this.putKnowledgeChanges(since, changes);
+        
+        /**
+         * I'm not happy with that implementation:
+         * In nearly any case, sync is performed between two peers.
+         * That implementation creates a copy of all changed information
+         * which are transmitted afterwards.
+         * 
+         * A better implementation would not create a copy but
+         * stream the data directly to the other side.
+         * 
+         * Anyway, that implementation could be made faster.
+         * Changing to a stream implementation shouldn't take longer
+         * than a day.
+         */
+
+        return changes;
     }
 
-    private void setCurrentTimeAsProperty(STSet set){
-        Iterator<SemanticTag> iterator = null;
-        try {
-            iterator = set.stTags();
-            while (iterator.hasNext()){
-                SemanticTag tag = iterator.next();
-                tag.setProperty(TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
-                set.merge(tag);
+    /**
+     * merges all changes information into that knowledge base
+     * @param since
+     * @return number of added informations (not only info spaces!)
+     * @throws SharkKBException 
+     */
+    private int putKnowledgeChanges(Long since, SharkKB kb) throws SharkKBException {
+        int infoNumber = 0;
+        
+        Iterator<ASIPInformationSpace> infoSpaceIter = 
+                this.targetKB.getAllInformationSpaces();
+        
+        if(infoSpaceIter != null) {
+            while(infoSpaceIter.hasNext()) {
+                ASIPInformationSpace infoSpace = infoSpaceIter.next();
+                
+                Iterator<ASIPInformation> infoIter = infoSpace.informations();
+                if(infoIter != null) {
+                    
+                    while(infoIter.hasNext()) {
+                        ASIPInformation info = infoIter.next();
+                        long changed = SyncKB.getTimeStamp(info);
+                        if(changed > since) {
+                            // add info - its a copy
+                            kb.addInformation(info.getContentAsByte(), 
+                                    info.getASIPSpace());
+                            
+                            infoNumber++;
+                        }
+                    }
+                }
             }
-        } catch (SharkKBException e) {
-            e.printStackTrace();
         }
+        
+        return infoNumber;
     }
-
+    
+    public static final long getTimeStamp(PropertyHolder target) throws SharkKBException {
+        String timeString = target.getProperty(SyncKB.TIME_PROPERTY_NAME);
+        if(timeString == null) {
+            return Long.MIN_VALUE;
+        }
+        
+        return Long.parseLong(timeString);
+    }
+    
+    
+    /**
+     * that method should be removed - we should use only one way to
+     * store the last modified time.
+     * 
+     * @param info
+     * @return
+     * @throws SharkKBException 
+     */
+    public static final long getTimeStamp(ASIPInformation info) throws SharkKBException {
+        String timeString = info.getProperty(InMemoInformation.INFO_LAST_MODIFED);
+        if(timeString == null) {
+            timeString = info.getProperty(InMemoInformation.INFO_CREATION_TIME);
+            if(timeString == null) {
+                return Long.MIN_VALUE;
+            }
+        }
+        
+        return Long.parseLong(timeString);
+    }
+    
     /**
      * Not additional activities required here
      * @param owner
@@ -111,12 +271,20 @@ public class SyncKB implements SharkKB {
 
     @Override
     public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-        return this.targetKB.getTopicsAsSemanticNet();
+        SemanticNet net = this.targetKB.getTopicsAsSemanticNet();
+        if(net == null) return null;
+        
+        // wrap it
+        return new SyncSemanticNet(net);
     }
 
     @Override
     public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
-        return this.targetKB.getTopicsAsTaxonomy();
+        Taxonomy tx = this.targetKB.getTopicsAsTaxonomy();
+        if(tx == null) return null;
+        
+        // wrap it
+        return new SyncTaxonomy(tx);
     }
 
     @Override
@@ -136,7 +304,10 @@ public class SyncKB implements SharkKB {
 
     @Override
     public PeerSTSet getPeerSTSet() throws SharkKBException {
-        return this.targetKB.getPeerSTSet();
+        PeerSTSet peers = this.targetKB.getPeerSTSet();
+        if(peers == null) return null;
+        
+        return new SyncPeerSTSet(peers);
     }
 
     @Override
@@ -278,12 +449,6 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        setCurrentTimeAsProperty(topics);
-        setCurrentTimeAsProperty(types);
-        setCurrentTimeAsProperty(approvers);
-        setCurrentTimeAsProperty(sender);
-        setCurrentTimeAsProperty(times);
-        setCurrentTimeAsProperty(locations);
         return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
@@ -294,23 +459,11 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        setCurrentTimeAsProperty(topics);
-        setCurrentTimeAsProperty(types);
-        setCurrentTimeAsProperty(approvers);
-        sender.setProperty(TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
-        setCurrentTimeAsProperty(times);
-        setCurrentTimeAsProperty(locations);
         return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
-        setCurrentTimeAsProperty(topics);
-        setCurrentTimeAsProperty(types);
-        setCurrentTimeAsProperty(approvers);
-        setCurrentTimeAsProperty(sender);
-        setCurrentTimeAsProperty(times);
-        setCurrentTimeAsProperty(locations);
         return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
     }
 
