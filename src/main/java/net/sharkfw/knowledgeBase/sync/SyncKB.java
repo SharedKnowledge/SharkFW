@@ -133,6 +133,35 @@ public class SyncKB implements SharkKB {
     }
 
     /**
+     * That methode takes a kb which is assumed to contain changed or new
+     * items. Loosly speaking, that methode is a number of merge calls on the
+     * local knowledge base.
+     *
+     * TODO: We haven't managed yet to implement removal of entities (tags, information). Must be done asap.
+     *
+     * @param changes
+     * @return
+     */
+    public void putChanges(SharkKB changes) throws SharkKBException {
+        // merge tags first
+        this.topics.merge(changes.getTopicSTSet());
+        this.types.merge(changes.getTypeSTSet());
+        this.peers.merge(changes.getPeerSTSet());
+        this.locations.merge(changes.getSpatialSTSet());
+        this.times.merge(changes.getTimeSTSet());
+
+        // merge information now
+        Iterator<ASIPInformationSpace> cInfoSpacesIter = changes.informationSpaces();
+        if(cInfoSpacesIter != null) {
+            while(cInfoSpacesIter.hasNext()) {
+                ASIPInformationSpace cInfoSpace = cInfoSpacesIter.next();
+                Iterator<ASIPInformation> cInfoIter = cInfoSpace.informations();
+                SharkAlgebra.mergeInformations(targetKB, cInfoIter);
+            }
+        }
+    }
+
+    /**
      * merges all changes information into that knowledge base
      * @param since
      * @return number of added informations (not only info spaces!)
@@ -210,7 +239,6 @@ public class SyncKB implements SharkKB {
 
     /**
      * Not additional activities required here
-     * @param owner
      * @return owner
      */
     @Override

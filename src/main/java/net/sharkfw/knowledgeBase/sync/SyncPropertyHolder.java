@@ -77,7 +77,8 @@ abstract class SyncPropertyHolder extends Sync implements SystemPropertyHolder {
         String timeString = Long.toString(System.currentTimeMillis());
         
         try {
-            this.target.setProperty(SyncKB.TIME_PROPERTY_NAME, timeString);
+            // set time stamp as non transferable property
+            this.target.setProperty(SyncKB.TIME_PROPERTY_NAME, timeString, false);
         } 
         catch(SharkKBException e) {
             L.e("cannot write time stamp - sync won't work accordingly");

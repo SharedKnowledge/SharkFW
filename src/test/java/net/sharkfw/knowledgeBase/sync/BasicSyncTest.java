@@ -52,18 +52,7 @@ public class BasicSyncTest {
         L.d(L.kb2String(target1, true));
         
         Long t1 = System.currentTimeMillis();
-        
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("time is " + Long.toString(t1), this);
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-        
+
         L.setLogLevel(L.LOGLEVEL_SILENT);
         Thread.sleep(10);
 
@@ -98,13 +87,35 @@ public class BasicSyncTest {
         Thread.sleep(10);
         changes = syncKB1.getChanges(t1);
         L.d(L.kb2String(changes, true));
+        L.setLogLevel(L.LOGLEVEL_SILENT);
         
         Assert.assertNotNull(changes.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/bob.html"));
         Assert.assertNull(changes.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/alice.html"));
         
         infoNumber = changes.getNumberInformation();
         Assert.assertNotEquals(0, infoNumber);
-        
+
+
+        // no import changes into another KB
+        SharkKB target2 = new InMemoSharkKB();
+        SyncKB syncKB2 = new SyncKB(target2);
+
+        syncKB2.putChanges(changes);
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        L.d("TARGET KB: After putChanges()\n");
+        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+        L.d(L.kb2String(target2, true));
+        L.setLogLevel(L.LOGLEVEL_SILENT);
+
+        Assert.assertNotNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/bob.html"));
+        Assert.assertNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/alice.html"));
+
+
+
+        // test if both kb are identically now!!
+
         // stop here .. work todo
         /*
         Assert.assertNotNull(spaces2);

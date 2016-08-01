@@ -596,7 +596,7 @@ public class Util {
      * @param si_a A string array from entity a
      * @param si_b A string array from entity b
      * @return <code>true</code> if at least on string is in both arrays, or if one of the arrays is <code>null</code>, <code>false</code> otherwise
-     * @deprecated use {@link SharkCSAlgebra.identical}
+     * @deprecated use SharkCSAlgebra.identical
      */
     public static boolean sameEntity(String[] si_a, String[] si_b) {
 
@@ -1293,6 +1293,31 @@ public class Util {
      */
     @SuppressWarnings("rawtypes")
     public static void copyPropertiesFromPropertyHolderToPropertyHolder(SystemPropertyHolder source, SystemPropertyHolder copy) {
+        try {
+            Enumeration nameEnum = source.propertyNames(true);
+            while (nameEnum != null && nameEnum.hasMoreElements()) {
+                String name = (String) nameEnum.nextElement();
+                String value = source.getProperty(name);
+                /*
+                * TODO: Handle transferable and untransferable props
+                */
+                if(value != null) {
+                    copy.setProperty(name, value);
+                }
+            }
+        } catch (SharkKBException ex) {
+            L.e("cannot access properties");
+        }
+    }
+
+    /**
+     * Copy all properties from PropertyHolder <code>source</code> to PropertyHolder <code>copy</code>.
+     *
+     * @param source The property holder used as template.
+     * @param copy The property holder to be filled with all props from source.
+     */
+    @SuppressWarnings("rawtypes")
+    public static void copyPropertiesFromPropertyHolderToPropertyHolder(PropertyHolder source, PropertyHolder copy) {
         try {
             Enumeration nameEnum = source.propertyNames(true);
             while (nameEnum != null && nameEnum.hasMoreElements()) {

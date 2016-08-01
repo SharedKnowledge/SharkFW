@@ -2,11 +2,15 @@ package net.sharkfw.knowledgeBase;
 
 import java.util.Enumeration;
 import java.util.Iterator;
+
+import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
+import net.sharkfw.system.Util;
+import net.sharkfw.system.Utils;
 
 /**
  *
@@ -411,5 +415,21 @@ public class SharkAlgebra {
 
         // anythings got a match
         return true;
+    }
+
+    public static void mergeInformation(SharkKB target, ASIPInformation info) throws SharkKBException {
+        ASIPInformation newInfo = target.addInformation(info.getContentAsByte(), info.getASIPSpace());
+
+        // copy properties
+        Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, newInfo);
+    }
+
+    public static void mergeInformations(SharkKB target, Iterator<ASIPInformation> cInfoIter) throws SharkKBException {
+        if(target == null || cInfoIter == null) return;
+
+        while(cInfoIter.hasNext()) {
+            ASIPInformation cInfo = cInfoIter.next();
+            SharkAlgebra.mergeInformation(target, cInfo);
+        }
     }
 }
