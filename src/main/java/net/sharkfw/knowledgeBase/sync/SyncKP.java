@@ -8,15 +8,13 @@ import net.sharkfw.peer.SharkEngine;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
-import org.json.JSONException;
+import net.sharkfw.system.Util;
 
 /**
  * Created by j4rvis on 19.07.16.
@@ -52,12 +50,15 @@ public class SyncKP extends ContentPort {
     }
   
     // test
-    public void saveLastSeen() {
-//    private void saveLastSeen() {
+    private void saveLastSeen() {
         //test
-        PeerSemanticTag p = InMemoSharkKB.createInMemoPeerSemanticTag("Alice", "http://alice.de", "mail://alice@alice.de");
-        Long t = System.currentTimeMillis();
-        this.lastSeen.put(p, t);
+//        PeerSemanticTag p = InMemoSharkKB.createInMemoPeerSemanticTag("Alice", "http://alice.de", "mail://alice@alice.de");
+//        Long t = System.currentTimeMillis();
+//        this.lastSeen.put(p, t);
+//        
+//        p = InMemoSharkKB.createInMemoPeerSemanticTag("Alice", "http://bob.de", "mail://bob@bob.de");
+//        t = System.currentTimeMillis();
+//        this.lastSeen.put(p, t);
         // end test
                 
         StringBuilder buf = new StringBuilder();
@@ -67,10 +68,11 @@ public class SyncKP extends ContentPort {
                 PeerSemanticTag peer = peerIter.next();
                 Long lastseen = this.lastSeen.get(peer);
                 buf.append(ASIPSerializer.serializeTag(peer));
-                buf.append(buf.toString());
+                buf.append("{" + Long.toString(lastseen) + "}");
             }
+            L.d("write buf: " + buf.toString());
             this.syncKB.setProperty(LAST_SEEN_PROPERTY_NAME, buf.toString());
-        } catch (JSONException | SharkKBException ex) {
+        } catch (Exception ex) {
             L.e("couldn't write last seen entries for sync - critical", this);
         }
     }
@@ -78,11 +80,21 @@ public class SyncKP extends ContentPort {
     /**
      * TODO
      */
-    private void restoreLastSeen2() {
+    private void restoreLastSeen() {
         try {
             String prop = this.syncKB.getProperty(LAST_SEEN_PROPERTY_NAME);
+            if(prop == null) return;
             
-            // TODO
+            Iterator<String> stringIter = Util.stringsBetween("{", "}", prop, 0);
+            while(stringIter.hasNext()) {
+                String peerString = "{" + stringIter.next() + "}";
+                String timeString = stringIter.next();
+                
+                PeerSemanticTag peer = ASIPSerializer.deserializePeerTag(peerString);
+                Long time = Long.parseLong(timeString);
+                
+                this.lastSeen.put(peer, time);
+            }
             
         } catch (SharkKBException ex) {
             L.d("cannot read last seen entries for sync - critical", this);

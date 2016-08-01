@@ -36,7 +36,5 @@ public class SyncKPTest {
          SyncKP kp = new SyncKP(se, synckb);
 
          L.setLogLevel(L.LOGLEVEL_ALL);
-         kp.saveLastSeen();
-     
      }
 }

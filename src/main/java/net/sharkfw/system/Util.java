@@ -1452,4 +1452,75 @@ public class Util {
         target.getTimeSTSet().merge(source.getTimes());
          
      }
+     
+    /**
+     * Its assumed that a string (source) contains other string which
+     * are separated by start and endtags. This methode produces an
+     * iterator through all found substring excluding their separaters.
+     * Search in source is started with index.
+     * 
+     * @param starttag
+     * @param endtag
+     * @param source
+     * @param index
+     * @return
+     */
+    public static Iterator<String> stringsBetween(String starttag, 
+            String endtag, String source, int index) {
+        
+        List<String> stringList = new ArrayList<>();
+        String stringBetween = null;
+        
+        do {
+            stringBetween = Util.stringBetween(starttag, endtag, source, index);
+            if(stringBetween == null) break;
+            stringList.add(stringBetween);
+            index += stringBetween.length();
+        } while(stringBetween != null && index < source.length());
+        
+        return stringList.iterator();
+    }
+    
+    /**
+     * Return string between two tags. Null is returned if no tag can be found
+     * which is also happens with malformed formats.
+     * @param starttag tag to look for
+     * @param endtag tag to look for
+     * @param index begin search at this index in source
+     * @param source tag should be found in this string
+     * @return 
+     */
+    public static String stringBetween(String starttag, String endtag, String source, int index) {
+        if(source == null || starttag == null || endtag == null || index < 0) {
+            return null;
+        }
+
+        if(index >= source.length()) {
+            return null;
+        }
+        
+        int startIndex = 0; 
+
+        startIndex = source.indexOf(starttag, index);
+        if(startIndex == -1) return null;
+
+        int endIndex;
+        
+        index = startIndex;
+        
+        endIndex = source.indexOf(endtag, index);
+            
+        if(endIndex == -1) {
+            return null;
+        }
+        
+        startIndex += starttag.length();
+        
+        String retString = source.substring(startIndex, endIndex);
+        
+        if(retString.length() == 0) {
+            return null;
+        }
+        return retString;
+    }     
 }
