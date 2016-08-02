@@ -111,19 +111,5 @@ public class BasicSyncTest {
 
         Assert.assertNotNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/bob.html"));
         Assert.assertNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/alice.html"));
-
-
-
-        // test if both kb are identically now!!
-
-        // stop here .. work todo
-        /*
-        Assert.assertNotNull(spaces2);
-        Assert.assertNotNull(spaces2.getVocabulary().getTopicSTSet().getSemanticTag("https://en.wikipedia.org/wiki/Ice_cream"));
-        Assert.assertNotNull(spaces2.getVocabulary().getPeerSTSet().getSemanticTag("http://www.sharksystem.net/alice.html"));
-        ASIPInformationSpace space2 = spaces2.informationSpaces().next();
-        String stringContent2 = space2.informations().next().getContentAsString();
-        Assert.assertEquals("Test data", stringContent2);
-         */
     }
 }
