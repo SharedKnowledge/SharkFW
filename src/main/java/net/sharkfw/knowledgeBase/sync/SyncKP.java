@@ -11,6 +11,9 @@ import java.util.Iterator;
 import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
+import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
@@ -25,11 +28,14 @@ public class SyncKP extends ContentPort {
     private PeerSTSet allowedUsers = null;
     private SyncKB syncKB;
     private HashMap<PeerSemanticTag, Long> lastSeen = new HashMap<>();
+    SemanticTag kbTitel;
     private static final String LAST_SEEN_PROPERTY_NAME = "SHARK_SYNC_LAST_SEEN";
     
-    public SyncKP(SharkEngine se, SyncKB kb, PeerSTSet allowedUsers) {
+    public SyncKP(SharkEngine se, SyncKB kb, SemanticTag kbTitel, PeerSTSet allowedUsers) {
         super(se);
         this.syncKB = kb;
+        this.kbTitel = kbTitel;
+        
         try {
             if(allowedUsers != null) {
                 this.allowedUsers = InMemoSharkKB.createInMemoCopy(allowedUsers);
@@ -40,13 +46,33 @@ public class SyncKP extends ContentPort {
         }
     }
 
-    public SyncKP(SharkEngine se, SyncKB kb) {
-        this(se, kb, null);
+    public SyncKP(SharkEngine se, SyncKB kb, SemanticTag kbTitel) {
+        this(se, kb, kbTitel, null);
     }
 
     @Override
     protected boolean handleRaw(ASIPInMessage message, ASIPConnection connection, InputStream inputStream) {
-        return false;
+        message.getTopic();
+        if(!SharkCSAlgebra.identical(this.kbTitel, message.getTopic())) return false;
+        
+        // check allowed sender .. better make that with black-/whitelist
+        // deserialize kb from content
+        InputStream rawContent = message.getRaw();
+        
+        SharkKB changes; // that shall be deserialized kb
+        
+        try {
+            // add to kb
+            this.syncKB.putChanges(syncKB);
+
+            // we are done :)
+        }
+        catch(SharkKBException e) {
+            // do something useful
+        }
+        
+        return true;
+        
     }
   
     // test
