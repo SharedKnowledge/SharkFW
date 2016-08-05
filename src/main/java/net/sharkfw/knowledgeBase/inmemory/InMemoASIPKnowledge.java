@@ -41,8 +41,9 @@ public class InMemoASIPKnowledge implements Knowledge {
     }
 
     private InMemoInformationSpace createInformationSpace(ASIPSpace space) throws SharkKBException {
-        while(informationSpaces().hasNext()){
-            ASIPInformationSpace current = informationSpaces().next();
+        Iterator<ASIPInformationSpace> infoIter = this.informationSpaces();
+        while(infoIter.hasNext()){
+            ASIPInformationSpace current = infoIter.next();
             if(SharkCSAlgebra.identical(current.getASIPSpace(), space)){
 //                current.setProperty(SyncKB.TIME_PROPERTY_NAME, String.valueOf(System.currentTimeMillis()), true);
                 return (InMemoInformationSpace) current;

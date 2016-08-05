@@ -349,22 +349,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return i;
     }
     
-    private static ASIPInterest _createInMemoCopy(ASIPSpace as) 
-            throws SharkKBException {
-        
-        ASIPInterest i = InMemoSharkKB.createInMemoASIPInterest();
-        
-        i.setTopics(InMemoSharkKB.createInMemoCopy(as.getTopics()));
-        i.setApprovers(InMemoSharkKB.createInMemoCopy(as.getApprovers()));
-        i.setSender(InMemoSharkKB.createInMemoCopy(as.getSender()));
-        i.setReceivers(InMemoSharkKB.createInMemoCopy(as.getReceivers()));
-        i.setTimes(InMemoSharkKB.createInMemoCopy(as.getTimes()));
-        i.setLocations(InMemoSharkKB.createInMemoCopy(as.getLocations()));
-        i.setDirection(as.getDirection());
-        
-        return i;
-    }
-    
     /**
      * @deprecated 
      * @param interest
@@ -378,7 +362,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     
     public static ASIPInterest createInMemoCopy(ASIPInterest interest) 
             throws SharkKBException {
-        return InMemoSharkKB._createInMemoCopy(interest);
+        return InMemoSharkKB.createInMemoCopy(interest);
     }
 
     /**
@@ -400,11 +384,44 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     public static ASIPInterest createInMemoCopy(ASIPSpace as) 
             throws SharkKBException {
         
-        if(as == null) {
-            throw new SharkKBException("cannot make in memo copy from null");
+        STSet mTopics = null;
+        STSet mTypes = null;
+        PeerSTSet mApprovers = null;
+        PeerSemanticTag mSender = null;
+        PeerSTSet mReceivers = null;
+        SpatialSTSet mLocations = null;
+        TimeSTSet mTimes = null;
+        
+        if(as.getTopics() != null) {
+            mTopics = InMemoSharkKB.createInMemoCopy(as.getTopics());
         }
         
-        return InMemoSharkKB._createInMemoCopy(as);
+        if(as.getTypes() != null) {
+            mTypes = InMemoSharkKB.createInMemoCopy(as.getTypes());
+        }
+        
+        if(as.getApprovers() != null) {
+            mApprovers = InMemoSharkKB.createInMemoCopy(as.getApprovers());
+        }
+        
+        if(as.getSender() != null) {
+            mSender = InMemoSharkKB.createInMemoCopy(as.getSender());
+        }
+        
+        if(as.getReceivers() != null) {
+            mReceivers = InMemoSharkKB.createInMemoCopy(as.getReceivers());
+        }
+        
+        if(as.getLocations() != null) {
+            mLocations = InMemoSharkKB.createInMemoCopy(as.getLocations());
+        }
+        
+        if(as.getTimes() != null) {
+            mTimes = InMemoSharkKB.createInMemoCopy(as.getTimes());
+        }
+        
+        return InMemoSharkKB.createInMemoASIPInterest(mTopics, mTypes, mReceivers, 
+                mApprovers, mReceivers, mTimes, mLocations, as.getDirection());
     }
     
     /**
@@ -1373,19 +1390,56 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return this.createASIPSpace(topics, types, approvers, senders, receiver, 
                 times, locations, ASIPSpace.DIRECTION_INOUT);
     }
+    
+    protected ASIPSpace mergeASIPSpace(ASIPSpace space) throws SharkKBException {
+        if(this.topics != null && space.getTopics() != null) {
+            this.topics.merge(space.getTopics());
+        }
+        
+        if(this.types != null && space.getTypes() != null) {
+            this.types.merge(space.getTypes());
+        }
+        
+        if(this.peers != null) {
+            if(space.getApprovers() != null) {
+                this.peers.merge(space.getApprovers());
+            }
+            
+            if(space.getSender() != null) {
+                this.peers.merge(space.getSender());
+            }
+            
+            if(space.getReceivers() != null) {
+                this.peers.merge(space.getReceivers());
+            }
+        }
+        
+        if(this.locations != null && space.getLocations() != null) {
+            this.locations.merge(space.getLocations());
+        }
+        
+        if(this.times != null && space.getTimes() != null) {
+            this.times.merge(space.getTimes());
+        }
+
+        return InMemoSharkKB.createInMemoCopy(space);
+    }
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        return this.getKnowledge().addInformation(content, semanticalAnnotations);
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
+        return this.getKnowledge().addInformation(content, mergeASIPSpace);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        return this.getKnowledge().addInformation(contentIS, numberOfBytes, semanticalAnnotations);
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
+        return this.getKnowledge().addInformation(contentIS, numberOfBytes, mergeASIPSpace);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        return this.getKnowledge().addInformation(content, semanticalAnnotations);
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
+        return this.getKnowledge().addInformation(content, mergeASIPSpace);
     }
 }

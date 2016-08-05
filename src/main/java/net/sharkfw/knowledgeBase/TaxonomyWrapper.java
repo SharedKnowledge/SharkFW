@@ -101,9 +101,11 @@ public abstract class TaxonomyWrapper implements Taxonomy {
             SemanticNet storage2Merge = imt.getStorage();
             
             this.sn.merge(storage2Merge);
-        } else {
-            throw new SharkKBException("InMemoTaxonomy can only merge "
-                    + "another InMemoTaxonomy in this version - sorry");
+        } 
+        else {
+//            throw new SharkKBException("InMemoTaxonomy can only merge "
+//                    + "another InMemoTaxonomy in this version - sorry");
+            this.sn.merge(toMerge);
         }
     }
 

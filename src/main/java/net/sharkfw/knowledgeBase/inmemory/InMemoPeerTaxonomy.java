@@ -91,7 +91,7 @@ public class InMemoPeerTaxonomy extends InMemoTaxonomy implements PeerTaxonomy, 
             return;
         }
         
-        if(source instanceof InMemoPeerTaxonomy) {
+        if(source instanceof InMemoPeerTaxonomy || source instanceof InMemoPeerSTSet) {
             super.merge(source);
         } else {
             throw new SharkKBException("InMemoPeerTaxonomy can only merge "
