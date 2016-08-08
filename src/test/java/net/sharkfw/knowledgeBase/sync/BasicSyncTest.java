@@ -67,12 +67,12 @@ public class BasicSyncTest {
                 ("Bob", "http://www.sharksystem.net/bob.html", (String)null);
         
         
-        syncKB1.createASIPSpace(eiscreme, null, bob, null, null, null, null,
+        ASIPSpace asipSpace2 = syncKB1.createASIPSpace(eiscreme, null, bob, null, null, null, null,
                 ASIPSpace.DIRECTION_INOUT);
 
-        syncKB1.addInformation("Bob data", asipSpace);
+        syncKB1.addInformation("Bob data", asipSpace2);
         
-        syncKB1.addInformation("like ice cream too", asipSpace);
+        syncKB1.addInformation("like ice cream too", asipSpace2);
         
         L.setLogLevel(L.LOGLEVEL_ALL);
         L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
