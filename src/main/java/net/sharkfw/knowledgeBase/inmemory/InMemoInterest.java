@@ -58,7 +58,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     /**
      * Creates an kepInterest.
      */
-    InMemoInterest(STSet topics, STSet types, PeerSTSet senders, 
+    InMemoInterest(STSet topics, STSet types, PeerSTSet senders,
             PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times, 
             SpatialSTSet locations, int direction) {
         

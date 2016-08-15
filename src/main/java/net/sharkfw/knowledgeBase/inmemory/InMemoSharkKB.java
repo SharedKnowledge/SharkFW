@@ -1127,7 +1127,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                                      int direction) throws SharkKBException {
 
         STSet topicSet = null, typeSet = null;
-        PeerSTSet approverSet = null, senderSet = null, receiverSet = null;
+        PeerSTSet approverSet = null, receiverSet = null;
         TimeSTSet timeSet = null;
         SpatialSTSet locationSet = null;
 
@@ -1146,11 +1146,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             approverSet.merge(approver);
         }
 
-        if(sender != null) {
-            senderSet = this.createInMemoPeerSTSet();
-            senderSet.merge(sender);
-        }
-
         if(receiver != null) {
             receiverSet = this.createInMemoPeerSTSet();
             receiverSet.merge(receiver);
@@ -1166,7 +1161,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             locationSet.merge(location);
         }
 
-        return this.createASIPSpace(topicSet, typeSet, approverSet, senderSet, receiverSet, timeSet, locationSet, direction);
+        return this.createASIPSpace(topicSet, typeSet, approverSet, sender, receiverSet, timeSet, locationSet, direction);
     }
 
     @Override
