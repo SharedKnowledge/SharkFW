@@ -46,27 +46,27 @@ public abstract class InMemoSharkCS implements SharkCS, ASIPSpace {
     public STSet getSTSet(int dim) throws SharkKBException {
         switch(dim) {
             // KEP
-            case SharkCS.DIM_TOPIC:
-                return this.getTopics();
-                
-            // see comments
-            case SharkCS.DIM_ORIGINATOR:
-                return this.getOriginators();
-                                        
-            case SharkCS.DIM_PEER: 
-                return this.getPeers();
-                
-            case SharkCS.DIM_REMOTEPEER:
-                return this.getRemotePeers();
-                
-            case SharkCS.DIM_TIME:
-                return this.getTimes();
-                
-            case SharkCS.DIM_LOCATION: 
-                return this.getLocations();
-                
-            case SharkCS.DIM_DIRECTION: 
-                return this.getDirections();
+//            case SharkCS.DIM_TOPIC:
+//                return this.getTopics();
+//                
+//            // see comments
+//            case SharkCS.DIM_ORIGINATOR:
+//                return this.getOriginators();
+//                                        
+//            case SharkCS.DIM_PEER: 
+//                return this.getPeers();
+//                
+//            case SharkCS.DIM_REMOTEPEER:
+//                return this.getRemotePeers();
+//                
+//            case SharkCS.DIM_TIME:
+//                return this.getTimes();
+//                
+//            case SharkCS.DIM_LOCATION: 
+//                return this.getLocations();
+//                
+//            case SharkCS.DIM_DIRECTION: 
+//                return this.getDirections();
 
             ////////////////////////////////////////////////////////
             //                      ASIP                          //

@@ -39,46 +39,46 @@ public interface ASIPSpace {
     /**
      * This dimention denotes for which topic this context is valid
      */
-    public static final int DIM_TOPIC = 10;
+    public static final int DIM_TOPIC = 0;
 
     /**
      * This dimention denotes type of information, e.g. news
      */
-    public static final int DIM_TYPE = 11;
+    public static final int DIM_TYPE = 1;
     
     /**
      * This dimensions describes what peers agrees that topics describe
      * attaced information correctly. (is/was orignator in KEP)
      */
-    public static final int DIM_APPROVERS = 12;
+    public static final int DIM_APPROVERS = 2;
 
     /**
      * This dimension denotes the actual peer that (originally) issued 
      * commands. It is the logical sender.
      */
-    public static final int DIM_SENDER = 13;
+    public static final int DIM_SENDER = 3;
 
     /**
      * This dimension denotes to whom a peer likes to exchange information
      * with.
      */
-    public static final int DIM_RECEIVER = 14;
+    public static final int DIM_RECEIVER = 4;
 
     /**
      * This dimension denote in which timespans the context is valid
      */
-    public static final int DIM_TIME = 15;
+    public static final int DIM_TIME = 5;
 
     /**
      * This dimension denotes where this context is valid
      */
-    public static final int DIM_LOCATION = 16;
+    public static final int DIM_LOCATION = 6;
     
     /**
      * In interests: Is this a sending or a receiving kepInterest (or both?)
      * (identical to direction in KEP)
      */
-    public static final int DIM_DIRECTION = 17;
+    public static final int DIM_DIRECTION = 7;
 
     /**
      * The single URL to use as SI when describing the ANY tag

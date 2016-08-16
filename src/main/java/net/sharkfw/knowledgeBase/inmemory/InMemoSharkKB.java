@@ -230,6 +230,11 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     ///////////////////////////////////////////////////////////////////
 
     public static STSet createInMemoCopy(STSet stSet) throws SharkKBException {
+        // looks weird but necessary...
+        if(stSet instanceof PeerSTSet) {
+            return InMemoSharkKB.createInMemoCopy((PeerSTSet) stSet);
+        }
+        
         STSet copy = InMemoSharkKB.createInMemoSTSet();
         copy.merge(stSet);
         return copy;

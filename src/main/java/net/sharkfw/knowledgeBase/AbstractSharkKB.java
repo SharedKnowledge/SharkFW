@@ -12,7 +12,6 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformationCoordinates;
-import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
 import net.sharkfw.system.EnumerationChain;
@@ -291,12 +290,19 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      * @param cs must not be null - use getAllContextPoints in this case.
      * @return
      * @throws SharkKBException 
+     * @deprecated 
      */
     @Override
     public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException {
         return this.getContextPoints(cs, true);
     }
     
+    /**
+     * @param cs
+     * @return
+     * @throws SharkKBException 
+     * @deprecated 
+     */
     @Override
     public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
         return this.contextPoints(cs, true);
@@ -365,7 +371,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
            (-,-,owner,-,-,-,-,direction)
         */
         
-        if (space.getDirection() == SharkCS.DIRECTION_INOUT) {
+        if (space.getDirection() == ASIPSpace.DIRECTION_INOUT) {
             /* if INOUT: we already have two points: 
               (-,-,owner,-,-,-,-,IN) and
               (-,-,owner,-,-,-,-,OUT)
@@ -431,13 +437,13 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         HashSet<ContextCoordinates> ccList = new HashSet<>();
         
         // create first prototype with direction and owner
-        if (space.getDirection() == SharkCS.DIRECTION_INOUT) {
+        if (space.getDirection() == ASIPSpace.DIRECTION_INOUT) {
             // if INOUT: there are two additional coordinates:
 
             //topic,originator,peer,remotepeer,time,location,direction
             // we match LASP sender with KEP peer
-            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, SharkCS.DIRECTION_IN));
-            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, SharkCS.DIRECTION_OUT));
+            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, ASIPSpace.DIRECTION_IN));
+            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, ASIPSpace.DIRECTION_OUT));
         }
         
         ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, space.getDirection()));
@@ -445,19 +451,19 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         // no combine with other dimensions
         
         // LASP topics go with KEP topics
-        ccList = this.coordCombination(ccList, space.getTopics(), SharkCS.DIM_TOPIC);
+        ccList = this.coordCombination(ccList, space.getTopics(), ASIPSpace.DIM_TOPIC);
         
         // LASP types are ignored here
         
         // LASP approvers matches with KEP originator
-        ccList = this.coordCombination(ccList, space.getApprovers(), SharkCS.DIM_ORIGINATOR);
+        ccList = this.coordCombination(ccList, space.getApprovers(), ASIPSpace.DIM_APPROVERS);
         
         // LASP receivers go with KEP remote peers
-        ccList = this.coordCombination(ccList, space.getReceivers(), SharkCS.DIM_REMOTEPEER);
+        ccList = this.coordCombination(ccList, space.getReceivers(), ASIPSpace.DIM_RECEIVER);
         
         // time and location is the same in both protocols
-        ccList = this.coordCombination(ccList, space.getTimes(), SharkCS.DIM_TIME);
-        ccList = this.coordCombination(ccList, space.getLocations(), SharkCS.DIM_LOCATION);
+        ccList = this.coordCombination(ccList, space.getTimes(), ASIPSpace.DIM_TIME);
+        ccList = this.coordCombination(ccList, space.getLocations(), ASIPSpace.DIM_LOCATION);
         
         return ccList;
     }
@@ -523,10 +529,10 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
                     case ASIPSpace.DIM_RECEIVER:
                         receiver = (PeerSemanticTag) tag;
                         break;
-                    case SharkCS.DIM_TIME:
+                    case ASIPSpace.DIM_TIME:
                         time = (TimeSemanticTag) tag;
                         break;
-                    case SharkCS.DIM_LOCATION:
+                    case ASIPSpace.DIM_LOCATION:
                         location = (SpatialSemanticTag) tag;
                         break;
                 }
@@ -711,6 +717,13 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.locations = locations;
     }
     
+    /**
+     * 
+     * @param as
+     * @return
+     * @throws SharkKBException 
+     * @deprecated 
+     */
     @Override
     public Interest contextualize(SharkCS as) throws SharkKBException {
         return this.contextualize(as, this.getStandardFPSet());
@@ -749,6 +762,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.persist();
     }
 
+    /**
+     * Use getDefaultFPSet instead.
+     * @return 
+     * @deprecated
+     */
     @Override
     public FragmentationParameter[] getStandardFPSet() {
         if(this.standardFP == null) {
@@ -756,15 +774,16 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             FragmentationParameter peersFP = new FragmentationParameter(true, false, 2);
             FragmentationParameter restFP = new FragmentationParameter(false, false, 0);
             
-            this.standardFP = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
+            this.standardFP = new FragmentationParameter[ASIPSpace.MAXDIMENSIONS];
             
-            this.standardFP[SharkCS.DIM_TOPIC] = topicsFP;
-            this.standardFP[SharkCS.DIM_PEER] = peersFP;
-            this.standardFP[SharkCS.DIM_REMOTEPEER] = peersFP;
-            this.standardFP[SharkCS.DIM_ORIGINATOR] = peersFP;
-            this.standardFP[SharkCS.DIM_TIME] = restFP;
-            this.standardFP[SharkCS.DIM_LOCATION] = restFP;
-            this.standardFP[SharkCS.DIM_DIRECTION] = restFP;
+            this.standardFP[ASIPSpace.DIM_TOPIC] = topicsFP;
+            this.standardFP[ASIPSpace.DIM_TYPE] = topicsFP;
+            this.standardFP[ASIPSpace.DIM_APPROVERS] = peersFP;
+            this.standardFP[ASIPSpace.DIM_SENDER] = peersFP;
+            this.standardFP[ASIPSpace.DIM_RECEIVER] = peersFP;
+            this.standardFP[ASIPSpace.DIM_TIME] = restFP;
+            this.standardFP[ASIPSpace.DIM_LOCATION] = restFP;
+            this.standardFP[ASIPSpace.DIM_DIRECTION] = restFP;
             
         }
         
@@ -1127,10 +1146,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     @Override
     public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
         return this.contextualize(as, this.getDefaultFPSet());
+        
     }
     
     private FPSet defaultFPSet = null;
-    
+
     public FPSet getDefaultFPSet() {
         if(this.defaultFPSet == null) {
             FragmentationParameter topicsFP = new FragmentationParameter(false, true, 2);
@@ -1138,14 +1158,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             FragmentationParameter peersFP = new FragmentationParameter(true, false, 2);
             FragmentationParameter restFP = FragmentationParameter.getZeroFP();
             
-            this.standardFP[SharkCS.DIM_TOPIC] = topicsFP;
-            this.standardFP[SharkCS.DIM_PEER] = peersFP;
-            this.standardFP[SharkCS.DIM_REMOTEPEER] = peersFP;
-            this.standardFP[SharkCS.DIM_ORIGINATOR] = peersFP;
-            this.standardFP[SharkCS.DIM_TIME] = restFP;
-            this.standardFP[SharkCS.DIM_LOCATION] = restFP;
-            this.standardFP[SharkCS.DIM_DIRECTION] = restFP;
-        
             this.defaultFPSet = new FPSet(topicsFP, typesFP, // topics and types
                     peersFP, peersFP, peersFP, // all peers same
                     restFP, restFP, restFP); // time / location / direction

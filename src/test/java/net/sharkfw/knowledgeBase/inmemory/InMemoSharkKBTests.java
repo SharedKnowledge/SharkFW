@@ -66,7 +66,7 @@ public class InMemoSharkKBTests {
         //NullPointerException in AbstractSharkKB.getDefaultFPSet (Zeile 1141)
         // Die Zeiler unter mir muss genutzt werden, damit der Test laeuft.
         // Wurde auskommentiert, damit shark trotzdem gebuat werden kann.
-//        System.out.println(L.asipSpace2String(kb.contextualize(inter)));
-
+        ASIPInterest ctx = kb.contextualize(inter);
+        L.d(L.asipSpace2String(ctx), this);
     }
 }

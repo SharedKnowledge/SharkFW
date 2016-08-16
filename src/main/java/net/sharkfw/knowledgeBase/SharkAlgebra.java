@@ -112,42 +112,42 @@ public class SharkAlgebra {
          */
         
         // assume case 6
-        int mutualDirection = SharkCS.DIRECTION_NOTHING;
+        int mutualDirection = ASIPSpace.DIRECTION_NOTHING;
         int s, c;
         
         s = source.getDirection();
         c = context.getDirection();
         
         // exclude case 7 and 8
-        if(s != SharkCS.DIRECTION_NOTHING 
-                && c != SharkCS.DIRECTION_NOTHING) {
+        if(s != ASIPSpace.DIRECTION_NOTHING 
+                && c != ASIPSpace.DIRECTION_NOTHING) {
             
             // case 5
-            if(s == SharkCS.DIRECTION_INOUT && c == SharkCS.DIRECTION_INOUT) {
-                    mutualDirection = SharkCS.DIRECTION_INOUT;
+            if(s == ASIPSpace.DIRECTION_INOUT && c == ASIPSpace.DIRECTION_INOUT) {
+                    mutualDirection = ASIPSpace.DIRECTION_INOUT;
             }
             
             // now, if both the same, nothing will happens
             else if(s == c) {
-                mutualDirection = SharkCS.DIRECTION_NOTHING;
+                mutualDirection = ASIPSpace.DIRECTION_NOTHING;
             }
             
             // case 1 and 2
-            else if(c == SharkCS.DIRECTION_IN || c == SharkCS.DIRECTION_OUT) {
+            else if(c == ASIPSpace.DIRECTION_IN || c == ASIPSpace.DIRECTION_OUT) {
                 mutualDirection = c;
             }
             
             // c == INOUT s is IN our OUT
             else {
                 switch(s) {
-                    case SharkCS.DIRECTION_IN : mutualDirection = SharkCS.DIRECTION_OUT; break;
-                    case SharkCS.DIRECTION_OUT : mutualDirection = SharkCS.DIRECTION_IN; break;
+                    case ASIPSpace.DIRECTION_IN : mutualDirection = ASIPSpace.DIRECTION_OUT; break;
+                    case ASIPSpace.DIRECTION_OUT : mutualDirection = ASIPSpace.DIRECTION_IN; break;
                 }
             }
         }
         
         // proceed or not?
-        if(mutualDirection == SharkCS.DIRECTION_NOTHING) {
+        if(mutualDirection == ASIPSpace.DIRECTION_NOTHING) {
             // no mutual intterest at all
             return false;
         }
