@@ -194,8 +194,10 @@ public class ASIPSerializer {
 
             String[] addresses = pst.getAddresses();
             JSONArray addrArray = new JSONArray();
-            for (String addr : addresses) {
-                addrArray.put(addr);
+            if(addresses.length > 0){
+                for (String addr : addresses) {
+                    addrArray.put(addr);
+                }
             }
             object.put(PeerSemanticTag.ADDRESSES, addrArray);
         }
