@@ -81,8 +81,9 @@ public class InMemoASIPKnowledge implements Knowledge {
     }
 
     public ASIPInformationSpace getInformationSpace(ASIPSpace space) throws SharkKBException {
-        while(informationSpaces().hasNext()){
-            ASIPInformationSpace current = informationSpaces().next();
+        Iterator<ASIPInformationSpace> iterator = informationSpaces();
+        while(iterator.hasNext()){
+            ASIPInformationSpace current = iterator.next();
             if(SharkCSAlgebra.identical(current.getASIPSpace(), space)){
                 return current;
             }

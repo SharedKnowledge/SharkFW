@@ -3,6 +3,8 @@ package net.sharkfw.knowledgeBase.inmemory;
 import java.io.InputStream;
 import java.io.OutputStream;
 import net.sharkfw.asip.ASIPSpace;
+
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1225,39 +1227,59 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces(
             ASIPSpace as, boolean matchAny) throws SharkKBException {
-        return null; // TODO
+
+
+        if(as==null){
+            if(matchAny){
+                // return all
+                // TODO
+            }
+            return informationSpaces();
+        }
+
+        ArrayList<ASIPInformationSpace> list = new ArrayList<>();
+
+        Iterator<ASIPInformationSpace> iterator = informationSpaces();
+        while (iterator.hasNext()){
+            ASIPInformationSpace next = iterator.next();
+            if(SharkCSAlgebra.identical(next.getASIPSpace(), as)){
+                list.add(next);
+            }
+        }
+        return list.iterator();
+
     }
-        
+
 //        if (as == null) { // no constraints
 //            if(matchAny) {
 //                // return all
 //                return this.getAllInformationPoints();
 //            } else { // be an exact match
 //                List<InformationPoint> aip = new ArrayList<>();
-//                
-//                InformationCoordinates ic = 
+//
+//                InformationCoordinates ic =
 //                        InMemoSharkKB.getAnyInformationCoordinates();
-//                
+//
 //                // is there a ip with no constraints at all
 //                InformationPoint anyIP = this.getInformationPoint(ic);
-//                
+//
 //                // yes
 //                if(anyIP != null) {
 //                    aip.add(anyIP);
 //                }
-//                
+//
 //                // list contains at most one info point
 //                return aip.iterator();
 //            }
 //        }
-//        
+//
 //        List<InformationPoint> result = new ArrayList<>();
 //        List<InformationCoordinates> coo = new ArrayList<>();
-//        
+//
 //        if (coo == null) {
 //            return result.iterator();
 //        }
-//        
+//
 //        Iterator<InformationCoordinates> cooIter = coo.iterator();
 //        while (cooIter.hasNext()) {
 //            // next possible coordinate
@@ -1274,16 +1296,17 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 //                Iterator<InformationPoint> ipIter = this.knowledge.informationPoints();
 //                while (ipIter.hasNext()) {
 //                    InformationPoint ip = ipIter.next();
-//                    if(SharkCSAlgebra.identical(ip.getInformationCoordinates(), co)) 
+//                    if(SharkCSAlgebra.identical(ip.getInformationCoordinates(), co))
 //                    {
 //                        result.add(ip);
 //                    }
 //                }
 //            }
 //        }
-//        
+//
 //        return result.iterator();
 //    }
+
 
     /**
      * @deprecated 
