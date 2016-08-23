@@ -194,7 +194,7 @@ public class ASIPSerializer {
 
             String[] addresses = pst.getAddresses();
             JSONArray addrArray = new JSONArray();
-            if(addresses.length > 0){
+            if(addresses.length > 0 && addresses[0]!=null){
                 for (String addr : addresses) {
                     addrArray.put(addr);
                 }
