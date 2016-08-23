@@ -131,14 +131,15 @@ public class InMemoASIPKnowledge implements Knowledge {
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
         // iterate information and see what space fits..
-        
-        List<ASIPInformation> result = new ArrayList<>();
-        
-        Iterator<ASIPInformation> infoIter = this.getInformationSpace(infoSpace).informations();
-        while(infoIter.hasNext()) {
-            ASIPInformation info = infoIter.next();
 
-            result.add(info);
+        return this.getInformationSpace(infoSpace).informations();
+
+//        List<ASIPInformation> result = new ArrayList<>();
+//
+//        Iterator<ASIPInformation> infoIter = this.getInformationSpace(infoSpace).informations();
+//        while(infoIter.hasNext()) {
+//            ASIPInformation info = infoIter.next();
+//
 //            ASIPSpace asipSpace = info.getASIPSpace();
 //            ASIPInterest mutualInterest = InMemoSharkKB.createInMemoASIPInterest(); // just a container
 //
@@ -146,10 +147,11 @@ public class InMemoASIPKnowledge implements Knowledge {
 //                    asipSpace, infoSpace, FPSet.getZeroFPSet())) {
 //
 //                // they have something in common - add info
+//                result.add(info);
 //            }
-        }
-        
-        return result.iterator();
+//        }
+//
+//        return result.iterator();
     }
 
     @Override
