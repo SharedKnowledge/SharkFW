@@ -332,7 +332,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * @return
      * @throws SharkKBException 
      */
-    private static Interest _createInMemoCopy(SharkCS interest) 
+    private static Interest  _createInMemoCopy(SharkCS interest)
             throws SharkKBException {
         
         Interest i = InMemoSharkKB.createInMemoInterest();
@@ -367,7 +367,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     
     public static ASIPInterest createInMemoCopy(ASIPInterest interest) 
             throws SharkKBException {
-        return InMemoSharkKB.createInMemoCopy(interest);
+        return InMemoSharkKB.createInMemoCopy((ASIPSpace) interest);
     }
 
     /**
@@ -425,7 +425,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
             mTimes = InMemoSharkKB.createInMemoCopy(as.getTimes());
         }
         
-        return InMemoSharkKB.createInMemoASIPInterest(mTopics, mTypes, mReceivers, 
+        return InMemoSharkKB.createInMemoASIPInterest(mTopics, mTypes, mSender,
                 mApprovers, mReceivers, mTimes, mLocations, as.getDirection());
     }
     
