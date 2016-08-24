@@ -13,7 +13,7 @@ public abstract class Sync<SyncEntity extends Sync> {
     
     // must be overwritten by each inheriting class
     SyncEntity wrapSyncObject(Object target) {
-        throw new RuntimeException("you really MUST overwritte wrapTag in your class :)");
+        throw new RuntimeException("you really MUST overwrite wrapTag in your class :)");
     }
     
     public ArrayList<SyncEntity> wrapSTIter(Sync caller, 

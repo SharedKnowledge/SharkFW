@@ -260,6 +260,19 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         }
     }
 
+    @Override
+    public void raw(byte[] bytes, String address) throws SharkException {
+        this.raw(bytes, new String[]{address});
+    }
+
+    @Override
+    public void raw(byte[] bytes, String[] address) throws SharkException {
+        ASIPOutMessage outMessage = this.createResponse(address);
+        if (outMessage != null) {
+            outMessage.raw(bytes);
+        }
+    }
+
     public void resetResponse(){
         this.response = null;
     }

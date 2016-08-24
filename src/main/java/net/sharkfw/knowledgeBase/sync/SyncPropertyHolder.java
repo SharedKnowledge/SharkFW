@@ -22,7 +22,7 @@ abstract class SyncPropertyHolder extends Sync implements SystemPropertyHolder {
             }
         }
         catch(SharkKBException e) {
-            L.e("cannot write time stampf to properties");
+            L.e("cannot write time stamp to properties");
         }
     }
 
@@ -71,7 +71,7 @@ abstract class SyncPropertyHolder extends Sync implements SystemPropertyHolder {
     }
     
     /**
-     * Taht method is to be called whenever a change occurred on that entity.
+     * That method is to be called whenever a change occurred on that entity.
      */
     protected final void changed() {
         String timeString = Long.toString(System.currentTimeMillis());

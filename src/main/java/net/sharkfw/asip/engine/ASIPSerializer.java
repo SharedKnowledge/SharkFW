@@ -22,6 +22,7 @@ import java.util.*;
 /**
  * @author j4rvis
  */
+@SuppressWarnings("Duplicates")
 public class ASIPSerializer {
 
     private static final String CLASS = "ASIPSERIALIZER: ";
@@ -102,7 +103,7 @@ public class ASIPSerializer {
                 .put(ASIPMessage.SIGNED, header.isSigned())
                 .put(ASIPMessage.TTL, header.getTtl())
                 .put(ASIPMessage.COMMAND, header.getCommand())
-//                .put(ASIPMessage.TOPIC, header.getTopic())
+                .put(ASIPMessage.TOPIC, header.getTopic())
                 .put(ASIPMessage.SENDER, (header.getSender() != null) ?
                         serializeTag(header.getSender()): "")
                 .put(ASIPMessage.RECEIVERPEER, (header.getReceiverPeer() != null) ?
@@ -121,7 +122,6 @@ public class ASIPSerializer {
 
     public static JSONObject serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException {
         if (knowledge == null) return null;
-
 
         JSONObject object = new JSONObject();
         SharkVocabulary vocabulary = knowledge.getVocabulary();
@@ -254,15 +254,13 @@ public class ASIPSerializer {
     }
 
     public static JSONArray serializeProperties(SystemPropertyHolder target) throws SharkKBException {
-        if (target == null) {
-            return null;
-        }
+
+        if (target == null) { return null; }
 
         Enumeration<String> propNamesEnum = target.propertyNames(false);
         if (propNamesEnum == null || !propNamesEnum.hasMoreElements()) {
             return new JSONArray();
         }
-        JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         while (propNamesEnum.hasMoreElements()) {
             String name = propNamesEnum.nextElement();
@@ -273,8 +271,6 @@ public class ASIPSerializer {
             property.put(PropertyHolder.VALUE, value);
             jsonArray.put(property);
         }
-
-//        jsonObject.put(PropertyHolder.PROPERTIES, jsonArray);
 
         return jsonArray;
     }
@@ -665,7 +661,6 @@ public class ASIPSerializer {
                 buff = contentString.substring(offset, length);
 
                 ASIPInformation info = kb.addInformation(buff, space);
-                // TODO Info setName poassible?
                 if (object.has(ASIPInfoMetaData.NAME)) {
                     info.setName(object.getString(ASIPInfoMetaData.NAME));
                 }
@@ -674,7 +669,11 @@ public class ASIPSerializer {
         if (infoDataArray.length() <= 0 && contentString.length() > 0) {
             kb.addInformation(contentString, null);
         }
-//    }
+
+        if(jsonObject.has(PropertyHolder.PROPERTIES)){
+            deserializeProperties(kb, jsonObject.get(PropertyHolder.PROPERTIES).toString());
+        }
+
         return kb;
     }
 
@@ -1121,4 +1120,12 @@ public class ASIPSerializer {
 
         return sn;
     }
+
+    public static JSONObject serializeKB(SharkKB kb) throws SharkKBException {
+        JSONObject jsonObject = ASIPSerializer.serializeKnowledge(kb);
+        jsonObject.put(PropertyHolder.PROPERTIES, ASIPSerializer.serializeProperties(kb));
+        return jsonObject;
+    }
+
+
 }

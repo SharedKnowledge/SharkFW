@@ -77,7 +77,7 @@ public class SyncKB implements SharkKB {
     }
     
     /**
-     * That methode return all data (tags and information) that has
+     * That method return all data (tags and information) that has
      * changed since a date. Note: We don't keep track of relations between
      * tags. We only keep track if tags and information are changed.
      * 

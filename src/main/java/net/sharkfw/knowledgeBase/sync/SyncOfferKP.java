@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -56,7 +57,7 @@ public class SyncOfferKP extends KnowledgePort {
 
     @Override
     protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
-        if(interest.getTypes() != null && interest.getSender() != null && interest.getTypes() != null) {
+        if(interest.getTypes() != null && interest.getSender() != null) {
             PeerSemanticTag peer = interest.getSender();
             SemanticTag st = interest.getTypes().getSemanticTag(SyncOfferKP.SHARK_SYNC_TYPE_SI);
             
@@ -77,13 +78,17 @@ public class SyncOfferKP extends KnowledgePort {
                                 SharkKB changes = kb.getChanges(peerLastSeen);
                                 
                                 // produce message: TODO: send whole kb not only knowledge!!
-                                JSONObject serializeKnowledge = ASIPSerializer.serializeKnowledge(changes);
+                                String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
                                 // TODO: send those data as content to recipient
-//                                try {
-//                                    asipConnection.raw(null, message.getSender().getAddresses());
-//                                } catch (SharkException ex) {
-//                                    L.e(ex.getLocalizedMessage(), this);
-//                                }
+
+                                try {
+                                    message.raw(
+                                            serializeKnowledge.getBytes(StandardCharsets.UTF_8),
+                                            message.getSender().getAddresses()
+                                    );
+                                } catch (SharkException ex) {
+                                    L.e(ex.getLocalizedMessage(), this);
+                                }
                             }
                         }
                     }

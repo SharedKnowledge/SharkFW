@@ -133,6 +133,10 @@ public class InMemoASIPKnowledge implements Knowledge {
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
         // iterate information and see what space fits..
 
+        if(this.getInformationSpace(infoSpace)==null){
+            return null;
+        }
+
         return this.getInformationSpace(infoSpace).informations();
 
 //        List<ASIPInformation> result = new ArrayList<>();
