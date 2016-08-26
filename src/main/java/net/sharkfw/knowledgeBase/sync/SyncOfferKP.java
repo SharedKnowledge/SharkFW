@@ -82,6 +82,7 @@ public class SyncOfferKP extends KnowledgePort {
                                 // TODO: send those data as content to recipient
 
                                 try {
+                                    // TODO Threading?
                                     message.raw(
                                             serializeKnowledge.getBytes(StandardCharsets.UTF_8),
                                             message.getSender().getAddresses()
