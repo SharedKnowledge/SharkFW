@@ -4,6 +4,7 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.peer.SharkEngine;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 public class SyncModuleTest {
 
     @Test
+    @Ignore
     public void UsageTest(){
 
         SharkEngine se = new J2SEAndroidSharkEngine(SharkKB storage);
@@ -21,42 +23,42 @@ public class SyncModuleTest {
         SharkKB storage = se.getStorage();
 
         // Later
-
-        se.persistPort(ASIPPort port);
-        // gib mir klassenNamen
-        // gib mir deine Memento
-        // speichere beides in der Internen KB
-        // REACTIVATE
-        // klassenObject erzeugen an Hand des KlassenNamens
-        // kann scheitern dann pech
-        // Constructor(Engine, Memento)
-        // Aufruf Constructor
-
-        se.removePersistedPort(ASIPPort port);
-
-        Iterator<ASIPPort> ports = se.getPersistedPorts();
-
-        se.reactivatePersistedPorts();
-
-        SharkKB kb = se.getKB(String id, Class className);
-
-        // KnowledgeBase
-
-        String id = kb.getId() // Mit KlassenNamen
-
-        // ASIPPort
-
-        ASIPPort port = new ASIPPort(SharkEngine engine, ASIPMemento memento);
-
-        port.setMemento(ASIPMemento memento);
-        ASIPMemento memento = port.getMemento();
-
-        // ASIPMemento
-
-        // Alle Parameter bis auf Engine und SharkKB als Id
-        memento.getSerializedString();
-
-        // END Later
+//
+//        se.persistPort(ASIPPort port);
+//        // gib mir klassenNamen
+//        // gib mir deine Memento
+//        // speichere beides in der Internen KB
+//        // REACTIVATE
+//        // klassenObject erzeugen an Hand des KlassenNamens
+//        // kann scheitern dann pech
+//        // Constructor(Engine, Memento)
+//        // Aufruf Constructor
+//
+//        se.removePersistedPort(ASIPPort port);
+//
+//        Iterator<ASIPPort> ports = se.getPersistedPorts();
+//
+//        se.reactivatePersistedPorts();
+//
+//        SharkKB kb = se.getKB(String id, Class className);
+//
+//        // KnowledgeBase
+//
+//        String id = kb.getId() // Mit KlassenNamen
+//
+//        // ASIPPort
+//
+//        ASIPPort port = new ASIPPort(SharkEngine engine, ASIPMemento memento);
+//
+//        port.setMemento(ASIPMemento memento);
+//        ASIPMemento memento = port.getMemento();
+//
+//        // ASIPMemento
+//
+//        // Alle Parameter bis auf Engine und SharkKB als Id
+//        memento.getSerializedString();
+//
+//        // END Later
 
         // SyncManager
 
