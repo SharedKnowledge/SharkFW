@@ -33,7 +33,7 @@ public class SyncOfferKP extends KnowledgePort {
     
     private final HashMap<SemanticTag, SyncKB> kbs = new HashMap<>();
     private final HashMap<PeerSemanticTag, Long> lastSeen = new HashMap<>();
-    
+
     private static final String LAST_SEEN_PROPERTY_NAME = "SHARK_SYNC_LAST_SEEN";
     private final PropertyHolder propertyHolder;
 
@@ -44,13 +44,12 @@ public class SyncOfferKP extends KnowledgePort {
 
     @Override
     protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
-        // nothing todo here
     }
-    
+
     public void addKnowledgeBase(SyncKB kb, SemanticTag kbTitel) {
         this.kbs.put(kbTitel, kb);
     }
-    
+
     public void removeKnowledgeBase(SemanticTag kbTitel) {
         this.kbs.remove(kbTitel);
     }

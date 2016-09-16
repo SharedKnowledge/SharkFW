@@ -24,22 +24,13 @@ import java.util.Iterator;
  */
 public class SyncInviteKP extends KnowledgePort {
 
-    public static final String SHARK_SYNC_TYPE_SI = "http://www.sharksystem.net/sync";
-
-    private final HashMap<PeerSemanticTag, Long> lastSeen = new HashMap<>();
-    private final int INVITE_INTERVAL;
-
-    private static final String LAST_SEEN_PROPERTY_NAME = "SHARK_SYNC_LAST_SEEN";
     private final PropertyHolder propertyHolder;
+    private final SyncManager syncManager;
 
     public SyncInviteKP(SharkEngine se, PropertyHolder propertyHolder) {
-        this(se, propertyHolder, 1000*60*10 ); // 10 minutes
-    }
-
-    public SyncInviteKP(SharkEngine se, PropertyHolder propertyHolder, int interval) {
         super(se);
         this.propertyHolder = propertyHolder;
-        INVITE_INTERVAL = interval;
+        this.syncManager = SyncManager.getInstance(null);
     }
 
     @Override
@@ -49,83 +40,46 @@ public class SyncInviteKP extends KnowledgePort {
 
     @Override
     protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
-        if(interest.getSender()!=null){
-            Long peerLastSeen = this.lastSeen.get(interest.getSender());
-            this.lastSeen.put(interest.getSender(), System.currentTimeMillis());
 
-            if(peerLastSeen!=null){
-                if(peerLastSeen < (System.currentTimeMillis() - INVITE_INTERVAL)){
+        // Check if it is an Invitation else return
+        SemanticTag inviteTag = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_INVITE_TYPE_SI);
+        if(inviteTag==null) return;
 
-                    // Build invitation interest w/ type: sync, sender: myself and receiver: the message's sender
-                    STSet set = InMemoSharkKB.createInMemoSTSet();
-                    set.createSemanticTag("SYNC", SHARK_SYNC_TYPE_SI);
-
-                    PeerSTSet inMemoPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
-                    inMemoPeerSTSet.merge(message.getSender());
-
-                    ASIPInterest asipInterest = InMemoSharkKB.createInMemoASIPInterest(
-                            null, set, se.getOwner(), null, inMemoPeerSTSet, null, null, ASIPSpace.DIRECTION_OUT );
-
-                    try {
-                        asipConnection.expose(asipInterest, message.getSender().getAddresses());
-                    } catch (SharkException e) {
-                        e.printStackTrace();
-                    }
-                }
+        // TODO is sender in whitelist?
+        // is uniqueName accepted? check if I already know it!
+        Iterator<SemanticTag> iterator = interest.getTopics().stTags();
+        while (iterator.hasNext()){
+            SemanticTag next = iterator.next();
+            SyncComponent syncComponent = syncManager.getComponentByName(next);
+            if(syncComponent!=null){
+                // TODO already invited.
+                // TODO Check if everything is still the same or new approver?
             }
         }
 
-    }
+        // for now => accept invitation!
 
+        // TODO create an empty SyncComponent based on the interest?
 
-    private void saveLastSeen() {
-        //test
-//        PeerSemanticTag p = InMemoSharkKB.createInMemoPeerSemanticTag("Alice", "http://alice.de", "mail://alice@alice.de");
-//        Long t = System.currentTimeMillis();
-//        this.lastSeen.put(p, t);
-//
-//        p = InMemoSharkKB.createInMemoPeerSemanticTag("Alice", "http://bob.de", "mail://bob@bob.de");
-//        t = System.currentTimeMillis();
-//        this.lastSeen.put(p, t);
-        // end test
+        // set myself in approver aswell and reply with an OfferTypeTag
 
-        StringBuilder buf = new StringBuilder();
-        Iterator<PeerSemanticTag> peerIter = this.lastSeen.keySet().iterator();
+        // Set new type as OfferType
+        STSet typeSet = InMemoSharkKB.createInMemoSTSet();
+        typeSet.merge(SyncManager.SHARK_SYNC_OFFER_TAG);
+        interest.setTypes(typeSet);
+
+        PeerSTSet approvers = interest.getApprovers();
+        // Add to approvers
+        approvers.merge(this.se.getOwner());
+        // Set myself as sender
+        interest.setSender(this.se.getOwner());
+
+        // and reply to originator
         try {
-            while(peerIter.hasNext()) {
-                PeerSemanticTag peer = peerIter.next();
-                Long lastseen = this.lastSeen.get(peer);
-                buf.append(ASIPSerializer.serializeTag(peer));
-                buf.append("{" + Long.toString(lastseen) + "}");
-            }
-            L.d("write buf: " + buf.toString());
-            this.propertyHolder.setProperty(LAST_SEEN_PROPERTY_NAME, buf.toString());
-        } catch (Exception ex) {
-            L.e("couldn't write last seen entries for sync - critical", this);
+            asipConnection.expose(interest);
+        } catch (SharkException e) {
+            e.printStackTrace();
         }
-    }
 
-    /**
-     * TODO
-     */
-    private void restoreLastSeen() {
-        try {
-            String prop = this.propertyHolder.getProperty(LAST_SEEN_PROPERTY_NAME);
-            if(prop == null) return;
-
-            Iterator<String> stringIter = Util.stringsBetween("{", "}", prop, 0);
-            while(stringIter.hasNext()) {
-                String peerString = "{" + stringIter.next() + "}";
-                String timeString = stringIter.next();
-
-                PeerSemanticTag peer = ASIPSerializer.deserializePeerTag(peerString);
-                Long time = Long.parseLong(timeString);
-
-                this.lastSeen.put(peer, time);
-            }
-
-        } catch (SharkKBException ex) {
-            L.d("cannot read last seen entries for sync - critical", this);
-        }
     }
 }

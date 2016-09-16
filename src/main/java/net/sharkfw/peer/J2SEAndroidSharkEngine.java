@@ -27,6 +27,7 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.sync.SyncManager;
 import net.sharkfw.protocols.*;
 import net.sharkfw.protocols.m2s.M2SStub;
 import net.sharkfw.protocols.m2s.MessageStorage;
@@ -73,6 +74,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     
     private static final int DEFAULT_MAX_MAIL_SIZE = 1024;  // default 1 MByte
     private int maxMailMessageSize = DEFAULT_MAX_MAIL_SIZE;
+    private SharkKB storage;
 
     /**
      * Create a new J2SESharkEngine.
@@ -83,9 +85,18 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
 		tcp = null;
     }
 
+    public J2SEAndroidSharkEngine(SharkKB storage){
+        this();
+        this.storage = storage;
+    }
+
     public void activateASIP(){
         this.kepStub = null;
         this.setASIPStub(new SimpleASIPStub(this));
+    }
+
+    public SyncManager getSyncManager(){
+        return SyncManager.getInstance();
     }
 
     @Override
