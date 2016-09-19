@@ -24,13 +24,11 @@ import java.util.Iterator;
  */
 public class SyncInviteKP extends KnowledgePort {
 
-    private final PropertyHolder propertyHolder;
     private final SyncManager syncManager;
 
-    public SyncInviteKP(SharkEngine se, PropertyHolder propertyHolder) {
+    public SyncInviteKP(SharkEngine se, SyncManager syncManager) {
         super(se);
-        this.propertyHolder = propertyHolder;
-        this.syncManager = SyncManager.getInstance(null);
+        this.syncManager = syncManager;
     }
 
     @Override
@@ -56,9 +54,6 @@ public class SyncInviteKP extends KnowledgePort {
                 // TODO Check if everything is still the same or new approver?
             }
         }
-
-        // for now => accept invitation!
-
         // TODO create an empty SyncComponent based on the interest?
 
         // set myself in approver aswell and reply with an OfferTypeTag

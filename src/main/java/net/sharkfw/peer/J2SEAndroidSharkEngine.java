@@ -85,18 +85,13 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
 		tcp = null;
     }
 
-    public J2SEAndroidSharkEngine(SharkKB storage){
-        this();
-        this.storage = storage;
-    }
-
     public void activateASIP(){
         this.kepStub = null;
         this.setASIPStub(new SimpleASIPStub(this));
     }
 
     public SyncManager getSyncManager(){
-        return SyncManager.getInstance();
+        return SyncManager.getInstance(this);
     }
 
     @Override

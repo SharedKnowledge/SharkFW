@@ -3,7 +3,6 @@ package net.sharkfw.knowledgeBase.sync;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
-import org.apache.maven.wagon.providers.ssh.jsch.ScpCommandExecutor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,6 +12,9 @@ import java.util.List;
  * Created by j4rvis on 14.09.16.
  */
 public class SyncManager {
+
+    private final SyncOfferKP offerKP;
+    private SyncInviteKP syncInviteKP;
 
     public interface SyncInviteListener {
         void onInvitation(SyncComponent component);
@@ -43,10 +45,15 @@ public class SyncManager {
 
     private SyncManager(SharkEngine engine) {
         this.engine = engine;
+        this.offerKP = new SyncOfferKP(this.engine, this.engine.getStorage());
     }
 
     public void allowInvitation(boolean allow){
-        // TODO activate or deactivate InvitationKP
+        if(allow){
+            syncInviteKP = new SyncInviteKP(this.engine, this);
+        } else if(!allow){
+            syncInviteKP = null;
+        }
     }
 
     public SyncComponent createSyncComponent(

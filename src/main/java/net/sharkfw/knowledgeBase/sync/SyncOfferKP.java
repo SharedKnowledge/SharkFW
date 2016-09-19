@@ -3,14 +3,12 @@ package net.sharkfw.knowledgeBase.sync;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPSerializer;
-import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.STSet;
@@ -22,75 +20,71 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 import net.sharkfw.system.Util;
-import org.json.JSONObject;
 
 /**
  *
  * @author thsc
  */
 public class SyncOfferKP extends KnowledgePort {
-    public static final String SHARK_SYNC_TYPE_SI = "http://www.sharksystem.net/sync";
-    
-    private final HashMap<SemanticTag, SyncKB> kbs = new HashMap<>();
+
     private final HashMap<PeerSemanticTag, Long> lastSeen = new HashMap<>();
 
     private static final String LAST_SEEN_PROPERTY_NAME = "SHARK_SYNC_LAST_SEEN";
     private final PropertyHolder propertyHolder;
+    private final SyncManager syncManager;
 
-    public SyncOfferKP(SharkEngine se, PropertyHolder propertyHolder) {
+    public SyncOfferKP(SharkEngine se, SyncManager syncManager, PropertyHolder propertyHolder) {
         super(se);
         this.propertyHolder = propertyHolder;
+        this.syncManager = syncManager;
     }
 
     @Override
     protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
     }
 
-    public void addKnowledgeBase(SyncKB kb, SemanticTag kbTitel) {
-        this.kbs.put(kbTitel, kb);
-    }
-
-    public void removeKnowledgeBase(SemanticTag kbTitel) {
-        this.kbs.remove(kbTitel);
-    }
-
     @Override
     protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
         if(interest.getTypes() != null && interest.getSender() != null) {
             PeerSemanticTag peer = interest.getSender();
-            SemanticTag st = interest.getTypes().getSemanticTag(SyncOfferKP.SHARK_SYNC_TYPE_SI);
+            SemanticTag st = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_OFFER_TYPE_SI);
             
             if(st != null && peer != null) {
-                Long peerLastSeen = this.lastSeen.get(peer);
-                // remember that 
-                this.lastSeen.put(peer, System.currentTimeMillis());
-                
-                if(interest.getTopics() != null) {
-                    STSet kbSIs = interest.getTopics();
-                    if(kbSIs != null) {
-                        // iterate kb sis and produce differences
-                        Iterator<SemanticTag> kbSIIter = kbSIs.stTags();
-                        while(kbSIIter.hasNext()) {
-                            SemanticTag kbSI = kbSIIter.next();
-                            SyncKB kb = this.kbs.get(kbSI);
-                            if(kb != null) {
-                                SharkKB changes = kb.getChanges(peerLastSeen);
-                                
-                                // produce message: TODO: send whole kb not only knowledge!!
-                                String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
-                                // TODO: send those data as content to recipient
 
-                                try {
-                                    // TODO Threading?
-                                    message.raw(
-                                            serializeKnowledge.getBytes(StandardCharsets.UTF_8),
-                                            message.getSender().getAddresses()
-                                    );
-                                } catch (SharkException ex) {
-                                    L.e(ex.getLocalizedMessage(), this);
-                                }
+                Long peerLastSeen = this.lastSeen.get(peer);
+                // remember that
+                this.lastSeen.put(peer, System.currentTimeMillis());
+
+                Iterator<SemanticTag> iterator = interest.getTopics().stTags();
+                while (iterator.hasNext()){
+                    SemanticTag next = iterator.next();
+                    SyncComponent component = syncManager.getComponentByName(next);
+                    if (component!=null){
+                        // Get Component and update approved group members
+                        component.addApprovedMember(interest.getApprovers());
+
+                        // Now send the latest changes to the sender
+                        SyncKB kb = component.getKb();
+                        if(kb != null) {
+                            SharkKB changes = kb.getChanges(peerLastSeen);
+
+                            // produce message: TODO: send whole kb not only knowledge!!
+                            String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
+                            // TODO: send those data as content to recipient
+
+                            try {
+                                // TODO Change the type of the message to merge type
+
+                                // TODO Threading?
+                                message.raw(
+                                        serializeKnowledge.getBytes(StandardCharsets.UTF_8),
+                                        message.getSender().getAddresses()
+                                );
+                            } catch (SharkException ex) {
+                                L.e(ex.getLocalizedMessage(), this);
                             }
                         }
+
                     }
                 }
             }

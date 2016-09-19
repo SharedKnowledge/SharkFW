@@ -16,11 +16,10 @@ import java.util.Enumeration;
 public class SyncComponent {
 
     private final SharkEngine engine;
-    private final SyncOfferKP syncOfferKP;
-    private SyncMergeKP syncMergeKP;
     private SyncKB syncKB;
     private SemanticTag uniqueName;
     private PeerSTSet members;
+    private PeerSTSet approvedMembers = InMemoSharkKB.createInMemoPeerSTSet();
     private PeerSemanticTag owner;
     private boolean writable;
 
@@ -31,8 +30,6 @@ public class SyncComponent {
         this.members = members;
         this.owner = owner;
         this.writable = writable;
-
-        this.syncOfferKP = new SyncOfferKP(this.engine, this.syncKB);
 
         // Send out invitations to the members
 
@@ -76,6 +73,15 @@ public class SyncComponent {
         message.expose(interest);
     }
 
+    public void addApprovedMember(PeerSemanticTag peerSemanticTag) throws SharkKBException {
+        approvedMembers.merge(peerSemanticTag);
+
+    }
+
+    public void addApprovedMember(PeerSTSet members) throws SharkKBException {
+        approvedMembers.merge(members);
+    }
+
     public void addMember(PeerSemanticTag member) throws SharkKBException {
         members.merge(member);
         sendInvite(member.getAddresses());
@@ -85,7 +91,7 @@ public class SyncComponent {
         members.removeSemanticTag(member);
     }
 
-    public SharkKB getKb() {
+    public SyncKB getKb() {
         return syncKB;
     }
 

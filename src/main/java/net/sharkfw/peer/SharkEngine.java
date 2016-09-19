@@ -103,6 +103,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     @SuppressWarnings("unused")
     private static int DEFAULT_HTTP_PORT = 8080;
     protected ConnectionStatusListener connectionListener = null;
+    private SharkKB storage;
 
     /**
      * Empty constructor for new API
@@ -110,6 +111,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public SharkEngine() {
         this.ports = new ArrayList<>();
+    }
+
+    public SharkEngine(SharkKB storage){
+        this();
+        this.storage = storage;
+    }
+
+    public SharkKB getStorage(){
+        return this.storage;
     }
 
     protected void setKEPStub(KEPStub kepStub) {
