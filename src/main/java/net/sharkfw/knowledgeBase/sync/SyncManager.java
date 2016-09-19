@@ -14,6 +14,7 @@ import java.util.List;
 public class SyncManager {
 
     private final SyncOfferKP offerKP;
+    private final SyncMergeKP syncMergeKP;
     private SyncInviteKP syncInviteKP;
 
     public interface SyncInviteListener {
@@ -46,6 +47,7 @@ public class SyncManager {
     private SyncManager(SharkEngine engine) {
         this.engine = engine;
         this.offerKP = new SyncOfferKP(this.engine, this, this.engine.getStorage());
+        this.syncMergeKP = new SyncMergeKP(this.engine, this);
     }
 
     public void allowInvitation(boolean allow){

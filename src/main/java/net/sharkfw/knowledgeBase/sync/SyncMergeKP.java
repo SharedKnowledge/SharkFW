@@ -2,10 +2,14 @@ package net.sharkfw.knowledgeBase.sync;
 
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
+import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.peer.ContentPort;
 import net.sharkfw.peer.SharkEngine;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
@@ -19,51 +23,41 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
  * @author thsc
  */
 public class SyncMergeKP extends ContentPort {
-    private PeerSTSet allowedUsers = null;
-    private SyncKB syncKB;
-    SemanticTag kbTitel;
-    
-    public SyncMergeKP(SharkEngine se, SyncKB kb, SemanticTag kbTitel, PeerSTSet allowedUsers) {
-        super(se);
-        this.syncKB = kb;
-        this.kbTitel = kbTitel;
-        
-        try {
-            if(allowedUsers != null) {
-                this.allowedUsers = InMemoSharkKB.createInMemoCopy(allowedUsers);
-            }
-        }
-        catch(SharkKBException e) {
-            // cannot happen..
-        }
-    }
 
-    public SyncMergeKP(SharkEngine se, SyncKB kb, SemanticTag kbTitel) {
-        this(se, kb, kbTitel, null);
+    private SyncManager syncManager;
+
+    public SyncMergeKP(SharkEngine se, SyncManager syncManager) {
+        super(se);
+        this.syncManager = syncManager;
     }
 
     @Override
     protected boolean handleRaw(ASIPInMessage message, ASIPConnection connection, InputStream inputStream) {
-        message.getTopic();
-        if(!SharkCSAlgebra.identical(this.kbTitel, message.getTopic())) return false;
-        
+
+        if(!SharkCSAlgebra.identical(message.getType(), SyncManager.SHARK_SYNC_MERGE_TAG)) return false;
+
+        SyncComponent component = syncManager.getComponentByName(message.getTopic());
+
+        if(component == null) return false;
+
+        SyncKB syncKB = component.getKb();
+
         // check allowed sender .. better make that with black-/whitelist
         // deserialize kb from content
-        InputStream rawContent = message.getRaw();
-        
-        SharkKB changes; // that shall be deserialized kb
-        
-        try {
-            // add to kb
-            this.syncKB.putChanges(syncKB);
 
-            // we are done :)
+        String text;
+        try (Scanner scanner = new Scanner(message.getRaw(), StandardCharsets.UTF_8.name())) {
+            text = scanner.useDelimiter("\\A").next();
         }
-        catch(SharkKBException e) {
-            // do something useful
+        SharkKB changes;
+
+        try {
+            changes = (SharkKB) ASIPSerializer.deserializeASIPKnowledge(text);
+            syncKB.putChanges(changes);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
         }
-        
+
         return true;
-        
     }
 }

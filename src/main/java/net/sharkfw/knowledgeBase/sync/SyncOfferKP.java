@@ -74,6 +74,7 @@ public class SyncOfferKP extends KnowledgePort {
 
                             try {
                                 // TODO Change the type of the message to merge type
+                                message.setType(SyncManager.SHARK_SYNC_MERGE_TAG);
 
                                 // TODO Threading?
                                 message.raw(

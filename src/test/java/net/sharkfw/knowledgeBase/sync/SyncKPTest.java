@@ -60,7 +60,7 @@ public class SyncKPTest {
         // setup engine 1
         SharkEngine se1 = new J2SEAndroidSharkEngine();
         SemanticTag kbTitel1 = InMemoSharkKB.createInMemoSemanticTag("kb1", "http://kb1.somewhere");
-        SyncMergeKP kp1 = new SyncMergeKP(se1, syncKB1, kbTitel1);
+//        SyncMergeKP kp1 = new SyncMergeKP(se1, syncKB1, kbTitel1);
 
         L.setLogLevel(L.LOGLEVEL_ALL);
         
@@ -69,7 +69,7 @@ public class SyncKPTest {
         SemanticTag kbTitel2 = InMemoSharkKB.createInMemoSemanticTag("kb2", "http://kb2.somewhere");
         SharkKB target2 = new InMemoSharkKB();
         SyncKB syncKB2 = new SyncKB(target2);
-        SyncMergeKP kp2 = new SyncMergeKP(se2, syncKB2, kbTitel2);
+//        SyncMergeKP kp2 = new SyncMergeKP(se2, syncKB2, kbTitel2);
 
         // do the exchange
         // no import changes into another KB
