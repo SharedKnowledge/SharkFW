@@ -36,6 +36,7 @@ public abstract class ASIPMessage {
     public static final String RECEIVERLOCATION = "RECEIVERLOCATION";
     public static final String RECEIVERTIME = "RECEIVERTIME";
     public static final String TOPIC = "TOPIC";
+    public static final String TYPE = "TYPE";
     private SharkEngine engine;
 
     private StreamConnection connection;
@@ -55,6 +56,7 @@ public abstract class ASIPMessage {
     private SpatialSemanticTag receiverSpatial = null;
     private TimeSemanticTag receiverTime = null;
     private SemanticTag topic;
+    private SemanticTag type;
 
     private PrivateKey privateKey;
     private SharkPkiStorage sharkPkiStorage;
@@ -75,7 +77,8 @@ public abstract class ASIPMessage {
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
                        TimeSemanticTag receiverTime,
-                       SemanticTag topic) throws SharkKBException {
+                       SemanticTag topic,
+                       SemanticTag type) throws SharkKBException {
 
         this.engine = engine;
         this.connection = connection;
@@ -98,6 +101,7 @@ public abstract class ASIPMessage {
         }
 
         this.topic = topic;
+        this.type = type;
     }
 
     public ASIPMessage(SharkEngine engine,
@@ -107,6 +111,7 @@ public abstract class ASIPMessage {
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
                        TimeSemanticTag receiverTime,
+                       SemanticTag type,
                        SemanticTag topic) throws SharkKBException {
 
         this.engine = engine;
@@ -129,6 +134,7 @@ public abstract class ASIPMessage {
             this.receivers.merge(receiverTime);
         }
         this.topic = topic;
+        this.type = type;
     }
     
     public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
@@ -200,6 +206,10 @@ public abstract class ASIPMessage {
         return this.topic;
     }
 
+    public SemanticTag getType(){
+        return this.type;
+    }
+
     public void setCommand(int command) {
         this.command = command;
     }
@@ -255,6 +265,10 @@ public abstract class ASIPMessage {
         this.topic = topic;
     }
 
+    public void setType(SemanticTag type){
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -275,6 +289,7 @@ public abstract class ASIPMessage {
 //        if (receivers != null ? !receivers.equals(that.receivers) : that.receivers != null) return false;
         if (receiverPeer != null ? !receiverPeer.equals(that.receiverPeer) : that.receiverPeer != null) return false;
         if (topic != null ? !topic.equals(that.topic) : that.topic != null) return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (receiverSpatial != null ? !receiverSpatial.equals(that.receiverSpatial) : that.receiverSpatial != null)
             return false;
         return receiverTime != null ? receiverTime.equals(that.receiverTime) : that.receiverTime == null;
@@ -316,6 +331,7 @@ public abstract class ASIPMessage {
                 ", receiverSpatial=" + receiverSpatial +
                 ", receiverTime=" + receiverTime +
                 ", topic=" + topic +
+                ", type=" + type +
                 '}';
     }
 }

@@ -1019,7 +1019,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public ASIPOutMessage createASIPOutMessage(String[] addresses, PeerSemanticTag receiver) {
-        return this.createASIPOutMessage(addresses, this.engineOwnerPeer, receiver, null, null, null, 10);
+        return this.createASIPOutMessage(addresses, this.engineOwnerPeer, receiver, null, null, null, null, 10);
     }
 
 
@@ -1030,6 +1030,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             SpatialSemanticTag receiverSpatial /* kann null sein*/,
             TimeSemanticTag receiverTime /* kann null sein*/,
             SemanticTag topic,
+            SemanticTag type,
             long ttl /* Max hops*/) {
 
         ASIPOutMessage message = null;
@@ -1054,8 +1055,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                  * Check if stub is available
                  */
 
-                int type = Protocols.getValueByAddress(address);
-                Stub protocolStub = this.getProtocolStub(type);
+                int protocol = Protocols.getValueByAddress(address);
+                Stub protocolStub = this.getProtocolStub(protocol);
 
                 /*
                  * Find out which protocol to use
@@ -1077,11 +1078,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     //    } else {
                     //  fromPool = true;
                     //  }
-                    message = new ASIPOutMessage(this, sConn, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic);
+                    message = new ASIPOutMessage(this, sConn, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic, type);
                 } else {
                     // TODO MessageStub necessary?
                     mStub = (MessageStub) protocolStub;
-                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic, address);
+                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic, type, address);
                 }
             } catch (SharkNotSupportedException ex) {
                 L.e(ex.getMessage(), this);

@@ -1,96 +1,96 @@
-package net.sharkfw.knowledgeBase.sync;
-
-import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.peer.ASIPPort;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.peer.SharkEngine;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import java.util.Iterator;
-
-/**
- * Created by j4rvis on 14.09.16.
- */
-public class SyncModuleTest {
-
-    @Test
-    @Ignore
-    public void UsageTest(){
-
-        SharkEngine se = new J2SEAndroidSharkEngine(SharkKB storage);
-
-        SharkKB storage = se.getStorage();
-
-        // Later
+//package net.sharkfw.knowledgeBase.sync;
 //
-//        se.persistPort(ASIPPort port);
-//        // gib mir klassenNamen
-//        // gib mir deine Memento
-//        // speichere beides in der Internen KB
-//        // REACTIVATE
-//        // klassenObject erzeugen an Hand des KlassenNamens
-//        // kann scheitern dann pech
-//        // Constructor(Engine, Memento)
-//        // Aufruf Constructor
+//import net.sharkfw.knowledgeBase.*;
+//import net.sharkfw.peer.ASIPPort;
+//import net.sharkfw.peer.J2SEAndroidSharkEngine;
+//import net.sharkfw.peer.SharkEngine;
+//import org.junit.Ignore;
+//import org.junit.Test;
 //
-//        se.removePersistedPort(ASIPPort port);
+//import java.util.Iterator;
 //
-//        Iterator<ASIPPort> ports = se.getPersistedPorts();
+///**
+// * Created by j4rvis on 14.09.16.
+// */
+//public class SyncModuleTest {
 //
-//        se.reactivatePersistedPorts();
+//    @Test
+//    @Ignore
+//    public void UsageTest(){
 //
-//        SharkKB kb = se.getKB(String id, Class className);
+//        SharkEngine se = new J2SEAndroidSharkEngine(SharkKB storage);
 //
-//        // KnowledgeBase
+//        SharkKB storage = se.getStorage();
 //
-//        String id = kb.getId() // Mit KlassenNamen
+//        // Later
+////
+////        se.persistPort(ASIPPort port);
+////        // gib mir klassenNamen
+////        // gib mir deine Memento
+////        // speichere beides in der Internen KB
+////        // REACTIVATE
+////        // klassenObject erzeugen an Hand des KlassenNamens
+////        // kann scheitern dann pech
+////        // Constructor(Engine, Memento)
+////        // Aufruf Constructor
+////
+////        se.removePersistedPort(ASIPPort port);
+////
+////        Iterator<ASIPPort> ports = se.getPersistedPorts();
+////
+////        se.reactivatePersistedPorts();
+////
+////        SharkKB kb = se.getKB(String id, Class className);
+////
+////        // KnowledgeBase
+////
+////        String id = kb.getId() // Mit KlassenNamen
+////
+////        // ASIPPort
+////
+////        ASIPPort port = new ASIPPort(SharkEngine engine, ASIPMemento memento);
+////
+////        port.setMemento(ASIPMemento memento);
+////        ASIPMemento memento = port.getMemento();
+////
+////        // ASIPMemento
+////
+////        // Alle Parameter bis auf Engine und SharkKB als Id
+////        memento.getSerializedString();
+////
+////        // END Later
 //
-//        // ASIPPort
+//        // SyncManager
 //
-//        ASIPPort port = new ASIPPort(SharkEngine engine, ASIPMemento memento);
+//        SyncManager sm = se.getSyncManager();
+//        sm.allowInvitation(boolean true); // toggle Invitation
 //
-//        port.setMemento(ASIPMemento memento);
-//        ASIPMemento memento = port.getMemento();
+//        Iterator<SyncComponents> iterator = sm.getSyncComponents(boolean invitedOnly);
 //
-//        // ASIPMemento
+//        sm.remove(SyncComponent component);
 //
-//        // Alle Parameter bis auf Engine und SharkKB als Id
-//        memento.getSerializedString();
+//        SyncComponent sc = sm.createSyncCommponent(
+//                SemanticTag uniqueName,
+//                PeerSTSet member,
+//                PeerSemanticTag owner,
+//                SharkKB kb,
+//                boolean writable
+//        );
 //
-//        // END Later
-
-        // SyncManager
-
-        SyncManager sm = se.getSyncManager();
-        sm.allowInvitation(boolean true); // toggle Invitation
-
-        Iterator<SyncComponents> iterator = sm.getSyncComponents(boolean invitedOnly);
-
-        sm.remove(SyncComponent component);
-
-        SyncComponent sc = sm.createSyncCommponent(
-                SemanticTag uniqueName,
-                PeerSTSet member,
-                PeerSemanticTag owner,
-                SharkKB kb,
-                boolean writable
-        );
-
-        // Listener Interface
-
-        sm.addInviteListener(SyncInviteListener listener);
-
-        listener.onInvitation(SyncComponent component);
-
-        // end listener
-
-        // SyncComponent
-
-        sc.addMember(PeerSemanticTag member);
-        sc.removeMember(PeerSemanticTag member);
-
-
-
-    }
-}
+//        // Listener Interface
+//
+//        sm.addInviteListener(SyncInviteListener listener);
+//
+//        listener.onInvitation(SyncComponent component);
+//
+//        // end listener
+//
+//        // SyncComponent
+//
+//        sc.addMember(PeerSemanticTag member);
+//        sc.removeMember(PeerSemanticTag member);
+//
+//
+//
+//    }
+//}

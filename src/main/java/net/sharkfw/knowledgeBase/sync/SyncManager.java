@@ -45,7 +45,7 @@ public class SyncManager {
 
     private SyncManager(SharkEngine engine) {
         this.engine = engine;
-        this.offerKP = new SyncOfferKP(this.engine, this.engine.getStorage());
+        this.offerKP = new SyncOfferKP(this.engine, this, this.engine.getStorage());
     }
 
     public void allowInvitation(boolean allow){

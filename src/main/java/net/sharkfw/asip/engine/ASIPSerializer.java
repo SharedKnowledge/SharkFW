@@ -103,7 +103,6 @@ public class ASIPSerializer {
                 .put(ASIPMessage.SIGNED, header.isSigned())
                 .put(ASIPMessage.TTL, header.getTtl())
                 .put(ASIPMessage.COMMAND, header.getCommand())
-                .put(ASIPMessage.TOPIC, header.getTopic())
                 .put(ASIPMessage.SENDER, (header.getSender() != null) ?
                         serializeTag(header.getSender()): "")
                 .put(ASIPMessage.RECEIVERPEER, (header.getReceiverPeer() != null) ?
@@ -113,7 +112,9 @@ public class ASIPSerializer {
                 .put(ASIPMessage.RECEIVERTIME, (header.getReceiverTime() != null) ?
                         serializeTag(header.getReceiverTime()) : "")
                 .put(ASIPMessage.TOPIC, (header.getTopic() != null) ?
-                        serializeTag(header.getTopic()) : "");
+                        serializeTag(header.getTopic()) : "")
+                .put(ASIPMessage.TYPE, (header.getType() != null) ?
+                        serializeTag(header.getType()) : "");
     }
 
     public static JSONObject serializeInterest(ASIPSpace space) throws SharkKBException, JSONException {
@@ -463,6 +464,7 @@ public class ASIPSerializer {
         TimeSemanticTag receiverTime = null;
         STSet receivers = null;
         SemanticTag topic = null;
+        SemanticTag type = null;
 
         String senderString = "";
         String receiverString = "";
@@ -470,6 +472,7 @@ public class ASIPSerializer {
         String receiverLocationString = "";
         String receiverTimeString = "";
         String topicString = "";
+        String typeString = "";
 
 
         if (object.has(ASIPMessage.VERSION))
@@ -527,6 +530,14 @@ public class ASIPSerializer {
             }
         }
 
+        if(object.has(ASIPMessage.TYPE)){
+            typeString = object.get(ASIPMessage.TYPE).toString();
+            try {
+                type = ASIPSerializer.deserializeTag(typeString);
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+            }
+        }
         // TODO obsolete?
         if (object.has(ASIPMessage.RECEIVERS)) {
             receiverString = object.getString(ASIPMessage.RECEIVERS);
@@ -544,6 +555,7 @@ public class ASIPSerializer {
         message.setReceiverTime(receiverTime);
         message.setReceivers(receivers);
         message.setTopic(topic);
+        message.setType(type);
 
 //      TODO
 //        try {

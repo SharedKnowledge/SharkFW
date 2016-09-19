@@ -35,15 +35,16 @@ public class ASIPOutMessage extends ASIPMessage {
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime,
-                          SemanticTag topic) throws SharkKBException {
+                          SemanticTag topic,
+                          SemanticTag type) throws SharkKBException {
 
-        super(engine, connection, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic);
+        super(engine, connection, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic, type);
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
-        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime(), in.getTopic());
+        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime(), in.getTopic(), in.getType());
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
@@ -56,9 +57,10 @@ public class ASIPOutMessage extends ASIPMessage {
                           SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime,
                           SemanticTag topic,
+                          SemanticTag type,
                           String address) throws SharkKBException {
 
-        super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic);
+        super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic, type);
         this.outStub = stub;
         this.recipientAddress = address;
         this.os = new ByteArrayOutputStream();

@@ -40,9 +40,9 @@ public class ASIPKB_Tests {
         ASIPSpace space1 = kb.createASIPSpace(topic1, null, author1, null, null, null, null, DIRECTION_INOUT);
         ASIPSpace space2 = kb.createASIPSpace(topic2, null, author2, null, null, null, null, DIRECTION_INOUT);
         
-        kb.addInformation("Ein schöner Sharktext...", space1);
+        kb.addInformation("Ein schoener Sharktext...", space1);
 
-        // Ist folgender Code nicht auskommentiert, wird statt der gültigen Ausgabe eine "Endlosschleife" produziert,
+        // Ist folgender Code nicht auskommentiert, wird statt der gueltigen Ausgabe eine "Endlosschleife" produziert,
         // ich erhalte dann keine Ausgabe.
         kb.addInformation("HTW-Krimskrams", space2);
         L.d(L.kb2String(kb), this);
