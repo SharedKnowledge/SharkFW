@@ -30,10 +30,9 @@ public class SyncComponent {
         this.members = members;
         this.owner = owner;
         this.writable = writable;
+    }
 
-        // Send out invitations to the members
-
-        // Create outMessage based on all peerAddresses
+    public void sendInvite() throws SharkKBException {
         Enumeration<PeerSemanticTag> enumeration = members.peerTags();
         ArrayList<String> addresses = new ArrayList();
         while (enumeration.hasMoreElements()){
@@ -47,12 +46,10 @@ public class SyncComponent {
         addressesArray = addresses.toArray(addressesArray);
 
         sendInvite(addressesArray);
-        // Members of Merge not yet clear - wait for accepting the Invitation
-//        this.syncMergeKP = new SyncMergeKP(this.engine, this.syncKB, this.uniqueName, this.members);
     }
 
     private void sendInvite(String[] addresses) throws SharkKBException {
-        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, null);
+        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, this.owner, null, null, null, null, null, 10);
 
         // Create ASIPInterest
         STSet topicSTSet = InMemoSharkKB.createInMemoSTSet();
@@ -69,7 +66,7 @@ public class SyncComponent {
         ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest(topicSTSet, typeSTSet, this.owner, approverSTSet, members, null, null, direction);
 
         // TODO expose Thread???
-        // TODO send Invitation again if no accept?
+        // TODO send Invitation again if not accepted?
         message.expose(interest);
     }
 

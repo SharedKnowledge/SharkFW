@@ -79,10 +79,12 @@ public class ASIPSession extends Thread {
 //                    knowledgeSendTriggered = inMessage.responseSent();
                 }
 
-                handled = this.stub.callListener(inMessage);
-                handled = handled && inMessage.keepOpen();
+                if(inMessage.isParsed()){
+                    handled = this.stub.callListener(inMessage);
+                    handled = handled && inMessage.keepOpen();
 
-                if(handled) Thread.sleep(1000);
+                    if(handled) Thread.sleep(1000);
+                }
 
             } catch (IOException | SharkException e) {
                 handled=false;

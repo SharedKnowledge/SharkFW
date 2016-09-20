@@ -46,10 +46,15 @@ public class SyncOfferKP extends KnowledgePort {
     @Override
     protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
         if(interest.getTypes() != null && interest.getSender() != null) {
+
+            L.d(this.se.getOwner().getName() + " received an expose from " + interest.getSender().getName(), this);
+
             PeerSemanticTag peer = interest.getSender();
             SemanticTag st = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_OFFER_TYPE_SI);
             
             if(st != null && peer != null) {
+
+                L.d(this.se.getOwner().getName() + " received an Offer from " + interest.getSender().getName(), this);
 
                 Long peerLastSeen = this.lastSeen.get(peer);
                 // remember that

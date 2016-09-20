@@ -734,7 +734,6 @@ public class ASIPSerializer {
             targetSet = InMemoSharkKB.createInMemoPeerSTSet();
 
         if (tagString == null || tagString.isEmpty()) {
-            L.d(CLASS + "tag equals null");
             return null;
         }
 

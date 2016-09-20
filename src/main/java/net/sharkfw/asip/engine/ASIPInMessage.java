@@ -32,6 +32,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     private InputStream raw;
     private String parsedString = "";
     private ASIPOutMessage response;
+    private boolean parsed = false;
 //    private boolean isEmpty = true;
 
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
@@ -67,19 +68,20 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         BufferedReader in = new BufferedReader(new InputStreamReader(this.is, StandardCharsets.UTF_8));
         StringBuilder response= new StringBuilder();
         int charsRead = 0;
-        int total = 0;
 
         if(in.ready()){
             do{
                 charsRead = in.read(buffer);
-                response.append(buffer ,0 ,charsRead) ;
-                total+=charsRead;
+                response.append(buffer, 0, charsRead) ;
             } while(charsRead == buffer.length);
 
             this.parsedString = response.toString();
         }
 
-        ASIPSerializer.deserializeInMessage(this, this.parsedString);
+        if(!this.parsedString.isEmpty()){
+            ASIPSerializer.deserializeInMessage(this, this.parsedString);
+            this.parsed = true;
+        }
     }
 
 //    public boolean isEmpty() {
@@ -293,5 +295,9 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     @Override
     public KEPConnection asKepConnection() {
         return this;
+    }
+
+    public boolean isParsed(){
+        return this.parsed;
     }
 }

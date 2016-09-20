@@ -14,6 +14,7 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 import net.sharkfw.system.Util;
+import org.apache.maven.doxia.logging.Log;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -43,18 +44,29 @@ public class SyncInviteKP extends KnowledgePort {
         SemanticTag inviteTag = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_INVITE_TYPE_SI);
         if(inviteTag==null) return;
 
+        L.d(this.se.getOwner().getName() + " received an Invite from " + interest.getSender().getName(), this);
+
         // TODO is sender in whitelist?
         // is uniqueName accepted? check if I already know it!
+        boolean isNewInvite = true;
         Iterator<SemanticTag> iterator = interest.getTopics().stTags();
         while (iterator.hasNext()){
             SemanticTag next = iterator.next();
             SyncComponent syncComponent = syncManager.getComponentByName(next);
             if(syncComponent!=null){
-                // TODO already invited.
-                // TODO Check if everything is still the same or new approver?
+                syncComponent.addApprovedMember(interest.getApprovers());
+                isNewInvite = false;
             }
         }
         // TODO create an empty SyncComponent based on the interest?
+
+        if(isNewInvite){
+            Iterator<SemanticTag> topics = interest.getTopics().stTags();
+            // Create an empty kb based on the first topic
+            SemanticTag next = topics.next();
+            SyncComponent component = syncManager.createSyncComponent(new InMemoSharkKB(), next, interest.getApprovers(), interest.getSender(), true);
+            component.addApprovedMember(this.se.getOwner());
+        }
 
         // set myself in approver aswell and reply with an OfferTypeTag
 
@@ -63,9 +75,8 @@ public class SyncInviteKP extends KnowledgePort {
         typeSet.merge(SyncManager.SHARK_SYNC_OFFER_TAG);
         interest.setTypes(typeSet);
 
-        PeerSTSet approvers = interest.getApprovers();
-        // Add to approvers
-        approvers.merge(this.se.getOwner());
+        interest.getApprovers().merge(this.se.getOwner());
+
         // Set myself as sender
         interest.setSender(this.se.getOwner());
 

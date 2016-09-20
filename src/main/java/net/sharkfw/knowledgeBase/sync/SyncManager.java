@@ -33,18 +33,21 @@ public class SyncManager {
 
     private SharkEngine engine;
 
-    private static SyncManager sInstance = null;
+//    private static SyncManager sInstance = null;
     private List<SyncComponent> components = new ArrayList<>();
     private List<SyncInviteListener> listeners = new ArrayList<>();
 
-    public static SyncManager getInstance(SharkEngine engine) {
-        if(sInstance == null){
-            sInstance = new SyncManager(engine);
-        }
-        return sInstance;
-    }
+//    public static SyncManager getInstance(SharkEngine engine) {
+//        if(engine!=null){
+//            sInstance = new SyncManager(engine);
+//        }
+//        if(sInstance == null){
+//            sInstance = new SyncManager(engine);
+//        }
+//        return sInstance;
+//    }
 
-    private SyncManager(SharkEngine engine) {
+    public SyncManager(SharkEngine engine) {
         this.engine = engine;
         this.offerKP = new SyncOfferKP(this.engine, this, this.engine.getStorage());
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
@@ -52,9 +55,9 @@ public class SyncManager {
 
     public void allowInvitation(boolean allow){
         if(allow){
-            syncInviteKP = new SyncInviteKP(this.engine, this);
-        } else if(!allow){
-            syncInviteKP = null;
+            this.syncInviteKP = new SyncInviteKP(this.engine, this);
+        } else {
+            this.syncInviteKP = null;
         }
     }
 
