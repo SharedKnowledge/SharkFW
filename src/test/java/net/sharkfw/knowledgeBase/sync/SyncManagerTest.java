@@ -23,12 +23,10 @@ public class SyncManagerTest {
 
         // Basics
         J2SEAndroidSharkEngine aliceEngine = new J2SEAndroidSharkEngine();
-        aliceEngine.activateASIP();
         SyncManager aliceManager = aliceEngine.getSyncManager();
         aliceManager.allowInvitation(true);
 
         J2SEAndroidSharkEngine bobEngine = new J2SEAndroidSharkEngine();
-        bobEngine.activateASIP();
         SyncManager bobManager = bobEngine.getSyncManager();
         bobManager.allowInvitation(true);
 

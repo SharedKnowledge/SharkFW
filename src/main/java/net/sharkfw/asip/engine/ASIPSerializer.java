@@ -957,7 +957,7 @@ public class ASIPSerializer {
             L.d(CLASS + "target == null");
             return;
         }
-        if (properties == null) {
+        if (properties.isEmpty() || properties.equals("[]")) {
             L.d(CLASS + "properties == null");
             return;
         }

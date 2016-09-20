@@ -40,12 +40,10 @@ public class ASIPStubTest extends ASIPBaseTest {
         receiverPeer = peers.createPeerSemanticTag("RECEIEVER", "www.si2.de", "tcp://addr2.de");
 
         engineA = new J2SEAndroidSharkEngine();
-        engineA.activateASIP();
         testKPA = new TestKP(engineA, "Port A");
         testKPA.setText("Pong");
 
         engineB = new J2SEAndroidSharkEngine();
-        engineB.activateASIP();
         testKPB = new TestKP(engineB, "Port B");
         testKPB.setText("Ping");
 

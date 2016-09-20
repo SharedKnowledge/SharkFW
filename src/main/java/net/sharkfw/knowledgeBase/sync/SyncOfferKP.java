@@ -47,14 +47,13 @@ public class SyncOfferKP extends KnowledgePort {
     protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
         if(interest.getTypes() != null && interest.getSender() != null) {
 
-            L.d(this.se.getOwner().getName() + " received an expose from " + interest.getSender().getName(), this);
-
             PeerSemanticTag peer = interest.getSender();
             SemanticTag st = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_OFFER_TYPE_SI);
             
             if(st != null && peer != null) {
 
                 L.d(this.se.getOwner().getName() + " received an Offer from " + interest.getSender().getName(), this);
+
 
                 Long peerLastSeen = this.lastSeen.get(peer);
                 // remember that
@@ -71,11 +70,11 @@ public class SyncOfferKP extends KnowledgePort {
                         // Now send the latest changes to the sender
                         SyncKB kb = component.getKb();
                         if(kb != null) {
-                            SharkKB changes = kb.getChanges(peerLastSeen);
-
-                            // produce message: TODO: send whole kb not only knowledge!!
+                            SharkKB changes = kb;
+                            if(peerLastSeen!=null){
+                                changes = kb.getChanges(peerLastSeen);
+                            }
                             String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
-                            // TODO: send those data as content to recipient
 
                             try {
                                 // TODO Change the type of the message to merge type

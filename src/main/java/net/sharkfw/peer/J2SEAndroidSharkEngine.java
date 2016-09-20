@@ -52,7 +52,7 @@ import net.sharkfw.system.Util;
  */
 public class J2SEAndroidSharkEngine extends SharkEngine {
 
-    private final SyncManager syncManager;
+    private SyncManager syncManager;
     // Mail parameter
     private String smtpHost;
     private String smtpUserName;
@@ -82,17 +82,15 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
      */
     public J2SEAndroidSharkEngine() {
         super();
-        this.setKEPStub(new SimpleKEPStub(this));
-		this.tcp = null;
-        this.syncManager = new SyncManager(this);
-    }
-
-    public void activateASIP(){
-        this.kepStub = null;
+//        this.setKEPStub(new SimpleKEPStub(this));
         this.setASIPStub(new SimpleASIPStub(this));
+		this.tcp = null;
     }
 
     public SyncManager getSyncManager(){
+        if(this.syncManager==null){
+            this.syncManager = new SyncManager(this);
+        }
         return this.syncManager;
     }
 
