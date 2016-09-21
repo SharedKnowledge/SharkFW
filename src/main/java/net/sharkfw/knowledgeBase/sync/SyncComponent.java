@@ -100,6 +100,10 @@ public class SyncComponent {
         return members;
     }
 
+    public PeerSTSet getApprovedMembers(){
+        return approvedMembers;
+    }
+
     public PeerSemanticTag getOwner() {
         return owner;
     }
