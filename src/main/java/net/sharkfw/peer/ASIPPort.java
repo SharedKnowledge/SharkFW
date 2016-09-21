@@ -25,7 +25,34 @@ public abstract class ASIPPort {
             se.addKP(this);
         }
     }
-
+    
+    /**
+     * Sometimes it's useful to keep the state of an ASIP port for further 
+     * incarnation. That behaviour is already described in the mememto 
+     * design pattern. Port developers can overwrite this methode to make
+     * their ports persistent.
+     * 
+     * @return the memento as byte
+     */
+    public byte[] getMemento() {return null;};
+    
+    /**
+     * Port developer must implement this methode if that port is going
+     * to ve persistent, see comments in getMemento().
+     * @param memento 
+     */
+    public void setMemento(byte[] memento) { }
+    
+    /**
+     * Ports can save their memento with the shark engine. 
+     * Engine has no way to distinguish two ports from same class.
+     * The engine keeps <i>only one instance of each class</i> unless this
+     * methode overwritten and returns a unique name for each object
+     * of that class.
+     * @return 
+     */
+    public String getUniqueMementoObjectName() {return null;}
+    
     public abstract boolean handleMessage(ASIPInMessage message, ASIPConnection connection);
 
     public void addListener(KPListener listener){

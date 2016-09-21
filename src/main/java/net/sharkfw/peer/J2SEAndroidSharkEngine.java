@@ -65,9 +65,9 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     
     // TCP parameter
     public static int defaultTCPPort = 7070;
-    private int defaultUDPPort = 5555;
-    private int defaultHTTPPort = 8080;
-    private int kpStoreCount = 0;
+    private final int defaultUDPPort = 5555;
+    private final int defaultHTTPPort = 8080;
+    private final int kpStoreCount = 0;
     
 	TCPStreamStub tcp;
     private static final boolean DEFAULT_SSL = false;
@@ -83,6 +83,15 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     public J2SEAndroidSharkEngine() {
         super();
 //        this.setKEPStub(new SimpleKEPStub(this));
+        this.init();
+    }
+    
+    public J2SEAndroidSharkEngine(SharkKB storage){
+        super(storage);
+        this.init();
+    }
+
+    private void init() {
         this.setASIPStub(new SimpleASIPStub(this));
 		this.tcp = null;
     }

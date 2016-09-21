@@ -3,6 +3,9 @@ package net.sharkfw.peer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -10,6 +13,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sharkfw.asip.*;
 
@@ -108,9 +114,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     /**
      * Empty constructor for new API
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public SharkEngine() {
         this.ports = new ArrayList<>();
+        this.refreshPersistedASIPPort();
     }
 
     public SharkEngine(SharkKB storage){
@@ -1526,6 +1532,140 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public abstract void startGeoSensor();
 
     public abstract void persist() throws SharkKBException;
+
+    public static final String STRING_ENCODING = "ISO-8859-1";
+    private static final String PERSISTED_PORT_PROPERTY_NAME = "SharkFW_INTERNAL_persisted_asip_port_names";
+    private static final String PERSISTED_PORT_NAME_SEPERATOR = "_SharkFW_INTERNAL_SEPERATOR_";
+    
+    private List<String> persistPortNames;
+    
+    private void persistPersistPortNames() throws SharkException {
+        SharkKB storageKB = this.getStorage();
+        if(storageKB == null) {
+            throw new SharkException("Storage KB no set - cannot persist port mementos");
+        }
+        
+        Iterator<String> iterator = this.persistPortNames.iterator();
+        StringBuilder buf = new StringBuilder();
+        
+        if(iterator.hasNext()) {
+            buf.append(iterator.next());
+        }
+        
+        while(iterator.hasNext()) {
+            buf.append(PERSISTED_PORT_NAME_SEPERATOR);
+            buf.append(iterator.next());
+        }
+        
+        storageKB.setProperty(PERSISTED_PORT_PROPERTY_NAME, buf.toString(), false);
+    }
+    
+    private void refreshPersistPortNames() throws SharkException {
+        SharkKB storageKB = this.getStorage();
+        if(storageKB == null) {
+            throw new SharkException("Storage KB no set - cannot persist port mementos");
+        }
+        
+        String nameList = storageKB.getProperty(PERSISTED_PORT_PROPERTY_NAME);
+        
+        // split it
+        StringTokenizer st = new StringTokenizer(nameList, PERSISTED_PORT_NAME_SEPERATOR);
+        
+        while(st.hasMoreTokens()) {
+            this.persistPortNames.add(st.nextToken());
+        }
+    }
+    
+    /**
+     * This method re-creates ASIP ports from their dormant state. Note
+     * that happens after each call. Calling th
+     */
+    private void refreshPersistedASIPPort() {
+        try {
+            // drop names, if any
+            this.persistPortNames = new ArrayList<>();
+            
+            // fill list
+            this.refreshPersistPortNames();
+            
+            Class sharkEngineClass = Class.forName(this.getClass().getCanonicalName());
+            SharkKB storageKB = this.getStorage();
+            
+            // walk
+            Iterator<String> portNameIter = this.persistPortNames.iterator();
+            while(portNameIter.hasNext()) {
+                String portNameString = portNameIter.next();
+                
+                // extract class name
+                int i = portNameString.indexOf(PERSISTED_PORT_NAME_SEPERATOR);
+                String className;
+                if(i < 0) {
+                    className = portNameString;
+                } else {
+                    className = portNameString.substring(0, i);
+                }
+                
+                Class portClass = Class.forName(className);
+                
+                // get constructor
+                Constructor constructor = 
+                        portClass.getConstructor(sharkEngineClass);
+                
+                // create an object
+                ASIPPort newPort = (ASIPPort)constructor.newInstance(this);
+                
+                // get Memento
+                String mementoString = storageKB.getProperty(portNameString);
+
+                // set memento
+                newPort.setMemento(mementoString.getBytes("UTF-8"));
+            }
+        } catch (SharkException | ClassNotFoundException 
+                | NoSuchMethodException | SecurityException 
+                | InstantiationException | IllegalAccessException 
+                | IllegalArgumentException | InvocationTargetException 
+                | UnsupportedEncodingException ex) {
+            L.e("could not refresh persisted port: " + ex.getLocalizedMessage());
+        }
+    }
+    
+    public void persistPort(ASIPPort port) throws SharkException {
+        byte[] memento = port.getMemento();
+        if(memento == null) return;
+        
+        SharkKB storageKB = this.getStorage();
+        if(storageKB == null) {
+            throw new SharkException("Storage KB no set - cannot persist port mementos");
+        }
+        
+        try {
+            String mementoString = new String(memento, SharkEngine.STRING_ENCODING);
+
+            String uniqueMementoObjectName = port.getUniqueMementoObjectName();
+            String canonicalName = port.getClass().getCanonicalName();
+
+            String propertyName;
+
+            if(uniqueMementoObjectName != null) {
+                propertyName = canonicalName + PERSISTED_PORT_NAME_SEPERATOR + uniqueMementoObjectName;
+            } else {
+                propertyName = canonicalName;
+            }
+
+            // save it - and overwrite..
+            storageKB.setProperty(propertyName, mementoString, false);
+            
+            // remember that key
+            this.persistPortNames.add(propertyName);
+            
+            // persist rememer
+            this.persistPersistPortNames();
+
+        } catch (UnsupportedEncodingException ex) {
+            throw new SharkException(ex.getLocalizedMessage());
+        }
+        
+    }
 
     public enum SecurityLevel {MUST, IF_POSSIBLE, NO}
 
