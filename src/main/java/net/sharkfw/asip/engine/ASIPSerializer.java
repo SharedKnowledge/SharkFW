@@ -954,11 +954,9 @@ public class ASIPSerializer {
     public static void deserializeProperties(SystemPropertyHolder target, String properties) throws SharkKBException {
 
         if (target == null) {
-            L.d(CLASS + "target == null");
             return;
         }
         if (properties.isEmpty() || properties.equals("[]")) {
-            L.d(CLASS + "properties == null");
             return;
         }
 
