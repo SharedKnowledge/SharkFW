@@ -1,28 +1,17 @@
 package net.sharkfw.asip;
 
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sharkfw.asip.engine.ASIPConnection;
-import net.sharkfw.asip.engine.ASIPInMessage;
+import java.util.Iterator;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.peer.KnowledgePort;
-import net.sharkfw.peer.SharkEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-
-import net.sharkfw.asip.engine.ASIPConnection;
-import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
+import org.junit.Assert;
 
 
 
@@ -43,49 +32,88 @@ public class ASIPPortPersistence {
     public void tearDown() {
     }
 
-    private class AnASIPPort extends ASIPPort {
-        private byte[] memento;
-
-        public AnASIPPort(SharkEngine se, String mementoString) {
-            super(se);
-            mementoString.getBytes();
-        }
-        
-        @Override
-        public byte[] getMemento() {
-            try {
-                return "MementoString".getBytes("ISO-8859-1");
-            } catch (UnsupportedEncodingException ex) {
-                return null;
-            }
-        }
-        
-        @Override
-        public void setMemento(byte[] memento) {
-            // nix.
-            L.d("reached setMemento: " + memento.toString());
-        }
-
-        @Override
-        public boolean handleMessage(ASIPInMessage message, ASIPConnection connection) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
-    
     @Test
-    public void basics() throws SharkException {
+    public void overwriteNotUniqueObjects() throws SharkException {
         SharkKB kb = new InMemoSharkKB();
         SharkEngine se = new J2SEAndroidSharkEngine(kb);
-        ASIPPort port = new AnASIPPort(se, "Nummer eins");
-        ASIPPort port2 = new AnASIPPort(se, "Nummer zwei");
+        ASIPPort port1 = new AnPersistentASIPPort(se, "Nummer eins", false);
+        ASIPPort port2 = new AnPersistentASIPPort(se, "Nummer zwei", false);
         
-        port.getMemento();
-        se.persistPort(port);
+        port1.getMemento();
+        se.persistPort(port1);
+        se.persistPort(port2);
         
         L.setLogLevel(L.LOGLEVEL_ALL);
         L.d(L.properties2String(kb), this);
 
         // re-fresh..
         SharkEngine se2 = new J2SEAndroidSharkEngine(kb);
+        
+        Iterator<ASIPPort> allPorts = se2.getAllPorts();
+        int i = 0;
+        while(allPorts.hasNext()) {
+            allPorts.next();
+            i++;
+        }
+        
+        // should only be one because port 1 and 2 considered the same
+        Assert.assertSame(1, i);
+    }
+    
+    @Test
+    public void persistTwoUniqueObject() throws SharkException {
+        SharkKB kb = new InMemoSharkKB();
+        SharkEngine se = new J2SEAndroidSharkEngine(kb);
+        ASIPPort port1 = new AnPersistentASIPPort(se, "Nummer eins", true);
+        ASIPPort port2 = new AnPersistentASIPPort(se, "Nummer zwei", true);
+        
+        port1.getMemento();
+        se.persistPort(port1);
+        se.persistPort(port2);
+        
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        L.d(L.properties2String(kb), this);
+
+        // refresh..
+        SharkEngine se2 = new J2SEAndroidSharkEngine(kb);
+        
+        Iterator<ASIPPort> allPorts = se2.getAllPorts();
+        int i = 0;
+        while(allPorts.hasNext()) {
+            allPorts.next();
+            i++;
+        }
+        
+        Assert.assertSame(2, i);
+    }
+    
+    @Test
+    public void removePort() throws SharkException {
+        SharkKB kb = new InMemoSharkKB();
+        SharkEngine se = new J2SEAndroidSharkEngine(kb);
+        ASIPPort port1 = new AnPersistentASIPPort(se, "Nummer eins", true);
+        ASIPPort port2 = new AnPersistentASIPPort(se, "Nummer zwei", true);
+        
+        port1.getMemento();
+        se.persistPort(port1);
+        se.persistPort(port2);
+        
+        se.removePersistedPort(port1);
+        
+        L.setLogLevel(L.LOGLEVEL_ALL);
+        L.d(L.properties2String(kb), this);
+
+        // refresh
+        SharkEngine se2 = new J2SEAndroidSharkEngine(kb);
+        
+        Iterator<ASIPPort> allPorts = se2.getAllPorts();
+        int i = 0;
+        while(allPorts.hasNext()) {
+            allPorts.next();
+            i++;
+        }
+        
+        // only one .. second was one removed
+        Assert.assertSame(1, i);
     }
 }

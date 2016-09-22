@@ -1536,8 +1536,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public abstract void persist() throws SharkKBException;
 
     public static final String STRING_ENCODING = "ISO-8859-1";
-    private static final String PERSISTED_PORT_PROPERTY_NAME = "SharkFW_INTERNAL_persisted_asip_port_names";
-    private static final String SHARK_ENGINE_STRING_SEPARATOR = "_SHARK_FW_INTERNAL_";
+    private static final String PERSISTED_PORT_PROPERTY_NAME = "SharkFW_INTERNAL_PERSISTED_ASIPPORT_NAMES";
+    private static final String SHARK_ENGINE_STRING_SEPARATOR = "_SHARK_FW_DELIM";
     
     private Set<String> persistPortNames;
     
@@ -1559,7 +1559,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             buf.append(iterator.next());
         }
         
-        storageKB.setProperty(PERSISTED_PORT_PROPERTY_NAME, buf.toString(), false);
+        if(buf.length() == 0) {
+            storageKB.setProperty(PERSISTED_PORT_PROPERTY_NAME, null);
+        } else {
+            storageKB.setProperty(PERSISTED_PORT_PROPERTY_NAME, buf.toString(), false);
+        }
     }
     
     private void refreshPersistedPortNames() throws SharkException {
@@ -1691,7 +1695,30 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
     }
     
+    private String getPersistPortName(ASIPPort port) throws SharkException {
+        SharkKB storageKB = this.getStorage();
+        if(storageKB == null) {
+            throw new SharkException("Storage KB no set - cannot persist port mementos");
+        }
+        
+        String uniqueMementoObjectName = port.getUniqueMementoObjectName();
+        String canonicalName = port.getClass().getCanonicalName();
+
+        String portName;
+
+        if(uniqueMementoObjectName != null) {
+            String[] tempS = new String[] {canonicalName, uniqueMementoObjectName};
+            portName =  Util.array2string(tempS);
+        } else {
+            portName = canonicalName;
+        }
+        
+        return portName;
+    }
+    
     public void persistPort(ASIPPort port) throws SharkException {
+        if(port == null) return;
+        
         byte[] memento = port.getMemento();
         if(memento == null) return;
         
@@ -1703,18 +1730,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         try {
             String mementoString = new String(memento, SharkEngine.STRING_ENCODING);
 
-            String uniqueMementoObjectName = port.getUniqueMementoObjectName();
-            String canonicalName = port.getClass().getCanonicalName();
+            String propertyName = this.getPersistPortName(port);
 
-            String propertyName;
-
-            if(uniqueMementoObjectName != null) {
-                String[] tempS = new String[] {canonicalName, uniqueMementoObjectName};
-                propertyName =  Util.array2string(tempS);
-            } else {
-                propertyName = canonicalName;
-            }
-            
             // save it - can be overwritten..
             storageKB.setProperty(propertyName, mementoString, false);
             
@@ -1727,7 +1744,26 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         } catch (UnsupportedEncodingException ex) {
             throw new SharkException(ex.getLocalizedMessage());
         }
+    }
+
+    public void removePersistedPort(ASIPPort port) throws SharkException {
+        if(port == null) return;
         
+        SharkKB storageKB = this.getStorage();
+        if(storageKB == null) {
+            throw new SharkException("Storage KB no set - cannot persist port mementos");
+        }
+        
+        String propertyName = this.getPersistPortName(port);
+
+        // save it - can be overwritten..
+        storageKB.setProperty(propertyName, null);
+
+        // remember that key
+        this.persistPortNames.remove(propertyName);
+
+        // persist rememer
+        this.persistPersistedPorts();
     }
 
     public enum SecurityLevel {MUST, IF_POSSIBLE, NO}
