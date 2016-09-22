@@ -5,6 +5,8 @@ import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
+import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.system.L;
 import org.junit.Test;

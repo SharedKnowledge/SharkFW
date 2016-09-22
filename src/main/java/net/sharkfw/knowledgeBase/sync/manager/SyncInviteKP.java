@@ -1,23 +1,16 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.sync.manager;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.ContentPort;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
-import net.sharkfw.system.Util;
-import org.apache.maven.doxia.logging.Log;
 
-import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Iterator;
 
 /**

@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.sync.manager;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -11,10 +11,10 @@ import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
-import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;

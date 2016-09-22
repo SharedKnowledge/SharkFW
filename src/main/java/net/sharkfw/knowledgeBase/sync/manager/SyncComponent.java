@@ -1,10 +1,11 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.sync.manager;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.peer.SharkEngine;
 
 import java.util.ArrayList;

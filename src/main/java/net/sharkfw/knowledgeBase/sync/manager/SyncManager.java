@@ -1,18 +1,16 @@
-package net.sharkfw.knowledgeBase.sync;
+package net.sharkfw.knowledgeBase.sync.manager;
 
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
-import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.LogRecord;
 
 /**
  * Created by j4rvis on 14.09.16.

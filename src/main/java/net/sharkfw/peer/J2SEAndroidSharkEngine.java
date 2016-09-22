@@ -23,7 +23,7 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.knowledgeBase.sync.SyncManager;
+import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.protocols.*;
 import net.sharkfw.protocols.m2s.M2SStub;
 import net.sharkfw.protocols.m2s.MessageStorage;
