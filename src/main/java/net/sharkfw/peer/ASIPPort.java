@@ -6,6 +6,7 @@ import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.kp.KPListener;
 
 import java.util.List;
+import net.sharkfw.system.L;
 
 /**
  * Created by j4rvis on 22.06.16.
@@ -35,13 +36,6 @@ public abstract class ASIPPort {
      * @return the memento as byte
      */
     public byte[] getMemento() {return null;};
-    
-    /**
-     * Port developer must implement this methode if that port is going
-     * to ve persistent, see comments in getMemento().
-     * @param memento 
-     */
-    public void setMemento(byte[] memento) { }
     
     /**
      * Ports can save their memento with the shark engine. 

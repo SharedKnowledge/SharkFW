@@ -5,15 +5,12 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.kep.SharkProtocolNotSupportedException;
-import net.sharkfw.kep.SimpleKEPStub;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -22,7 +19,6 @@ import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
@@ -35,7 +31,6 @@ import net.sharkfw.protocols.m2s.SharkKBMessageStorage;
 import net.sharkfw.protocols.mail.MailMessageStub;
 import net.sharkfw.protocols.tcp.TCPStreamStub;
 import net.sharkfw.system.L;
-import net.sharkfw.system.Util;
 
 /**
  * An implementation of SharkEngine for J2SE enable devices.
@@ -69,7 +64,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     private final int defaultHTTPPort = 8080;
     private final int kpStoreCount = 0;
     
-	TCPStreamStub tcp;
+    TCPStreamStub tcp;
     private static final boolean DEFAULT_SSL = false;
     private boolean sslSMTP = DEFAULT_SSL, sslPOP3 = DEFAULT_SSL;
     
