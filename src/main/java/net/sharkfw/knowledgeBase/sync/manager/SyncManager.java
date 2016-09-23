@@ -19,6 +19,7 @@ public class SyncManager implements Runnable{
 
     private final SyncOfferKP offerKP;
     private final SyncMergeKP syncMergeKP;
+    private final SyncMergePropertyList mergePropertyList;
     private SyncInviteKP syncInviteKP;
     private long intervall;
     private boolean suspended;
@@ -48,6 +49,11 @@ public class SyncManager implements Runnable{
         this.engine = engine;
         this.offerKP = new SyncOfferKP(this.engine, this, this.engine.getStorage());
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
+        this.mergePropertyList = new SyncMergePropertyList(this.engine.getStorage());
+    }
+
+    public SyncMergePropertyList getMergePropertyList(){
+        return this.mergePropertyList;
     }
 
     public void allowInvitation(boolean allow){
@@ -76,9 +82,18 @@ public class SyncManager implements Runnable{
 
                         // get the changes since that date
 
-                        long lastMerged = 0;
+                        SyncMergeProperty property = this.mergePropertyList.get(peerSemanticTag, next.getUniqueName());
+
+                        long lastMerged = property.getDate();
 
                         SharkKB changes = next.getKb().getChanges(lastMerged);
+
+                        // TODO if changes are empty?
+
+                        property.updateDate();
+
+                        this.mergePropertyList.add(property);
+
                         String serializedChanges = ASIPSerializer.serializeKB(changes).toString();
 
                         ASIPOutMessage outMessage = this.engine.createASIPOutMessage(

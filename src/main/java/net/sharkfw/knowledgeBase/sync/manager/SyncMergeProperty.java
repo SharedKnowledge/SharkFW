@@ -65,4 +65,8 @@ public class SyncMergeProperty {
     public long getDate() {
         return date;
     }
+
+    public void updateDate(){
+        this.date = System.currentTimeMillis();
+    }
 }

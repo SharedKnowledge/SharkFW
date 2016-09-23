@@ -54,10 +54,10 @@ public class SyncOfferKP extends KnowledgePort {
 
                 L.d(this.se.getOwner().getName() + " received an Offer from " + interest.getSender().getName(), this);
 
+                SyncMergePropertyList mergePropertyList = this.syncManager.getMergePropertyList();
 
-                Long peerLastSeen = this.lastSeen.get(peer);
-                // remember that
-                this.lastSeen.put(peer, System.currentTimeMillis());
+//                // remember that
+//                this.lastSeen.put(peer, System.currentTimeMillis());
 
                 Iterator<SemanticTag> iterator = interest.getTopics().stTags();
                 while (iterator.hasNext()){
@@ -71,13 +71,22 @@ public class SyncOfferKP extends KnowledgePort {
                         SyncKB kb = component.getKb();
                         if(kb != null) {
                             SharkKB changes = kb;
+
+                            SyncMergeProperty property = mergePropertyList.get(peer, next);
+
+                            Long peerLastSeen = property.getDate();
+
                             if(peerLastSeen!=null){
                                 changes = kb.getChanges(peerLastSeen);
                             }
+
+                            property.updateDate();
+
+                            mergePropertyList.add(property);
+
                             String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
 
                             try {
-                                // TODO Change the type of the message to merge type
                                 message.setType(SyncManager.SHARK_SYNC_MERGE_TAG);
 
                                 // TODO Threading?
