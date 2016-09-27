@@ -23,8 +23,8 @@ public class SharkTaskExecutor {
         return executorService.submit((Callable) task);
     }
 
-    public void scheduleAtFixedRate(SharkTask task, long initialDelay, long period, TimeUnit unit){
-        executorService.scheduleAtFixedRate(task, initialDelay, period, unit);
+    public void scheduleAtFixedRate(SharkTask task, long period, TimeUnit unit){
+        executorService.scheduleAtFixedRate(task, 0, period, unit);
     }
 
     public void shutdown(){

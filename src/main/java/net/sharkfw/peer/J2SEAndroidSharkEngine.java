@@ -47,7 +47,6 @@ import net.sharkfw.system.L;
  */
 public class J2SEAndroidSharkEngine extends SharkEngine {
 
-    private SyncManager syncManager;
     // Mail parameter
     private String smtpHost;
     private String smtpUserName;
@@ -64,20 +63,18 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     private final int defaultHTTPPort = 8080;
     private final int kpStoreCount = 0;
     
-    TCPStreamStub tcp;
+    private TCPStreamStub tcp;
     private static final boolean DEFAULT_SSL = false;
     private boolean sslSMTP = DEFAULT_SSL, sslPOP3 = DEFAULT_SSL;
     
     private static final int DEFAULT_MAX_MAIL_SIZE = 1024;  // default 1 MByte
     private int maxMailMessageSize = DEFAULT_MAX_MAIL_SIZE;
-    private SharkKB storage;
 
     /**
      * Create a new J2SESharkEngine.
      */
     public J2SEAndroidSharkEngine() {
         super();
-//        this.setKEPStub(new SimpleKEPStub(this));
         this.init();
     }
     
@@ -89,13 +86,6 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     private void init() {
         this.setASIPStub(new SimpleASIPStub(this));
 		this.tcp = null;
-    }
-
-    public SyncManager getSyncManager(){
-        if(this.syncManager==null){
-            this.syncManager = new SyncManager(this);
-        }
-        return this.syncManager;
     }
 
     @Override

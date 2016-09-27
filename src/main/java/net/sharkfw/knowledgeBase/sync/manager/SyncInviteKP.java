@@ -59,6 +59,8 @@ public class SyncInviteKP extends KnowledgePort {
             SemanticTag next = topics.next();
             SyncComponent component = syncManager.createSyncComponent(new InMemoSharkKB(), next, interest.getApprovers(), interest.getSender(), true);
             component.addApprovedMember(this.se.getOwner());
+            // Trigger the listeners
+            syncManager.triggerListener(component);
         }
 
         // set myself in approver aswell and reply with an OfferTypeTag

@@ -35,6 +35,7 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.protocols.*;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.*;
@@ -107,14 +108,13 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private static int DEFAULT_HTTP_PORT = 8080;
     protected ConnectionStatusListener connectionListener = null;
     private SharkKB storage;
-    private SharkTaskExecutor sharkTaskExecutor;
+    private SyncManager syncManager;
 
     /**
      * Empty constructor for new API
      */
     public SharkEngine() {
         this.ports = new ArrayList<>();
-        this.sharkTaskExecutor = SharkTaskExecutor.getInstance();
     }
 
     public SharkEngine(SharkKB storage){
@@ -125,6 +125,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public SharkKB getStorage(){
         return this.storage;
+    }
+
+    public SyncManager getSyncManager(){
+        if(this.syncManager==null){
+            this.syncManager = new SyncManager(this);
+            this.syncManager.startUpdateProcess(15);
+        }
+        return this.syncManager;
+
     }
 
     protected void setKEPStub(KEPStub kepStub) {
@@ -141,7 +150,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     /**
-     * TODO: Pr�fen, ob wir finalize() noch brauchen
+     * TODO: Pruefen, ob wir finalize() noch brauchen
      */
     @Override
     protected void finalize() throws Throwable {
