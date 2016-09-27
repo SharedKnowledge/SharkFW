@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,13 +37,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.protocols.*;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
-import net.sharkfw.system.EnumerationChain;
-import net.sharkfw.system.Iterator2Enumeration;
-import net.sharkfw.system.L;
-import net.sharkfw.system.SharkException;
-import net.sharkfw.system.SharkNotSupportedException;
-import net.sharkfw.system.SharkSecurityException;
-import net.sharkfw.system.Util;
+import net.sharkfw.system.*;
 
 /**
  * This class is the facade for the Shark-System. It provides a single interface to the user/developer where
@@ -112,12 +107,14 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private static int DEFAULT_HTTP_PORT = 8080;
     protected ConnectionStatusListener connectionListener = null;
     private SharkKB storage;
+    private SharkTaskExecutor sharkTaskExecutor;
 
     /**
      * Empty constructor for new API
      */
     public SharkEngine() {
         this.ports = new ArrayList<>();
+        this.sharkTaskExecutor = SharkTaskExecutor.getInstance();
     }
 
     public SharkEngine(SharkKB storage){
