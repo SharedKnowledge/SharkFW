@@ -7,7 +7,6 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.SharkTask;
 import net.sharkfw.system.SharkTaskExecutor;
-import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
