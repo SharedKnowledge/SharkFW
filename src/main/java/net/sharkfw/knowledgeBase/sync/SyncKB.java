@@ -12,13 +12,14 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
 /**
  * Created by j4rvis on 19.07.16.
  *
  * @author thsc42
  */
-public class SyncKB implements SharkKB {
+public class SyncKB implements SharkKB{
     private final SyncSTSet topics;
     private final SyncSemanticNet snTopics;
     private final SyncTaxonomy txTopics;
@@ -74,6 +75,30 @@ public class SyncKB implements SharkKB {
         TODO: We have to wrap information as well here. We cannot ensure that
         any kb implementation implements that modified time setting correctly.
         */
+    }
+
+    /**
+     * This method will be called after each changes made to the targetKB.
+     */
+    private void changed() {
+        String timeString = Long.toString(System.currentTimeMillis());
+
+        try {
+            // set time stamp as non transferable property
+            this.targetKB.setProperty(SyncKB.TIME_PROPERTY_NAME, timeString, false);
+        }
+        catch(SharkKBException e) {
+            L.e("cannot write time stamp - sync won't work accordingly");
+        }
+    }
+
+    public Long getTimeOfLastChanges(){
+        try {
+            return Long.getLong(this.targetKB.getProperty(SyncKB.TIME_PROPERTY_NAME));
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     /**
@@ -235,6 +260,7 @@ public class SyncKB implements SharkKB {
     @Override
     public void setOwner(PeerSemanticTag owner) {
         this.targetKB.setOwner(owner);
+        this.changed();
     }
 
     /**
@@ -389,17 +415,20 @@ public class SyncKB implements SharkKB {
     @Deprecated
     @Override
     public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotepeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        this.changed();
         return this.targetKB.createContextCoordinates(topic, originator, peer,remotepeer, time, location, direction);
     }
 
     @Deprecated
     @Override
     public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
+        this.changed();
         return this.targetKB.createContextPoint(coordinates);
     }
 
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
+        this.changed();
         return this.targetKB.assimilate(target, interest, backgroundFP, knowledge, learnTags, deleteAssimilated);
     }
 
@@ -431,12 +460,14 @@ public class SyncKB implements SharkKB {
     @Deprecated
     @Override
     public Knowledge createKnowledge() {
+        this.changed();
         return this.targetKB.createKnowledge();
     }
 
     @Deprecated
     @Override
     public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException {
+        this.changed();
         this.targetKB.removeContextPoint(coordinates);
     }
 
@@ -477,21 +508,25 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        this.changed();
         return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        this.changed();
         return this.targetKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        this.changed();
         return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
+        this.changed();
         return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
     }
 
@@ -522,27 +557,32 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        this.changed();
         return this.targetKB.mergeInformation(information, space);
     }
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        this.changed();
         return this.targetKB.addInformation(content, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        this.changed();
         return this.targetKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        this.changed();
         return this.targetKB.addInformation(content, semanticAnnotations);
     }
 
     @Override
     public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
         this.targetKB.removeInformation(info, infoSpace);
+        this.changed();
     }
 
     @Override
@@ -563,6 +603,7 @@ public class SyncKB implements SharkKB {
     @Override
     public void removeInformation(ASIPSpace space) throws SharkKBException {
         this.targetKB.removeInformation(space);
+        this.changed();
     }
 
     @Override
@@ -579,12 +620,14 @@ public class SyncKB implements SharkKB {
     @Override
     public void addInterest(SharkCS interest) throws SharkKBException {
         this.targetKB.addInterest(interest);
+        this.changed();
     }
 
     @Deprecated
     @Override
     public void removeInterest(SharkCS interest) throws SharkKBException {
         this.targetKB.removeInterest(interest);
+        this.changed();
     }
 
     @Deprecated
@@ -606,6 +649,7 @@ public class SyncKB implements SharkKB {
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
         this.targetKB.setProperty(name, value, transfer);
+        this.changed();
     }
 
     @Override

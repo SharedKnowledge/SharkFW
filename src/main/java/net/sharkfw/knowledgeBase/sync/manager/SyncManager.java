@@ -86,27 +86,31 @@ public class SyncManager extends SharkTask {
                     SyncMergeProperty property = this.mergePropertyList.get(peerSemanticTag, next.getUniqueName());
 
                     long lastMerged = property.getDate();
+                    long lastChanges = next.getKb().getTimeOfLastChanges();
 
-                    SharkKB changes = next.getKb().getChanges(lastMerged);
+                    if(lastChanges > lastMerged){
+                        SharkKB changes = next.getKb().getChanges(lastMerged);
 
-                    // TODO if changes are empty?
+                        // TODO if changes are empty?
 
-                    property.updateDate();
+                        property.updateDate();
 
-                    this.mergePropertyList.add(property);
+                        this.mergePropertyList.add(property);
 
-                    String serializedChanges = ASIPSerializer.serializeKB(changes).toString();
+                        String serializedChanges = ASIPSerializer.serializeKB(changes).toString();
 
-                    ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
-                            peerSemanticTag.getAddresses(),
-                            this.engine.getOwner(),
-                            peerSemanticTag,
-                            null,
-                            null,
-                            next.getUniqueName(),
-                            SyncManager.SHARK_SYNC_MERGE_TAG, 1);
+                        ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
+                                peerSemanticTag.getAddresses(),
+                                this.engine.getOwner(),
+                                peerSemanticTag,
+                                null,
+                                null,
+                                next.getUniqueName(),
+                                SyncManager.SHARK_SYNC_MERGE_TAG, 1);
 
-                    outMessage.raw(serializedChanges.getBytes(StandardCharsets.UTF_8));
+                        outMessage.raw(serializedChanges.getBytes(StandardCharsets.UTF_8));
+                    }
+
                 }
 
             } catch (SharkKBException e) {
