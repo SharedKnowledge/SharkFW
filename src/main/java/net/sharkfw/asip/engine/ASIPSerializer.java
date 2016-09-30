@@ -450,6 +450,8 @@ public class ASIPSerializer {
             L.d(CLASS + e);
         }
 
+        // uncomment to see json output of serialization
+//        L.d(object.toString(4));
 
         String version = "";
         String format = "";
@@ -606,6 +608,7 @@ public class ASIPSerializer {
                 message.setRaw(new ByteArrayInputStream(raw));
                 break;
         }
+
     }
 
     /**
@@ -757,9 +760,13 @@ public class ASIPSerializer {
         String[] addresses = new String[addressesList.size()];
         addresses = addressesList.toArray(addresses);
 
-        PeerSemanticTag tag = ((PeerSTSet) targetSet).createPeerSemanticTag(name, sis, addresses);
+        PeerSTSet inMemoPeerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+
+        PeerSemanticTag tag = inMemoPeerSTSet.createPeerSemanticTag(name, sis, addresses);
 
         deserializeProperties(tag, tagString);
+
+        targetSet.merge(inMemoPeerSTSet);
 
         return tag;
     }

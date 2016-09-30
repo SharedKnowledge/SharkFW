@@ -1,11 +1,13 @@
 package net.sharkfw.system;
 
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Iterator;
 
 /**
  * Created by j4rvis on 9/29/16.
@@ -33,8 +35,12 @@ public class TestUtils {
      * @param length
      * @return random String
      */
-    private static String getRandomString(int length) {
+    public static String createRandomString(int length) {
         return new BigInteger(130, random).toString(32).substring(0, checkLength(length));
+    }
+
+    public static int createRandomDirection(){
+        return random.nextInt(4);
     }
 
     /**
@@ -47,7 +53,7 @@ public class TestUtils {
         int numberOfSI = checkLength(length);
         String[] sis = new String[numberOfSI];
         for (int i = 0; i < numberOfSI; i++) {
-            sis[i] = getRandomString(random.nextInt(11));
+            sis[i] = createRandomString(random.nextInt(21));
         }
         return sis;
     }
@@ -57,7 +63,7 @@ public class TestUtils {
      * @return SemanticTag
      */
     public static SemanticTag createRandomSemanticTag() {
-        String name = getRandomString(random.nextInt(11));
+        String name = createRandomString(random.nextInt(21));
         String[] sis = createStringArray(random.nextInt(6));
         return InMemoSharkKB.createInMemoSemanticTag(name, sis);
     }
@@ -68,9 +74,9 @@ public class TestUtils {
      * @return SemanticTag
      */
     public static PeerSemanticTag createRandomPeerSemanticTag() {
-        PeerSemanticTag tag = (PeerSemanticTag) createRandomSemanticTag();
-        tag.setAddresses(createStringArray(random.nextInt(5)));
-        return tag;
+        SemanticTag semanticTag = createRandomSemanticTag();
+        String[] addresses = createStringArray(random.nextInt(6));
+        return InMemoSharkKB.createInMemoPeerSemanticTag(semanticTag.getName(), semanticTag.getSI(), addresses);
     }
 
     /**
@@ -97,7 +103,7 @@ public class TestUtils {
      * @return STSet
      */
     public static STSet createRandomSTSet(){
-        return createRandomSTSet(random.nextInt(10));
+        return createRandomSTSet(random.nextInt(6));
     }
 
     /**
@@ -124,10 +130,38 @@ public class TestUtils {
      * @return PeerSTSet
      */
     public static PeerSTSet createRandomPeerSTSet(){
-        return createRandomPeerSTSet(random.nextInt(11));
+        return createRandomPeerSTSet(random.nextInt(6));
     }
 
-    /**
+    public static SemanticNet createRandomSemanticNet(int length){
+        SemanticNet semanticNet = InMemoSharkKB.createInMemoSemanticNet();
+        length = checkLength(length);
+        try {
+            semanticNet.merge(createRandomSTSet(length));
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return semanticNet;
+    }
+
+    public static SemanticNet createRandomSemanticNet(){ return createRandomSemanticNet(random.nextInt(6));}
+
+    public static PeerTaxonomy createRandomPeerTaxonomy(int length){
+        PeerTaxonomy peerTaxonomy = InMemoSharkKB.createInMemoPeerTaxonomy();
+        length = checkLength(length);
+        try {
+                peerTaxonomy.merge(createRandomPeerSTSet(length));
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+            }
+        return peerTaxonomy;
+    }
+
+    public static PeerTaxonomy createRandomPeerTaxonomy(){
+        return createRandomPeerTaxonomy(random.nextInt(6));
+    }
+
+        /**
      * This method will return an ASIPSpace with random Tags and Sets
      * TODO Add Spatial and TimeTag support
      * @return ASIPSpace
@@ -143,5 +177,23 @@ public class TestUtils {
                 null,
                 random.nextInt(4)
         );
+    }
+
+    public static SharkKB createRandomSharkKB(){
+        InMemoSharkKB sharkKB = null;
+        try {
+            sharkKB = new InMemoSharkKB(
+                    createRandomSemanticNet(),
+                    createRandomSemanticNet(),
+                    createRandomPeerTaxonomy(),
+                    InMemoSharkKB.createInMemoSpatialSTSet(),
+                    InMemoSharkKB.createInMemoTimeSTSet()
+            );
+            sharkKB.setOwner(createRandomPeerSemanticTag());
+            sharkKB.addInformation(createRandomString(26), createRandomASIPSpace());
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return sharkKB;
     }
 }

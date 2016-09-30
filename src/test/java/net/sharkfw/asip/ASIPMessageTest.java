@@ -7,6 +7,7 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoASIPKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
+import net.sharkfw.system.TestUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -102,6 +103,69 @@ public class ASIPMessageTest extends ASIPBaseTest{
         inMessage.parse();
 
         Assert.assertTrue(SharkAlgebra.identical(space, inMessage.getInterest()));
+    }
+
+    @Test
+    public void ASIPMessage_getOutputInterest_success() throws Exception {
+
+        ASIPInterest space = (ASIPInterest) TestUtils.createRandomASIPSpace();
+
+        ASIPOutMessage outMessage = new ASIPOutMessage(
+                this.engine,
+                this.connection,
+                10,
+                TestUtils.createRandomPeerSemanticTag(),
+                TestUtils.createRandomPeerSemanticTag(),
+                null,
+                null,
+                TestUtils.createRandomSemanticTag(),
+                TestUtils.createRandomSemanticTag());
+        outMessage.expose(space);
+        this.connection.createInputStream();
+
+        ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
+        inMessage.parse();
+    }
+
+    @Test
+    public void ASIPMessage_getOutputKnowledge_success() throws Exception {
+
+        InMemoSharkKB sharkKB = new InMemoSharkKB(
+                TestUtils.createRandomSemanticNet(1),
+                TestUtils.createRandomSemanticNet(1),
+                TestUtils.createRandomPeerTaxonomy(1),
+                InMemoSharkKB.createInMemoSpatialSTSet(),
+                InMemoSharkKB.createInMemoTimeSTSet()
+        );
+
+        ASIPSpace asipSpace = sharkKB.createASIPSpace(
+                TestUtils.createRandomSTSet(1),
+                TestUtils.createRandomSTSet(1),
+                TestUtils.createRandomPeerSTSet(1),
+                TestUtils.createRandomPeerSemanticTag(),
+                TestUtils.createRandomPeerSTSet(1),
+                null,
+                null,
+                TestUtils.createRandomDirection()
+        );
+
+        sharkKB.addInformation(TestUtils.createRandomString(20), asipSpace);
+
+        ASIPOutMessage outMessage = new ASIPOutMessage(
+                this.engine,
+                this.connection,
+                10,
+                TestUtils.createRandomPeerSemanticTag(),
+                TestUtils.createRandomPeerSemanticTag(),
+                null,
+                null,
+                TestUtils.createRandomSemanticTag(),
+                TestUtils.createRandomSemanticTag());
+        outMessage.insert(sharkKB);
+        this.connection.createInputStream();
+
+        ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
+        inMessage.parse();
     }
 
     @Test
