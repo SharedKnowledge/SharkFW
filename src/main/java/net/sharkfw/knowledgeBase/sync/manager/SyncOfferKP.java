@@ -71,16 +71,20 @@ public class SyncOfferKP extends KnowledgePort {
                         SyncKB kb = component.getKb();
                         if(kb != null) {
                             SharkKB changes = kb;
+                            Long peerLastSeen = null;
 
                             SyncMergeProperty property = mergePropertyList.get(peer, next);
 
-                            Long peerLastSeen = property.getDate();
+                            if(property!=null){
+                                peerLastSeen = property.getDate();
+                                property.updateDate();
+                            } else {
+                                property = new SyncMergeProperty(peer, next, System.currentTimeMillis());
+                            }
 
                             if(peerLastSeen!=null){
                                 changes = kb.getChanges(peerLastSeen);
                             }
-
-                            property.updateDate();
 
                             mergePropertyList.add(property);
 

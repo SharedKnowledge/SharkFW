@@ -115,6 +115,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      */
     public SharkEngine() {
         this.ports = new ArrayList<>();
+        this.storage = new InMemoSharkKB();
     }
 
     public SharkEngine(SharkKB storage){
