@@ -9,6 +9,7 @@ import java.util.Iterator;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.SharkStub;
+import net.sharkfw.asip.engine.serializer.AbstractSharkStub;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.Interest;

@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+
+import net.sharkfw.asip.engine.serializer.DecryptingInputStream;
+import net.sharkfw.asip.engine.serializer.VerifyingInputStream;
 import net.sharkfw.kep.*;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;

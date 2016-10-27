@@ -10,8 +10,8 @@ import java.util.Map;
 
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.SimpleASIPStub;
-import net.sharkfw.kep.SharkProtocolNotSupportedException;
-import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Information;
@@ -23,7 +23,6 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.protocols.*;
 import net.sharkfw.protocols.m2s.M2SStub;
 import net.sharkfw.protocols.m2s.MessageStorage;

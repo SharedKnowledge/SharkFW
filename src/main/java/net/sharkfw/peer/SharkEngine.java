@@ -25,8 +25,8 @@ import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.kep.KEPOutMessage;
 import net.sharkfw.kep.KEPStub;
 import net.sharkfw.kep.KnowledgeSerializer;
-import net.sharkfw.kep.SharkProtocolNotSupportedException;
-import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
@@ -351,7 +351,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * Stops networking for a given protocol.
      *
      * @param type Int value representing the protocol
-     * @throws net.sharkfw.kep.SharkProtocolNotSupportedException
+     * @throws SharkProtocolNotSupportedException
      * @see net.sharkfw.protocols.Protocols
      */
     public void stopProtocol(int type) throws SharkProtocolNotSupportedException {

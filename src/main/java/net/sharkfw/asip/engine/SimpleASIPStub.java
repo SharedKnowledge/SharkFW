@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import net.sharkfw.asip.*;
-import net.sharkfw.kep.AbstractSharkStub;
+import net.sharkfw.asip.engine.serializer.AbstractSharkStub;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;

@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.*;
 import net.sharkfw.ports.KnowledgePort;

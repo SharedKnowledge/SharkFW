@@ -10,7 +10,7 @@ import java.util.StringTokenizer;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformationCoordinates;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;

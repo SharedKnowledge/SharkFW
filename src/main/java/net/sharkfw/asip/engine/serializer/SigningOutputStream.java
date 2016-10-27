@@ -1,4 +1,4 @@
-package net.sharkfw.kep;
+package net.sharkfw.asip.engine.serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,7 +42,7 @@ public class SigningOutputStream extends OutputStream {
         }
     }
 
-    byte[] getSignature() {
+    public byte[] getSignature() {
 //        System.out.println(">>>>>>>>>>>>>>>> counter, sign: " + this.counter);
         try {
             return this.signature.sign();

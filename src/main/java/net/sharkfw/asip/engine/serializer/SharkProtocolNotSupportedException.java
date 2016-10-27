@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package net.sharkfw.kep;
+package net.sharkfw.asip.engine.serializer;
 
 import net.sharkfw.system.SharkException;
 

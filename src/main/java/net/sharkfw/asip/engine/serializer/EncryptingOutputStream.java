@@ -1,4 +1,4 @@
-package net.sharkfw.kep;
+package net.sharkfw.asip.engine.serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -90,7 +90,7 @@ public class EncryptingOutputStream extends OutputStream {
         this.os.flush();
     }
 
-    void doFinal() throws IOException {
+    public void doFinal() throws IOException {
         this.finishAndSendBlock();
         this.flush();
     }

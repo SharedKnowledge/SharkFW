@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.*;
 import javax.crypto.*;
+
+import net.sharkfw.asip.engine.serializer.EncryptingOutputStream;
+import net.sharkfw.asip.engine.serializer.SigningOutputStream;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -25,7 +29,7 @@ import net.sharkfw.system.Utils;
  * The really hardcore serialization however happens in an instance of <code>KnowledgeSerializer</code>.
  * 
  * @see net.sharkfw.kep.KnowledgeSerializer
- * @see net.sharkfw.kep.format.XMLSerializer
+ * @see XMLSerializer
  * @see net.sharkfw.kep.KEPMessage
  *
  *

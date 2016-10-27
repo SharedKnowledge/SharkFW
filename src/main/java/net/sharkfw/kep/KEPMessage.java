@@ -1,6 +1,6 @@
 package net.sharkfw.kep;
 
-import net.sharkfw.kep.format.XMLSerializer;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.system.SharkNotSupportedException;
 
 /**

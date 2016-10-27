@@ -5,7 +5,7 @@
 
 package net.sharkfw.protocols;
 
-import net.sharkfw.kep.SharkProtocolNotSupportedException;
+import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 
 /**
  * This abstract class contains a number of utility methods for dealing with
