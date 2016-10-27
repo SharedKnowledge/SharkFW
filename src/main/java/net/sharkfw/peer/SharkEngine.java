@@ -90,16 +90,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * no relay will be used.
      */
     protected String relaisaddress;
-    /**
-     * Reference to the GeoSensor working on this SharkEngine
-     */
-    @SuppressWarnings("unused")
-    private GeoSensor gsensor = null;
-    /**
-     * Reference to the TimeSensor working on this SharkEngine
-     */
-    @SuppressWarnings("unused")
-    private TimeSensor tsensor = null;
+
     private static int DEFAULT_TCP_PORT = 7070;
     @SuppressWarnings("unused")
     private static int DEFAULT_HTTP_PORT = 8080;
@@ -115,18 +106,18 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.storage = new InMemoSharkKB();
     }
 
-    public SharkEngine(SharkKB storage){
+    public SharkEngine(SharkKB storage) {
         this();
         this.storage = storage;
         this.refreshPersistedASIPPort();
     }
 
-    public SharkKB getStorage(){
+    public SharkKB getStorage() {
         return this.storage;
     }
 
-    public SyncManager getSyncManager(){
-        if(this.syncManager==null){
+    public SyncManager getSyncManager() {
+        if (this.syncManager == null) {
             this.syncManager = new SyncManager(this);
             this.syncManager.startUpdateProcess(15);
         }
@@ -139,7 +130,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         //this.environment = this.kepStub.getEnvironment();
     }
 
-    public void setEngineOwnerPeer(PeerSemanticTag tag){
+    public void setEngineOwnerPeer(PeerSemanticTag tag) {
         this.engineOwnerPeer = tag;
     }
 
@@ -200,9 +191,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         // create
         switch (type) {
             case net.sharkfw.protocols.Protocols.TCP:
-                if(this.getAsipStub()!=null){
+                if (this.getAsipStub() != null) {
                     protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false, null);
-                } else if(this.getKepStub()!=null){
+                } else if (this.getKepStub() != null) {
                     protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false, null);
                 }
                 break;
@@ -215,17 +206,17 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 //            case net.sharkfw.protocols.Protocols.HTTP:
 //                return this.createTCPStreamStub(this.getKepStub(), DEFAULT_HTTP_PORT, true);
             case net.sharkfw.protocols.Protocols.MAIL:
-                if(this.getAsipStub()!=null){
+                if (this.getAsipStub() != null) {
                     protocolStub = this.createMailStreamStub(this.getAsipStub());
-                } else if(this.getKepStub()!=null){
+                } else if (this.getKepStub() != null) {
                     protocolStub = this.createMailStreamStub(this.getKepStub());
                 }
                 break;
 
             case net.sharkfw.protocols.Protocols.WIFI_DIRECT:
-                if(this.getAsipStub()!=null){
+                if (this.getAsipStub() != null) {
                     protocolStub = this.createWifiDirectStreamStub(this.getAsipStub());
-                } else if(this.getKepStub()!=null){
+                } else if (this.getKepStub() != null) {
                     protocolStub = this.createWifiDirectStreamStub(this.getKepStub());
                 }
                 break;
@@ -438,7 +429,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.getKepStub().handleInterest(interest);
     }
 
-    public void handleASIPInterest(ASIPInterest interest){
+    public void handleASIPInterest(ASIPInterest interest) {
         this.getAsipStub().handleASIPInterest(interest, this.asipStub);
     }
 
@@ -827,9 +818,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public void publishKP(KnowledgePort kp, PeerSemanticTag recipient)
             throws SharkSecurityException, SharkKBException, IOException {
 
-        if(kp.getAsipInterest()!=null)
+        if (kp.getAsipInterest() != null)
             this.sendASIPInterest(kp.getAsipInterest(), recipient, kp);
-        else if(kp.getKEPInterest()!=null)
+        else if (kp.getKEPInterest() != null)
             this.sendKEPInterest(kp.getKEPInterest(), recipient, kp);
     }
 
@@ -1003,23 +994,23 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return false;
     }
 
-    public void addConnectionStatusListener(ConnectionStatusListener listener){
+    public void addConnectionStatusListener(ConnectionStatusListener listener) {
         this.connectionListener = listener;
     }
 
     public ASIPOutMessage createASIPOutResponse(StreamConnection connection, String[] receiverAddress, ASIPInMessage inMessage) throws SharkKBException {
 
 
-        if(connection != null){
+        if (connection != null) {
 //            L.d("We still have the connection", this);
-            if(this.connectionListener!=null){
+            if (this.connectionListener != null) {
                 connection.addConnectionListener(this.connectionListener);
             }
-            if(inMessage.getSender()==null){
+            if (inMessage.getSender() == null) {
                 String receiver = connection.getReceiverAddressString();
                 int colon = receiver.lastIndexOf(":");
-                String newAddress = receiver.substring(0, colon+1);
-                newAddress+="7071";
+                String newAddress = receiver.substring(0, colon + 1);
+                newAddress += "7071";
                 PeerSemanticTag tag = InMemoSharkKB.createInMemoPeerSemanticTag("receiver", "www.receiver.de", newAddress);
                 inMessage.setSender(tag);
             }
@@ -1079,12 +1070,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     //      if(sConn == null) {
                     try {
                         sConn = sStub.createStreamConnection(address);
-                        if(this.connectionListener!=null){
+                        if (this.connectionListener != null) {
                             sConn.addConnectionListener(this.connectionListener);
                         }
                     } catch (RuntimeException re) {
                         throw new SharkException(re.getMessage(), re.getCause());
-                    } catch (IOException ioe){
+                    } catch (IOException ioe) {
                         ioe.printStackTrace();
                     }
                     //    } else {
@@ -1437,17 +1428,19 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         ASIPInterest asipInterest = null;
         PeerSTSet recipients = null;
 
-        if(kp.getAsipInterest()!=null){
+        if (kp.getAsipInterest() != null) {
             asipInterest = kp.getAsipInterest();
             recipients = asipInterest.getReceivers();
-        } else if(kp.getKEPInterest()!=null){
+        } else if (kp.getKEPInterest() != null) {
             kepInterest = kp.getKEPInterest();
             try {
                 recipients = (PeerSTSet) kepInterest.getSTSet(SharkCS.DIM_REMOTEPEER);
             } catch (SharkKBException e) {
                 e.printStackTrace();
             }
-        } else{ return; }
+        } else {
+            return;
+        }
 
         try {
             Enumeration<SemanticTag> recipientTags = recipients.tags();
@@ -1500,90 +1493,53 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
     }
 
-    /**
-     * Get a reference to the PeerSensor this SharkEngine uses. If no PeerSensor
-     * is supported, null is returned.
-     *
-     * @return An instance of PeerSensor, or null if none is supported
-     * @deprecated
-     */
-    public abstract PeerSensor startPeerSensor();
-
-    /**
-     * Stop the currently running PeerSensor.
-     *
-     * @deprecated
-     */
-    public abstract void stopPeerSensor();
-
-    /**
-     * Get a reference to the GeoSensor this SharkEngine uses. If no GeoSensor
-     * is supported, null is returned.
-     *
-     * @return An instance of GeoSensor, or null if none is supported.
-     * @deprecated
-     */
-    public abstract GeoSensor getGeoSensor();
-
-    /**
-     * Stop the currently running GeoSensor.
-     *
-     * @deprecated
-     */
-    public abstract void stopGeoSensor();
-
-    /**
-     * Sutart the GeoSensor
-     */
-    public abstract void startGeoSensor();
-
     public abstract void persist() throws SharkKBException;
 
     public static final String STRING_ENCODING = "ISO-8859-1";
     private static final String PERSISTED_PORT_PROPERTY_NAME = "SharkFW_INTERNAL_PERSISTED_ASIPPORT_NAMES";
     private static final String SHARK_ENGINE_STRING_SEPARATOR = "_SHARK_FW_DELIM";
-    
+
     private Set<String> persistPortNames;
-    
+
     private void persistPersistedPorts() throws SharkException {
         SharkKB storageKB = this.getStorage();
-        if(storageKB == null) {
+        if (storageKB == null) {
             throw new SharkException("Storage KB no set - cannot persist port mementos");
         }
-        
+
         Iterator<String> iterator = this.persistPortNames.iterator();
         StringBuilder buf = new StringBuilder();
-        
-        if(iterator.hasNext()) {
+
+        if (iterator.hasNext()) {
             buf.append(iterator.next());
         }
-        
-        while(iterator.hasNext()) {
+
+        while (iterator.hasNext()) {
             buf.append(SHARK_ENGINE_STRING_SEPARATOR);
             buf.append(iterator.next());
         }
-        
-        if(buf.length() == 0) {
+
+        if (buf.length() == 0) {
             storageKB.setProperty(PERSISTED_PORT_PROPERTY_NAME, null);
         } else {
             storageKB.setProperty(PERSISTED_PORT_PROPERTY_NAME, buf.toString(), false);
         }
     }
-    
+
     private void refreshPersistedPortNames() throws SharkException {
         SharkKB storageKB = this.getStorage();
-        if(storageKB == null) {
+        if (storageKB == null) {
             throw new SharkException("Storage KB no set - cannot persist port mementos");
         }
-        
+
         String nameList = storageKB.getProperty(PERSISTED_PORT_PROPERTY_NAME);
-        if(nameList == null) {
+        if (nameList == null) {
             // no list, no names, no persistence - that's ok
             return;
         }
-        
+
         // StringTokenizer was buggy.. don't ask me why... do it my myself..
-        
+
         // split it
 //        StringTokenizer st = new StringTokenizer(nameList, SHARK_ENGINE_STRING_SEPARATOR);
 //        
@@ -1593,27 +1549,27 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 //                this.persistPortNames.add(name);
 //            }
 //        }
-        
+
         int i = nameList.indexOf(SHARK_ENGINE_STRING_SEPARATOR);
-        if(i == -1) {
+        if (i == -1) {
             this.persistPortNames.add(nameList);
             return;
         }
-        
+
         do {
             String name = nameList.substring(0, i);
             this.persistPortNames.add(name);
             nameList = nameList.substring(i);
             i = nameList.indexOf(SHARK_ENGINE_STRING_SEPARATOR + 1);
-        } while( i != -1 );
-        
+        } while (i != -1);
+
         // now take out the last one
         String name = nameList.substring(SHARK_ENGINE_STRING_SEPARATOR.length());
         this.persistPortNames.add(name);
     }
-    
+
     private static final String SHARK_ENGINE_CLASSNAME = "net.sharkfw.peer.SharkEngine";
-    
+
     /**
      * This method re-creates ASIP ports from their dormant state. Note
      * that happens after each call. Calling th
@@ -1622,34 +1578,34 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         try {
             // drop names, if any
             this.persistPortNames = new HashSet<>();
-            
+
             // fill list
             this.refreshPersistedPortNames();
-            
-            if(this.persistPortNames.isEmpty()) {
+
+            if (this.persistPortNames.isEmpty()) {
                 return;
             }
-            
+
             Class sharkEngineClass = Class.forName(SHARK_ENGINE_CLASSNAME);
             Class mementoClass = null;
             Class[] constructorParam = null;
-            
+
             SharkKB storageKB = this.getStorage();
-            
+
             // walk
             Iterator<String> portNameIter = this.persistPortNames.iterator();
-            while(portNameIter.hasNext()) {
+            while (portNameIter.hasNext()) {
                 String portNameString = portNameIter.next();
-                
+
                 // extract class name
                 String[] array = Util.string2array(portNameString);
                 String className;
-                if(array == null) {
+                if (array == null) {
                     className = portNameString;
                 } else {
                     className = array[0];
                 }
-                
+
 //                int i = portNameString.indexOf(SHARK_ENGINE_STRING_SEPARATOR);
 //                String className;
 //                if(i < 0) {
@@ -1657,80 +1613,80 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 //                } else {
 //                    className = portNameString.substring(0, i);
 //                }
-                
+
                 Class portClass = Class.forName(className);
-                
+
                 // get Memento
                 String mementoString = storageKB.getProperty(portNameString);
-                
+
                 byte[] mementoByte = null;
-                
-                if(mementoString != null) {
+
+                if (mementoString != null) {
                     mementoByte = mementoString.getBytes(STRING_ENCODING);
                 } else {
                     L.w("memento string was empty for " + portNameString, this);
                 }
-                
+
                 // create memento
                 ASIPPortMemento memento = new ASIPPortMemento(className, mementoByte);
-                
-                if(constructorParam == null) {
+
+                if (constructorParam == null) {
                     // that class is always the same. Taking it once is enough.
                     mementoClass = memento.getClass();
-                    constructorParam = new Class[] {sharkEngineClass, mementoClass};
+                    constructorParam = new Class[]{sharkEngineClass, mementoClass};
                 }
-                
+
                 // get constructor
-                Constructor constructor = 
+                Constructor constructor =
                         portClass.getConstructor(constructorParam);
-                
+
                 // pack constructor parameters
-                Object[] newParams = new Object[] { this, memento };
+                Object[] newParams = new Object[]{this, memento};
                 // create an object
-                ASIPPort newPort = (ASIPPort)constructor.newInstance(newParams);
-                
+                ASIPPort newPort = (ASIPPort) constructor.newInstance(newParams);
+
             }
-        } catch (SharkException | ClassNotFoundException 
-                | NoSuchMethodException | SecurityException 
-                | InstantiationException | IllegalAccessException 
-                | IllegalArgumentException | InvocationTargetException 
+        } catch (SharkException | ClassNotFoundException
+                | NoSuchMethodException | SecurityException
+                | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException
                 | UnsupportedEncodingException ex) {
             L.e("could not refresh persisted port: \n" + ex.getClass().getName() + "\n" + ex.getLocalizedMessage(), this);
         }
     }
-    
+
     private String getPersistPortName(ASIPPort port) throws SharkException {
         SharkKB storageKB = this.getStorage();
-        if(storageKB == null) {
+        if (storageKB == null) {
             throw new SharkException("Storage KB no set - cannot persist port mementos");
         }
-        
+
         String uniqueMementoObjectName = port.getUniqueMementoObjectName();
         String canonicalName = port.getClass().getCanonicalName();
 
         String portName;
 
-        if(uniqueMementoObjectName != null) {
-            String[] tempS = new String[] {canonicalName, uniqueMementoObjectName};
-            portName =  Util.array2string(tempS);
+        if (uniqueMementoObjectName != null) {
+            String[] tempS = new String[]{canonicalName, uniqueMementoObjectName};
+            portName = Util.array2string(tempS);
         } else {
             portName = canonicalName;
         }
-        
+
         return portName;
     }
-    
+
     public void persistPort(ASIPPort port) throws SharkException {
-        if(port == null) return;
-        
+        if (port == null) return;
+
         byte[] memento = port.getMemento();
-        if(memento == null) return;
-        
+        if (memento == null) return;
+
         SharkKB storageKB = this.getStorage();
-        if(storageKB == null) {
+        if (storageKB == null) {
             throw new SharkException("Storage KB no set - cannot persist port mementos");
         }
-        
+
         try {
             String mementoString = new String(memento, SharkEngine.STRING_ENCODING);
 
@@ -1738,10 +1694,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
             // save it - can be overwritten..
             storageKB.setProperty(propertyName, mementoString, false);
-            
+
             // remember that key
             this.persistPortNames.add(propertyName);
-            
+
             // persist rememer
             this.persistPersistedPorts();
 
@@ -1751,13 +1707,13 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public void removePersistedPort(ASIPPort port) throws SharkException {
-        if(port == null) return;
-        
+        if (port == null) return;
+
         SharkKB storageKB = this.getStorage();
-        if(storageKB == null) {
+        if (storageKB == null) {
             throw new SharkException("Storage KB no set - cannot persist port mementos");
         }
-        
+
         String propertyName = this.getPersistPortName(port);
 
         // save it - can be overwritten..

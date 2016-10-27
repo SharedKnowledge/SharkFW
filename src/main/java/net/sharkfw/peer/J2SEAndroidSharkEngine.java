@@ -279,32 +279,6 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
         }
     }
 
-    public PeerSensor startPeerSensor() {
-        // Not supported yet
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public GeoSensor getGeoSensor() {
-        // Not supported yet
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void stopPeerSensor() {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void stopGeoSensor() {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void startGeoSensor() {
-        // TODO Auto-generated method stub
-    }
 
     @Override
 	public MessageStub createMailStub(RequestHandler handler) 
