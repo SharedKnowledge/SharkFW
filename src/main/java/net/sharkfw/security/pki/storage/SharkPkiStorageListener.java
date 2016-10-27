@@ -5,7 +5,7 @@ import net.sharkfw.pki.SharkCertificate;
 /**
  * Interface describing a listener for SharkPkiStorage events
  *
- * Currently not used. The provided methods of the {@link net.sharkfw.kp.KPListener} used in the
+ * Currently not used. The provided methods of the {@link net.sharkfw.ports.KPListener} used in the
  * {@link net.sharkfw.security.pki.SharkPkiKP} covers the current demands.
  *
  * @author ac

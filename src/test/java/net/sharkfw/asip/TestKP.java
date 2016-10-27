@@ -2,18 +2,11 @@ package net.sharkfw.asip;
 
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.peer.KEPConnection;
-import net.sharkfw.peer.KnowledgePort;
+import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
-
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 /**
  * Created by j4rvis on 21.03.16.

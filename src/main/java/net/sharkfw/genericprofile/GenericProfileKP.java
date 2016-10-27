@@ -6,7 +6,7 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
-import net.sharkfw.peer.StandardKP;
+import net.sharkfw.ports.StandardKP;
 
 /**
  *

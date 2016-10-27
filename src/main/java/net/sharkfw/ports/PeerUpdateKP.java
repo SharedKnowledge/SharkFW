@@ -1,14 +1,10 @@
-package net.sharkfw.kp;
+package net.sharkfw.ports;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.peer.KEPConnection;
-import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 
 /**

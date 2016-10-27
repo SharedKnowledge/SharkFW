@@ -1,9 +1,8 @@
-package net.sharkfw.kp;
+package net.sharkfw.ports;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
 
 import java.io.InputStream;
 

@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.peer.StandardKP;
+import net.sharkfw.ports.StandardKP;
 import net.sharkfw.system.SharkSecurityException;
 
 /**

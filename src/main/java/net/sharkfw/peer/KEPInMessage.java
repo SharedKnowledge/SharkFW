@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 import net.sharkfw.kep.*;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine.SecurityLevel;
 import net.sharkfw.peer.SharkEngine.SecurityReplyPolicy;
 import net.sharkfw.protocols.*;

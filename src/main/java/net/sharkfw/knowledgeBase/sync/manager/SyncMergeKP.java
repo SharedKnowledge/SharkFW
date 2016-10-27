@@ -5,7 +5,7 @@ import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.sync.SyncKB;
-import net.sharkfw.peer.ContentPort;
+import net.sharkfw.ports.ContentPort;
 import net.sharkfw.peer.SharkEngine;
 
 import java.io.InputStream;

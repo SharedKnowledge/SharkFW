@@ -7,7 +7,7 @@ import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.KEPConnection;
-import net.sharkfw.peer.KnowledgePort;
+import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;

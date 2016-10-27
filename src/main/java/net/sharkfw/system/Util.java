@@ -9,7 +9,7 @@ import java.util.*;
 import net.sharkfw.kep.format.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.*;
-import net.sharkfw.peer.KnowledgePort;
+import net.sharkfw.ports.KnowledgePort;
 
 /**
  * A collection of static utility methods for

@@ -15,10 +15,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.sharkfw.asip.*;
 
@@ -36,6 +32,7 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
+import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.protocols.*;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.*;
@@ -55,7 +52,7 @@ import net.sharkfw.system.*;
  * @author mfi
  * @see net.sharkfw.knowledgeBase.SharkKB
  * @see net.sharkfw.kep.SimpleKEPStub
- * @see net.sharkfw.peer.KnowledgePort
+ * @see KnowledgePort
  */
 abstract public class SharkEngine implements WhiteAndBlackListManager {
 
@@ -402,7 +399,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * Needs to be invisible to the user in the future.
      *
      * @param kp The instance of <code>KnowledgePort</code> to add.
-     * @see net.sharkfw.peer.KnowledgePort
+     * @see KnowledgePort
      */
     void addKP(ASIPPort kp) {
         if (this.asipStub != null)

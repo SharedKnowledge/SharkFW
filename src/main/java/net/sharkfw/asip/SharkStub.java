@@ -2,14 +2,11 @@ package net.sharkfw.asip;
 
 import java.security.PrivateKey;
 import java.util.Iterator;
-import net.sharkfw.asip.engine.ASIPInMessage;
+
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.peer.ASIPPort;
-import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
-import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.protocols.Stub;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 
 /**

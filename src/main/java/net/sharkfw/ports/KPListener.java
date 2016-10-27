@@ -1,9 +1,8 @@
-package net.sharkfw.kp;
+package net.sharkfw.ports;
 
 import net.sharkfw.knowledgeBase.ContextPoint;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.SharkCS;
-import net.sharkfw.peer.KnowledgePort;
 
 /**
  * Listening for events happening on a KnowledgePort implementation.

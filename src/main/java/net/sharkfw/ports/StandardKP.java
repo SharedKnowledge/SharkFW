@@ -1,7 +1,4 @@
-package net.sharkfw.peer;
-
-import java.util.ArrayList;
-import java.util.Iterator;
+package net.sharkfw.ports;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
@@ -9,9 +6,9 @@ import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.PeerAddress;
 import net.sharkfw.system.L;
-import net.sharkfw.system.SharkException;
 
 /**
  * Default implementation for {@link AbstractKP}.
@@ -85,9 +82,9 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         this.deleteAssimilated = delete;
     }
   
-    public StandardKP(SharkEngine se, SharkCS interest, 
-            FragmentationParameter[] backgroundFP, 
-            FragmentationParameter[] fp, SharkKB kb) {
+    public StandardKP(SharkEngine se, SharkCS interest,
+                      FragmentationParameter[] backgroundFP,
+                      FragmentationParameter[] fp, SharkKB kb) {
         
         super(se, kb);
         this.fp = fp;
@@ -116,7 +113,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @param kb The SharkKB over which the KnowledgPort works.
      */
     public StandardKP(SharkEngine se, SharkCS interest, SharkKB kb) {
-        this(se, interest, KnowledgePort.getZeroFP(), KnowledgePort.getZeroFP(), kb);
+        this(se, interest, getZeroFP(), getZeroFP(), kb);
     }
 
     public StandardKP(SharkEngine se, SharkCS interest, 

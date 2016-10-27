@@ -9,12 +9,10 @@ import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.ASIPPort;
-import net.sharkfw.peer.KEPInMessage;
-import net.sharkfw.peer.KnowledgePort;
+import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.protocols.Stub;
 import net.sharkfw.system.*;
 
 /**

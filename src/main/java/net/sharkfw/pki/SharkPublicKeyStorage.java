@@ -2,15 +2,10 @@ package net.sharkfw.pki;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import net.sharkfw.knowledgeBase.ContextPoint;
+
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.peer.StandardKP;
-import net.sharkfw.system.SharkPKVerifiyException;
-import net.sharkfw.system.SharkSecurityException;
+
 /**
  *
  * A peer can and should share certificates. Thus, whenever a peer

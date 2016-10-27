@@ -1,8 +1,8 @@
-package net.sharkfw.peer;
+package net.sharkfw.ports;
 
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.asip.engine.ASIPMessage;
+import net.sharkfw.peer.SharkEngine;
 
 import java.io.InputStream;
 

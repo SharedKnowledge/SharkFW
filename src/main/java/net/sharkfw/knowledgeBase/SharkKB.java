@@ -6,6 +6,7 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import java.util.Enumeration;
 import java.util.Iterator;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.ports.KnowledgePort;
 
 /**
  *
@@ -36,7 +37,7 @@ import net.sharkfw.asip.ASIPKnowledge;
  * </p>
  * 
  * <p><strong>Creation of standard interests</strong> <br />
- * Standard interests are used in {@link net.sharkfw.peer.KnowledgePort} to define the details
+ * Standard interests are used in {@link KnowledgePort} to define the details
  * of a communication with other peers. They define about what, when and where an
  * exchange may take place. The creation of these standard interests is handled here.
  * By providing a number of anchor points (in an AnchorSet) and a number of {@link FragmentationParameter}s,

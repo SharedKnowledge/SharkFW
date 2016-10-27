@@ -3,10 +3,10 @@ package net.sharkfw.protocols.mail;
 import junit.framework.Assert;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.kp.KPListener;
+import net.sharkfw.ports.KPListener;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.peer.KnowledgePort;
-import net.sharkfw.peer.StandardKP;
+import net.sharkfw.ports.KnowledgePort;
+import net.sharkfw.ports.StandardKP;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkSecurityException;
 
