@@ -46,26 +46,26 @@ public abstract class InMemoSharkCS implements SharkCS, ASIPSpace {
     public STSet getSTSet(int dim) throws SharkKBException {
         switch(dim) {
             // KEP
-//            case SharkCS.DIM_TOPIC:
+//            case ASIPSpace.DIM_TOPIC:
 //                return this.getTopics();
 //                
 //            // see comments
-//            case SharkCS.DIM_ORIGINATOR:
+//            case ASIPSpace.DIM_ORIGINATOR:
 //                return this.getOriginators();
 //                                        
-//            case SharkCS.DIM_PEER: 
+//            case ASIPSpace.DIM_PEER:
 //                return this.getPeers();
 //                
-//            case SharkCS.DIM_REMOTEPEER:
+//            case ASIPSpace.DIM_REMOTEPEER:
 //                return this.getRemotePeers();
 //                
-//            case SharkCS.DIM_TIME:
+//            case ASIPSpace.DIM_TIME:
 //                return this.getTimes();
 //                
-//            case SharkCS.DIM_LOCATION: 
+//            case ASIPSpace.DIM_LOCATION:
 //                return this.getLocations();
 //                
-//            case SharkCS.DIM_DIRECTION: 
+//            case ASIPSpace.DIM_DIRECTION:
 //                return this.getDirections();
 
             ////////////////////////////////////////////////////////
@@ -147,19 +147,19 @@ public abstract class InMemoSharkCS implements SharkCS, ASIPSpace {
         String name, si;
 
         switch(this.getDirection()) {
-            case SharkCS.DIRECTION_IN: {
+            case ASIPSpace.DIRECTION_IN: {
                 name = "direction in";
                 si = SharkCS.INURL;
                 break;
             }
                 
-            case SharkCS.DIRECTION_OUT: {
+            case ASIPSpace.DIRECTION_OUT: {
                 name = "direction out";
                 si = SharkCS.OUTURL;
                 break;
             }
                 
-            case SharkCS.DIRECTION_INOUT: {
+            case ASIPSpace.DIRECTION_INOUT: {
                 name = "direction in out";
                 si = SharkCS.INOUTURL;
                 break;

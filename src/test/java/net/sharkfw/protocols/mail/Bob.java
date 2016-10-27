@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
+
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
@@ -44,7 +46,7 @@ public class Bob {
         PeerSemanticTag bobPeer = kb.getPeerSTSet().createPeerSemanticTag("Bob", "http://www.sharksystem.net/bob.html", Settings.BOB_ADDRESS);
         SemanticTag p2p = kb.getPeerSTSet().createSemanticTag("P2P", "http://www.p2p.de");
         
-        ContextCoordinates cc = kb.createContextCoordinates(p2p, bobPeer, null, null, null, null, SharkCS.DIRECTION_IN);
+        ContextCoordinates cc = kb.createContextCoordinates(p2p, bobPeer, null, null, null, null, ASIPSpace.DIRECTION_IN);
         StandardKP kp = new StandardKP(bob, cc, kb);        
         System.out.println("done!");
         
@@ -68,7 +70,7 @@ public class Bob {
     }
 
     private static void printStatus(SharkKB kb) throws SharkKBException {
-        Enumeration<ContextPoint> cpEnum = kb.getContextPoints(kb.createContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT));
+        Enumeration<ContextPoint> cpEnum = kb.getContextPoints(kb.createContextCoordinates(null, null, null, null, null, null, ASIPSpace.DIRECTION_INOUT));
         int cpCount = 0;
         System.out.println("\n\n\n\nContextPoints:");
         while (cpEnum != null && cpEnum.hasMoreElements()) {

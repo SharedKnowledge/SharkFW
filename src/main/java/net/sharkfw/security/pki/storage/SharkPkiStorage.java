@@ -1,6 +1,8 @@
 package net.sharkfw.security.pki.storage;
 
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoASIPKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import net.sharkfw.security.pki.Certificate;
@@ -85,7 +87,7 @@ public class SharkPkiStorage implements PkiStorage {
                 null,
                 null,
                 null,
-                SharkCS.DIRECTION_INOUT);
+                ASIPSpace.DIRECTION_INOUT);
 
         ownerPrivateKeyContextCoordinatesFilter = InMemoSharkKB.createInMemoContextCoordinates(
                 PKI_OWNER_PRIVATE_KEY_CONTEXT_COORDINATE,
@@ -94,7 +96,7 @@ public class SharkPkiStorage implements PkiStorage {
                 null,
                 null,
                 null,
-                SharkCS.DIRECTION_NOTHING
+                ASIPSpace.DIRECTION_NOTHING
         );
         keyFactory = KeyFactory.getInstance(SharkKeyPairAlgorithm.RSA.name());
     }
@@ -106,7 +108,8 @@ public class SharkPkiStorage implements PkiStorage {
      */
     @Override
     public PrivateKey getOwnerPrivateKey() throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
         if(knowledge != null) {
             ContextPoint cp = knowledge.contextPoints().nextElement();
             if(cp != null) {
@@ -128,7 +131,8 @@ public class SharkPkiStorage implements PkiStorage {
      */
     @Override
     public void replaceOwnerPrivateKey(PrivateKey newPrivateKey) throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, ownerPrivateKeyContextCoordinatesFilter);
         if(knowledge != null) {
             ContextPoint cp = knowledge.contextPoints().nextElement();
             if(cp != null) {
@@ -164,7 +168,7 @@ public class SharkPkiStorage implements PkiStorage {
                 sharkCertificate.getIssuer(),       //Remote peer -> if null any
                 time,                               //Time -> if null any
                 null,                               //Location -> if null any
-                SharkCS.DIRECTION_INOUT);           //Direction
+                ASIPSpace.DIRECTION_INOUT);           //Direction
         ContextPoint contextPoint = sharkPkiStorageKB.createContextPoint(contextCoordinates);
 
         Information publicKey = contextPoint.addInformation();
@@ -205,7 +209,7 @@ public class SharkPkiStorage implements PkiStorage {
                 sharkCertificate.getContextCoordinates().getRemotePeer(), //Remote peer -> if null any
                 time,                                                     //Time -> if null any
                 null,                                                     //Location -> if null any
-                SharkCS.DIRECTION_INOUT);                                 //Direction
+                ASIPSpace.DIRECTION_INOUT);                                 //Direction
         ContextPoint contextPoint = sharkPkiStorageKB.createContextPoint(contextCoordinates);
 
         try {
@@ -242,7 +246,8 @@ public class SharkPkiStorage implements PkiStorage {
 
     @Override
     public SharkCertificate getSharkCertificate(PeerSemanticTag subject) throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             if(SharkCSAlgebra.identical(subject, cp.getContextCoordinates().getPeer())) {
 
@@ -268,7 +273,8 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     public SharkCertificate getSharkCertificate(String[] subjectIdentifier) throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         try {
             for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
                 if(SharkCSAlgebra.identical(cp.getContextCoordinates().getPeer().getSI(), subjectIdentifier)) {
@@ -305,7 +311,8 @@ public class SharkPkiStorage implements PkiStorage {
      */
     @Override
     public SharkCertificate getSharkCertificate(PeerSemanticTag subject, PublicKey publicKey) throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             if (SharkCSAlgebra.identical(subject, cp.getContextCoordinates().getPeer())
                     && Arrays.equals(cp.getInformation(PKI_INFORMATION_PUBLIC_KEY_NAME).next().getContentAsByte(), publicKey.getEncoded())) {
@@ -336,7 +343,8 @@ public class SharkPkiStorage implements PkiStorage {
      */
     @Override
     public SharkCertificate getSharkCertificate(PeerSemanticTag issuer, PeerSemanticTag subject) throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         SharkCertificate sharkCertificate = null;
         for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
             if (SharkCSAlgebra.identical(issuer, cp.getContextCoordinates().getRemotePeer()) && SharkCSAlgebra.identical(subject, cp.getContextCoordinates().getPeer())) {
@@ -376,7 +384,8 @@ public class SharkPkiStorage implements PkiStorage {
      */
     @Override
     public HashSet<SharkCertificate> getSharkCertificateList() throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         HashSet<SharkCertificate> sharkCertificateList = new HashSet<>();
         if(knowledge != null) {
             for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
@@ -441,7 +450,7 @@ public class SharkPkiStorage implements PkiStorage {
                         sharkCertificate.getIssuer(),                             //Remote peer -> if null any
                         InMemoSharkKB.createInMemoTimeSemanticTag(TimeSemanticTag.FIRST_MILLISECOND_EVER, sharkCertificate.getValidity().getTime()), //Time -> if null any
                         null,                                                     //Location -> if null any
-                        SharkCS.DIRECTION_INOUT)                                  //Direction
+                        ASIPSpace.DIRECTION_INOUT)                                  //Direction
             );
             return true;
         }
@@ -464,7 +473,8 @@ public class SharkPkiStorage implements PkiStorage {
      * @throws SharkKBException
      */
     private boolean isCertificateInKb(SharkCertificate sharkCertificate) throws SharkKBException {
-        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
+        Knowledge knowledge = new InMemoASIPKnowledge();
+//        Knowledge knowledge = SharkCSAlgebra.extract(sharkPkiStorageKB, contextCoordinatesFilter);
         if(knowledge != null) {
             for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
                 Information publicKey = extractInformation(cp, PKI_INFORMATION_PUBLIC_KEY_NAME);

@@ -1,32 +1,15 @@
 package net.sharkfw.peer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import net.sharkfw.asip.*;
-
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.ASIPOutMessage;
+import net.sharkfw.asip.engine.SimpleASIPStub;
+import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.kep.KEPMessage;
 import net.sharkfw.kep.KEPOutMessage;
 import net.sharkfw.kep.KEPStub;
 import net.sharkfw.kep.KnowledgeSerializer;
-import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
-import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
@@ -36,6 +19,16 @@ import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.protocols.*;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.*;
 
 /**
  * This class is the facade for the Shark-System. It provides a single interface to the user/developer where
@@ -1434,7 +1427,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         } else if (kp.getKEPInterest() != null) {
             kepInterest = kp.getKEPInterest();
             try {
-                recipients = (PeerSTSet) kepInterest.getSTSet(SharkCS.DIM_REMOTEPEER);
+                recipients = (PeerSTSet) kepInterest.getSTSet(ASIPSpace.DIM_APPROVERS);
             } catch (SharkKBException e) {
                 e.printStackTrace();
             }
@@ -2001,7 +1994,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private ContextCoordinates getUnsentCC(PeerSemanticTag recipient) {
         return InMemoSharkKB.createInMemoContextCoordinates(
                 this.unsentMessagesST, recipient, null, null,
-                null, null, SharkCS.DIRECTION_NOTHING);
+                null, null, ASIPSpace.DIRECTION_NOTHING);
     }
 
     private ContextPoint getUnsentMessageCP(PeerSemanticTag recipient) {

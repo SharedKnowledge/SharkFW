@@ -1,6 +1,7 @@
 package net.sharkfw.protocols.mail;
 
 import junit.framework.Assert;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.ports.KPListener;
@@ -62,7 +63,7 @@ public class MailTests implements KPListener {
         // Create new coordinates before creating a ContextPoint
         ContextCoordinates javaAliceContext = aliceKB.createContextCoordinates(javaST, 
                 alicePST, /*remote peer*/ null, /*originator*/ null, /*time*/ null, 
-                /*place*/ null, SharkCS.DIRECTION_OUT);
+                /*place*/ null, ASIPSpace.DIRECTION_OUT);
 
         // Create a ContextPoint to add information to
         ContextPoint javaAliceCP = aliceKB.createContextPoint(javaAliceContext);
@@ -110,7 +111,7 @@ public class MailTests implements KPListener {
 
         // Create new ContextCoordinates
         ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(bobJavaST, null, 
-                bobbobPST, null, null, null, SharkCS.DIRECTION_IN);
+                bobbobPST, null, null, null, ASIPSpace.DIRECTION_IN);
 
         // Activate a KnowledgePort using the kepInterest to handle incoming events
         StandardKP bobKP = new StandardKP(bobSE, cc, bobKB);
@@ -163,7 +164,7 @@ public class MailTests implements KPListener {
 
         // Create new ContextCoordinates
         ContextCoordinates cc = InMemoSharkKB.createInMemoContextCoordinates(bobJavaST, null, 
-                bobbobPST, null, null, null, SharkCS.DIRECTION_IN);
+                bobbobPST, null, null, null, ASIPSpace.DIRECTION_IN);
 
         // Activate a KnowledgePort using the kepInterest to handle incoming events
         StandardKP bobKP = new StandardKP(bobSE, cc, bobKB);
@@ -205,7 +206,7 @@ public class MailTests implements KPListener {
         // Create new coordinates before creating a ContextPoint
         ContextCoordinates javaAliceContext = aliceKB.createContextCoordinates(javaST, 
                 alicePST, /*remote peer*/ null, /*originator*/ null, /*time*/ null, 
-                /*place*/ null, SharkCS.DIRECTION_OUT);
+                /*place*/ null, ASIPSpace.DIRECTION_OUT);
 
         // Create a ContextPoint to add information to
         ContextPoint javaAliceCP = aliceKB.createContextPoint(javaAliceContext);

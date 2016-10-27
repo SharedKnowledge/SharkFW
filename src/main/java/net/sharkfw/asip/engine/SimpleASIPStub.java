@@ -253,7 +253,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     public final void startConversion(StreamConnection con) {
         // creates an empty kepInterest - which is interpreted as any kepInterest.
         Interest anyInterest = InMemoSharkKB.createInMemoInterest();
-        anyInterest.setDirection(SharkCS.DIRECTION_INOUT);
+        anyInterest.setDirection(ASIPSpace.DIRECTION_INOUT);
 
         Iterator<ASIPPort> kpIter = this.getListener();
 

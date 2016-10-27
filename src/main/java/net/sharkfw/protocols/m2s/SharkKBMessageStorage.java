@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.system.TimeLong;
 import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.ContextPoint;
@@ -51,7 +52,7 @@ public class SharkKBMessageStorage implements MessageStorage {
     public ContextPoint createCP(String id, boolean toBeSent) throws SharkException {
         SemanticTag idTag = kb.getTopicSTSet().createSemanticTag(id, id);
 
-        int direction = toBeSent ? SharkCS.DIRECTION_OUT : SharkCS.DIRECTION_IN;
+        int direction = toBeSent ? ASIPSpace.DIRECTION_OUT : ASIPSpace.DIRECTION_IN;
         ContextCoordinates cc = 
                 this.kb.createContextCoordinates(idTag, null, null, null, null, null, direction);
 
@@ -62,7 +63,7 @@ public class SharkKBMessageStorage implements MessageStorage {
         try {
             SemanticTag idTag = kb.getTopicSTSet().createSemanticTag(id, id);
             
-            int direction = toBeSent ? SharkCS.DIRECTION_OUT : SharkCS.DIRECTION_IN;
+            int direction = toBeSent ? ASIPSpace.DIRECTION_OUT : ASIPSpace.DIRECTION_IN;
             ContextCoordinates cc = 
                     this.kb.createContextCoordinates(idTag, null, null, null, null, null, direction);
             
@@ -87,7 +88,6 @@ public class SharkKBMessageStorage implements MessageStorage {
      * 
      * @param id
      * @param recipientAddress
-     * @param firstOffset
      * @param maxLen
      * @return 
      */
@@ -133,8 +133,6 @@ public class SharkKBMessageStorage implements MessageStorage {
      * @param id
      * @param packageNumber
      * @param last
-     * @param msg
-     * @param offset 
      */
     public void savePart(String id, int packageNumber, boolean last, InputStream is) throws SharkException {
         ContextPoint cp = this.createCP(id, false);

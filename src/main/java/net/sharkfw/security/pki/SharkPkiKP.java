@@ -2,6 +2,7 @@ package net.sharkfw.security.pki;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
@@ -154,7 +155,7 @@ public class SharkPkiKP extends KnowledgePort {
                     sc.getIssuer(),
                     null,
                     null,
-                    SharkCS.DIRECTION_INOUT);
+                    ASIPSpace.DIRECTION_INOUT);
 
             Knowledge knowledge = InMemoSharkKB.createInMemoKnowledge();
             ContextPoint contextPoint = InMemoSharkKB.createInMemoContextPoint(contextCoordinatesFilter);
@@ -188,9 +189,9 @@ public class SharkPkiKP extends KnowledgePort {
                     sc.getIssuer(),
                     null,
                     null,
-                    SharkCS.DIRECTION_INOUT);
+                    ASIPSpace.DIRECTION_INOUT);
 
-            Knowledge extractedCertificate = SharkCSAlgebra.extract(sharkPkiStorage.getSharkPkiStorageKB(), contextCoordinatesFilter);
+            Knowledge extractedCertificate = null;
             this.sendKnowledge(extractedCertificate, interest.getOriginator());
             this.notifyExposeSent(this, interest);
         }

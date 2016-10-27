@@ -305,10 +305,10 @@ public class L {
 
         buf.append("Direction:\t");
         switch(asipSpace.getDirection()) {
-            case SharkCS.DIRECTION_IN : buf.append("in"); break;
-            case SharkCS.DIRECTION_OUT : buf.append("out"); break;
-            case SharkCS.DIRECTION_INOUT : buf.append("in/out"); break;
-            case SharkCS.DIRECTION_NOTHING : buf.append("nothing"); break;
+            case ASIPSpace.DIRECTION_IN : buf.append("in"); break;
+            case ASIPSpace.DIRECTION_OUT : buf.append("out"); break;
+            case ASIPSpace.DIRECTION_INOUT : buf.append("in/out"); break;
+            case ASIPSpace.DIRECTION_NOTHING : buf.append("nothing"); break;
             default: buf.append("L.asipSpace2String: unknown (shouldn't be here"); break;
         }
         buf.append("\n");
@@ -513,10 +513,10 @@ public class L {
     
             buf.append("Direction:\t");
             switch(cs.getDirection()) {
-                case SharkCS.DIRECTION_IN : buf.append("in"); break;
-                case SharkCS.DIRECTION_OUT : buf.append("out"); break;
-                case SharkCS.DIRECTION_INOUT : buf.append("in/out"); break;
-                case SharkCS.DIRECTION_NOTHING : buf.append("nothing"); break;
+                case ASIPSpace.DIRECTION_IN : buf.append("in"); break;
+                case ASIPSpace.DIRECTION_OUT : buf.append("out"); break;
+                case ASIPSpace.DIRECTION_INOUT : buf.append("in/out"); break;
+                case ASIPSpace.DIRECTION_NOTHING : buf.append("nothing"); break;
                 default: buf.append("unknown (shouldn't be here"); break;
             }
             buf.append("\n");

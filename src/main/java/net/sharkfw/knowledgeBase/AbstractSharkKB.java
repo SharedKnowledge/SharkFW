@@ -1,21 +1,14 @@
 package net.sharkfw.knowledgeBase;
 
-import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.asip.ASIPInformationSpace;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import net.sharkfw.asip.ASIPInformation;
-import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.*;
 import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformationCoordinates;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
 import net.sharkfw.system.EnumerationChain;
 import net.sharkfw.system.Iterator2Enumeration;
+
+import java.util.*;
 
 /**
  * This class implements as much methods from SharkKB as possible
@@ -147,11 +140,11 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 //        try {
             return InMemoSharkKB.createInMemoInterest(topicsSet, this.owner,
                     peersSet, peersSet, this.times,
-                    this.locations, SharkCS.DIRECTION_INOUT);
+                    this.locations, ASIPSpace.DIRECTION_INOUT);
             
 //            return this.createInterest(topicsSet, this.owner,
 //                    peersSet, peersSet, this.times,
-//                    this.locations, SharkCS.DIRECTION_INOUT);
+//                    this.locations, ASIPSpace.DIRECTION_INOUT);
 //        } catch (SharkKBException ex) {
 //            // never happens.
 //        }
@@ -583,19 +576,19 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
                 SpatialSemanticTag location = oldCC.getLocation();
                 int direction = oldCC.getDirection();
                 switch (dim) {
-                    case SharkCS.DIM_TOPIC:
+                    case ASIPSpace.DIM_TOPIC:
                         topic = tag;
                         break;
-                    case SharkCS.DIM_PEER:
+                    case ASIPSpace.DIM_SENDER:
                         peer = (PeerSemanticTag) tag;
                         break;
-                    case SharkCS.DIM_REMOTEPEER:
+                    case ASIPSpace.DIM_RECEIVER:
                         remotePeer = (PeerSemanticTag) tag;
                         break;
-                    case SharkCS.DIM_TIME:
+                    case ASIPSpace.DIM_TIME:
                         time = (TimeSemanticTag) tag;
                         break;
-                    case SharkCS.DIM_LOCATION:
+                    case ASIPSpace.DIM_LOCATION:
                         location = (SpatialSemanticTag) tag;
                         break;
                 }
@@ -741,7 +734,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public Interest contextualize(SharkCS context, FragmentationParameter[] fp) throws SharkKBException {
         Interest result = new net.sharkfw.knowledgeBase.inmemory.InMemoInterest();
         
-        SharkCSAlgebra.contextualize(result, this.asSharkCS(), context, fp);
+//        SharkCSAlgebra.contextualize(result, this.asSharkCS(), context, fp);
         /* NOTE: contextualize twists peer/remote peer and changes direction
          * Twisting peers has no effect here because there is just a single
          * peer set.
@@ -1045,7 +1038,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     
     /**
      * 
-     * @param interests
      * @return -1 of no such kepInterest in in the list
      */
     private int findInterestIndex(SharkCS interest) throws SharkKBException {
@@ -1171,7 +1163,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      *
      * @param as
      * @param fps
-     * @param fp
      * @return
      * @throws SharkKBException
      */

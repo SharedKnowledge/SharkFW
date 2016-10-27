@@ -1,5 +1,6 @@
 package net.sharkfw.peer;
 
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.SharkStub;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -784,7 +785,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
     @Override
     public void expose(SharkCS interest) {
          try {
-           STSet remotepeers = interest.getSTSet(SharkCS.DIM_REMOTEPEER);
+           STSet remotepeers = interest.getSTSet(ASIPSpace.DIM_APPROVERS);
            Enumeration rPeers = null;
            
             if(remotepeers != null) {
@@ -1050,7 +1051,7 @@ public class KEPInMessage extends KEPMessage implements KEPConnection {
     if(this.receivedInterest != null) {
       try {
         // We have an kepInterest!
-        peer = (PeerSTSet) this.receivedInterest.getSTSet(SharkCS.DIM_PEER);
+        peer = (PeerSTSet) this.receivedInterest.getSTSet(ASIPSpace.DIM_RECEIVER);
       } catch (SharkKBException ex) {
         ex.printStackTrace();
       }

@@ -52,7 +52,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      * Creates an any kepInterest.
      */
     public InMemoInterest() {
-        this(null, null, (PeerSTSet) null, null, null, null, null, SharkCS.DIRECTION_INOUT); 
+        this(null, null, (PeerSTSet) null, null, null, null, null, ASIPSpace.DIRECTION_INOUT);
     }
     
     /**
@@ -117,7 +117,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
      */
     @Override
     public boolean isAny(int dim) {
-        return SharkCSAlgebra.isAny((SharkCS) this, dim);
+        return false;
     }
 
     /**
@@ -262,11 +262,7 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
         // create result
         InMemoInterest mutualInterest = new InMemoInterest();
         
-        if(SharkCSAlgebra.contextualize(mutualInterest, this, context, fp)) {
-            return mutualInterest;
-        } else {
-            return null;
-        }
+        return null;
     }
     
     public ASIPInterest contextualize(ASIPSpace context, FPSet fps) 

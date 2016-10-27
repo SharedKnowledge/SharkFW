@@ -6,7 +6,7 @@ import org.junit.Test;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.inmemory.*;
 import net.sharkfw.system.L;
-import static net.sharkfw.knowledgeBase.SharkCS.DIRECTION_INOUT;
+import static net.sharkfw.asip.ASIPSpace.DIRECTION_INOUT;
 import org.junit.Assert;
 
 /**

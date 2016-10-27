@@ -273,8 +273,8 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 //          /////////////////////////////////////////////////////////////////
 //
 //          // remote peer wants to send something?
-//          if(effectiveDirection == SharkCS.DIRECTION_INOUT ||
-//                  effectiveDirection == SharkCS.DIRECTION_IN) {
+//          if(effectiveDirection == ASIPSpace.DIRECTION_INOUT ||
+//                  effectiveDirection == ASIPSpace.DIRECTION_IN) {
 //            // Effective kepInterest = receiving kepInterest. Send response.
 //            L.d("Answering with expose", this);
 //
@@ -291,8 +291,8 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 //          /////////////////////////////////////////////////////////////////
 //
 //          // remote peer wants to get something?
-//          if(effectiveDirection == SharkCS.DIRECTION_INOUT ||
-//                  effectiveDirection == SharkCS.DIRECTION_OUT) {
+//          if(effectiveDirection == ASIPSpace.DIRECTION_INOUT ||
+//                  effectiveDirection == ASIPSpace.DIRECTION_OUT) {
 //
 ////              Interest extractionInterest = SharkCSAlgebra.contextualize(
 ////                  this.getKB().asSharkCS(), mutualInterest, this.getOTP());
@@ -301,9 +301,9 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 ////              L.d("handleExpose: \n extraction kepInterest is:\n"+ L.contextSpace2String(extractionInterest), this);
 //
 //              // set direction: we take all cps that are explicitely set to out
-////              extractionInterest.setDirection(SharkCS.DIRECTION_INOUT);
+////              extractionInterest.setDirection(ASIPSpace.DIRECTION_INOUT);
 //
-//              mutualInterest.setDirection(SharkCS.DIRECTION_INOUT);
+//              mutualInterest.setDirection(ASIPSpace.DIRECTION_INOUT);
 //
 //              L.d("handleExpose: \n extraction kepInterest is:\n"+ L.contextSpace2String(mutualInterest), this);
 //

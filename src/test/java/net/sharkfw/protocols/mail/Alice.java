@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
@@ -38,7 +40,7 @@ public class Alice {
         SharkKB kb = new InMemoSharkKB();
         
         FragmentationParameter[] fps = kb.getStandardFPSet();
-        fps[SharkCS.DIM_TOPIC] = new FragmentationParameter(true, true, 1);
+        fps[ASIPSpace.DIM_TOPIC] = new FragmentationParameter(true, true, 1);
         kb.setStandardFPSet(fps);
         
 //        alice.setMailConfiguration("smtp.sharksystem.net", "thsc_test1@sharksystem.net", "thsc_test1", "pop3.sharksystem.net", "thsc_test1@sharksystem.net", "thsc_test1@sharksystem.net", "thsc_test1", 1);
@@ -56,7 +58,7 @@ public class Alice {
         TXSemanticTag shark = kb.getTopicsAsTaxonomy().createTXSemanticTag("Shark", "http://www.sharksystem.net");
         shark.move(p2p);
         
-        ContextCoordinates cc = kb.createContextCoordinates(shark, alicePeer, null, null, null, null, SharkCS.DIRECTION_OUT);
+        ContextCoordinates cc = kb.createContextCoordinates(shark, alicePeer, null, null, null, null, ASIPSpace.DIRECTION_OUT);
         
         ContextPoint cp = kb.createContextPoint(cc);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

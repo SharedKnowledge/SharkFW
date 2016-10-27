@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.system.TimeLong;
 import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.knowledgeBase.*;
@@ -428,7 +429,6 @@ public class XMLSerializer implements KnowledgeSerializer {
     
     /**
      * Deserializes semantic tag from string
-     * @param target
      * @param s
      */
     private SemanticTag deserializeTag(STSet targetSet, String s) throws SharkKBException {
@@ -959,17 +959,17 @@ public class XMLSerializer implements KnowledgeSerializer {
         ////////////////////////////////////////////////////////////
         //                    direction                           //
         ////////////////////////////////////////////////////////////
-        int direction = SharkCS.DIRECTION_NOTHING; // init
+        int direction = ASIPSpace.DIRECTION_NOTHING; // init
         partString = this.stringBetween(DIRECTION_TAG, csString, 0);
         if(partString != null) {
 
             try {
                 direction = Integer.parseInt(partString);
-                if(direction != SharkCS.DIRECTION_IN &&
-                        direction != SharkCS.DIRECTION_INOUT &&
-                        direction != SharkCS.DIRECTION_OUT &&
-                        direction != SharkCS.DIRECTION_NOTHING) {
-                    direction = SharkCS.DIRECTION_NOTHING;
+                if(direction != ASIPSpace.DIRECTION_IN &&
+                        direction != ASIPSpace.DIRECTION_INOUT &&
+                        direction != ASIPSpace.DIRECTION_OUT &&
+                        direction != ASIPSpace.DIRECTION_NOTHING) {
+                    direction = ASIPSpace.DIRECTION_NOTHING;
                 }
             }
             catch(NumberFormatException nfe) {

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.security.PrivateKey;
 import java.util.Iterator;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.AccessListManager;
@@ -117,13 +118,13 @@ public abstract class KnowledgePort extends ContentPort {
     public boolean isOKP() {
         if(getAsipInterest()!=null){
             int dimension = getAsipInterest().getDirection();
-            return (dimension == SharkCS.DIRECTION_OUT ||
-                    dimension == SharkCS.DIRECTION_INOUT);
+            return (dimension == ASIPSpace.DIRECTION_OUT ||
+                    dimension == ASIPSpace.DIRECTION_INOUT);
         }
         if(getKEPInterest()!=null){
             int dimension = this.getKEPInterest().getDirection();
-            return (dimension == SharkCS.DIRECTION_OUT ||
-                    dimension == SharkCS.DIRECTION_INOUT);
+            return (dimension == ASIPSpace.DIRECTION_OUT ||
+                    dimension == ASIPSpace.DIRECTION_INOUT);
         }
         return false;
     }
@@ -137,13 +138,13 @@ public abstract class KnowledgePort extends ContentPort {
 
         if(getAsipInterest()!=null){
             int dimension = getAsipInterest().getDirection();
-            return (dimension == SharkCS.DIRECTION_IN ||
-                    dimension == SharkCS.DIRECTION_INOUT);
+            return (dimension == ASIPSpace.DIRECTION_IN ||
+                    dimension == ASIPSpace.DIRECTION_INOUT);
         }
         if(getKEPInterest()!=null){
             int dimension = this.getKEPInterest().getDirection();
-            return (dimension == SharkCS.DIRECTION_IN ||
-                    dimension == SharkCS.DIRECTION_INOUT);
+            return (dimension == ASIPSpace.DIRECTION_IN ||
+                    dimension == ASIPSpace.DIRECTION_INOUT);
         }
         return false;
     }

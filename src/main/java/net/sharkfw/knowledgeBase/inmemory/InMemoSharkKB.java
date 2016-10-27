@@ -595,7 +595,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     ///////////////////////////////////////////////////////////////////////////
 
     public static ContextCoordinates getAnyCoordinates() {
-        return InMemoSharkKB.createInMemoContextCoordinates(null, null, null, null, null, null, SharkCS.DIRECTION_INOUT);
+        return InMemoSharkKB.createInMemoContextCoordinates(null, null, null, null, null, null, ASIPSpace.DIRECTION_INOUT);
     }
 
     public static InformationCoordinates getAnyInformationCoordinates() 
@@ -628,12 +628,12 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         // direction
         // Bugfix to avoid recreation/duplicate profiles, it was triggered by OpenCV() or anything similar which led to exact direction match failed
         switch (cc1.getDirection()) {
-            case SharkCS.DIRECTION_OUT:
+            case ASIPSpace.DIRECTION_OUT:
                 switch (cc2.getDirection()) {
-                    case SharkCS.DIRECTION_IN:
+                    case ASIPSpace.DIRECTION_IN:
                         /* OUT/IN, incompatible */
                         return false;
-                    case SharkCS.DIRECTION_INOUT:
+                    case ASIPSpace.DIRECTION_INOUT:
                         /* OUT/INOUT */
                         L.w("relax direction match");
                 // fall thru
@@ -642,12 +642,12 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                         break;
                 }
                 break;
-            case SharkCS.DIRECTION_IN:
+            case ASIPSpace.DIRECTION_IN:
                 switch (cc2.getDirection()) {
-                    case SharkCS.DIRECTION_OUT:
+                    case ASIPSpace.DIRECTION_OUT:
                         /* IN/OUT, incompatible */
                         return false;
-                    case SharkCS.DIRECTION_INOUT:
+                    case ASIPSpace.DIRECTION_INOUT:
                         /* IN/INOUT */
                         L.w("relax direction match");
                 // fall thru
@@ -656,15 +656,15 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                         break;
                 }
                 break;
-            case SharkCS.DIRECTION_INOUT:
+            case ASIPSpace.DIRECTION_INOUT:
                 switch (cc2.getDirection()) {
-                    case SharkCS.DIRECTION_OUT:
+                    case ASIPSpace.DIRECTION_OUT:
 /* INOUT/OUT */
-                    case SharkCS.DIRECTION_IN:
+                    case ASIPSpace.DIRECTION_IN:
                         /* INOUT/IN */
                         L.w("relax direction match");
                 // fall thru
-                    case SharkCS.DIRECTION_INOUT:
+                    case ASIPSpace.DIRECTION_INOUT:
                         /* INOUT/INOUT is OK */
                         break;
                 }
@@ -719,12 +719,12 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         exact direction match failed
         */
         switch (ic1.getDirection()) {
-            case SharkCS.DIRECTION_OUT:
+            case ASIPSpace.DIRECTION_OUT:
                 switch (ic2.getDirection()) {
-                    case SharkCS.DIRECTION_IN:
+                    case ASIPSpace.DIRECTION_IN:
                         /* OUT/IN, incompatible */
                         return false;
-                    case SharkCS.DIRECTION_INOUT:
+                    case ASIPSpace.DIRECTION_INOUT:
                         /* OUT/INOUT */
                         L.w("relax direction match");
                         // fall thru - both coordinates still match
@@ -733,12 +733,12 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                         break;
                 }
                 break;
-            case SharkCS.DIRECTION_IN:
+            case ASIPSpace.DIRECTION_IN:
                 switch (ic2.getDirection()) {
-                    case SharkCS.DIRECTION_OUT:
+                    case ASIPSpace.DIRECTION_OUT:
                         /* IN/OUT, incompatible */
                         return false;
-                    case SharkCS.DIRECTION_INOUT:
+                    case ASIPSpace.DIRECTION_INOUT:
                         /* IN/INOUT */
                         L.w("relax direction match");
                 // fall thru
@@ -747,15 +747,15 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
                         break;
                 }
                 break;
-            case SharkCS.DIRECTION_INOUT:
+            case ASIPSpace.DIRECTION_INOUT:
                 switch (ic2.getDirection()) {
-                    case SharkCS.DIRECTION_OUT:
+                    case ASIPSpace.DIRECTION_OUT:
                     /* INOUT/OUT */
-                    case SharkCS.DIRECTION_IN:
+                    case ASIPSpace.DIRECTION_IN:
                         /* INOUT/IN */
                         L.w("relax direction match");
                 // fall thru
-                    case SharkCS.DIRECTION_INOUT:
+                    case ASIPSpace.DIRECTION_INOUT:
                         /* INOUT/INOUT is OK */
                         break;
                 }
@@ -1320,18 +1320,18 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         }
         HashSet<ContextCoordinates> protoCoo = new HashSet<ContextCoordinates>();
         // create first prototype with direction and owner
-        if (cs.getDirection() == SharkCS.DIRECTION_INOUT) {
+        if (cs.getDirection() == ASIPSpace.DIRECTION_INOUT) {
             // two additional coordinates
-            protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, SharkCS.DIRECTION_IN));
-            protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, SharkCS.DIRECTION_OUT));
+            protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, ASIPSpace.DIRECTION_IN));
+            protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, ASIPSpace.DIRECTION_OUT));
         }
         protoCoo.add(this.createContextCoordinates(null, cs.getOriginator(), null, null, null, null, cs.getDirection()));
         // no combine with other dimensions
-        protoCoo = this.coordCombination(protoCoo, cs.getTopics(), SharkCS.DIM_TOPIC);
-        protoCoo = this.coordCombination(protoCoo, cs.getPeers(), SharkCS.DIM_PEER);
-        protoCoo = this.coordCombination(protoCoo, cs.getRemotePeers(), SharkCS.DIM_REMOTEPEER);
-        protoCoo = this.coordCombination(protoCoo, cs.getTimes(), SharkCS.DIM_TIME);
-        protoCoo = this.coordCombination(protoCoo, cs.getLocations(), SharkCS.DIM_LOCATION);
+        protoCoo = this.coordCombination(protoCoo, cs.getTopics(), ASIPSpace.DIM_TOPIC);
+        protoCoo = this.coordCombination(protoCoo, cs.getPeers(), ASIPSpace.DIM_RECEIVER);
+        protoCoo = this.coordCombination(protoCoo, cs.getRemotePeers(), ASIPSpace.DIM_APPROVERS);
+        protoCoo = this.coordCombination(protoCoo, cs.getTimes(), ASIPSpace.DIM_TIME);
+        protoCoo = this.coordCombination(protoCoo, cs.getLocations(), ASIPSpace.DIM_LOCATION);
         return protoCoo;
     }
 
