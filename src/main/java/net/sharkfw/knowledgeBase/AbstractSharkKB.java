@@ -2,13 +2,13 @@ package net.sharkfw.knowledgeBase;
 
 import net.sharkfw.asip.*;
 import net.sharkfw.asip.engine.serializer.XMLSerializer;
-import net.sharkfw.knowledgeBase.inmemory.InMemoInformationCoordinates;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoTaxonomy;
 import net.sharkfw.system.EnumerationChain;
-import net.sharkfw.system.Iterator2Enumeration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
 /**
  * This class implements as much methods from SharkKB as possible
@@ -20,8 +20,7 @@ import java.util.*;
  * @author thsc
  */
 public abstract class AbstractSharkKB extends PropertyHolderDelegate
-        implements SharkKB, KnowledgeListener,
-        InterestStorage {
+        implements SharkKB {
     public static String SHARKFW_SENDER_PROPERTY = "sharkfw_sender";
     public static String SHARKFW_TIME_RECEIVED_PROPERTY = "sharkfw_timeReceived";
 
@@ -72,7 +71,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
         this(topics, types, peers, locations, times);
         this.knowledge = k;
-        this.knowledge.addListener(this);
     }
 
     @Override
@@ -105,50 +103,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
                 this.times,
                 this.locations,
                 ASIPSpace.DIRECTION_INOUT);
-    }
-
-    /**
-     * @return
-     * @deprecated
-     */
-    @Override
-    public SharkCS asSharkCS() {
-        return this.asInterest();
-    }
-
-    /**
-     * @return
-     * @deprecated
-     */
-    @Override
-    public Interest asInterest() {
-        // hide semantic tags
-        STSet topicsSet = this.topics.asSTSet();
-        PeerSTSet peersSet;
-        try {
-            peersSet = this.peers.asPeerSTSet();
-        } catch (SharkKBException ex) {
-            return null;
-        }
-
-        this.locations.setEnumerateHiddenTags(true);
-        this.times.setEnumerateHiddenTags(true);
-        topicsSet.setEnumerateHiddenTags(true);
-        peersSet.setEnumerateHiddenTags(true);
-
-//        try {
-        return InMemoSharkKB.createInMemoInterest(topicsSet, this.owner,
-                peersSet, peersSet, this.times,
-                this.locations, ASIPSpace.DIRECTION_INOUT);
-
-//            return this.createInterest(topicsSet, this.owner,
-//                    peersSet, peersSet, this.times,
-//                    this.locations, ASIPSpace.DIRECTION_INOUT);
-//        } catch (SharkKBException ex) {
-//            // never happens.
-//        }
-
-//        return null;
     }
 
 //    /**
@@ -270,333 +224,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         return this.knowledge;
     }
 
-    @Override
-    public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        ContextPoint toRemove = this.getContextPoint(coordinates);
-        if (toRemove != null) {
-            this.knowledge.removeContextPoint(toRemove);
-        }
-    }
-
-    /**
-     * @param cs must not be null - use getAllContextPoints in this case.
-     * @return
-     * @throws SharkKBException
-     * @deprecated
-     */
-    @Override
-    public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException {
-        return this.getContextPoints(cs, true);
-    }
-
-    /**
-     * @param cs
-     * @return
-     * @throws SharkKBException
-     * @deprecated
-     */
-    @Override
-    public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
-        return this.contextPoints(cs, true);
-    }
-
-    /**
-     * Return all context points that are in the context space.
-     * <p>
-     * <br/><b>Important:</b> This implementation differs from other usage, e.g.
-     * when finding mutual interests. In this case, both interests must match
-     * in all dimensions.
-     * <p>
-     * That's different here. The context space is taken and any possible
-     * coordinate combination is calculated. That much might a huge number.
-     * <p>
-     * Finally, any context points matching with one of the coordinates are
-     * returned.
-     * <p>
-     * <b>Important: The set contains references of existing context points.
-     * Changes will have impact on the actual knowledge base. Make a copy if
-     * necessary.
-     * </b>
-     *
-     * @param cs       if null (which means any context) all context points are returned.
-     * @param matchAny
-     * @return
-     * @throws SharkKBException
-     * @deprecated us Iterator instead of Enumeration @see contextPoints
-     */
-    @Override
-    public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
-        Iterator<ContextPoint> iterCPs = this.contextPoints(cs, matchAny);
-        if (iterCPs == null) return null;
-
-        // else
-        return new Iterator2Enumeration(iterCPs);
-    }
-
-    public InformationCoordinates createInformationCoordinates(
-            SemanticTag topic, SemanticTag type,
-            PeerSemanticTag approver, PeerSemanticTag sender,
-            PeerSemanticTag receiver, TimeSemanticTag time,
-            SpatialSemanticTag location, int direction)
-            throws SharkKBException {
-
-        SemanticTag to = this.getTopicSTSet().merge(topic);
-        SemanticTag ty = this.getTypeSTSet().merge(type);
-        PeerSTSet peerDimension = this.getPeerSTSet();
-        PeerSemanticTag a = (PeerSemanticTag) peerDimension.merge(approver);
-        PeerSemanticTag s = (PeerSemanticTag) peerDimension.merge(sender);
-        PeerSemanticTag r = (PeerSemanticTag) peerDimension.merge(receiver);
-        TimeSemanticTag ti = (TimeSemanticTag) this.getTimeSTSet().merge(time);
-        SpatialSemanticTag lo = (SpatialSemanticTag) this.getSpatialSTSet().merge(location);
-
-        return new InMemoInformationCoordinates(
-                to, ty, a, s, r, ti, lo, direction);
-    }
-
-    HashSet<InformationCoordinates> possibleInformationCoordinates(ASIPSpace space) throws SharkKBException {
-        if (space == null) {
-            return null;
-        }
-        HashSet<InformationCoordinates> icList = new HashSet<>();
-        
-        /* create first prototype with direction and owner: 
-           (-,-,owner,-,-,-,-,direction)
-        */
-
-        if (space.getDirection() == ASIPSpace.DIRECTION_INOUT) {
-            /* if INOUT: we already have two points: 
-              (-,-,owner,-,-,-,-,IN) and
-              (-,-,owner,-,-,-,-,OUT)
-            */
-
-            // topic, type, approver, sender, receiver, time, location, direction
-
-            // add prototype OUT kepInterest
-            icList.add(this.createInformationCoordinates(null, null, null,
-                    owner, null, null, null, ASIPSpace.DIRECTION_IN));
-
-            // add prototype OUT kepInterest
-            icList.add(this.createInformationCoordinates(null, null, null,
-                    owner, null, null, null, ASIPSpace.DIRECTION_OUT));
-
-        }
-
-        // in any case - add prototyp with original direction
-        icList.add(this.createInformationCoordinates(null, null, null,
-                owner, null, null, null, space.getDirection()));
-        
-        /* now combine with other dimensions 
-           sender and direction are already combined
-        */
-
-        // combine topic dimension
-        icList = this.informationCoordinatesCombination(icList,
-                space.getTopics(), ASIPSpace.DIM_TOPIC);
-
-        // combine type dimension
-        icList = this.informationCoordinatesCombination(icList,
-                space.getTypes(), ASIPSpace.DIM_TYPE);
-
-        // combine approver dimension
-        icList = this.informationCoordinatesCombination(icList,
-                space.getApprovers(), ASIPSpace.DIM_APPROVERS);
-
-        // combine receiver dimension
-        icList = this.informationCoordinatesCombination(icList,
-                space.getReceivers(), ASIPSpace.DIM_RECEIVER);
-
-        // combine time dimension
-        icList = this.informationCoordinatesCombination(icList,
-                space.getTimes(), ASIPSpace.DIM_TIME);
-
-        // combine location dimension
-        icList = this.informationCoordinatesCombination(icList,
-                space.getLocations(), ASIPSpace.DIM_LOCATION);
-
-        return icList;
-    }
-
-    /**
-     * @param space
-     * @return
-     * @throws SharkKBException
-     * @deprecated
-     */
-    HashSet<ContextCoordinates> possibleCoordinates(ASIPSpace space) throws SharkKBException {
-        if (space == null) {
-            return null;
-        }
-        HashSet<ContextCoordinates> ccList = new HashSet<>();
-
-        // create first prototype with direction and owner
-        if (space.getDirection() == ASIPSpace.DIRECTION_INOUT) {
-            // if INOUT: there are two additional coordinates:
-
-            //topic,originator,peer,remotepeer,time,location,direction
-            // we match LASP sender with KEP peer
-            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, ASIPSpace.DIRECTION_IN));
-            ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, ASIPSpace.DIRECTION_OUT));
-        }
-
-        ccList.add(this.createContextCoordinates(null, null, space.getSender(), null, null, null, space.getDirection()));
-
-        // no combine with other dimensions
-
-        // LASP topics go with KEP topics
-        ccList = this.coordCombination(ccList, space.getTopics(), ASIPSpace.DIM_TOPIC);
-
-        // LASP types are ignored here
-
-        // LASP approvers matches with KEP originator
-        ccList = this.coordCombination(ccList, space.getApprovers(), ASIPSpace.DIM_APPROVERS);
-
-        // LASP receivers go with KEP remote peers
-        ccList = this.coordCombination(ccList, space.getReceivers(), ASIPSpace.DIM_RECEIVER);
-
-        // time and location is the same in both protocols
-        ccList = this.coordCombination(ccList, space.getTimes(), ASIPSpace.DIM_TIME);
-        ccList = this.coordCombination(ccList, space.getLocations(), ASIPSpace.DIM_LOCATION);
-
-        return ccList;
-    }
-
-    protected HashSet informationCoordinatesCombination(
-            HashSet<InformationCoordinates> protoCoo, STSet set, int dim)
-            throws SharkKBException {
-
-        // if stset is empty - no new combination can be created - done
-        if (SharkCSAlgebra.isAny(set)) {
-            return protoCoo;
-        }
-
-        set.setEnumerateHiddenTags(true);
-
-        // iterate all tags in set - if empty - we are done.
-        Iterator<SemanticTag> stTags = set.stTags();
-        if (stTags == null || !stTags.hasNext()) {
-            return protoCoo;
-        }
-
-        // lets combine - create container for results first
-        HashSet<InformationCoordinates> result = new HashSet<>();
-        while (stTags.hasNext()) {
-            // take next tag to combine
-            SemanticTag tag = stTags.next();
-
-            // if this tag is any - continue: no need to create combinations.
-            if (SharkCSAlgebra.isAny(tag)) continue;
-
-            // create new combination which each already existing coordinate
-            Iterator<InformationCoordinates> cooIter = protoCoo.iterator();
-            while (cooIter.hasNext()) {
-                InformationCoordinates oldCC = cooIter.next();
-
-                // take all eight parts from coordinate:
-                // topic,type,approver,sender,receiver,time,location,direction
-                SemanticTag topic = oldCC.getTopic();
-                SemanticTag type = oldCC.getType();
-                PeerSemanticTag approver = oldCC.getApprover();
-                PeerSemanticTag sender = oldCC.getSender();
-                PeerSemanticTag receiver = oldCC.getReceiver();
-                TimeSemanticTag time = oldCC.getTime();
-                SpatialSemanticTag location = oldCC.getLocation();
-                int direction = oldCC.getDirection();
-                
-                /* now: what dimension do we combine ?
-                   set our tag instead of the odl one (which is presumably null)
-                */
-                switch (dim) {
-                    case ASIPSpace.DIM_TOPIC:
-                        topic = tag;
-                        break;
-                    case ASIPSpace.DIM_TYPE:
-                        type = tag;
-                        break;
-                    case ASIPSpace.DIM_APPROVERS:
-                        approver = (PeerSemanticTag) tag;
-                        break;
-                    case ASIPSpace.DIM_SENDER:
-                        sender = (PeerSemanticTag) tag;
-                        break;
-                    case ASIPSpace.DIM_RECEIVER:
-                        receiver = (PeerSemanticTag) tag;
-                        break;
-                    case ASIPSpace.DIM_TIME:
-                        time = (TimeSemanticTag) tag;
-                        break;
-                    case ASIPSpace.DIM_LOCATION:
-                        location = (SpatialSemanticTag) tag;
-                        break;
-                }
-
-                // we have a new coordinate - create an object
-                InformationCoordinates newIC =
-                        this.createInformationCoordinates(topic, type, approver,
-                                sender, receiver, time, location, direction);
-
-                // add to list
-                result.add(newIC);
-
-                // combine with next existing coordinate
-            }
-        }
-        return result;
-    }
-
-    /**
-     * @param protoCoo
-     * @param set
-     * @param dim
-     * @return
-     * @throws SharkKBException
-     * @deprecated
-     */
-    protected HashSet coordCombination(HashSet<ContextCoordinates> protoCoo, STSet set, int dim) throws SharkKBException {
-        if (SharkCSAlgebra.isAny(set)) {
-            return protoCoo;
-        }
-        set.setEnumerateHiddenTags(true);
-        Enumeration<SemanticTag> tagEnum = set.tags();
-        if (tagEnum == null || !tagEnum.hasMoreElements()) {
-            return protoCoo;
-        }
-        HashSet<ContextCoordinates> result = new HashSet<>();
-        while (tagEnum.hasMoreElements()) {
-            SemanticTag tag = tagEnum.nextElement();
-            // combine with existing
-            Iterator<ContextCoordinates> cooIter = protoCoo.iterator();
-            while (cooIter.hasNext()) {
-                ContextCoordinates oldCC = cooIter.next();
-                SemanticTag topic = oldCC.getTopic();
-                PeerSemanticTag originator = oldCC.getOriginator();
-                PeerSemanticTag peer = oldCC.getPeer();
-                PeerSemanticTag remotePeer = oldCC.getRemotePeer();
-                TimeSemanticTag time = oldCC.getTime();
-                SpatialSemanticTag location = oldCC.getLocation();
-                int direction = oldCC.getDirection();
-                switch (dim) {
-                    case ASIPSpace.DIM_TOPIC:
-                        topic = tag;
-                        break;
-                    case ASIPSpace.DIM_SENDER:
-                        peer = (PeerSemanticTag) tag;
-                        break;
-                    case ASIPSpace.DIM_RECEIVER:
-                        remotePeer = (PeerSemanticTag) tag;
-                        break;
-                    case ASIPSpace.DIM_TIME:
-                        time = (TimeSemanticTag) tag;
-                        break;
-                    case ASIPSpace.DIM_LOCATION:
-                        location = (SpatialSemanticTag) tag;
-                        break;
-                }
-                ContextCoordinates newCC = this.createContextCoordinates(topic, originator, peer, remotePeer, time, location, direction);
-                result.add(newCC);
-            }
-        }
-        return result;
-    }
 
     private ArrayList<KnowledgeBaseListener> listeners = new ArrayList<KnowledgeBaseListener>();
 
@@ -709,45 +336,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.locations = locations;
     }
 
-    /**
-     * @param as
-     * @return
-     * @throws SharkKBException
-     * @deprecated
-     */
-    @Override
-    public Interest contextualize(SharkCS as) throws SharkKBException {
-        return this.contextualize(as, this.getStandardFPSet());
-    }
-
-    /**
-     * Should use methods in the algebra!
-     *
-     * @param context
-     * @param fp
-     * @return
-     * @throws SharkKBException
-     * @deprecated
-     */
-    @Override
-    public Interest contextualize(SharkCS context, FragmentationParameter[] fp) throws SharkKBException {
-        Interest result = new net.sharkfw.knowledgeBase.inmemory.InMemoInterest();
-
-//        SharkCSAlgebra.contextualize(result, this.asSharkCS(), context, fp);
-        /* NOTE: contextualize twists peer/remote peer and changes direction
-         * Twisting peers has no effect here because there is just a single
-         * peer set.
-         *
-         * Changing direction would have an effect, though. But a kb doesn't
-         * care about direction just in it cps. Thus, we can simply set direction
-         * after contextualization.
-         */
-
-        result.setDirection(context.getDirection());
-
-        return result;
-    }
-
     @Override
     public void setStandardFPSet(FragmentationParameter[] fps) {
         this.standardFP = fps;
@@ -838,49 +426,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
             AbstractSemanticTag st = (AbstractSemanticTag) this.owner;
 
             st.setListener(this);
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-    //               kb listener                                          //
-    ////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void contextPointAdded(ContextPoint cp) {
-        this.notifyCpCreated(cp);
-    }
-
-    @Override
-    public void cpChanged(ContextPoint cp) {
-        this.notifyCpChanged(cp);
-    }
-
-    @Override
-    public void contextPointRemoved(ContextPoint cp) {
-        this.notifyCpRemoved(cp);
-    }
-
-    protected void notifyCpCreated(ContextPoint cp) {
-        Iterator<KnowledgeBaseListener> listenerIterator = this.listeners.iterator();
-        while (listenerIterator.hasNext()) {
-            KnowledgeBaseListener listener = listenerIterator.next();
-            listener.contextPointAdded(cp);
-        }
-    }
-
-    protected void notifyCpChanged(ContextPoint cp) {
-        Iterator<KnowledgeBaseListener> listenerIterator = this.listeners.iterator();
-        while (listenerIterator.hasNext()) {
-            KnowledgeBaseListener listener = listenerIterator.next();
-            listener.cpChanged(cp);
-        }
-    }
-
-    protected void notifyCpRemoved(ContextPoint cp) {
-        Iterator<KnowledgeBaseListener> listenerIterator = this.listeners.iterator();
-        while (listenerIterator.hasNext()) {
-            KnowledgeBaseListener listener = listenerIterator.next();
-            listener.contextPointRemoved(cp);
         }
     }
 
@@ -994,22 +539,22 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
         XMLSerializer s = new XMLSerializer();
 
-        Iterator<SharkCS> interestIter = this.interests();
-        if (interestIter == null) {
-            // remove property at all
-            this.setProperty(INTEREST_PROPERTY_NAME, null);
-            return;
-        }
+//        Iterator<SharkCS> interestIter = this.interests();
+//        if (interestIter == null) {
+//            // remove property at all
+//            this.setProperty(INTEREST_PROPERTY_NAME, null);
+//            return;
+//        }
 
         StringBuilder interestString = new StringBuilder();
 
-        while (interestIter.hasNext()) {
-            SharkCS interest = interestIter.next();
-//            String serializedInterest = s.serializeSharkCS(interest);
-
-//            interestString.append(serializedInterest);
-            interestString.append(INTEREST_DELIMITER);
-        }
+//        while (interestIter.hasNext()) {
+//            SharkCS interest = interestIter.next();
+////            String serializedInterest = s.serializeSharkCS(interest);
+//
+////            interestString.append(serializedInterest);
+//            interestString.append(INTEREST_DELIMITER);
+//        }
 
 //        this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString());
         this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString(), false);
@@ -1049,53 +594,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
         // no matching kepInterest found
         return -1;
-    }
-
-    /**
-     * Saves this kepInterest into a list of interests
-     *
-     * @param interest
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     */
-    @Override
-    public void addInterest(SharkCS interest) throws SharkKBException {
-        this.restoreInterestsFromProperties();
-        // if not already in there - add
-        if (this.findInterestIndex(interest) == -1) {
-            this.interestsList.add(interest);
-            this.saveInterestsToProperties();
-        }
-    }
-
-    /**
-     * Removes this kepInterest from the storage
-     *
-     * @param interest
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     */
-    @Override
-    public void removeInterest(SharkCS interest) throws SharkKBException {
-        this.restoreInterestsFromProperties();
-
-        int index = this.findInterestIndex(interest);
-
-        if (index != -1) {
-            this.interestsList.remove(index);
-            this.saveInterestsToProperties();
-        }
-    }
-
-    /**
-     * Return iteration of interests stored in the
-     * kepInterest storage
-     *
-     * @return
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     */
-    @Override
-    public Iterator<SharkCS> interests() throws SharkKBException {
-        this.restoreInterestsFromProperties();
-        return this.interestsList.iterator();
     }
 
     /**

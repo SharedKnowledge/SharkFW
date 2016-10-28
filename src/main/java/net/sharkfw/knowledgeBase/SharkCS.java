@@ -11,7 +11,7 @@ package net.sharkfw.knowledgeBase;
  * @author mfi
  * @author thsc
  */
-public interface SharkCS extends ContextSpace {
+public interface SharkCS {
 
   /**
    * The maximum number of allowed dimensions in the context space
@@ -156,8 +156,7 @@ public interface SharkCS extends ContextSpace {
    * DIRECTION_INOUT - peer want's to send and retrieve information
    * DIRECTION_NOTHING - peer doesn't want to exchange these information at all
    *
-   * @see net.sharkfw.knowledgeBase.ContextSpace
-   * 
+   *
    * @return An int value denoting the direction of this kepInterest
    */
   public int getDirection();

@@ -121,11 +121,6 @@ public abstract class KnowledgePort extends ContentPort {
             return (dimension == ASIPSpace.DIRECTION_OUT ||
                     dimension == ASIPSpace.DIRECTION_INOUT);
         }
-        if(getKEPInterest()!=null){
-            int dimension = this.getKEPInterest().getDirection();
-            return (dimension == ASIPSpace.DIRECTION_OUT ||
-                    dimension == ASIPSpace.DIRECTION_INOUT);
-        }
         return false;
     }
 
@@ -141,34 +136,7 @@ public abstract class KnowledgePort extends ContentPort {
             return (dimension == ASIPSpace.DIRECTION_IN ||
                     dimension == ASIPSpace.DIRECTION_INOUT);
         }
-        if(getKEPInterest()!=null){
-            int dimension = this.getKEPInterest().getDirection();
-            return (dimension == ASIPSpace.DIRECTION_IN ||
-                    dimension == ASIPSpace.DIRECTION_INOUT);
-        }
         return false;
-    }
-
-    /**
-     * Return the {@link Interest} that this AbstractKP handles.
-     * 
-     * @return The kepInterest which is kept inside this AbstractKP.
-     * @return null if no kepInterest was set
-     */
-    public SharkCS getKEPInterest() {
-        return this.kepInterest;
-    }
-    
-    /**
-     * Set kepInterest. Knowledge port makes a copy of this kepInterest.
-     * @param kepInterest
-     */
-    protected void setKepInterest(SharkCS kepInterest) {
-        try {
-            this.kepInterest = InMemoSharkKB.createInMemoCopy(kepInterest);
-        } catch (SharkKBException ex) {
-            this.kepInterest = kepInterest;
-        }
     }
 
     public ASIPInterest getAsipInterest() {
@@ -370,48 +338,8 @@ public abstract class KnowledgePort extends ContentPort {
         return false;
     }
 
-    /**
-     * Has this AbstractKP been started to handle requests?
-     * @return <code>true</code> if active , <code>false</code> if stopped.
-     */
-//    public boolean isStarted() {
-//        return this.isStarted;
-//    }
-
-    /**
-     * Add a KPListener to this Knowledge Port.
-     */
-
-	@SuppressWarnings("unchecked")
-//    public final void addListener(KPListener listener) {
-//        this.listeners.add(listener);
-//    }
-
-    /**
-     * Withdraw the given listener from this Knowledge Port.
-     *
-     * @param listener Listener impl to be removed
-     */
-//    public void removeListener(KPListener listener) {
-//        this.listeners.remove(listener);
-//    }
-
     // ==========================================================================
     // Notification helper methods
-    /**
-     * Notifiy all Listeners for event 'expose sent'.
-     * 
-     * @param kp The kp instance that sent the expose.
-     * @param mutualinterest The kepInterest that has been sent.
-     */
-    protected void notifyExposeSent(KnowledgePort kp, SharkCS mutualinterest) {
-        Iterator listenerIter = this.listeners.iterator();
-
-        while (listenerIter.hasNext()) {
-            KPListener kpl = (KPListener) listenerIter.next();
-            kpl.exposeSent(kp, mutualinterest);
-        }
-    }
 
     /**
      * Notify all listeners for event 'insert sent'
@@ -425,21 +353,6 @@ public abstract class KnowledgePort extends ContentPort {
         while (listenerIter.hasNext()) {
             KPListener kpl = (KPListener) listenerIter.next();
             kpl.insertSent(kp, k);
-        }
-    }
-
-    /**
-     * Notify all listener for event 'knowledge assimilated'
-     * 
-     * @param kp The kp instance that assimilated knowledge.
-     * @param cp The {@link net.sharkfw.knowledgeBase.ContextPoint} that has been assimilated.
-     */
-    protected void notifyKnowledgeAssimilated(KnowledgePort kp, ContextPoint cp) {
-        Iterator listenerIter = this.listeners.iterator();
-
-        while (listenerIter.hasNext()) {
-            KPListener kpl = (KPListener) listenerIter.next();
-            kpl.knowledgeAssimilated(kp, cp);
         }
     }
 

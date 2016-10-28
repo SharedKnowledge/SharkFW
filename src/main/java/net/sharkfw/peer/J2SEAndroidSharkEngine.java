@@ -1,22 +1,17 @@
 package net.sharkfw.peer;
 
 import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.protocols.*;
-import net.sharkfw.protocols.m2s.M2SStub;
-import net.sharkfw.protocols.m2s.MessageStorage;
-import net.sharkfw.protocols.m2s.SharkKBMessageStorage;
 import net.sharkfw.protocols.mail.MailMessageStub;
 import net.sharkfw.protocols.tcp.TCPStreamStub;
 import net.sharkfw.system.L;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -289,33 +284,33 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
                 this.sslPOP3,
                 this.maxMailMessageSize);
     }
-
-    private SharkKBMessageStorage kbStorage = null;
-
-    public MessageStorage getMessageStorage() throws SharkKBException {
-        if (this.kbStorage == null) {
-            this.kbStorage = new SharkKBMessageStorage(new InMemoSharkKB());
-        }
-
-        return this.kbStorage;
-    }
-
-    @Override
-    protected StreamStub createMailStreamStub(RequestHandler handler)
-            throws SharkProtocolNotSupportedException {
-
-        MessageStub mailMessageStub = createMailStub(handler);
-        StreamStub mailStreamStub;
-        try {
-            mailStreamStub = new M2SStub(
-                    this.getMessageStorage(), mailMessageStub, handler);
-        } catch (SharkKBException ex) {
-            // TODO - that not actually a protocol not supported problem.
-            throw new SharkProtocolNotSupportedException(ex.getMessage());
-        }
-
-        return mailStreamStub;
-    }
+//
+//    private SharkKBMessageStorage kbStorage = null;
+//
+//    public MessageStorage getMessageStorage() throws SharkKBException {
+//        if (this.kbStorage == null) {
+//            this.kbStorage = new SharkKBMessageStorage(new InMemoSharkKB());
+//        }
+//
+//        return this.kbStorage;
+//    }
+//
+//    @Override
+//    protected StreamStub createMailStreamStub(RequestHandler handler)
+//            throws SharkProtocolNotSupportedException {
+//
+//        MessageStub mailMessageStub = createMailStub(handler);
+//        StreamStub mailStreamStub;
+//        try {
+//            mailStreamStub = new M2SStub(
+//                    this.getMessageStorage(), mailMessageStub, handler);
+//        } catch (SharkKBException ex) {
+//            // TODO - that not actually a protocol not supported problem.
+//            throw new SharkProtocolNotSupportedException(ex.getMessage());
+//        }
+//
+//        return mailStreamStub;
+//    }
 
     /**
      * @param smtpHost          SMTP host used to transmit messages

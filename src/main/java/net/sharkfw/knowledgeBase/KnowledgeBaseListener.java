@@ -7,8 +7,8 @@ package net.sharkfw.knowledgeBase;
  * @author thsc
  * @author mfi
  */
-public interface KnowledgeBaseListener extends KnowledgeListener {
 
+public interface KnowledgeBaseListener {
 
   /**
    * Called when a topic is created.
@@ -25,7 +25,6 @@ public interface KnowledgeBaseListener extends KnowledgeListener {
   /**
    * Called when a location is created.
      * @param location
-   * @param tag The geo tag that has been created.
    */
   public void locationAdded(SpatialSemanticTag location);
 

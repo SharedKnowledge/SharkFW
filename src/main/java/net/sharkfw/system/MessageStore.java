@@ -17,8 +17,6 @@ public abstract class MessageStore<T> {
     }
 
     /**
-     * 
-     * @param ph
      * @param valid in milliseconds
      */
     public MessageStore(long valid) {

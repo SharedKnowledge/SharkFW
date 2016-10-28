@@ -5,27 +5,26 @@ import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.PeerAddress;
 import net.sharkfw.system.L;
 
 /**
  * Default implementation for
- *
+ * <p>
  * This KnowledgePort offers implemented standard behavior for handling expose and
  * insert messages, as well as implementations for extraction and assimilation
  * of {@link net.sharkfw.knowledgeBase.Knowledge}.
- *
+ * <p>
  * The standard KnowledgePort works with Standard {@link net.sharkfw.knowledgeBase.Interest} only, as it assumes,
  * that Interests have so called "anchor points" which are essential for the
  * implemented algorithms.
- *
+ * <p>
  * The KnowledgePort can be configured to use a relay. A relay is a designated
  * node, that receives all KEP traffic this peer is sending, despite other
  * recipients that may have been computed as REMOTEPEERs on the Interest or
  * Contextmap.
- *
+ * <p>
  * This KnowledgePort can also be configured to handle incoming Knowledge objects
  * in different ways. Upon reiceiving Knowledge which contains {@link net.sharkfw.knowledgeBase.Information}.
  * for tags, that were not part of the anchor points of this kp's Interest, the KowledgePort may either:
@@ -34,91 +33,55 @@ import net.sharkfw.system.L;
  * extend its local vocabulary with those tags before adding the contextpoint to its kb</li>
  * <li> Check if a locally known tag can be found (using the OTP) which is
  * related to the unknown tag. If that is possible the coordinates of the said
- * {@link net.sharkfw.knowledgeBase.ContextPoint} will be changed to point to locally known tag instead of
+ * will be changed to point to locally known tag instead of
  * pointing to the unknown tag</li>
  * </ul>
  * This behavior can be configured using <code>learnSTs(boolean learn)</code> method.
  *
+ * @author thsc
+ * @author mfi
  * @see #setRelayAddress(net.sharkfw.protocols.PeerAddress)
  * @see #unsetRelays()
  * @see #learnSTs(boolean)
- *
- * @author thsc
- * @author mfi
  */
 public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
-    
+
     /**
-    * Determine if the assimilation shall learn new tags or not.
-    */
+     * Determine if the assimilation shall learn new tags or not.
+     */
     private boolean learn = true;
 
     /**
-    * A String containing address information for a relaying peer
-    */
+     * A String containing address information for a relaying peer
+     */
     private PeerAddress relayaddress = null;
 
     /**
-    * Switch for auto-updating kepInterest of this knowledge port.
-    */
+     * Switch for auto-updating kepInterest of this knowledge port.
+     */
     private boolean sync = false;
 
     /**
-    * FragmentationParameter used for this KnowledgePort.
-    */
+     * FragmentationParameter used for this KnowledgePort.
+     */
     private FragmentationParameter[] fp;
 
     /**
-    * Ontology-Transfer-Parameter used for this KnowledgePort.
-    */
+     * Ontology-Transfer-Parameter used for this KnowledgePort.
+     */
     private FragmentationParameter[] bgfp;
-    
+
     /**
      * Whether or not delete assimiated context point from received knowledge.
      */
     private boolean deleteAssimilated = true;
-    
+
+    protected StandardKP(SharkEngine se, SharkKB kb) {
+        super(se, kb);
+    }
+
     public void deleteAssimilatedFromKnowledge(boolean delete) {
         this.deleteAssimilated = delete;
-    }
-  
-    public StandardKP(SharkEngine se, SharkCS interest,
-                      FragmentationParameter[] backgroundFP,
-                      FragmentationParameter[] fp, SharkKB kb) {
-        
-        super(se, kb);
-        this.fp = fp;
-        this.bgfp = backgroundFP;
-        
-        try {
-            this.kepInterest = InMemoSharkKB.createInMemoCopy(interest);
-        } catch (SharkKBException ex) {
-            this.kepInterest = interest;
-        }
-        
-        this.kb.addListener(this);
-    }
-
-    /**
-     * <p>
-     * Create a KnowledgePort using a prebuilt kepInterest.
-     * The KnowledgePort will handle all incoming requests for the kepInterest.
-     * </p><p>
-     * When using this constructor however, the KnowledgePort is unable
-     * to keep the kepInterest in syncObsolete with the KB as it lacks access to the
-     * AnchorSet, that has been used to create the kepInterest.
-     * </p>
-     * @param se The SharkEngine that handles the KnowledgePort.
-     * @param interest
-     * @param kb The SharkKB over which the KnowledgPort works.
-     */
-    public StandardKP(SharkEngine se, SharkCS interest, SharkKB kb) {
-        this(se, interest, getZeroFP(), getZeroFP(), kb);
-    }
-
-    public StandardKP(SharkEngine se, SharkCS interest, 
-            FragmentationParameter[] fp, SharkKB kb) {
-        this(se, interest, fp, fp, kb);
     }
 
 //    /**
@@ -329,47 +292,47 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 //          L.e(ex.getMessage(), this);
 //      }
 //    }
-    
+
     private boolean revealLocalInterest = false;
-    
+
     /**
      * StandardKP has a local kepInterest. It is used as context when an kepInterest
      * arrives from another peer. Following situation can arise:
-     * 
+     * <p>
      * Local kepInterest can contain e.g. topics. Reveived kepInterest might not specify
      * a topic at all. Usually, the mutual kepInterest would contain the context
      * topics. Thus, it would reveal definitions made locally with its local kepInterest.
-     * 
+     * <p>
      * This behaviour works in any dimension. In consequence, a fully
      * unconstraint receiving kepInterest would trigger this StandardKP to reply
      * it local interests. This default behaviour can be switched of by defining
      * reveal to false.
-     * 
+     *
      * @param reveal True: reveal details of local kepInterest if received
-     * kepInterest has unspecified dimensions. False: Don't reply to interests which
-     * have an unspecified dimension where the local dimension is specified.
-     * Default: false
-     * 
-     * (Redo in version 3.0)
+     *               kepInterest has unspecified dimensions. False: Don't reply to interests which
+     *               have an unspecified dimension where the local dimension is specified.
+     *               Default: false
+     *               <p>
+     *               (Redo in version 3.0)
      */
     public void setRevealLocalInterest(boolean reveal) {
         this.revealLocalInterest = reveal;
     }
 
     private boolean revealingAndAllowed(SharkCS source, SharkCS context) {
-        if(this.revealLocalInterest) {
+        if (this.revealLocalInterest) {
             // there is no need to test anything - revealing local definitions ok
             return true;
         }
         // now check whether source is any but context not
-        
+
         // topic
-        if(SharkCSAlgebra.isAny(source.getTopics()) && 
+        if (SharkCSAlgebra.isAny(source.getTopics()) &&
                 SharkCSAlgebra.isAny(context.getTopics())) {
             return false;
         }
-        
-    // TODO
+
+        // TODO
 //        // peer / remote peer
 //        if(SharkCSAlgebra.isAny(source.getPeers()) && 
 //                SharkCSAlgebra.isAny(context.getRemotePeers())) {
@@ -387,10 +350,10 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
 //                SharkCSAlgebra.isAny(context.getLocations())) {
 //            return false;
 //        }
-        
+
         // location
         // ignore time - it is nothing we hide
-        
+
         return true;
     }
 
@@ -400,7 +363,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @param otp An array of FragmentationParameter. One for each dimension.
      */
     public void setOtp(FragmentationParameter otp[]) {
-      this.bgfp = otp;
+        this.bgfp = otp;
 
     }
 
@@ -410,7 +373,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @param fp An Array of FragmentationParameter. One for each dimension.
      */
     public void setFP(FragmentationParameter fp[]) {
-      this.fp = fp;
+        this.fp = fp;
     }
 
     /**
@@ -419,14 +382,14 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @return An array of <code>FragmentationParameter</code>. One for each dimension.
      */
     public FragmentationParameter[] getFP() {
-      return this.fp;
+        return this.fp;
     }
 
     /**
-        * Return the Ontology-Transfer-Parameter from this KowledgePort.
-        *
-        * @return An array of <code>FragmentationParameter</code>. One for each dimension.
-        */
+     * Return the Ontology-Transfer-Parameter from this KowledgePort.
+     *
+     * @return An array of <code>FragmentationParameter</code>. One for each dimension.
+     */
     public FragmentationParameter[] getOTP() {
         return this.bgfp;
     }
@@ -438,7 +401,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * the KB.</p>
      */
     public final void refreshDynamicInterest() throws SharkKBException {
-        if(this.kepInterest instanceof DynamicInterest) {
+        if (this.kepInterest instanceof DynamicInterest) {
             ((DynamicInterest) this.kepInterest).refresh();
         }
     }
@@ -447,14 +410,14 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * <p>Make the Knowledge Port listen for changes from the {@link net.sharkfw.knowledgeBase.SharkKB}.
      * Upon each received change, the KnowledgePort will call its
      * <code>refreshInterest()</code> method to update the kepInterest.</p>
-     *
+     * <p>
      * <p>Thus the KP needs not be updated manually but will keep in syncObsolete with
      * the knowledgebase automatically.</p>
      *
      * @param sync <code>true</code> to start syncing, <code>false</code> to stop syncing.
      */
     public void keepInterestInSyncWithKB(boolean sync) {
-      this.sync = sync;
+        this.sync = sync;
     }
 
     /**
@@ -464,14 +427,14 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * <li> Don't learn new tags but rather find the tags 'closest' to the unknown ones, in the local kb and save received contextpoints to the locally known tags.</li>
      * </ul>
      * </p>
-     *
+     * <p>
      * <p>If you set learn to <code>true</code> strategy 1 will apply, if you set learn to <code>false</code> strategy 2 will apply.
      * The default strategy is: 1.</p>
      *
      * @param learn Either <code>true</code> for strategy one, or <code>false</code> for strategy 2.
      */
     public void learnSTs(boolean learn) {
-      this.learn = learn;
+        this.learn = learn;
     }
 
     /**
@@ -481,7 +444,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * @param relayaddress A string complying to the shark addressing scheme with the address of the relaying peer.
      */
     public void setRelayAddress(PeerAddress relayaddress) {
-      this.relayaddress = relayaddress;
+        this.relayaddress = relayaddress;
     }
 
     /**
@@ -489,86 +452,71 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      * If no relay address has been set, nothing will happen.</p>
      */
     public void unsetRelays() {
-      this.relayaddress = null;
+        this.relayaddress = null;
     }
 
     @Override
-  public void topicAdded(SemanticTag tag) {
-    this.syncInterest();
-  }
+    public void topicAdded(SemanticTag tag) {
+        this.syncInterest();
+    }
 
     @Override
-  public void peerAdded(PeerSemanticTag tag) {
-    this.syncInterest();
-  }
+    public void peerAdded(PeerSemanticTag tag) {
+        this.syncInterest();
+    }
 
     @Override
-  public void locationAdded(SpatialSemanticTag tag) {
-    this.syncInterest();
-  }
+    public void locationAdded(SpatialSemanticTag tag) {
+        this.syncInterest();
+    }
 
     @Override
-  public void timespanAdded(TimeSemanticTag time) {
-    this.syncInterest();
-  }
+    public void timespanAdded(TimeSemanticTag time) {
+        this.syncInterest();
+    }
 
     @Override
-  public void topicRemoved(SemanticTag tag) {
-    this.syncInterest();
-  }
+    public void topicRemoved(SemanticTag tag) {
+        this.syncInterest();
+    }
 
     @Override
-  public void peerRemoved(PeerSemanticTag tag) {
-    this.syncInterest();
-  }
+    public void peerRemoved(PeerSemanticTag tag) {
+        this.syncInterest();
+    }
 
     @Override
-  public void locationRemoved(SpatialSemanticTag tag) {
-    this.syncInterest();
-  }
+    public void locationRemoved(SpatialSemanticTag tag) {
+        this.syncInterest();
+    }
 
     @Override
-  public void timespanRemoved(TimeSemanticTag tag) {
-    this.syncInterest();
-  }
-  
-    @Override
-  public void contextPointAdded(ContextPoint cp) {
-    // Not necessary for interests, as no knowledge is included in them
-  }
+    public void timespanRemoved(TimeSemanticTag tag) {
+        this.syncInterest();
+    }
 
     @Override
-  public void cpChanged(ContextPoint cp) {
-    // Not necessary for interests, as no knowledge is included in them
-  }
+    public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
+        this.syncInterest();
+    }
 
     @Override
-  public void contextPointRemoved(ContextPoint cp) {
-    // Not necessary for interests, as no knowledge is included in them
-  }
-  
-    @Override
-  public void predicateCreated(SNSemanticTag subject, String type, SNSemanticTag object) {
-    this.syncInterest();
-  }
+    public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
+        this.syncInterest();
+    }
 
-    @Override
-  public void predicateRemoved(SNSemanticTag subject, String type, SNSemanticTag object) {
-    this.syncInterest();
-  }
-
-  /**
-   * Refresh interests, if the user switched syncing on. Do nothing otherwise.
-   */
-  private void syncInterest() {
-    if(this.sync) {
-        try {
-            this.refreshDynamicInterest();
-        } catch (SharkKBException ex) {
-            L.d("couldn't refresh kepInterest: " + ex.getMessage(), this);
+    /**
+     * Refresh interests, if the user switched syncing on. Do nothing otherwise.
+     */
+    private void syncInterest() {
+        if (this.sync) {
+            try {
+                this.refreshDynamicInterest();
+            } catch (SharkKBException ex) {
+                L.d("couldn't refresh kepInterest: " + ex.getMessage(), this);
+            }
         }
     }
-  }
 
     @Override
     public void tagChanged(SemanticTag tag) {

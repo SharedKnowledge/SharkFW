@@ -19,44 +19,7 @@ public interface SharkVocabulary {
     
     
     public PeerSemanticTag getOwner();
-    
-    /**
-     * Each SharkKB holds Semantic Tag Sets. Thus, it can act as
-     * a Shark Context Space. This method returns this SharkKB 
-     * providing the SharkCS interface.
-     * 
-     * Note:<br/>
-     * <ul>
-     * <li> Each KB holds only one Peer Semantic Tag set. The Shark CS
-     * comprises two, to denote peers and remote peers. Both tags set
-     * will be the same.
-     * <li> The originator will be the owner which can be set with
-     * the SharkKB interface
-     * <li> A direction cannot be set on a SharKB. A SharkKB stores 
-     * Context Points which can have each direction in their coordinates.
-     * The SharkKB will claim to have an IN and OUT kepInterest in general.
-     * 
-     * <br/>Note: This isn't a security hazard. It just offers semantic tags
-     * but no context points, no knowledge, no information. They can only be
-     * retrieved by means of extraction. Real direction parameters are checked
-     * during extraction.
-     * 
-     * <li> Semantic Tags can be set hidden. Those tags will not be visible
-     * in the kepInterest.
-     * </ul>
-     * 
-     * @return this knowledge base as Shark context space
-     * @deprecated 
-     */
-    public SharkCS asSharkCS();
-    
-    /**
-     * 
-     * @return 
-     * @deprecated 
-     */
-    public Interest asInterest();
-    
+
     public ASIPSpace asASIPSpace() throws SharkKBException;
     public ASIPInterest asASIPInterest() throws SharkKBException;
       
@@ -166,35 +129,8 @@ public interface SharkVocabulary {
    */
   public SpatialSTSet getSpatialSTSet() throws SharkKBException;
 
-  /**
-   * <p>Create a new kepInterest from the given AnchorSet, using the kb's default FP.
-   * This method will use the standard fp set.</p>
-   *
-   * <p>During kepInterest creation each dimension of the kepInterest is filled
-   * with values from the kb. The values are STSets. The STSets are determined
-   * by running a fragmentation on every STSet of the kb, using the anchor points
-   * from <code>as</code> and the standard fp set.</p>
-   *
-     * @param cs
-   * @param cs The anchorpoints for the new kepInterest.
-   * @return An Interest created from the anchorpoints.
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     * @deprecated 
-   */
-  public Interest contextualize(SharkCS cs) throws SharkKBException;
-  
   public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException;
 
-  /**
-   * @deprecated 
-   * @param as
-   * @param fp
-   * @return
-   * @throws SharkKBException 
-   */
-  public Interest contextualize(SharkCS as, FragmentationParameter[] fp) 
-          throws SharkKBException;
-  
   public ASIPInterest contextualize(ASIPSpace as, FPSet fps) 
           throws SharkKBException;
   

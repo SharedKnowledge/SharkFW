@@ -50,7 +50,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         this.is = new ByteArrayInputStream(msg);
     }
 
-    public ASIPInMessage(SharkEngine se, int asipMessageType, Interest anyInterest, StreamConnection con, ASIPStub asipStub) {
+    public ASIPInMessage(SharkEngine se, int asipMessageType, ASIPInterest anyInterest, StreamConnection con, ASIPStub asipStub) {
         super(se, con);
     }
 

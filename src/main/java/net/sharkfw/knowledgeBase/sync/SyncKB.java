@@ -272,18 +272,6 @@ public class SyncKB implements SharkKB{
         return this.targetKB.getOwner();
     }
 
-    @Deprecated
-    @Override
-    public SharkCS asSharkCS() {
-        return this.targetKB.asSharkCS();
-    }
-
-    @Deprecated
-    @Override
-    public Interest asInterest() {
-        return this.targetKB.asInterest();
-    }
-
     /**
      * Not additional activities required here. Return value is
      * supposed to be copy of data. Changes on that have no 
@@ -384,46 +372,14 @@ public class SyncKB implements SharkKB{
         return this.targetKB.getSpatialSTSet();
     }
 
-    @Deprecated
-    @Override
-    public Interest contextualize(SharkCS cs) throws SharkKBException {
-        return this.targetKB.contextualize(cs);
-    }
-
     @Override
     public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
         return this.targetKB.contextualize(as);
     }
 
-    @Deprecated
-    @Override
-    public Interest contextualize(SharkCS as, FragmentationParameter[] fp) throws SharkKBException {
-        return this.targetKB.contextualize(as, fp);
-    }
-
     @Override
     public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
         return this.targetKB.contextualize(as, fps);
-    }
-
-    @Deprecated
-    @Override
-    public ContextPoint getContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        return this.targetKB.getContextPoint(coordinates);
-    }
-
-    @Deprecated
-    @Override
-    public ContextCoordinates createContextCoordinates(SemanticTag topic, PeerSemanticTag originator, PeerSemanticTag peer, PeerSemanticTag remotepeer, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        this.changed();
-        return this.targetKB.createContextCoordinates(topic, originator, peer,remotepeer, time, location, direction);
-    }
-
-    @Deprecated
-    @Override
-    public ContextPoint createContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        this.changed();
-        return this.targetKB.createContextPoint(coordinates);
     }
 
     @Override
@@ -457,53 +413,9 @@ public class SyncKB implements SharkKB{
         return this.targetKB.extract(target, context, backgroundFP, cutGroups, recipient);
     }
 
-    @Deprecated
-    @Override
-    public Knowledge createKnowledge() {
-        this.changed();
-        return this.targetKB.createKnowledge();
-    }
-
-    @Deprecated
-    @Override
-    public void removeContextPoint(ContextCoordinates coordinates) throws SharkKBException {
-        this.changed();
-        this.targetKB.removeContextPoint(coordinates);
-    }
-
-    @Deprecated
-    @Override
-    public Enumeration<ContextPoint> getContextPoints(SharkCS cs) throws SharkKBException {
-        return this.targetKB.getContextPoints(cs);
-    }
-
-    @Deprecated
-    @Override
-    public Iterator<ContextPoint> contextPoints(SharkCS cs) throws SharkKBException {
-        return this.targetKB.contextPoints(cs);
-    }
-
-    @Deprecated
-    @Override
-    public Enumeration<ContextPoint> getContextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
-        return this.targetKB.getContextPoints(cs, matchAny);
-    }
-
-    @Deprecated
-    @Override
-    public Iterator<ContextPoint> contextPoints(SharkCS cs, boolean matchAny) throws SharkKBException {
-        return this.targetKB.contextPoints(cs, matchAny);
-    }
-
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException {
         return this.targetKB.informationSpaces(as, matchAny);
-    }
-
-    @Deprecated
-    @Override
-    public Enumeration<ContextPoint> getAllContextPoints() throws SharkKBException {
-        return this.targetKB.getAllContextPoints();
     }
 
     @Override
@@ -614,26 +526,6 @@ public class SyncKB implements SharkKB{
     @Override
     public int getNumberInformation() throws SharkKBException {
         return this.targetKB.getNumberInformation();
-    }
-
-    @Deprecated
-    @Override
-    public void addInterest(SharkCS interest) throws SharkKBException {
-        this.targetKB.addInterest(interest);
-        this.changed();
-    }
-
-    @Deprecated
-    @Override
-    public void removeInterest(SharkCS interest) throws SharkKBException {
-        this.targetKB.removeInterest(interest);
-        this.changed();
-    }
-
-    @Deprecated
-    @Override
-    public Iterator<SharkCS> interests() throws SharkKBException {
-        return this.targetKB.interests();
     }
 
     @Override

@@ -111,16 +111,6 @@ public class InMemoInterest extends InMemoSharkCS implements Interest, ASIPInter
     }
 
     /**
-     * @deprecated 
-     * @param dim
-     * @return 
-     */
-    @Override
-    public boolean isAny(int dim) {
-        return false;
-    }
-
-    /**
      * Note: the object reference is returned. The set shouldn't be changed outside.
      * @return 
      */

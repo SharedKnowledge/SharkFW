@@ -2,13 +2,10 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPStub;
-import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
-import net.sharkfw.system.SharkSecurityException;
 import net.sharkfw.system.Streamer;
 
 import java.io.IOException;
@@ -26,26 +23,26 @@ public class ASIPSession extends Thread {
     private ASIPStub stub;
 
     private PrivateKey privateKey;
-    private SharkPkiStorage sharkPkiStorage;
+    //    private SharkPkiStorage sharkPkiStorage;
     private SharkEngine.SecurityLevel encryptionLevel;
     private SharkEngine.SecurityLevel signatureLevel;
     private SharkEngine.SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
 
-    ASIPSession(SharkEngine engine, StreamConnection connection, ASIPStub stub, ASIPKnowledge knowledge){
+    ASIPSession(SharkEngine engine, StreamConnection connection, ASIPStub stub, ASIPKnowledge knowledge) {
         this.engine = engine;
         this.connection = connection;
         this.stub = stub;
         this.knowledge = knowledge;
     }
 
-    public void initSecurity(PrivateKey privateKey, SharkPkiStorage sharkPkiStorage,
+    public void initSecurity(PrivateKey privateKey/*, SharkPkiStorage sharkPkiStorage*/,
                              SharkEngine.SecurityLevel encryptionLevel,
                              SharkEngine.SecurityLevel signatureLevel,
                              SharkEngine.SecurityReplyPolicy replyPolicy,
                              boolean refuseUnverifiably) {
         this.privateKey = privateKey;
-        this.sharkPkiStorage = sharkPkiStorage;
+//        this.sharkPkiStorage = sharkPkiStorage;
         this.encryptionLevel = encryptionLevel;
         this.signatureLevel = signatureLevel;
         this.replyPolicy = replyPolicy;
@@ -59,7 +56,7 @@ public class ASIPSession extends Thread {
         int looper = 3;
         int currentLoop = 0;
 
-        do{
+        do {
             try {
                 ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
 //                inMessage.initSecurity(this.privateKey, this.sharkPkiStorage, this.encryptionLevel,
@@ -67,7 +64,7 @@ public class ASIPSession extends Thread {
                 inMessage.parse();
 
                 // Used for WifiCommunication.
-                if(this.knowledge!=null && !knowledgeSendTriggered){
+                if (this.knowledge != null && !knowledgeSendTriggered) {
                     L.d("I have a knowledge, I need to reply.", this);
                     // Now create a response with that knowledge
                     final String receiver = this.connection.getReceiverAddressString();
@@ -79,48 +76,47 @@ public class ASIPSession extends Thread {
 //                    knowledgeSendTriggered = inMessage.responseSent();
                 }
 
-                if(inMessage.isParsed()){
+                if (inMessage.isParsed()) {
                     handled = this.stub.callListener(inMessage);
                     handled = handled && inMessage.keepOpen();
 
-                    if(handled) Thread.sleep(1000);
+                    if (handled) Thread.sleep(1000);
                 }
 
             } catch (IOException | SharkException e) {
-                handled=false;
+                handled = false;
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            if(!handled) {
+            if (!handled) {
 //                L.d("Checking for more ASIP Messages", this);
                 // no listener handled that request
                 // maybe there is another KEP methode in the stream
                 try {
-                    if(this.connection.getInputStream().available() > 0) {
-                        L.d("More bytes available on inputstream" , this);
+                    if (this.connection.getInputStream().available() > 0) {
+                        L.d("More bytes available on inputstream", this);
                         handled = true;
                     } else {
                         // maybe remote peer wasn't fast enough - give it some time
                         L.d("Waiting for remotepeer for max. : " + engine.getConnectionTimeOut(), this);
-                        long duration = engine.getConnectionTimeOut()/looper;
-                        while(currentLoop < looper){
+                        long duration = engine.getConnectionTimeOut() / looper;
+                        while (currentLoop < looper) {
                             Thread.sleep(duration);
                             currentLoop++;
-                            if(this.connection.getInputStream().available() > 0) {
+                            if (this.connection.getInputStream().available() > 0) {
                                 handled = true;
-                                currentLoop=0;
+                                currentLoop = 0;
                                 break;
                             }
                         }
                     }
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     // ignore and go ahead
                 }
             }
-        } while(handled);
+        } while (handled);
 
         try {
             final InputStream inputStream = this.connection.getInputStream();

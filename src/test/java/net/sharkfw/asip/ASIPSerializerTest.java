@@ -44,7 +44,8 @@ public class ASIPSerializerTest {
     SemanticTag t5;
     
     STSet topics;
-    
+    STSet types;
+
     PeerSemanticTag p1;
     PeerSemanticTag p2;
     PeerSemanticTag p3;
@@ -85,6 +86,8 @@ public class ASIPSerializerTest {
         topics = InMemoSharkKB.createInMemoSTSet();
         topics.merge(t1);
         topics.merge(t2);
+
+        types = topics;
         
         p1 = kb.getPeerSTSet().createPeerSemanticTag("Peer1", "http://peer1.de", "tcp://peer1.de:1234");
         p2 = kb.getPeerSTSet().createPeerSemanticTag("Peer2", "http://peer2.de", "tcp://peer2.de:1234");
@@ -288,11 +291,11 @@ public class ASIPSerializerTest {
         J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
         SharkKB kb = new InMemoSharkKB();
         
-        Interest co1 = InMemoSharkKB.createInMemoInterest(topics, p4, approvers, receivers, times, locations, 0);
+        ASIPInterest co1 = InMemoSharkKB.createInMemoASIPInterest(topics, types, p4, approvers, receivers, times, locations, 0);
 //        ContextPoint cp1 = kb.createContextPoint(co1);
 //        cp1.addInformation("ContextPoint1");
         
-        System.out.println(ASIPSerializer.serializeInterest((ASIPSpace)co1).toString(2) );
+        System.out.println(ASIPSerializer.serializeInterest(co1).toString(2) );
         
         Assert.assertTrue(true);
     }

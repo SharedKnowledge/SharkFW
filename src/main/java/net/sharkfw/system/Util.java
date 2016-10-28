@@ -584,53 +584,6 @@ public class Util {
     }
 
     /**
-     * Return whether or not two entities (<code>SemanticTag</code> i.e.) are the
-     * same, by checking their SIs. If at least one SI matches this method will
-     * return true. If no SIs match the method will return false.
-     *
-     * <code>null</code> is interpreted as 'unset'. This method will only
-     * return <bold>exact</bold> matches.
-     *
-     * @param si_a A string array from entity a
-     * @param si_b A string array from entity b
-     * @return <code>true</code> if at least on string is in both arrays, or if one of the arrays is <code>null</code>, <code>false</code> otherwise
-     * @deprecated use SharkCSAlgebra.identical
-     */
-    public static boolean sameEntity(String[] si_a, String[] si_b) {
-
-        if (si_a == null && si_b == null) {
-            return true;
-        }
-
-        if (si_a == null && si_b != null) {
-            return false;
-        }
-
-        if (si_a != null && si_b == null) {
-            return false;
-        }
-
-        //Temp solution!! not very nice....
-        /*if (DataUtil.sameDataEntity(si_a, si_b)) {
-        return true;
-        }*/
-        /*(if (DataUtil.dataEntityContains(si_a[0], si_b[0])) {
-        System.out.println("Same");
-        return true;
-        }*/
-
-        for (int a = 0; a < si_a.length; a++) {
-            for (int b = 0; b < si_b.length; b++) {
-                if (si_a[a].equalsIgnoreCase(si_b[b])) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Return whether or not a string is considered a PSI.
      * This is determind by checking for the presence of
      * the mandatory '://' separator.
@@ -996,51 +949,6 @@ public class Util {
     }
 
     /**
-     * Copy all information from one ContextPoint to another.
-     *
-     * @param original The <code>ContextPoint</code> to copy from.
-     * @param copy The <code>ContextPoint</code> to copy to.
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void copyInformation(ContextPoint original, ContextPoint copy, boolean withTimestamp) throws SharkKBException {
-        Enumeration infoEnum = original.enumInformation();
-        while (infoEnum != null && infoEnum.hasMoreElements()) {
-//            try {
-            Information info = (Information) infoEnum.nextElement();
-            // Is this the right place? -mfi
-            // removed cause it just copied the first information not all!
-//            if (Util.contextPointHasHashcode(copy, info.hashCode())) {
-//                L.d("Duplicate suppression omits information " + info, Util.class);
-//                continue;
-//            }
-            // Auch properties versuchen zu uebernehmen
-            Hashtable localProps = new Hashtable();
-            Enumeration props = info.propertyNames();
-            if (props != null) {
-                while (props.hasMoreElements()) {
-                    String name = (String) props.nextElement();
-                    String value = info.getProperty(name);
-                    if(value != null) {
-                        localProps.put(name, value);
-                    }
-                }
-            }
-
-            // Stream content of information
-            Information localInfo = (Information) copy.addInformation();
-            // Copy all properties from the original contextpoint to the copied ContextPoint
-            Util.copyPropertiesFromPropertyHolderToPropertyHolder(original, copy);
-            
-            OutputStream os = localInfo.getOutputStream();
-            info.streamContent(os);
-            // Also copy all props from the original information to the newly created information
-            Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, localInfo);
-            L.d("Creating Information with name:" + info, Util.class);
-
-        }
-    }
-
-    /**
      * Return whether or not the given tag has the given address.
      * @param tag
      * @param address
@@ -1196,43 +1104,6 @@ public class Util {
         if (i < hi) {
             integerQuicksort(elements, i, hi);
         }
-    }
-
-    /**
-     * Return whether or not a certain hashcode is set already known on the
-     * ContextPoint <code>cp</code>
-     *
-     * @param cp The ContextPoint to check.
-     * @param hashcode The hashcode to check.
-     * @return <code>true</code> if an Information exists on <code>cp</code> with <code>.getProperty(SharkKB.HASHCODE).equals(hashcode)</code>. <code>false</code> otherwise.
-     */
-    @SuppressWarnings("rawtypes")
-    public static boolean contextPointHasHashcode(ContextPoint cp, int hashcode) {
-        if (cp == null) {
-            return false;
-        }
-
-        Enumeration infoEnum = cp.enumInformation();
-        while (infoEnum != null && infoEnum.hasMoreElements()) {
-            Information info = (Information) infoEnum.nextElement();
-
-            if (info.hashCode() == hashcode) {
-                return true;
-            }
-
-        } // End of enumeration
-        return false;
-    }
-
-    /**
-     * Return an Array of FragmentationParameters like:
-     * <code>new FragmentationParameter(false, false, 0);</code>
-     *
-     * @return An Array of size <code>ContextSpace.MAXDIMENSIONS</code> with FPs
-     * @deprecated 
-     */
-    public static FragmentationParameter[] getZeroFP() {
-        return KnowledgePort.getZeroFP();
     }
 
     // These Strings are used to denote if a property is serializable or not

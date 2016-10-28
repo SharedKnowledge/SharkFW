@@ -48,7 +48,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
         L.d("ASIPStub: message with length of " + msg.length + " bytes received: " + Arrays.toString(msg), this);
         try {
             ASIPInMessage inMsg = new ASIPInMessage(this.se, msg, stub);
-            inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+            inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ /*this.sharkPkiStorage,*/
                     this.encryptionLevel, this.signatureLevel,
                     this.replyPolicy, this.refuseUnverifiably);
             inMsg.parse();
@@ -71,7 +71,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     @Override
     public final void handleStream(StreamConnection con) {
         ASIPSession session = new ASIPSession(this.se, con, this, null);
-        session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
+        session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ /*this.sharkPkiStorage,*/
                 this.encryptionLevel, this.signatureLevel,
                 this.replyPolicy, this.refuseUnverifiably);
         session.start();
@@ -256,7 +256,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     @Override
     public final void startConversion(StreamConnection con) {
         // creates an empty kepInterest - which is interpreted as any kepInterest.
-        Interest anyInterest = InMemoSharkKB.createInMemoInterest();
+        ASIPInterest anyInterest = InMemoSharkKB.createInMemoASIPInterest();
         anyInterest.setDirection(ASIPSpace.DIRECTION_INOUT);
 
         Iterator<ASIPPort> kpIter = this.getListener();

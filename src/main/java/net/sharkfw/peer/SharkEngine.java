@@ -1,19 +1,19 @@
 package net.sharkfw.peer;
 
-import net.sharkfw.asip.*;
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.ASIPStub;
+import net.sharkfw.asip.SharkStub;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
-import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.protocols.*;
-import net.sharkfw.security.pki.storage.SharkPkiStorage;
 import net.sharkfw.system.*;
 
 import java.io.IOException;
@@ -46,7 +46,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private PrivateKey privateKey = null;
     private PeerSemanticTag engineOwnerPeer;
     //private SharkPublicKeyStorage publicKeyStorage;
-    private SharkPkiStorage sharkPkiStorage;
     private SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
     private SecurityLevel encryptionLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
@@ -968,13 +967,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         if (kp.getAsipInterest() != null) {
             asipInterest = kp.getAsipInterest();
             recipients = asipInterest.getReceivers();
-        } else if (kp.getKEPInterest() != null) {
-            kepInterest = kp.getKEPInterest();
-            try {
-                recipients = (PeerSTSet) kepInterest.getSTSet(ASIPSpace.DIM_APPROVERS);
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-            }
         } else {
             return;
         }
@@ -1267,12 +1259,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public enum SecurityReplyPolicy {SAME, TRY_SAME, AS_DEFINED}
 
-
-    public /*SharkPublicKeyStorage*/ SharkPkiStorage /*getPublicKeyStorage()*/ getSharkPkiStorage() {
-        //return this.publicKeyStorage;
-        return this.sharkPkiStorage;
-    }
-
     ////////////////////////////////////////////////////////////////////////
     //                    don't sent information again                    //
     ////////////////////////////////////////////////////////////////////////
@@ -1308,94 +1294,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             new HashMap<>();
 
     private boolean allowEmptyContextPoints = true;
-
-    /**
-     * This methods checks whether information are already sent to a peer
-     *
-     * @param k       knowledge ought to be sent
-     * @param address recipient address
-     * @return Knowledge with information that are not already sent or null if
-     * all information have already been transmitted
-     * @deprecated ???
-     */
-    @SuppressWarnings("rawtypes")
-    public Knowledge removeSentInformation(Knowledge k, String address) {
-
-        // create knowledge to be returned
-        Knowledge retK = new InMemoKnowledge(k.getVocabulary());
-
-        // let's investigate each cp
-        Enumeration cpEnum = k.contextPoints();
-        while (cpEnum.hasMoreElements()) {
-            ContextPoint cp = (ContextPoint) cpEnum.nextElement();
-
-            // hung up that point
-//            k.removeContextPoint(cp);
-
-            InMemoContextPoint newCP = new InMemoContextPoint(cp.getContextCoordinates());
-
-            Enumeration infoEnum = cp.enumInformation();
-            while (infoEnum.hasMoreElements()) {
-                Information info = (Information) infoEnum.nextElement();
-
-                Integer hash = new Integer(info.hashCode());
-
-                // already in list ?
-                String oldAddress = this.deliveredInformation.get(hash);
-
-                // already sent?
-                boolean sent = false;
-                if (oldAddress != null && address.equalsIgnoreCase(oldAddress)) {
-                    sent = true;
-                }
-
-                if (!sent) {
-                    // no yet sent - keep it.
-                    newCP.addInformation(info);
-                }
-            }
-
-            // something left?
-            if (newCP.getNumberInformation() > 0 || this.allowEmptyContextPoints) {
-                // add properties from original cp
-                Util.copyPropertiesFromPropertyHolderToPropertyHolder(cp, newCP);
-
-                // hang in the new cp
-                retK.addContextPoint(newCP);
-            }
-        }
-
-        if (retK.getNumberOfContextPoints() > 0) {
-            return retK;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * this method stores what information are sent to whom in order to suppress
-     * duplicates. Note: It only suppresses duplicates to direct communication
-     * partners. It does not inspect the remote dimension of context points though.
-     *
-     * @param k       knowledge to be sent
-     * @param address communication partners address
-     */
-    @SuppressWarnings("rawtypes")
-    public void setSentInformation(Knowledge k, String address) {
-        // lets investigate any cp
-        Enumeration cpEnum = k.contextPoints();
-        while (cpEnum.hasMoreElements()) {
-            ContextPoint cp = (ContextPoint) cpEnum.nextElement();
-
-            Enumeration infoEnum = cp.enumInformation();
-
-            while (infoEnum.hasMoreElements()) {
-                Information info = (Information) infoEnum.nextElement();
-                int hash = info.hashCode();
-                this.deliveredInformation.put(new Integer(hash), address);
-            }
-        }
-    }
 
     public final static int DEFAULT_SILTENT_PERIOD = 500;
 

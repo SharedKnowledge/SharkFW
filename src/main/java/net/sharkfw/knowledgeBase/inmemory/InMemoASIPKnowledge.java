@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import net.sharkfw.asip.ASIPInformation;
-import net.sharkfw.asip.ASIPInformationSpace;
-import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPSpace;
+
+import net.sharkfw.asip.*;
 import net.sharkfw.knowledgeBase.*;
 
 /**
@@ -160,43 +158,8 @@ public class InMemoASIPKnowledge implements Knowledge {
     }
 
     @Override
-    public void addContextPoint(ContextPoint cp) {
-
-    }
-
-    @Override
-    public void removeContextPoint(ContextPoint cp) {
-
-    }
-
-    @Override
-    public Enumeration<ContextPoint> contextPoints() {
-        return null;
-    }
-
-    @Override
     public SharkVocabulary getVocabulary() {
         return this.cm;
-    }
-
-    @Override
-    public int getNumberOfContextPoints() {
-        return 0;
-    }
-
-    @Override
-    public ContextPoint getCP(int i) {
-        return null;
-    }
-
-    @Override
-    public void addListener(KnowledgeListener kListener) {
-
-    }
-
-    @Override
-    public void removeListener(KnowledgeListener kListener) {
-
     }
 
     @Override
