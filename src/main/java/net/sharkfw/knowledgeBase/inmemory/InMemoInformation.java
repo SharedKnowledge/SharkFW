@@ -1,26 +1,18 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sharkfw.asip.ASIPSpace;
-
-import net.sharkfw.system.TimeLong;
-import net.sharkfw.kep.KEPMessage;
-import net.sharkfw.knowledgeBase.Information;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PropertyHolderDelegate;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SystemPropertyHolder;
-import net.sharkfw.protocols.UTF8SharkOutputStream;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.L;
 import net.sharkfw.system.Streamer;
+import net.sharkfw.system.TimeLong;
+
+import java.io.*;
 
 /**
  * An in memory implementation of the <code>Information</code> interface.
- *
+ * <p>
  * This implementation stores its content in a <code>ByteArrayInputStream</code> to allow easy stream based access to it.
- *
+ * <p>
  * It also keeps a <code>Hashtable</code> to manage its properties.
  *
  * @author mfi, thsc
@@ -35,8 +27,8 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public static final String INFO_NAME = "info_name";
     public static final String INFO_ORIGINATOR = "info_originator";
     public static final String INFO_ID_PROPERTY_NAME = "SharkNet_InfoID";
-    
-// Save the content. Manages internal byte array automatically.
+
+    // Save the content. Manages internal byte array automatically.
     private ByteArrayOutputStream content = new ByteArrayOutputStream();
     private ASIPSpace space;
 
@@ -61,7 +53,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         super();
         this.defaultInit();
     }
-    
+
     InMemoInformation(ASIPSpace space) {
         this();
         this.space = space;
@@ -71,7 +63,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      * create it and set status
      */
     protected InMemoInformation(String contentType, long lastModified,
-            long creationTime, PeerSTSet recipientSet) {
+                                long creationTime, PeerSTSet recipientSet) {
 
         try {
             this.setProperty(InMemoInformation.INFO_CONTENT_TYPE, contentType);
@@ -106,16 +98,16 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     @Override
     public void setName(String name) throws SharkKBException {
         if (name != null && (
-        			name.contains("<") ||		/* less than,  IO redirection (input) */
-        			name.contains(">") || 		/* greater than, IO redirection (output) */
-        			name.contains("|") || 		/* bar,  IO redirection (pipe) */
-        			name.contains("/") || 		/* slash, directory separator */
-        			name.contains(":") ||		/* colon, host separator on network filesystems, protocol separator */ 
-        			name.contains("*") ||		/* asterisk, wildcard for any amount of chars */ 
-        			name.contains("?") ||		/* question mark, wildcard for one single char */ 
-        			name.contains("\"") ||		/* double quotes, commandline argument grouping (doesn't work on windows cmd.exe shell anyway, but the char is forbidden) */ 
-        			name.contains("\\")			/* backslash, directory separator */
-        		)) {
+                name.contains("<") ||		/* less than,  IO redirection (input) */
+                        name.contains(">") || 		/* greater than, IO redirection (output) */
+                        name.contains("|") || 		/* bar,  IO redirection (pipe) */
+                        name.contains("/") || 		/* slash, directory separator */
+                        name.contains(":") ||		/* colon, host separator on network filesystems, protocol separator */
+                        name.contains("*") ||		/* asterisk, wildcard for any amount of chars */
+                        name.contains("?") ||		/* question mark, wildcard for one single char */
+                        name.contains("\"") ||		/* double quotes, commandline argument grouping (doesn't work on windows cmd.exe shell anyway, but the char is forbidden) */
+                        name.contains("\\")			/* backslash, directory separator */
+        )) {
             throw new SharkKBException("The name contains not allowed characters.");
         }
 
@@ -129,15 +121,15 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         } catch (SharkKBException ex) {
             // cannot happen
         }
-        
+
         return null;
     }
 
     /**
      * Writes the content of the internal ByteArrayInputStream to the given <code>OutputStream</code>.
-     *
+     * <p>
      * Behaves like:      <code>
-   * os.write(content.getByteArray());
+     * os.write(content.getByteArray());
      * </code>
      *
      * @param os The <code>OutputStream</code> to write to.
@@ -148,7 +140,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
             // vllt mit Streamer.stream arbeiten?
             //os.write(content.toByteArray());
             ByteArrayInputStream bais = new ByteArrayInputStream(content.toByteArray());
-            Streamer.stream(bais, os, UTF8SharkOutputStream.STREAM_BUFFER_SIZE, content.size());
+            Streamer.stream(bais, os, 1024 /*TODO MAX BUFFER SIZE*/, content.size());
         } catch (IOException ex) {
             L.e(ex.getMessage(), this);
         }
@@ -157,7 +149,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     /**
      * Fill the internal content memory from the <code>InputStream</code>
      *
-     * @param is The <code>InputStream</code> to read from
+     * @param is  The <code>InputStream</code> to read from
      * @param len An integer value to denote the length of the content.
      */
     @Override
@@ -189,15 +181,15 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     /**
      * Returning the content of this information as a byte array. Behaves like calling:      <code>
-   * return content.toByteArray();
+     * return content.toByteArray();
      * </code>
      *
      * @return
      */
     @Override
     public byte[] getContentAsByte() {
-		byte[] ba = content.toByteArray();
-		return ba;
+        byte[] ba = content.toByteArray();
+        return ba;
     }
 
     /**
@@ -207,11 +199,11 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      */
     @Override
     public long getContentLength() {
-		if (this.content != null) {
-			int sz = this.content.size();
-			return sz;
-		}
-		return 0;
+        if (this.content != null) {
+            int sz = this.content.size();
+            return sz;
+        }
+        return 0;
     }
 
     /**
@@ -229,15 +221,15 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         } catch (SharkKBException ex) {
             // cannot happen
         }
-            
+
         return InMemoInformation.INFO_DEFAULT_CONTENT_TYPE;
     }
 
     /**
      * Overridden hashcode method. This method implements a simple algorithm for determining the hashcode of an Information object taking the content of the object into account as well.
-     *
+     * <p>
      * It takes the size of the content into account when computing the value to prevent a too-high CPU load:
-     *
+     * <p>
      * <ul>
      * <li> Below 100 bytes, every byte of the content becomes part of the hashcode </li>
      * <li> Between 100 bytes and 1MB, the first 100 byte are becoming part of the hascode, plus, every 100th bytes becomes part of the hashcode. </li>
@@ -250,12 +242,12 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     public int hashCode() {
         int result = 0; //hashCode;
         if (result == 0) {
-			byte[] contentArray = content.toByteArray();
+            byte[] contentArray = content.toByteArray();
             long size = contentArray.length;
 
             result = 17;
             if (size > 100 && size < 1024 * 1024) {
-        // Medium sized, between 100 byte and 1MB
+                // Medium sized, between 100 byte and 1MB
 
                 int cur = 100;
                 // compute hash of first 100 byte
@@ -282,7 +274,7 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
                 }
 
             } else {
-        // Small sized
+                // Small sized
                 // Arrays.hashcode is not available in JavaME
                 for (int i = 0; i < contentArray.length; i++) {
                     result = 31 * result + (int) contentArray[i];
@@ -292,7 +284,8 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         return result;
     }
 
-  // API rev. methods
+    // API rev. methods
+
     /**
      * Set the given byte[] to be the content for this Information object. Internally, the content will be written into a newly created ByteArrayOutputStream. Calling this method will erase previously
      * set content on this object.
@@ -311,11 +304,11 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         }
     }
 
-    
+
     protected void setTimes() {
         try {
             String nowString = Long.toString(System.currentTimeMillis());
-            
+
             this.setProperty(InMemoInformation.INFO_LAST_MODIFED, nowString);
             this.setProperty(InMemoInformation.INFO_CREATION_TIME, nowString);
         } catch (SharkKBException ex) {
@@ -332,10 +325,10 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
     @Override
     public void setContent(String content) {
         try {
-			setContent(content.getBytes(KEPMessage.ENCODING));
-		} catch (UnsupportedEncodingException e) {
+            setContent(content.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
             //FIXME: Catch unknown encoding exception?!
-			e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -350,8 +343,6 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
 
     /**
      * Set the type of this information's content as a property (<code>Information.CONTENTTYPE</code>) to this Information object.
-     *
-     * @param mimetype The type of this information's content.
      */
     @Override
     public void setContentType(String mimeType) {
@@ -428,13 +419,13 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
      * Return an InputStream that allows streaming data into information object.
      *
      * @return InputStream to information object
-     * @throws SharkKBException 
+     * @throws SharkKBException
      */
     public InputStream getInputStream() throws SharkKBException {
-		byte[] ba = content.toByteArray();
-		ByteArrayInputStream is = new ByteArrayInputStream(ba);
-		return is;
-        }
+        byte[] ba = content.toByteArray();
+        ByteArrayInputStream is = new ByteArrayInputStream(ba);
+        return is;
+    }
 
 	/* size() was a duplicate to getContentLength() */
 
@@ -464,14 +455,14 @@ public class InMemoInformation extends PropertyHolderDelegate implements Informa
         return cString;
     }
 
-	public void obtainLock(InputStream i) {
-	}
+    public void obtainLock(InputStream i) {
+    }
 
-	public void obtainLock(OutputStream i) {
-	}
-	
-	public void releaseLock() {
-	}
+    public void obtainLock(OutputStream i) {
+    }
+
+    public void releaseLock() {
+    }
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {

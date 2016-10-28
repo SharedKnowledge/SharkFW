@@ -6,10 +6,6 @@ import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 import net.sharkfw.asip.engine.serializer.XMLSerializer;
-import net.sharkfw.kep.KEPMessage;
-import net.sharkfw.kep.KEPOutMessage;
-import net.sharkfw.kep.KEPStub;
-import net.sharkfw.kep.KnowledgeSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoContextPoint;
 import net.sharkfw.knowledgeBase.inmemory.InMemoKnowledge;
@@ -22,12 +18,10 @@ import net.sharkfw.system.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.*;
 
 /**
@@ -44,7 +38,6 @@ import java.util.*;
  * @author thsc
  * @author mfi
  * @see net.sharkfw.knowledgeBase.SharkKB
- * @see net.sharkfw.kep.SimpleKEPStub
  * @see KnowledgePort
  */
 abstract public class SharkEngine implements WhiteAndBlackListManager {
@@ -58,14 +51,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private boolean refuseUnverifiably;
     private SecurityLevel encryptionLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
     private SecurityLevel signatureLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
-
-
-    /**
-     * The <code>KEPStub</code> implementation that handles all KEP messages,
-     * along with message accountin, connection pooling and observing
-     * the <code>Environment</code>
-     */
-    protected KEPStub kepStub;
 
     protected ASIPStub asipStub;
 
@@ -116,11 +101,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
         return this.syncManager;
 
-    }
-
-    protected void setKEPStub(KEPStub kepStub) {
-        this.kepStub = kepStub;
-        //this.environment = this.kepStub.getEnvironment();
     }
 
     public void setEngineOwnerPeer(PeerSemanticTag tag) {
@@ -186,8 +166,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             case net.sharkfw.protocols.Protocols.TCP:
                 if (this.getAsipStub() != null) {
                     protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false, null);
-                } else if (this.getKepStub() != null) {
-                    protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false, null);
                 }
                 break;
 //            case net.sharkfw.protocols.Protocols.UDP:
@@ -201,16 +179,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             case net.sharkfw.protocols.Protocols.MAIL:
                 if (this.getAsipStub() != null) {
                     protocolStub = this.createMailStreamStub(this.getAsipStub());
-                } else if (this.getKepStub() != null) {
-                    protocolStub = this.createMailStreamStub(this.getKepStub());
                 }
                 break;
 
             case net.sharkfw.protocols.Protocols.WIFI_DIRECT:
                 if (this.getAsipStub() != null) {
                     protocolStub = this.createWifiDirectStreamStub(this.getAsipStub());
-                } else if (this.getKepStub() != null) {
-                    protocolStub = this.createWifiDirectStreamStub(this.getKepStub());
                 }
                 break;
 
@@ -257,8 +231,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         Stub stub = null;
         if (this.asipStub != null) {
             this.startServer(type, this.asipStub, port, knowledge);
-        } else if (this.kepStub != null) {
-            this.startServer(type, this.kepStub, port, null);
         }
 
         return true;
@@ -388,38 +360,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     void addKP(ASIPPort kp) {
         if (this.asipStub != null)
             kp.setSharkStub(this.asipStub);
-        else if (this.kepStub != null)
-            kp.setSharkStub(this.kepStub);
         ports.add(kp);
-    }
-
-    /**
-     * Usually, interests come from outside over a network connection and are received
-     * and handled by a KEPStub. This method works the opposite way. The kepInterest
-     * is taken and offered any open knowledge port which can react on it.
-     * <p>
-     * This method can be used in at least to cases:
-     * <p>
-     * <ol>
-     * <li> Establishing an ad hoc connection start usually by getting an
-     * address. One partner must now establish a KEP connection. It could be done
-     * in this way: A anonymous peer semantic tag is created. The network address
-     * is added. An kepInterest is created with no entries but the peer. This kepInterest
-     * is send to this method and KP can decide to establish a KEP connection based
-     * on the already establised ad hoc connection.
-     * <p>
-     * <li> Some application may want to store kepInterest, e.g. to store kepInterest
-     * which hadn't been interesting when receiving them. This method allows
-     * <i> replying </i> that kepInterest.
-     * <p>
-     * </ol>
-     * <p>
-     * Not yet implemented...
-     *
-     * @param interest
-     */
-    public void handleInterest(Interest interest) {
-        this.getKepStub().handleInterest(interest);
     }
 
     public void handleASIPInterest(ASIPInterest interest) {
@@ -686,57 +627,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     /********************************************************************
      * Serialization stuff                             *
-     ********************************************************************/
-    protected int kFormat = KEPMessage.XML;
-
-    /**
-     * Returns the serialization format
-     *
-     * @return An integer value representing the serialization format for knowledge
-     * @see net.sharkfw.kep.KEPMessage
-     */
-    public int getKnowledgeFormat() {
-        return this.kFormat;
-    }
-
-    /**
-     * Returns an instance of <code>KnowledgeSerializer</code> for a given serialization type.
-     *
-     * @param format An integer value representing the format to use
-     * @return An instance of <code>KnowlegdeSerializer</code> for the given serialization type.
-     * @throws SharkNotSupportedException
-     * @see net.sharkfw.kep.KEPMessage
-     */
-    KnowledgeSerializer getKnowledgeSerializer(int format) throws SharkNotSupportedException {
-        return KEPMessage.getKnowledgeSerializer(format);
-    }
-
-    /**
-     * Return the currently used instance of <code>KnowledgeSerializer</code>
-     *
-     * @return The instance of <code>KnowledgeSerializer</code> that's being used by this engine.
-     */
-    KnowledgeSerializer getKnowledgeSerializer() {
-        try {
-            return KEPMessage.getKnowledgeSerializer(this.kFormat);
-        } catch (Exception e) {
-            // shouldn't happen
-            return KEPMessage.getKnowledgeSerializer();
-        }
-    }
-
-    /*************************************************************
-     *                      some getter                          *
+     * <p>
+     * /*************************************************************
+     * some getter                          *
      *************************************************************/
-    /**
-     * Return the currently used KEPStub.
-     *
-     * @return The KEPStub, currently used by this SharkEngine.
-     * @deprecated
-     */
-    public KEPStub getKepStub() {
-        return kepStub;
-    }
 
     public ASIPStub getAsipStub() {
         return this.asipStub;
@@ -813,8 +707,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
         if (kp.getAsipInterest() != null)
             this.sendASIPInterest(kp.getAsipInterest(), recipient, kp);
-        else if (kp.getKEPInterest() != null)
-            this.sendKEPInterest(kp.getKEPInterest(), recipient, kp);
     }
 
     public void sendASIPInterest(ASIPInterest interest, PeerSemanticTag recipient, KnowledgePort kp)
@@ -829,22 +721,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.sendASIPCommand(null, null, is, kp, recipient);
     }
 
-    public void sendKEPInterest(SharkCS interest, PeerSemanticTag recipient, KnowledgePort kp)
-            throws SharkSecurityException, SharkKBException, IOException {
-
-        this.sendKEPCommand(interest, null, kp, recipient);
-    }
-
     public void sendASIPKnowledge(ASIPKnowledge knowledge, PeerSemanticTag recipient, KnowledgePort kp)
             throws SharkSecurityException, SharkKBException, IOException {
 
         this.sendASIPCommand(null, knowledge, null, kp, recipient);
-    }
-
-    public void sendKEPKnowledge(Knowledge k, PeerSemanticTag recipient, KnowledgePort kp)
-            throws SharkSecurityException, SharkKBException, IOException {
-
-        this.sendKEPCommand(null, k, kp, recipient);
     }
 
     private void sendASIPCommand(ASIPInterest interest, ASIPKnowledge knowledge, InputStream is, KnowledgePort kp, PeerSemanticTag recipient)
@@ -873,51 +753,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
 
         L.d("<<<<<<<<<<<<<<<<<< End sending knowledge, kepInterest or raw to recipient", this);
-    }
-
-    @SuppressWarnings("unused")
-    private void sendKEPCommand(SharkCS interest, Knowledge k, KnowledgePort kp, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
-        L.d("Send KEP command to recipient: >>>>>>>>>>>\n", this);
-
-        // See if a response has been sent yet
-        boolean sent = false;
-        
-        /*
-         * Read receipient's addresses
-         */
-        String[] addresses = recipient.getAddresses();
-
-        if (addresses == null) {
-            L.e("KP cannot send KEP message: No address in remote peer dimension in kepInterest and no address set in publish found. Aborting.", this);
-            return;
-        }
-
-        KEPOutMessage response = this.createKEPOutMessage(addresses, recipient);
-
-        if (response != null) {
-            // Response could be created
-
-            try {
-                // send kepInterest
-                if (interest != null) {
-                    response.expose(interest);
-                }
-
-                // send knowledge
-                if (k != null) {
-                    response.insert(k);
-                }
-            } catch (IOException e) {
-                throw new SharkKBException(e.getMessage());
-            }
-        }
-
-        if (response != null) {
-            // If the response has been sent we are finished.
-            sent = response.responseSent();
-        }
-
-        L.d("<<<<<<<<<<<<<<<<<< End sending knowledge or kepInterest to recipient", this);
     }
 
     /**
@@ -1110,297 +945,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return null;
     }
 
-
-    /**
-     * Creates a new KEPOutMessage without security initialization.
-     *
-     * @param addresses
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    private KEPOutMessage createKEPOutMessage(String[] addresses) {
-        KEPOutMessage response = null;
-        MessageStub mStub;
-        StreamStub sStub;
-        StreamConnection sConn = null;
-
-        if (addresses == null) {
-            return null;
-        }
-
-        // sort addresses first
-        addresses = this.prioritizeAddresses(addresses);
-
-        Enumeration addrEnum = Util.array2Enum(addresses);
-        while (addrEnum.hasMoreElements()) {
-            String address = (String) addrEnum.nextElement();
-            L.d("sendKEPInterest: try address:" + address, this);
-            //boolean fromPool = false;
-            try {
-                /*
-                 * Check if stub is available
-                 */
-
-                int type = Protocols.getValueByAddress(address);
-                Stub protocolStub = this.getProtocolStub(type);
-
-                /*
-                 * Find out which protocol to use
-                 */
-                if (protocolStub instanceof StreamStub) {
-                    sStub = (StreamStub) protocolStub;
-                    //        sConn = this.kepStub.getConnectionByAddress(address);
-                    //      if(sConn == null) {
-                    try {
-                        sConn = sStub.createStreamConnection(address);
-                    } catch (RuntimeException re) {
-                        throw new SharkException(re.getMessage());
-                    }
-                    //    } else {
-                    //  fromPool = true;
-                    //  }
-                    response = new KEPOutMessage(this, sConn, KEPMessage.getKnowledgeSerializer(this.kFormat));
-                } else {
-                    mStub = (MessageStub) protocolStub;
-                    response = new KEPOutMessage(this, mStub, KEPMessage.getKnowledgeSerializer(this.kFormat), address);
-                }
-            } catch (SharkNotSupportedException ex) {
-                L.e(ex.getMessage(), this);
-//                ex.printStackTrace();
-                continue;
-            } catch (IOException ex) {
-                L.e(ex.getMessage(), this);
-//                ex.printStackTrace();
-                continue;
-            } catch (SharkProtocolNotSupportedException spn) {
-                L.e(spn.getMessage(), this);
-//                spn.printStackTrace();
-                continue;
-            } catch (SharkException sse) {
-                L.w("cannot create KEP message: " + sse.getMessage(), this);
-                continue;
-            }
-
-            if (sConn != null /*&& !fromPool*/) {
-                this.kepStub.handleStream(sConn);
-            }
-
-            // one kep message is enough
-            if (response != null) {
-                return response;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Create a KEP message that shall be send to on (!) of those addresses
-     *
-     * @return
-     */
-    private KEPOutMessage createKEPOutMessage(String[] addresses, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException {
-        KEPOutMessage response = this.createKEPOutMessage(addresses);
-
-        if (response != null) {
-            this.initSecurity(response, recipient);
-        }
-        return response;
-    }
-
-    /**
-     * Create a message as reply on an already received message
-     *
-     * @return
-     */
-    KEPOutMessage createKEPOutResponse(StreamConnection con,
-                                       String[] addresses, PublicKey publicKeyRemotePeer,
-                                       String[] remotePeerSI, boolean encrypted, boolean signed)
-            throws SharkKBException, SharkSecurityException, SharkException {
-
-        L.d("Creating new KEP reply:", this);
-
-        KEPOutMessage response = null;
-
-        // is there already a stub?
-        if (con != null) {
-            // we take existing stream connection
-
-            response = new KEPOutMessage(this, con,
-                    this.getKnowledgeSerializer());
-        } else { // there is no open connection
-            response = this.createKEPOutMessage(addresses);
-        }
-
-        if (response == null) {
-            throw new SharkException("couldn't create KEP reponse message");
-        }
-
-        ///////////////////////////////////////////////////////////////////
-        //                       setting up security                     //
-        ///////////////////////////////////////////////////////////////////
-
-        // check reply policy what todo
-
-        // pre set all parameter with those are found in original request
-        PrivateKey useThisPrivateKey = this.privateKey;
-
-        String[] useThisSI = null;
-        PeerSemanticTag seOwner = this.getOwner();
-        if (seOwner != null) {
-            useThisSI = seOwner.getSI();
-        }
-
-        PublicKey useThisPublicKey = publicKeyRemotePeer;
-        boolean sign = true;
-
-        ///////////////////////////////////////////////////////////
-        //                 "as defined" policy                   //
-        ///////////////////////////////////////////////////////////
-        if (this.replyPolicy == SecurityReplyPolicy.AS_DEFINED) {
-
-            // encryption - set or unset public key remote peer ///
-
-            if (this.encryptionLevel == SecurityLevel.NO) {
-                // no encryption at all
-                useThisPublicKey = null;
-            } else if (this.encryptionLevel == SecurityLevel.MUST) {
-                if (useThisPublicKey == null && remotePeerSI != null) {
-                    // there is no public key - maybe we have it on oki store
-                    //useThisPublicKey = this.publicKeyStorage.getPublicKey(remotePeerSI);
-                    useThisPublicKey = this.sharkPkiStorage.getSharkCertificate(remotePeerSI).getSubjectPublicKey();
-                }
-
-                if (useThisPublicKey == null) {
-                    throw new SharkSecurityException("security policy declares encryption a MUST but no public key of remote peer can be found - fatal - message not sent");
-                }
-            }
-            // else SecurityLevel.IF_POSSIBLE; - nothing todo
-
-            // signing - set or unset private key and si to identify this peer
-
-            if (this.signatureLevel == SecurityLevel.NO) {
-                // no signing - remove public key and si
-                sign = false;
-            } else if (this.signatureLevel == SecurityLevel.MUST) {
-                if (useThisPrivateKey == null || useThisSI == null) {
-                    throw new SharkSecurityException("security policy declares encryption a MUST but no private key set or no SI of this peer found - fatal - message not sent");
-                }
-            }
-            // else SecurityLevel.IF_POSSIBLE; - nothing todo
-        }
-
-        ///////////////////////////////////////////////////////////
-        //                 "(try) same" policy                   //
-        ///////////////////////////////////////////////////////////
-        else {
-            // encryption
-
-            // if message wasn't encrypted - don't encrypt either
-            if (!encrypted) {
-                useThisPublicKey = null;
-            } else {
-                if (this.replyPolicy == SecurityReplyPolicy.SAME) {
-                    // we must encrypt
-                    if (useThisPublicKey == null && remotePeerSI != null) {
-                        // there is no public key - maybe we have it on oki store
-                        //useThisPublicKey = this.publicKeyStorage.getPublicKey(remotePeerSI);
-                        useThisPublicKey = this.sharkPkiStorage.getSharkCertificate(remotePeerSI).getSubjectPublicKey();
-                    }
-                    if (useThisPublicKey == null) {
-                        throw new SharkSecurityException("security policy is SAME AS MESSAGE and message was encrypted but cannot find public key - fatal - message not sent");
-                    }
-                } // TRY_SAME. nothing todo
-            }
-
-            // siging
-            if (!signed) {
-                sign = false;
-            } else {
-                // we like to sign
-                sign = true;
-                if (useThisPrivateKey == null || useThisSI == null) {
-                    if (this.replyPolicy == SecurityReplyPolicy.SAME) {
-                        // we must sign - test must not fail
-                        throw new SharkSecurityException("security policy is SAME AS MESSAGE and message was signed but no private key set or no SI of this peer found - fatal - message not sent");
-                    } else {
-                        // we wanted but cannot
-                        sign = false;
-                    }
-                }
-            }
-        }
-
-        response.initSecurity(useThisPrivateKey, useThisPublicKey, useThisSI, sign);
-
-        return response;
-    }
-
-    private void initSecurity(KEPOutMessage msg, PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException {
-        if (recipient != null) {
-            this.initSecurity(msg, recipient.getSI());
-        } else {
-            this.initSecurity(msg, (String[]) null);
-        }
-    }
-
-    private void initSecurity(KEPOutMessage msg, String[] recipientSIs) throws SharkSecurityException, SharkKBException {
-        // set public and private key fpr encryption and signing if needed.
-
-        String recipientSI = "no recipient set - not so good";
-        if (recipientSIs != null) {
-            recipientSI = recipientSIs[0];
-        }
-
-        L.d("Init security. 1st recipient si is: " + recipientSI, this);
-
-        PublicKey publicKey = null;
-        String[] sendingPeerSIString = null;
-
-        if (this.engineOwnerPeer != null) {
-            sendingPeerSIString = this.engineOwnerPeer.getSI();
-        }
-
-        boolean sign = true;
-
-        PrivateKey useThisPrivateKey = this.privateKey;
-
-        if (this.encryptionLevel != SharkEngine.SecurityLevel.NO && /*this.publicKeyStorage != null*/ this.sharkPkiStorage != null) {
-
-            // try to find recipient public key
-            if (recipientSIs == null) {
-                if (this.encryptionLevel == SharkEngine.SecurityLevel.MUST) {
-                    throw new SharkSecurityException("encryption level is MUST but no recipient defined which is required to find its public key");
-                }
-            } else {
-                //publicKey = this.publicKeyStorage.getPublicKey(recipientSIs);
-                publicKey = this.sharkPkiStorage.getSharkCertificate(recipientSIs).getSubjectPublicKey();
-
-                if (sendingPeerSIString == null) {
-                    throw new SharkSecurityException("encryption level is MUST - engine owner is not set but it is required to allowed communication partner find its public key");
-                }
-            }
-
-            if (useThisPrivateKey == null) {
-                throw new SharkSecurityException("encryption level is MUST but no private key found to wrap session key");
-            }
-        }
-
-        if (this.signatureLevel != SharkEngine.SecurityLevel.NO) {
-            if (signatureLevel == SharkEngine.SecurityLevel.MUST
-                    && (useThisPrivateKey == null || this.engineOwnerPeer == null)) {
-                throw new SharkSecurityException("signing level is MUST but private key or peer si or both are missing");
-            } else if (this.engineOwnerPeer != null) {
-                // we can sign and should do it
-                sendingPeerSIString = this.engineOwnerPeer.getSI();
-            } // else we have no peer - no signing
-        } else { // no signing at all
-            sign = false;
-        }
-
-        // init request with both key which can be null if level is IF_POSSIBLE
-        msg.initSecurity(useThisPrivateKey, publicKey, sendingPeerSIString, sign);
-    }
 
     /**
      * That message iterates all remote peers in kp kepInterest and exposes that
@@ -1723,88 +1267,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public enum SecurityReplyPolicy {SAME, TRY_SAME, AS_DEFINED}
 
-    /**
-     * @param engineOwnerPeer
-     * @param sharkPkiStorage
-     * @param encryptionLevel    set encryption level of first messages.
-     *                           MUST: message must be encrypted - if no public key available - no message will be sent
-     *                           IF_POSSIBLE: message will be encrypted if a valid public key can be found
-     *                           NO: message won't be encrypted at all
-     * @param signatureLevel     set level signature level of first KEP message
-     * @param replyPolicy        defines security level that should be used in reply of
-     *                           a received call: SAME - the same methods have to be used or no message will
-     *                           be sent. TRY_SAME: same as SAME but message is also sent if key are missing and
-     *                           signing and/or encryption isn't possible. AS_DEFINED uses same level as defined
-     *                           with security and encryptipon level.
-     * @param refuseUnverifiably a message cannot be verified if the peer has no
-     *                           public key. This paramter defines whether the message is to be refused in this
-     *                           case or not. Note: Messages with wrong signatures are refused in any case.
-     * @throws net.sharkfw.system.SharkSecurityException
-     */
-    @SuppressWarnings("unused")
-    public void initSecurity(PeerSemanticTag engineOwnerPeer, 
-            /*SharkPublicKeyStorage publicKeyStorage,*/
-                             SharkPkiStorage sharkPkiStorage,
-                             SecurityLevel encryptionLevel, SecurityLevel signatureLevel,
-                             SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably)
-            throws SharkSecurityException {
-
-        PrivateKey useThisPrivateKey;
-
-        try {
-            if (/*publicKeyStorage*/ sharkPkiStorage != null) {
-                //this.privateKey = publicKeyStorage.getPrivateKey();
-                this.privateKey = sharkPkiStorage.getOwnerPrivateKey();
-            }
-        } catch (SharkKBException e) {
-            this.privateKey = null;
-        }
-
-        // keep pki store at least for the next few lines of code
-        //this.publicKeyStorage = publicKeyStorage;
-        this.sharkPkiStorage = sharkPkiStorage;
-
-        if (encryptionLevel == SharkEngine.SecurityLevel.MUST) {
-            if (/*publicKeyStorage == null*/sharkPkiStorage == null) {
-                throw new SharkSecurityException("encryption level is MUST but no public key storage available");
-            }
-
-            if (this.privateKey == null) {
-                throw new SharkSecurityException("encryption level is MUST but no private key in storage found - need private key to unwrap session encryption key");
-            }
-        } else if (encryptionLevel == SharkEngine.SecurityLevel.NO) {
-            // encryption is not allowed - forget PKI storage, if set
-            //publicKeyStorage = null;
-            sharkPkiStorage = null;
-        }
-
-        if (signatureLevel == SharkEngine.SecurityLevel.MUST
-                && (this.privateKey == null || engineOwnerPeer == null)) {
-            throw new SharkSecurityException("signing level is MUST but private key or peer description missing");
-        }
-
-        // description of this peer
-        this.engineOwnerPeer = engineOwnerPeer;
-
-        this.encryptionLevel = encryptionLevel;
-
-        this.signatureLevel = signatureLevel;
-
-        // remember reply policy
-        this.replyPolicy = replyPolicy;
-
-        this.refuseUnverifiably = refuseUnverifiably;
-
-        // propagate to KEPStub the handles Requests.
-        this.kepStub.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
-                this.encryptionLevel, this.signatureLevel, this.replyPolicy,
-                this.refuseUnverifiably);
-    }
-
-    void initSecurity(KEPInMessage msg) {
-        msg.initSecurity(privateKey, /*publicKeyStorage*/ this.sharkPkiStorage, encryptionLevel,
-                signatureLevel, replyPolicy, refuseUnverifiably);
-    }
 
     public /*SharkPublicKeyStorage*/ SharkPkiStorage /*getPublicKeyStorage()*/ getSharkPkiStorage() {
         //return this.publicKeyStorage;
@@ -1935,46 +1397,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
     }
 
-    public Iterator<SharkCS> getSentInterests(long since) {
-        return this.kepStub.getSentInterests(since);
-    }
-
-    public Iterator<Knowledge> getSentKnowledge(long since) {
-        return this.kepStub.getSentKnowledge(since);
-    }
-
-    public Iterator<SharkCS> getUnhandledInterests(long since) {
-        return this.kepStub.getUnhandledInterests(since);
-    }
-
-    public Iterator<SharkCS> getUnhandledKnowledge(long since) {
-        return this.getUnhandledKnowledge(since);
-    }
-
-    public void removeSentHistory() {
-        this.kepStub.removeSentHistory();
-    }
-
     public final static int DEFAULT_SILTENT_PERIOD = 500;
-
-    /**
-     * There can be a weired situation in spontaneous networks when
-     * establishing a connection: Two peer start sending simultaneously.
-     * It can happen that both peer exchange same message over to different
-     * channels. The engine tries to prevent this situation be defining a
-     * so called "silent period". Identical interests and knowledge want
-     * be sent regardless to what recipient. This methods allows defining
-     * that silent period.
-     * <p>
-     * Unit test require a quite short siltent period. In real time, some
-     * seconds are usefull. Default is defined in this class with
-     * DEFAULT_SILTENT_PERIOD.
-     *
-     * @param milliseconds
-     */
-    public void setSilentPeriod(int milliseconds) {
-        this.kepStub.setSilentPeriod(milliseconds);
-    }
 
     /////////////////////////////////////////////////////////////////
     //                 remember unsent messages                    //
@@ -1991,26 +1414,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.unsentMessagesKB = kb;
     }
 
-    private ContextCoordinates getUnsentCC(PeerSemanticTag recipient) {
-        return InMemoSharkKB.createInMemoContextCoordinates(
-                this.unsentMessagesST, recipient, null, null,
-                null, null, ASIPSpace.DIRECTION_NOTHING);
-    }
-
-    private ContextPoint getUnsentMessageCP(PeerSemanticTag recipient) {
-        if (this.unsentMessagesKB != null) {
-            try {
-                ContextPoint cp = this.unsentMessagesKB.createContextPoint(
-                        this.getUnsentCC(recipient));
-
-                return cp;
-            } catch (SharkKBException e) {
-            }
-        }
-
-        return null;
-    }
-
     private XMLSerializer xs = null;
 
     private XMLSerializer getXMLSerializer() {
@@ -2020,120 +1423,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
         return this.xs;
     }
-
-    /**
-     * stores unsent message somewhere... TODO
-     *
-     * @param interest
-     * @param recipient
-     */
-    public void rememberUnsentInterest(SharkCS interest, PeerSemanticTag recipient) {
-        ContextPoint cp = this.getUnsentMessageCP(recipient);
-
-        if (cp == null) {
-            L.w("cannot save unsent kepInterest: ", this);
-            return;
-        }
-
-        try {
-            String interestString = this.getXMLSerializer().serializeSharkCS(interest);
-            Information i = cp.addInformation(interestString);
-
-            i.setContentType(INTEREST_CONTENT_TYPE);
-
-        } catch (SharkKBException ex) {
-            L.d("cannot serialize kepInterest", this);
-        }
-    }
-
-    /**
-     * stores unsent knowledge somewhere... TODO
-     *
-     * @param k
-     * @param recipient
-     */
-    public void rememberUnsentKnowledge(Knowledge k, PeerSemanticTag recipient) {
-        ContextPoint cp = this.getUnsentMessageCP(recipient);
-
-        if (cp == null) {
-            L.w("cannot save unsent knowledge: ", this);
-            return;
-        }
-
-        try {
-            Information i = cp.addInformation();
-            OutputStream os = i.getOutputStream();
-            SharkOutputStream sos = new UTF8SharkOutputStream(os);
-            this.getXMLSerializer().write(k, sos);
-            i.setContentType(KNOWLEDGE_CONTENT_TYPE);
-        } catch (Exception ex) {
-            L.d("cannot serialize knowledge", this);
-        }
-    }
-
-    /**
-     * Re-send unsent messages.
-     */
-    public void sendUnsentMessages() {
-        if (this.unsentMessagesKB != null) {
-            try {
-                Enumeration<ContextPoint> cpEnum = this.unsentMessagesKB.getAllContextPoints();
-                if (cpEnum == null) {
-                    return;
-                }
-
-                while (cpEnum.hasMoreElements()) {
-                    ContextPoint cp = cpEnum.nextElement();
-
-                    this.unsentMessagesKB.removeContextPoint(cp.getContextCoordinates());
-
-                    Enumeration<Information> infoEnum = cp.enumInformation();
-                    if (infoEnum == null) {
-                        continue;
-                    }
-
-                    while (infoEnum.hasMoreElements()) {
-                        Information i = infoEnum.nextElement();
-
-                        if (i.getContentType().equalsIgnoreCase(INTEREST_CONTENT_TYPE)) {
-                            // Interest
-                            String serialeInterest = i.getContentAsString();
-                            SharkCS deserializeSharkCS = this.getXMLSerializer().deserializeSharkCS(serialeInterest);
-                            cp.removeInformation(i);
-
-                            // TODO reset - prevent loop!
-                        } else if (i.getContentType().equalsIgnoreCase(KNOWLEDGE_CONTENT_TYPE)) {
-                            // knowledge
-                            // TODO
-                        }
-
-                    }
-                }
-
-            } catch (SharkKBException e) {
-
-            }
-        }
-    }
-
-    public void removeUnsentMessages() {
-        if (this.unsentMessagesKB != null) {
-            try {
-                Enumeration<ContextPoint> cpEnum = this.unsentMessagesKB.getAllContextPoints();
-                if (cpEnum == null) {
-                    return;
-                }
-
-                while (cpEnum.hasMoreElements()) {
-                    ContextPoint cp = cpEnum.nextElement();
-                    this.unsentMessagesKB.removeContextPoint(cp.getContextCoordinates());
-                }
-            } catch (SharkKBException e) {
-                L.d("problems while iterating stored unsent messages", this);
-            }
-        }
-    }
-
 
     /////////////////////////////////////////////////////////////////////////
     //                        list manager methods                         //

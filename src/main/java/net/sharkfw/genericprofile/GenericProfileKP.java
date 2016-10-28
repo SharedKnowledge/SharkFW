@@ -4,7 +4,6 @@ import net.sharkfw.knowledgeBase.ContextCoordinates;
 import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.ports.StandardKP;
 
@@ -23,23 +22,23 @@ public class GenericProfileKP extends StandardKP {
         }
 
     }
-
-    protected void doInsert(String key, byte[] daten, KEPConnection response) {
-
-        try {
-            profile.addInformation(key, daten);
-        } catch (SharkKBException ex) {
-
-        }
-    }
-
-    protected void doExpose(ContextCoordinates interest, KEPConnection response) {
-        try {
-            profile.addInterest(interest);
-        } catch (SharkKBException ex) {
-
-        }
-    }
+//
+//    protected void doInsert(String key, byte[] daten, KEPConnection response) {
+//
+//        try {
+//            profile.addInformation(key, daten);
+//        } catch (SharkKBException ex) {
+//
+//        }
+//    }
+//
+//    protected void doExpose(ContextCoordinates interest, KEPConnection response) {
+//        try {
+//            profile.addInterest(interest);
+//        } catch (SharkKBException ex) {
+//
+//        }
+//    }
     
     public GenericProfileImpl getGenericProfile() {
         return profile;

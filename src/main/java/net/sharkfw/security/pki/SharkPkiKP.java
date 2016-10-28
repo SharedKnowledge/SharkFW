@@ -7,7 +7,6 @@ import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
@@ -46,32 +45,6 @@ public class SharkPkiKP extends KnowledgePort {
         this.peerSTSet = trustedIssuer;
     }
 
-//    @Override //incoming knowledge
-    protected void handleInsert(Knowledge knowledge, KEPConnection kepConnection) {
-        for (ContextPoint cp : Collections.list(knowledge.contextPoints())) {
-            try {
-                if (isValidPKIContextCoordinateAndTrustLevel(cp) && isFromTrustedIssuerIfAny(cp)){
-                    updateRecalculatedTrustLevel(cp);
-                    attachSenderToTransmitterList(cp, kepConnection.getSender());
-
-                    if (sharkPkiStorage.addSharkCertificate(cp)) {
-                        this.notifyKnowledgeAssimilated(this, cp);
-                    } else {
-                        L.d("Certificate already in SharkPkiStorage.");
-                    }
-                }
-            } catch (SharkKBException | InvalidKeySpecException | NoSuchAlgorithmException e) {
-                L.e(e.getMessage());
-            }
-
-            boolean isValidFingerprint = SharkCSAlgebra.identical(cp.getContextCoordinates().getTopic(), Certificate.FINGERPRINT_COORDINATE);
-            if (isValidFingerprint && isFromTrustedIssuerIfAny(cp)) {
-                System.out.println("Received fingerprint: " + Arrays.toString(cp.getInformation(Certificate.FINGERPRINT_INFORMATION_NAME).next().getContentAsByte()));
-                this.notifyKnowledgeAssimilated(this, cp);
-            }
-        }
-    }
-
     private void updateRecalculatedTrustLevel(ContextPoint cp) throws SharkKBException, NoSuchAlgorithmException, InvalidKeySpecException {
         cp.removeInformation(cp.getInformation(SharkPkiStorage.PKI_INFORMATION_TRUST_LEVEL).next());
         Information trustLevel = cp.addInformation();
@@ -103,24 +76,6 @@ public class SharkPkiKP extends KnowledgePort {
 
     private boolean isFromTrustedIssuerIfAny(ContextPoint cp) {
         return peerSTSet == null || Collections.list(peerSTSet.peerTags()).contains(cp.getContextCoordinates().getRemotePeer());
-    }
-
-//    @Override //outgoing knowledge
-    protected void handleExpose(SharkCS interest, KEPConnection kepConnection) {
-        try {
-            ArrayList<SemanticTag> listOfTopics = Collections.list(interest.getTopics().tags());
-            for (SemanticTag topic : listOfTopics) {
-                if(isValidTopicAndSameSize(interest, topic, KP_CERTIFICATE_VALIDATION_COORDINATE)) {
-                    validateCertificateByFingerprintAndNotify(interest);
-                }
-
-                if(isValidTopicAndSameSize(interest, topic, Certificate.CERTIFICATE_COORDINATE)) {
-                    lookForCertificateAndNotifyIfFound(interest);
-                }
-            }
-        } catch (IOException | SharkException e) {
-            L.e(e.getMessage());
-        }
     }
 
     private boolean isValidTopicAndSameSize(SharkCS interest, SemanticTag listOfTopic, SemanticTag certificateCoordinate) throws SharkKBException {

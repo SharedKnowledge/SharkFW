@@ -1,19 +1,22 @@
 package net.sharkfw.asip.engine;
 
-import java.io.IOException;
-import java.util.*;
-
 import net.sharkfw.asip.*;
 import net.sharkfw.asip.engine.serializer.AbstractSharkStub;
-import net.sharkfw.kep.KEPMessage;
-import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.ASIPPort;
-import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.system.*;
+import net.sharkfw.system.L;
+import net.sharkfw.system.SharkSecurityException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * Created by j4rvis on 18.03.16.
@@ -106,6 +109,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
         this.startConversion(con);
 
     }
+
     /**
      * Central method in which all listeners are called
      * This should be the only method in this class which
@@ -261,7 +265,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
             ASIPPort kp = kpIter.next();
 
             ASIPInMessage internalMessage = new ASIPInMessage(this.se,
-                    KEPMessage.KEP_EXPOSE, anyInterest, con, this);
+                    ASIPMessage.ASIP_EXPOSE, anyInterest, con, this);
 
             kp.handleMessage(internalMessage, null);
         }

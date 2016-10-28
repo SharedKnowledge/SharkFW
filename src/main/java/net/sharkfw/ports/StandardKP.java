@@ -11,7 +11,7 @@ import net.sharkfw.protocols.PeerAddress;
 import net.sharkfw.system.L;
 
 /**
- * Default implementation for {@link AbstractKP}.
+ * Default implementation for
  *
  * This KnowledgePort offers implemented standard behavior for handling expose and
  * insert messages, as well as implementations for extraction and assimilation

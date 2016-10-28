@@ -7,11 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import net.sharkfw.protocols.ConnectionListenerManager;
-import net.sharkfw.protocols.SharkInputStream;
-import net.sharkfw.protocols.SharkOutputStream;
-import net.sharkfw.protocols.StandardSharkInputStream;
 import net.sharkfw.protocols.StreamConnection;
-import net.sharkfw.protocols.UTF8SharkOutputStream;
 import net.sharkfw.system.L;
 import net.sharkfw.system.Streamer;
 
@@ -121,10 +117,6 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
         }
     }
 
-    public SharkInputStream getSharkInputStream() {
-        return new StandardSharkInputStream(this.in);
-    }
-
     @Override
     public InputStream getInputStream() {
         return this.in;
@@ -133,10 +125,6 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
     @Override
     public OutputStream getOutputStream() {
         return this.out;
-    }
-
-    public SharkOutputStream getSharkOutputStream() {
-        return new UTF8SharkOutputStream(this.out);
     }
 
     /**

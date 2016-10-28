@@ -5,7 +5,6 @@ import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPStub;
 import net.sharkfw.asip.SharkStub;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.Stub;
@@ -156,31 +155,6 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     }
 
     @Override
-    public void expose(SharkCS interest) throws SharkException {
-        // do nothing
-    }
-
-    @Override
-    public void expose(SharkCS interest, String receiveraddress) throws SharkException {
-        // do nothing
-    }
-
-    @Override
-    public void expose(SharkCS interest, String[] receiveraddresses) throws SharkException {
-        // do nothing
-    }
-
-    @Override
-    public void insert(Knowledge k, String receiveraddress) throws SharkException {
-        // do nothing
-    }
-
-    @Override
-    public void insert(Knowledge k, String[] receiveraddresses) throws SharkException {
-        // do nothing
-    }
-
-    @Override
     public void expose(ASIPInterest interest) throws SharkException {
 
         this.expose(interest, this.con.getReceiverAddressString());
@@ -290,11 +264,6 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     @Override
     public void sendToAllAddresses(PeerSemanticTag pst) {
 
-    }
-
-    @Override
-    public KEPConnection asKepConnection() {
-        return this;
     }
 
     public boolean isParsed(){

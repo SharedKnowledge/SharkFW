@@ -4,7 +4,6 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.system.SharkException;
 
 import java.io.InputStream;
@@ -13,7 +12,7 @@ import java.io.InputStream;
  *
  * @author thsc
  */
-public interface ASIPConnection extends KEPConnection{
+public interface ASIPConnection {
 
     void sendMessage(ASIPOutMessage msg, String[] addresses) throws SharkException;
 
@@ -66,6 +65,4 @@ public interface ASIPConnection extends KEPConnection{
     void sendToAllAddresses(PeerSemanticTag pst);
 
     PeerSemanticTag getSender() throws SharkKBException;
-
-    KEPConnection asKepConnection();
 }

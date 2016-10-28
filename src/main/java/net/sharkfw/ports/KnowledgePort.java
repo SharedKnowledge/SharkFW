@@ -457,16 +457,6 @@ public abstract class KnowledgePort extends ContentPort {
 //        }
     }
     
-    /**
-     * send knowledge to all recipients - this call is delegated to shark engine
-     * @param k knowledge to be sent
-     * @param recipient addresses in Shark format. mail://... tcp://... etc.
-     */
-    public void sendKnowledge(Knowledge k, PeerSemanticTag recipient)
-            throws SharkSecurityException, SharkKBException, IOException {
-        this.se.sendKEPKnowledge(k, recipient, this);
-    }
-
     public void sendKnowledge(ASIPKnowledge k, PeerSemanticTag recipient)
             throws SharkSecurityException, SharkKBException, IOException{
 
@@ -482,15 +472,6 @@ public abstract class KnowledgePort extends ContentPort {
 
         if(getAsipInterest()!=null)
             this.sendInterest(getAsipInterest(), recipient);
-        else if(getKEPInterest()!=null)
-            this.sendInterest(this.getKEPInterest(), recipient);
-    }
-
-    @SuppressWarnings("deprecation")
-    public void sendInterest(SharkCS interest, PeerSemanticTag recipient)
-            throws SharkSecurityException, SharkKBException, IOException {
-
-        this.se.sendKEPInterest(interest, recipient, this);
     }
 
     public void sendInterest(ASIPInterest interest, PeerSemanticTag recipient)

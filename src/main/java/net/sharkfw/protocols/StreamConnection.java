@@ -19,7 +19,6 @@ public interface StreamConnection {
      * @return An <code>InputStream</code> from this connection.
      * @see java.io.InputStream
      */
-    public SharkInputStream getSharkInputStream();
 
     public InputStream getInputStream();
 
@@ -31,7 +30,6 @@ public interface StreamConnection {
      * @return An <code>OutputStream</code> from this connection.
      * @see java.io.OutputStream
      */
-    public SharkOutputStream getSharkOutputStream();
 
     /**
      * Package a message into a stream and send it to the communication partner

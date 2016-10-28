@@ -23,11 +23,6 @@ public class TestConnection implements StreamConnection {
     }
 
     @Override
-    public SharkInputStream getSharkInputStream() {
-        return new StandardSharkInputStream(this.is);
-    }
-
-    @Override
     public InputStream getInputStream() {
         return this.is;
     }
@@ -35,11 +30,6 @@ public class TestConnection implements StreamConnection {
     @Override
     public OutputStream getOutputStream() {
         return this.os;
-    }
-
-    @Override
-    public SharkOutputStream getSharkOutputStream() {
-        return new UTF8SharkOutputStream(this.os);
     }
 
     @Override

@@ -142,24 +142,24 @@ public class FSContextPoint extends InMemoContextPoint {
         super.persist();
         
         XMLSerializer xs = new XMLSerializer();
-        try {
-            String cooString = xs.serializeSharkCS(this.getContextCoordinates());
-            
-            // save
-            this.setSystemProperty(CP_COORDINATE, cooString);
-            
-        } catch (SharkKBException ex) {
-            L.w(ex.getMessage(), this);
-        }
-
-		if (this.infoFolder != null) {
-        	// info folder
-        	String foldernames = Util.enumeration2String(this.infoFolder.elements(), DELIMITER);
-        
-        	if(foldernames != null && foldernames.length() > 0) {
-                    this.setSystemProperty(INFO_FOLDERNAME_PROPERTY, foldernames);
-        	}
-        }
+//        try {
+////            String cooString = xs.serializeSharkCS(this.getContextCoordinates());
+//
+//            // save
+////            this.setSystemProperty(CP_COORDINATE, cooString);
+//
+//        } catch (SharkKBException ex) {
+//            L.w(ex.getMessage(), this);
+//        }
+//
+//		if (this.infoFolder != null) {
+//        	// info folder
+//        	String foldernames = Util.enumeration2String(this.infoFolder.elements(), DELIMITER);
+//
+//        	if(foldernames != null && foldernames.length() > 0) {
+//                    this.setSystemProperty(INFO_FOLDERNAME_PROPERTY, foldernames);
+//        	}
+//        }
     }
     
     @Override
@@ -173,12 +173,12 @@ public class FSContextPoint extends InMemoContextPoint {
         imkb = new InMemoSharkKB();
         
         XMLSerializer xs = new XMLSerializer();
-        try {
-            // create in memory copy and use it
-            this.setContextCoordinates(xs.deserializeContextCoordinates(imkb, cooString));
-        } catch (SharkKBException ex) {
-            L.w("cannot deserialize context coordinates from persistent storage: " + ex.getMessage(), this);
-        }
+//        try {
+//            // create in memory copy and use it
+//            this.setContextCoordinates(xs.deserializeContextCoordinates(imkb, cooString));
+//        } catch (SharkKBException ex) {
+//            L.w("cannot deserialize context coordinates from persistent storage: " + ex.getMessage(), this);
+//        }
 
         // info folder
         String foldernames = this.getSystemProperty(INFO_FOLDERNAME_PROPERTY);
