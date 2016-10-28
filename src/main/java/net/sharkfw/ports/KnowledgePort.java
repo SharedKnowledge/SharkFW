@@ -44,8 +44,6 @@ import net.sharkfw.asip.engine.ASIPMessage;
  */
 public abstract class KnowledgePort extends ContentPort {
 
-    protected SharkCS kepInterest;
-    protected SharkCS receivedKEPInterest; // TODO: Use!
     protected ASIPInterest asipInterest;
     protected ASIPInterest receiverASIPInterest;
     protected SharkKB kb;
@@ -400,9 +398,9 @@ public abstract class KnowledgePort extends ContentPort {
      * @return An Array of size <code>ContextSpace.MAXDIMENSIONS</code> with FPs
      */
     public static FragmentationParameter[] getZeroFP() {
-        FragmentationParameter fp[] = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
+        FragmentationParameter fp[] = new FragmentationParameter[ASIPSpace.MAXDIMENSIONS];
 
-        for (int i = 0; i < SharkCS.MAXDIMENSIONS; i++) {
+        for (int i = 0; i < ASIPSpace.MAXDIMENSIONS; i++) {
             fp[i] = new FragmentationParameter(false, false, 0);
         }
         return fp;

@@ -1,6 +1,9 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import net.sharkfw.asip.*;
+import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
@@ -407,7 +410,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return new InMemoPeerSTSet();
     }
 
-    public static ASIPInterest createInMemoASIPInterest() {
+    public static ASIPInterest createInMemoASIPInterest() throws SharkKBException {
         return new InMemoInterest();
     }
 
@@ -418,16 +421,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return new InMemoInterest(topics, types, sender, approvers,
                 receivers, times, locations, direction);
     }
-
-
-    public static ASIPInterest createInMemoASIPInterest(STSet topics, STSet types,
-                                                        PeerSTSet senders, PeerSTSet approvers, PeerSTSet receivers,
-                                                        TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-
-        return new InMemoInterest(topics, types, senders, approvers,
-                receivers, times, locations, direction);
-    }
-
 
     public static TimeSTSet createInMemoTimeSTSet() {
         return new InMemoTimeSTSet();
@@ -441,7 +434,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     ///////////////////////////////////////////////////////////////////////////
     //                 actual kb implementation starts here                  //
     ///////////////////////////////////////////////////////////////////////////
-
 
 
     /**
@@ -634,6 +626,11 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         return this.knowledge.informationSpaces();
     }
 
+    @Override
+    public FragmentationParameter[] getStandardFPSet() {
+        return new FragmentationParameter[0];
+    }
+
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces(
@@ -720,23 +717,8 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
 
     @Override
-    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet senders, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        return new InMemoInterest(topics, types, senders, approvers, receiver,
-                times, locations, direction);
-    }
-
-    @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         return new InMemoInterest(topics, types, sender, approvers, receiver, times, locations, direction);
-    }
-
-    @Override
-    public ASIPSpace createASIPSpace(STSet topics, STSet types,
-                                     PeerSTSet approvers, PeerSTSet senders, PeerSTSet receiver,
-                                     TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
-
-        return this.createASIPSpace(topics, types, approvers, senders, receiver,
-                times, locations, ASIPSpace.DIRECTION_INOUT);
     }
 
     protected ASIPSpace mergeASIPSpace(ASIPSpace space) throws SharkKBException {

@@ -52,7 +52,7 @@ public interface ASIPConnection {
 
     /**
      * That methode can be used to figure out if a response was succcessully sent.
-     * A failing sending attempt will result in a "false".
+     * A failing sending attempt will resultSet in a "false".
      *
      * @return True if response could be sent. False otherwise.
      */

@@ -61,7 +61,7 @@ public class InMemoSharkKBTests {
 
         STSet topicSet = InMemoSharkKB.createInMemoSTSet();
         topicSet.merge(topic2);
-        ASIPInterest inter = InMemoSharkKB.createInMemoASIPInterest(topicSet,null,(PeerSTSet) null,null,null,null,null,DIRECTION_INOUT);
+        ASIPInterest inter = InMemoSharkKB.createInMemoASIPInterest(topicSet,null,null,null,null,null,null,DIRECTION_INOUT);
 
         //NullPointerException in AbstractSharkKB.getDefaultFPSet (Zeile 1141)
         // Die Zeiler unter mir muss genutzt werden, damit der Test laeuft.

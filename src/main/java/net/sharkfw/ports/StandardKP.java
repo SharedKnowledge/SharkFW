@@ -319,43 +319,6 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         this.revealLocalInterest = reveal;
     }
 
-    private boolean revealingAndAllowed(SharkCS source, SharkCS context) {
-        if (this.revealLocalInterest) {
-            // there is no need to test anything - revealing local definitions ok
-            return true;
-        }
-        // now check whether source is any but context not
-
-        // topic
-        if (SharkCSAlgebra.isAny(source.getTopics()) &&
-                SharkCSAlgebra.isAny(context.getTopics())) {
-            return false;
-        }
-
-        // TODO
-//        // peer / remote peer
-//        if(SharkCSAlgebra.isAny(source.getPeers()) && 
-//                SharkCSAlgebra.isAny(context.getRemotePeers())) {
-//            return false;
-//        }
-//        
-//        // remote peer / peer
-//        if(SharkCSAlgebra.isAny(source.getRemotePeers()) && 
-//                SharkCSAlgebra.isAny(context.getPeers())) {
-//            return false;
-//        }
-//        
-//        // location
-//        if(SharkCSAlgebra.isAny(source.getLocations()) && 
-//                SharkCSAlgebra.isAny(context.getLocations())) {
-//            return false;
-//        }
-
-        // location
-        // ignore time - it is nothing we hide
-
-        return true;
-    }
 
     /**
      * Set the Ontology-Transfer-Parameter for this KnowledgePort.
@@ -394,17 +357,6 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
         return this.bgfp;
     }
 
-    /**
-     * <p>When the underlying {@link net.sharkfw.knowledgeBase.SharkKB} has changed it might by advisable to
-     * refresh the interests in the Knowledge Ports. By calling this method, the
-     * KP will attempt to re-create its kepInterest using the current data inside
-     * the KB.</p>
-     */
-    public final void refreshDynamicInterest() throws SharkKBException {
-        if (this.kepInterest instanceof DynamicInterest) {
-            ((DynamicInterest) this.kepInterest).refresh();
-        }
-    }
 
     /**
      * <p>Make the Knowledge Port listen for changes from the {@link net.sharkfw.knowledgeBase.SharkKB}.
@@ -510,11 +462,7 @@ public class StandardKP extends KnowledgePort implements KnowledgeBaseListener {
      */
     private void syncInterest() {
         if (this.sync) {
-            try {
-                this.refreshDynamicInterest();
-            } catch (SharkKBException ex) {
-                L.d("couldn't refresh kepInterest: " + ex.getMessage(), this);
-            }
+            // TODO sync
         }
     }
 

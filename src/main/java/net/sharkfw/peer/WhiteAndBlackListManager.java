@@ -10,7 +10,7 @@ public interface WhiteAndBlackListManager {
     /**
      * Add or remove peer to/from blacklist (filter.
      * @param peer 
-     * @param accept true: peer invitations are accepted and result in a 
+     * @param accept true: peer invitations are accepted and resultSet in a
      * invitation notification: false: Invitations are dropped without further
      * comments
      */

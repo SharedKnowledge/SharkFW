@@ -1,7 +1,6 @@
 package net.sharkfw.ports;
 
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.SharkCS;
 
 /**
  * Listening for events happening on a KnowledgePort implementation.

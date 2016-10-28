@@ -137,7 +137,7 @@ public class InMemoASIPKnowledge implements Knowledge {
 
         return this.getInformationSpace(infoSpace).informations();
 
-//        List<ASIPInformation> result = new ArrayList<>();
+//        List<ASIPInformation> resultSet = new ArrayList<>();
 //
 //        Iterator<ASIPInformation> infoIter = this.getInformationSpace(infoSpace).informations();
 //        while(infoIter.hasNext()) {
@@ -150,11 +150,11 @@ public class InMemoASIPKnowledge implements Knowledge {
 //                    asipSpace, infoSpace, FPSet.getZeroFPSet())) {
 //
 //                // they have something in common - add info
-//                result.add(info);
+//                resultSet.add(info);
 //            }
 //        }
 //
-//        return result.iterator();
+//        return resultSet.iterator();
     }
 
     @Override

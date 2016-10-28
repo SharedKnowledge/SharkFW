@@ -1,6 +1,5 @@
 package net.sharkfw.asip;
 
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.system.MessageStore;
 
 import java.util.Iterator;

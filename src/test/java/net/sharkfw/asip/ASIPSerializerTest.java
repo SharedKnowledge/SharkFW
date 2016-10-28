@@ -28,7 +28,7 @@ import org.junit.*;
  * Taken from http://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
  * When - MethodName, or many methods names if needed, or action without associated with specific method
  * Given - state at test moment
- * Then - excepted result.
+ * Then - excepted resultSet.
  * @author j4rvis
  */
 public class ASIPSerializerTest {

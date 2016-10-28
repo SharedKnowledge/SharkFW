@@ -1,6 +1,5 @@
 package net.sharkfw.knowledgeBase;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import net.sharkfw.asip.ASIPInformation;
@@ -8,9 +7,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.system.L;
 import net.sharkfw.system.Util;
-import net.sharkfw.system.Utils;
 
 /**
  *
@@ -34,7 +31,7 @@ public class SharkAlgebra {
             SharkCSAlgebra.isAny(interest.getTopics()) &&
             SharkCSAlgebra.isAny(interest.getTypes()) &&
             SharkCSAlgebra.isAny(interest.getApprovers()) &&
-            SharkCSAlgebra.isAny(interest.getSenders()) &&
+            SharkCSAlgebra.isAny(interest.getSender()) &&
             SharkCSAlgebra.isAny(interest.getReceivers()) &&
             SharkCSAlgebra.isAny(interest.getTimes()) &&
             SharkCSAlgebra.isAny(interest.getLocations()) &&
@@ -59,7 +56,7 @@ public class SharkAlgebra {
         senders.merge(source.getSender());
         
         return InMemoSharkKB.createInMemoASIPInterest(source.getTopics(), 
-                source.getTypes(), source.getApprovers(), senders, 
+                source.getTypes(), source.getSender(), senders,
                 source.getReceivers(), 
                 source.getTimes(), source.getLocations(), 
                 source.getDirection());
@@ -100,7 +97,7 @@ public class SharkAlgebra {
         ////////////////////////////////////////////////////////////
         
         /*
-         *   source | context | result
+         *   source | context | resultSet
          * 1  IN       (IN)OUT   IN OUT
          * 2  OUT      IN        OUT IN
          * 3  INOUT    IN        OUT IN
@@ -159,7 +156,7 @@ public class SharkAlgebra {
         STSet mTopics;
         STSet mTypes;
         PeerSTSet mApprovers;
-        PeerSTSet mSenders;
+        PeerSemanticTag mSender;
         PeerSTSet mReceivers;
         TimeSTSet mTimes;
         SpatialSTSet mLocations;
@@ -201,7 +198,7 @@ public class SharkAlgebra {
                 fpSet.getFP(ASIPSpace.DIM_TOPIC));
 
         if(!h.success) return false;
-        mTopics = h.result;
+        mTopics = h.resultSet;
         
         // types
         h = new CtxHelper();
@@ -212,7 +209,7 @@ public class SharkAlgebra {
                 );
 
         if(!h.success) return false;
-        mTypes = h.result;
+        mTypes = h.resultSet;
         
         // approvers
         h = new CtxHelper();
@@ -223,32 +220,35 @@ public class SharkAlgebra {
                 );
 
         if(!h.success) return false;
-        mApprovers = (PeerSTSet) h.result;
+        mApprovers = (PeerSTSet) h.resultSet;
         
-        /* senders: twist: local senders = ctx(source.receivers, context.sender)
-           receiver from senders perspective are sender from our local local
-           point of view.
-        */
-        h = new CtxHelper();
-        h.contextualizeSingleDimension(
-                source.getReceivers(), // source
-                context.getSenders(), // context
-                fpSet.getFP(ASIPSpace.DIM_SENDER) // fragmentation parameter
-                );
-
-        if(!h.success) return false;
-        mSenders = (PeerSTSet) h.result;
+//        /* senders: twist: local senders = ctx(source.receivers, context.sender)
+//           receiver from senders perspective are sender from our local local
+//           point of view.
+//        */
+//        h = new CtxHelper();
+//
+//        h.contextualizeSingleDimensionTag(
+//                source.getSender(), // source
+//                context.getSender(), // context
+//                fpSet.getFP(ASIPSpace.DIM_SENDER) // fragmentation parameter
+//                );
+//
+//        if(!h.success) return false;
+//        mSender = h.resultPeer;
+        // TODO contextualize tweo single tags?
+        mSender = null;
 
         // receivers: twist again, see comments above
         h = new CtxHelper();
         h.contextualizeSingleDimension(
-                source.getSenders(), // source
+                source.getReceivers(), // source
                 context.getReceivers(), // context
                 fpSet.getFP(ASIPSpace.DIM_RECEIVER) // fragmentation parameter
                 );
 
         if(!h.success) return false;
-        mReceivers = (PeerSTSet) h.result;
+        mReceivers = (PeerSTSet) h.resultSet;
 
         // times
         h = new CtxHelper();
@@ -259,7 +259,7 @@ public class SharkAlgebra {
                 );
 
         if(!h.success) return false;
-        mTimes = (TimeSTSet) h.result;
+        mTimes = (TimeSTSet) h.resultSet;
         
         // locations
         h = new CtxHelper();
@@ -270,7 +270,7 @@ public class SharkAlgebra {
                 );
         
         if(!h.success) return false;
-        mLocations = (SpatialSTSet) h.result;
+        mLocations = (SpatialSTSet) h.resultSet;
         
         // if this point is reached - no contextualization failed.
         
@@ -278,7 +278,7 @@ public class SharkAlgebra {
         mutualInterest.setTopics(mTopics);
         mutualInterest.setTypes(mTypes);
         mutualInterest.setApprovers(mApprovers);
-        mutualInterest.setSenders(mSenders);
+        mutualInterest.setSender(mSender);
         mutualInterest.setReceivers(mReceivers);
         mutualInterest.setTimes(mTimes);
         mutualInterest.setLocations(mLocations);
@@ -310,7 +310,7 @@ public class SharkAlgebra {
         } else
         if(!SharkAlgebra.isIn(target.getApprovers(), context.getApprovers())) {
             return false;
-        } else if(!SharkAlgebra.isIn(target.getSenders(), context.getSenders())) {
+        } else if(!SharkCSAlgebra.identical(target.getSender(), context.getSender())) {
             return false;
         } else if(!SharkAlgebra.isIn(target.getReceivers(), context.getReceivers())) {
             return false;

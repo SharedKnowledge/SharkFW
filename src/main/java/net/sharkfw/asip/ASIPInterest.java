@@ -10,8 +10,8 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
  * <p>An interface defining the kepInterest.</p>
  *
  * <p>An kepInterest in shark is used to describe the context in which a peer is
- * willing to exchange information. The kepInterest thus is a special {@link ContextSpace}.
- * The {@link SemanicTag}s on the different dimensions of the kepInterest define this
+ * willing to exchange information..
+ * The SemanicTags on the different dimensions of the kepInterest define this
  * context.</p>
  *
  * ContextSpace is a general concept whereas kepInterest makes more specific
@@ -76,7 +76,6 @@ public interface ASIPInterest extends ASIPSpace {
    * DIRECTION_NOTHING - peer doesn't want to exchange these information at all
    *
      * @param direction
-   * @see net.sharkfw.knowledgeBase.ContextSpace
    */
   public void setDirection(int direction);
 
@@ -89,18 +88,6 @@ public interface ASIPInterest extends ASIPSpace {
      * @param originator
    */
   public void setSender(PeerSemanticTag originator);
-
-  /**
-   * Return the originator dimension of this kepInterest.
-   * 
-   * This peer is the one who can also sign the message.
-   * It isn't necessarily part of the peer tag. 
-   * 
-     * @param senders
-   */
-  public void setSenders(PeerSTSet senders);
-  
-  public PeerSTSet getSenders();
 
   /**
    * Return the remotepeer dimension of this kepInterest

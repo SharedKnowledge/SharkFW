@@ -3,6 +3,7 @@ package net.sharkfw.asip.engine;
 import net.sharkfw.asip.*;
 import net.sharkfw.asip.engine.serializer.AbstractSharkStub;
 import net.sharkfw.knowledgeBase.Interest;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.ASIPPort;
 import net.sharkfw.peer.SharkEngine;
@@ -256,7 +257,12 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     @Override
     public final void startConversion(StreamConnection con) {
         // creates an empty kepInterest - which is interpreted as any kepInterest.
-        ASIPInterest anyInterest = InMemoSharkKB.createInMemoASIPInterest();
+        ASIPInterest anyInterest = null;
+        try {
+            anyInterest = InMemoSharkKB.createInMemoASIPInterest();
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
         anyInterest.setDirection(ASIPSpace.DIRECTION_INOUT);
 
         Iterator<ASIPPort> kpIter = this.getListener();

@@ -2,7 +2,6 @@ package net.sharkfw.system;
 
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.SharkCS;
 
 /**
  *

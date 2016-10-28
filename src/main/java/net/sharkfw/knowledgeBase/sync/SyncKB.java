@@ -5,36 +5,36 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.system.L;
 
 /**
  * Created by j4rvis on 19.07.16.
  *
  * @author thsc42
  */
-public class SyncKB implements SharkKB{
+public class SyncKB implements SharkKB {
     private final SyncSTSet topics;
     private final SyncSemanticNet snTopics;
     private final SyncTaxonomy txTopics;
-    
+
     private final SyncSTSet types;
     private final SyncSemanticNet snTypes;
     private final SyncTaxonomy txTypes;
-    
+
     private final SyncPeerSTSet peers;
     private final SyncPeerSemanticNet snPeers;
     private final SyncPeerTaxonomy txPeers;
-    
+
     private final SyncSpatialSTSet locations;
     private final SyncTimeSTSet times;
-    
+
     private final SharkKB targetKB;
     public final static String TIME_PROPERTY_NAME = "Shark_System_Last_Modified";
 
@@ -47,25 +47,25 @@ public class SyncKB implements SharkKB{
         Note: We only work with stSets here because we do not keep track of
         changes in tag relations. That must be implemented asap.
         */
-        
+
         // topics
         this.topics = new SyncSTSet(target.getTopicSTSet());
         this.snTopics = new SyncSemanticNet(target.getTopicsAsSemanticNet());
         this.txTopics = new SyncTaxonomy(target.getTopicsAsTaxonomy());
-        
+
         // types
         this.types = new SyncSTSet(target.getTypeSTSet());
         this.snTypes = new SyncSemanticNet(target.getTypesAsSemanticNet());
         this.txTypes = new SyncTaxonomy(target.getTypesAsTaxonomy());
-        
+
         // peers
         this.peers = new SyncPeerSTSet(target.getPeerSTSet());
         this.snPeers = new SyncPeerSemanticNet(target.getPeersAsSemanticNet());
         this.txPeers = new SyncPeerTaxonomy(target.getPeersAsTaxonomy());
-        
+
         // locations
         this.locations = new SyncSpatialSTSet(target.getSpatialSTSet());
-        
+
         // times
         this.times = new SyncTimeSTSet(target.getTimeSTSet());
         
@@ -86,13 +86,12 @@ public class SyncKB implements SharkKB{
         try {
             // set time stamp as non transferable property
             this.targetKB.setProperty(SyncKB.TIME_PROPERTY_NAME, timeString, false);
-        }
-        catch(SharkKBException e) {
+        } catch (SharkKBException e) {
             L.e("cannot write time stamp - sync won't work accordingly");
         }
     }
 
-    public Long getTimeOfLastChanges(){
+    public Long getTimeOfLastChanges() {
         try {
             return Long.getLong(this.targetKB.getProperty(SyncKB.TIME_PROPERTY_NAME));
         } catch (SharkKBException e) {
@@ -100,55 +99,54 @@ public class SyncKB implements SharkKB{
         }
         return null;
     }
-    
+
     /**
      * That method return all data (tags and information) that has
      * changed since a date. Note: We don't keep track of relations between
      * tags. We only keep track if tags and information are changed.
-     * 
-     * The resulting knowledge will contain semantic tag sets only but 
+     * <p>
+     * The resulting knowledge will contain semantic tag sets only but
      * not semantic nets or taxonomies. Thus, relations won't be harmed
      * when merging those changes into another knowledge base.
-     * 
+     * <p>
      * That's not a feature. That's a bug. TODO: Must be fixed.
-     * 
-     * 
+     *
      * @param since
-     * @return 
-     * @throws net.sharkfw.knowledgeBase.SharkKBException 
+     * @return
+     * @throws net.sharkfw.knowledgeBase.SharkKBException
      */
     public SharkKB getChanges(Long since) throws SharkKBException {
         // get changes from topics
         SemanticNet cTopics = this.topics.getChangesAsSemanticNet(since);
-        
+
         // get changes from topics
         SemanticNet cTypes = this.types.getChangesAsSemanticNet(since);
-        
+
         // get changes from peers
         PeerTaxonomy cPeers = this.txPeers.getChangesAsTaxonomy(since);
-        
+
         // get changes from locations
         SpatialSTSet cLocations = (SpatialSTSet) this.locations.getChanges(since);
-        
+
         // get changes from times
         TimeSTSet cTimes = (TimeSTSet) this.times.getChanges(since);
-        
+
         // Merge all together - we have a kb containing changed items
         InMemoSharkKB changes = new InMemoSharkKB(cTopics, cTypes, cPeers,
-                 cLocations, cTimes);
+                cLocations, cTimes);
 
         // add information
         int infoNumber = this.putKnowledgeChanges(since, changes);
-        
+
         /**
          * I'm not happy with that implementation:
          * In nearly any case, sync is performed between two peers.
          * That implementation creates a copy of all changed information
          * which are transmitted afterwards.
-         * 
+         *
          * A better implementation would not create a copy but
          * stream the data directly to the other side.
-         * 
+         *
          * Anyway, that implementation could be made faster.
          * Changing to a stream implementation shouldn't take longer
          * than a day.
@@ -161,7 +159,7 @@ public class SyncKB implements SharkKB{
      * That methode takes a kb which is assumed to contain changed or new
      * items. Loosly speaking, that methode is a number of merge calls on the
      * local knowledge base.
-     *
+     * <p>
      * TODO: We haven't managed yet to implement removal of entities (tags, information). Must be done asap.
      *
      * @param changes
@@ -177,8 +175,8 @@ public class SyncKB implements SharkKB{
 
         // merge information now
         Iterator<ASIPInformationSpace> cInfoSpacesIter = changes.informationSpaces();
-        if(cInfoSpacesIter != null) {
-            while(cInfoSpacesIter.hasNext()) {
+        if (cInfoSpacesIter != null) {
+            while (cInfoSpacesIter.hasNext()) {
                 ASIPInformationSpace cInfoSpace = cInfoSpacesIter.next();
                 Iterator<ASIPInformation> cInfoIter = cInfoSpace.informations();
                 SharkAlgebra.mergeInformations(targetKB, cInfoIter);
@@ -188,73 +186,75 @@ public class SyncKB implements SharkKB{
 
     /**
      * merges all changes information into that knowledge base
+     *
      * @param since
      * @return number of added informations (not only info spaces!)
-     * @throws SharkKBException 
+     * @throws SharkKBException
      */
     private int putKnowledgeChanges(Long since, SharkKB kb) throws SharkKBException {
         int infoNumber = 0;
-        
-        Iterator<ASIPInformationSpace> infoSpaceIter = 
+
+        Iterator<ASIPInformationSpace> infoSpaceIter =
                 this.targetKB.getAllInformationSpaces();
-        
-        if(infoSpaceIter != null) {
-            while(infoSpaceIter.hasNext()) {
+
+        if (infoSpaceIter != null) {
+            while (infoSpaceIter.hasNext()) {
                 ASIPInformationSpace infoSpace = infoSpaceIter.next();
-                
+
                 Iterator<ASIPInformation> infoIter = infoSpace.informations();
-                if(infoIter != null) {
-                    
-                    while(infoIter.hasNext()) {
+                if (infoIter != null) {
+
+                    while (infoIter.hasNext()) {
                         ASIPInformation info = infoIter.next();
                         long changed = SyncKB.getTimeStamp(info);
-                        if(changed > since) {
+                        if (changed > since) {
                             // add info - its a copy
-                            kb.addInformation(info.getContentAsByte(), 
+                            kb.addInformation(info.getContentAsByte(),
                                     info.getASIPSpace());
-                            
+
                             infoNumber++;
                         }
                     }
                 }
             }
         }
-        
+
         return infoNumber;
     }
-    
+
     public static final long getTimeStamp(PropertyHolder target) throws SharkKBException {
         String timeString = target.getProperty(SyncKB.TIME_PROPERTY_NAME);
-        if(timeString == null) {
+        if (timeString == null) {
             return Long.MIN_VALUE;
         }
-        
+
         return Long.parseLong(timeString);
     }
-    
-    
+
+
     /**
      * that method should be removed - we should use only one way to
      * store the last modified time.
-     * 
+     *
      * @param info
      * @return
-     * @throws SharkKBException 
+     * @throws SharkKBException
      */
     public static final long getTimeStamp(ASIPInformation info) throws SharkKBException {
         String timeString = info.getProperty(InMemoInformation.INFO_LAST_MODIFED);
-        if(timeString == null) {
+        if (timeString == null) {
             timeString = info.getProperty(InMemoInformation.INFO_CREATION_TIME);
-            if(timeString == null) {
+            if (timeString == null) {
                 return Long.MIN_VALUE;
             }
         }
-        
+
         return Long.parseLong(timeString);
     }
-    
+
     /**
      * Not additional activities required here
+     *
      * @param owner
      */
     @Override
@@ -265,6 +265,7 @@ public class SyncKB implements SharkKB{
 
     /**
      * Not additional activities required here
+     *
      * @return owner
      */
     @Override
@@ -274,10 +275,11 @@ public class SyncKB implements SharkKB{
 
     /**
      * Not additional activities required here. Return value is
-     * supposed to be copy of data. Changes on that have no 
+     * supposed to be copy of data. Changes on that have no
      * effect on knowledge base.
+     *
      * @return
-     * @throws SharkKBException 
+     * @throws SharkKBException
      */
     @Override
     public ASIPSpace asASIPSpace() throws SharkKBException {
@@ -286,10 +288,11 @@ public class SyncKB implements SharkKB{
 
     /**
      * Not additional activities required here. Return value is
-     * supposed to be copy of data. Changes on that have no 
+     * supposed to be copy of data. Changes on that have no
      * effect on knowledge base.
+     *
      * @return
-     * @throws SharkKBException 
+     * @throws SharkKBException
      */
     @Override
     public ASIPInterest asASIPInterest() throws SharkKBException {
@@ -299,14 +302,15 @@ public class SyncKB implements SharkKB{
     /**
      * Taht set must be wrapped. That set can be used to
      * add, change or remove tags which has impact on knowledge base.
+     *
      * @return
-     * @throws SharkKBException 
+     * @throws SharkKBException
      */
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
         STSet set = this.targetKB.getTopicSTSet();
-        if(set == null) return null;
-        
+        if (set == null) return null;
+
         // wrap it
         return new SyncSTSet(set);
     }
@@ -314,8 +318,8 @@ public class SyncKB implements SharkKB{
     @Override
     public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
         SemanticNet net = this.targetKB.getTopicsAsSemanticNet();
-        if(net == null) return null;
-        
+        if (net == null) return null;
+
         // wrap it
         return new SyncSemanticNet(net);
     }
@@ -323,8 +327,8 @@ public class SyncKB implements SharkKB{
     @Override
     public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
         Taxonomy tx = this.targetKB.getTopicsAsTaxonomy();
-        if(tx == null) return null;
-        
+        if (tx == null) return null;
+
         // wrap it
         return new SyncTaxonomy(tx);
     }
@@ -347,8 +351,8 @@ public class SyncKB implements SharkKB{
     @Override
     public PeerSTSet getPeerSTSet() throws SharkKBException {
         PeerSTSet peers = this.targetKB.getPeerSTSet();
-        if(peers == null) return null;
-        
+        if (peers == null) return null;
+
         return new SyncPeerSTSet(peers);
     }
 
@@ -419,12 +423,6 @@ public class SyncKB implements SharkKB{
     }
 
     @Override
-    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        this.changed();
-        return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
-    }
-
-    @Override
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
         this.changed();
         return this.targetKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
@@ -434,12 +432,6 @@ public class SyncKB implements SharkKB{
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         this.changed();
         return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
-    }
-
-    @Override
-    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations) throws SharkKBException {
-        this.changed();
-        return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations);
     }
 
     @Override

@@ -161,7 +161,7 @@ public class SpatialAlgebra {
      *                      to fragment
      * 
      * @throws SharkKBException   Is thrown if an error has occurred during proccessing.
-     * @return Returns the result SpatialSTSet fragment. If the passed SpatialSTSet
+     * @return Returns the resultSet SpatialSTSet fragment. If the passed SpatialSTSet
      *         fragment was null, then an empty SpatialSTSet will returned.
      */    
     public SpatialSTSet fragment(SpatialSTSet fragment, SpatialSTSet source, SpatialSemanticTag anchor) throws SharkKBException {

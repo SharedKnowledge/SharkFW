@@ -1,8 +1,6 @@
 package net.sharkfw.asip;
 
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.SharkCS;
 import net.sharkfw.protocols.RequestHandler;
 
 import java.util.Iterator;

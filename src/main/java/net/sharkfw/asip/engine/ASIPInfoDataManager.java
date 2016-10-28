@@ -46,9 +46,9 @@ public class ASIPInfoDataManager {
                 String content = info.getContentAsString();
                 String result = "";
 //                byte[] content = info.getContentAsByte();
-//                byte[] result = new byte[infoContent.length + content.length];
-//                System.arraycopy(infoContent, 0, result, 0, infoContent.length());
-//                System.arraycopy(content, 0, result, infoContent.length(), content.length());
+//                byte[] resultSet = new byte[infoContent.length + content.length];
+//                System.arraycopy(infoContent, 0, resultSet, 0, infoContent.length());
+//                System.arraycopy(content, 0, resultSet, infoContent.length(), content.length());
                 infoContent += content;
                 currentOffset=infoContent.length();
                 

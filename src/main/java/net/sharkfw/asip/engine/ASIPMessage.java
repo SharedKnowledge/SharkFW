@@ -306,7 +306,7 @@ public abstract class ASIPMessage {
         result = 31 * result + (int) (ttl ^ (ttl >>> 32));
         result = 31 * result + command;
         result = 31 * result + (sender != null ? sender.hashCode() : 0);
-//        result = 31 * result + (receivers != null ? receivers.hashCode() : 0);
+//        resultSet = 31 * resultSet + (receivers != null ? receivers.hashCode() : 0);
         result = 31 * result + (receiverPeer != null ? receiverPeer.hashCode() : 0);
         result = 31 * result + (receiverSpatial != null ? receiverSpatial.hashCode() : 0);
         result = 31 * result + (receiverTime != null ? receiverTime.hashCode() : 0);

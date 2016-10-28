@@ -343,35 +343,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     }
 
     /**
-     * Use getDefaultFPSet instead.
-     *
-     * @return
-     * @deprecated
-     */
-    @Override
-    public FragmentationParameter[] getStandardFPSet() {
-        if (this.standardFP == null) {
-            FragmentationParameter topicsFP = new FragmentationParameter(false, true, 2);
-            FragmentationParameter peersFP = new FragmentationParameter(true, false, 2);
-            FragmentationParameter restFP = new FragmentationParameter(false, false, 0);
-
-            this.standardFP = new FragmentationParameter[ASIPSpace.MAXDIMENSIONS];
-
-            this.standardFP[ASIPSpace.DIM_TOPIC] = topicsFP;
-            this.standardFP[ASIPSpace.DIM_TYPE] = topicsFP;
-            this.standardFP[ASIPSpace.DIM_APPROVERS] = peersFP;
-            this.standardFP[ASIPSpace.DIM_SENDER] = peersFP;
-            this.standardFP[ASIPSpace.DIM_RECEIVER] = peersFP;
-            this.standardFP[ASIPSpace.DIM_TIME] = restFP;
-            this.standardFP[ASIPSpace.DIM_LOCATION] = restFP;
-            this.standardFP[ASIPSpace.DIM_DIRECTION] = restFP;
-
-        }
-
-        return this.standardFP;
-    }
-
-    /**
      * That KB listens to its sets which make up the vocabulary. That methode
      * is called whenever e.g. a tag in the topic dimension is created.
      * That message triggers KB listener.
@@ -531,70 +502,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      ******************************************************************/
 
     public static final String INTEREST_PROPERTY_NAME = "SharkKB_InterestsString";
-    private ArrayList<SharkCS> interestsList = null;
     private static final String INTEREST_DELIMITER = "||";
-
-    private void saveInterestsToProperties() throws SharkKBException {
-        this.restoreInterestsFromProperties();
-
-        XMLSerializer s = new XMLSerializer();
-
-//        Iterator<SharkCS> interestIter = this.interests();
-//        if (interestIter == null) {
-//            // remove property at all
-//            this.setProperty(INTEREST_PROPERTY_NAME, null);
-//            return;
-//        }
-
-        StringBuilder interestString = new StringBuilder();
-
-//        while (interestIter.hasNext()) {
-//            SharkCS interest = interestIter.next();
-////            String serializedInterest = s.serializeSharkCS(interest);
-//
-////            interestString.append(serializedInterest);
-//            interestString.append(INTEREST_DELIMITER);
-//        }
-
-//        this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString());
-        this.setProperty(INTEREST_PROPERTY_NAME, interestString.toString(), false);
-    }
-
-    private void restoreInterestsFromProperties() throws SharkKBException {
-        if (this.interestsList == null) {
-            this.interestsList = new ArrayList();
-
-            String interestsString = this.getProperty(INTEREST_PROPERTY_NAME);
-            if (interestsString == null) {
-                return;
-            }
-
-            StringTokenizer st = new StringTokenizer(interestsString, INTEREST_DELIMITER);
-
-            XMLSerializer s = new XMLSerializer();
-
-            while (st.hasMoreTokens()) {
-                String interestString = st.nextToken();
-//                SharkCS interest = s.deserializeSharkCS(interestString);
-//                this.interestsList.add(interest);
-            }
-        }
-    }
-
-    /**
-     * @return -1 of no such kepInterest in in the list
-     */
-    private int findInterestIndex(SharkCS interest) throws SharkKBException {
-        for (int index = 0; index < this.interestsList.size(); index++) {
-            SharkCS next = this.interestsList.get(index);
-            if (SharkCSAlgebra.identical(next, interest)) {
-                return index;
-            }
-        }
-
-        // no matching kepInterest found
-        return -1;
-    }
 
     /**
      * That method should be overwritten. This default implementation assumes

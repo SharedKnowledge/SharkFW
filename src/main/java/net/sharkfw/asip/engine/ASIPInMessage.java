@@ -16,7 +16,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Objects of this class are result of the scanning process
+ * Objects of this class are resultSet of the scanning process
  * of imcomming messages from underlying protocols
  *
  * @author thsc, j4rvis

@@ -1,15 +1,16 @@
 package net.sharkfw.system;
 
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.engine.serializer.XMLSerializer;
+import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import net.sharkfw.asip.engine.serializer.XMLSerializer;
-import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.*;
-import net.sharkfw.ports.KnowledgePort;
 
 /**
  * A collection of static utility methods for
@@ -26,8 +27,9 @@ public class Util {
     /**
      * Properties from ph2 are copied to ph1 only if a property with the
      * same name does not exist. If a property already exists nothing happens.
+     *
      * @param target
-     * @param source 
+     * @param source
      */
     public static void mergeProperties(SystemPropertyHolder target, SystemPropertyHolder source) {
         try {
@@ -36,7 +38,7 @@ public class Util {
                 String ph2Key = ph2KeyEnum.nextElement();
                 String ph2Value = source.getProperty(ph2Key);
                 String ph1Value = target.getProperty(ph2Key);
-                if(ph1Value == null) {
+                if (ph1Value == null) {
                     target.setProperty(ph2Key, ph2Value);
                 }
             }
@@ -46,7 +48,6 @@ public class Util {
     }
 
     /**
-     *
      * This class turns a String array into an <code>
      * Enumeration.
      */
@@ -58,6 +59,7 @@ public class Util {
 
         /**
          * The array to created the Enumeration form
+         *
          * @param s String array to create the Enumeration
          */
         ArrayEnum(String[] s) {
@@ -76,12 +78,12 @@ public class Util {
     /**
      * Copy contents of string array source to string array target
      * target and source need to be at least of the size of <code>size</code>.
-     *
+     * <p>
      * This code acts exactly like:
      * <code>
      * for(int i = 0; i < number; i++) {
-    target[i] = source[i];
-    }
+     * target[i] = source[i];
+     * }
      * </code>
      *
      * @param target The string array to copy to
@@ -98,7 +100,7 @@ public class Util {
      * Add a string into an array and extend its size.
      * If source is null, a new string array is created.
      *
-     * @param source The string array to add a atring to
+     * @param source  The string array to add a atring to
      * @param newItem The string to be added
      * @return The extended string array
      */
@@ -120,7 +122,7 @@ public class Util {
      * This method will remove every occurrence of that string from the array
      * returning a downsized array.
      *
-     * @param source The array to delete from
+     * @param source  The array to delete from
      * @param delItem The string to be deleted from the array
      * @return The downsized array holding no more instances of <code>delItem</code>
      */
@@ -152,6 +154,7 @@ public class Util {
 
     /**
      * Return an Enumeration from a String array
+     *
      * @param cpSI The array to be turned into an Enumeration
      * @return An Enumeration of Strings created from the array
      */
@@ -235,7 +238,7 @@ public class Util {
      * @param b A string array
      * @return The union of <code>a</code> and <code>b</code>
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static String[] mergeArrays(String[] a, String[] b) {
         if (a == null) {
             return b;
@@ -319,15 +322,16 @@ public class Util {
 //            return null;
 //        }
 //    }
+
     /**
      * Deserializing a string into a vector using a given delimiter to
      * find single tokens.
      *
-     * @param s The string to deserialize
+     * @param s         The string to deserialize
      * @param delimiter The delimiter to tell tokens apart
      * @return A vector of String as taken from <code>s</code>
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Vector string2Vector(String s, String delimiter) {
         if (s == null || delimiter == null) {
             return null;
@@ -346,7 +350,7 @@ public class Util {
     /**
      * Serializing a Vector containing strings to a string using a given delimiter.
      *
-     * @param v The vector to serialize
+     * @param v         The vector to serialize
      * @param delimiter The delimiter to tell tokens apart
      * @return A string containing the serialized contents of the Vector
      */
@@ -358,44 +362,44 @@ public class Util {
 
         return enumeration2String(v.elements(), delimiter);
     }
-    
-    public static String PSTArrayList2String(ArrayList<PeerSemanticTag> stList) 
+
+    public static String PSTArrayList2String(ArrayList<PeerSemanticTag> stList)
             throws SharkKBException {
-        
-        if(stList == null) {
+
+        if (stList == null) {
             return null;
         }
-        
+
         PeerSTSet pSet = InMemoSharkKB.createInMemoPeerSTSet();
         Iterator<PeerSemanticTag> pIter = stList.iterator();
-        while(pIter.hasNext()) {
+        while (pIter.hasNext()) {
             pSet.merge(pIter.next());
         }
-        
+
         XMLSerializer xs = new XMLSerializer();
         return xs.serializeSTSet(pSet);
     }
-    
+
     public static ArrayList<PeerSemanticTag> String2PSTArrayList(String serialized) throws SharkKBException {
         XMLSerializer xs = new XMLSerializer();
 
         PeerSTSet pSet = InMemoSharkKB.createInMemoPeerSTSet();
         xs.deserializeSTSet(pSet, serialized);
-        
+
         ArrayList<PeerSemanticTag> pArray = new ArrayList<PeerSemanticTag>();
-        
+
         Enumeration<PeerSemanticTag> peerTags = pSet.peerTags();
-        if(peerTags == null || !peerTags.hasMoreElements()) {
+        if (peerTags == null || !peerTags.hasMoreElements()) {
             return pArray;
         }
-        
-        while(peerTags.hasMoreElements()) {
+
+        while (peerTags.hasMoreElements()) {
             pArray.add(peerTags.nextElement());
         }
-        
+
         return pArray;
     }
-    
+
     @SuppressWarnings("rawtypes")
     public static String iteration2String(Iterator iter, String delimiter) {
         return enumeration2String(new Iterator2Enumeration(iter), delimiter);
@@ -425,7 +429,7 @@ public class Util {
         // <dim
         // id=_><atypes>a,b,c</atypes><ftypes>d,e,f</ftypes><depth>_</depth></dim>
 
-        for (int dim = 0; dim < fp.length && dim < SharkCS.MAXDIMENSIONS; dim++) {
+        for (int dim = 0; dim < fp.length && dim < ASIPSpace.MAXDIMENSIONS; dim++) {
             FragmentationParameter f = fp[dim];
 
             if (f != null) {
@@ -472,7 +476,7 @@ public class Util {
      */
     @SuppressWarnings("rawtypes")
     public static FragmentationParameter[] string2fragmentationParameter(String s) {
-        FragmentationParameter[] fpSet = new FragmentationParameter[SharkCS.MAXDIMENSIONS];
+        FragmentationParameter[] fpSet = new FragmentationParameter[ASIPSpace.MAXDIMENSIONS];
 
         if (s == null) {
             return fpSet;
@@ -496,7 +500,7 @@ public class Util {
             allowed = null;
             forbidden = null;
             depth = -1;
-            if (dimNumber >= 0 && dimNumber <= SharkCS.MAXDIMENSIONS) {
+            if (dimNumber >= 0 && dimNumber <= ASIPSpace.MAXDIMENSIONS) {
 
                 index = s.indexOf("<atypes>", behind);
                 if (index > -1 && index < nextIndex) {
@@ -545,11 +549,11 @@ public class Util {
 
     /**
      * Turn a <code>List</code> into a <code>Vector</code>
-     * 
+     *
      * @param list The <code>List</code> to convert
      * @return A <code>Vector</code> containing all elements from the <code>list</code>.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Vector list2Vector(List list) {
         Iterator listIterator = list.iterator();
 
@@ -564,11 +568,11 @@ public class Util {
 
     /**
      * Turns an <code>Enumeration</code> into a <code>Vector</code>.
+     *
      * @param e The <code>Enumeration</code> to convert.
-     * 
      * @return A <code>Vector</code> containing all elements of <code>e</code>
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Vector enum2Vector(Enumeration e) {
         if (e == null) {
             return new Vector();
@@ -621,10 +625,9 @@ public class Util {
     /**
      * Tries to delete a directory and all contained files and subdirectories
      *
-     * @param path
-     *            File or Directory to delete.
+     * @param path File or Directory to delete.
      * @return returns true if the directory could be deleted. Also return true
-     *         if the directory did not exist from the start.
+     * if the directory did not exist from the start.
      */
     static public boolean deleteDirectory(File path) {
         if (!path.exists()) {
@@ -680,7 +683,7 @@ public class Util {
      */
     @SuppressWarnings("rawtypes")
     public static void storeProps(OutputStream fos, Properties prop,
-            String comment) {
+                                  String comment) {
         try {
             BufferedOutput writer = new BufferedOutput(fos);
 
@@ -716,7 +719,7 @@ public class Util {
      * @throws IOException
      */
     private static void writeEscaped(BufferedOutput writer, String value,
-            boolean escapeAllSpaces) throws IOException {
+                                     boolean escapeAllSpaces) throws IOException {
         final int l = value.length();
         boolean onlySpacesYet = true;
         for (int i = 0; i < l; i++) {
@@ -809,10 +812,11 @@ public class Util {
 
     /**
      * Retrieve the IP and port from the gcf notation for addresses, leaving out the protocol prefix
+     *
      * @param uri
      * @return Stringarray which [0] Element holds the ip address and [1] holds the port
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static String[] getIPandPortFromURI(String uri) {
 
         Vector strings = new Vector();
@@ -852,6 +856,7 @@ public class Util {
 
     /**
      * resolve a domainname to an ip address
+     *
      * @param domainname the domainname of the hose
      * @return the ipaddress corresponding to the hostname or the passed argument if an exception occured
      */
@@ -865,6 +870,7 @@ public class Util {
 
     /**
      * resolve an ip address to a domainname
+     *
      * @param ipaddress the ipaddress in question
      * @return the name corresponding to the ip address (using etc/hosts or dns servers) or the passed argument in case of an error
      */
@@ -878,6 +884,7 @@ public class Util {
 
     /**
      * Tries to resolve a domainname within a gcf string (that is "socket://domainname:port") into socket://IP-Address:Port.
+     *
      * @param gcfstring the address String in gcf notation
      * @return an address String in GCF notation in which a hostname has been replaced by the corresponding IP Addres. If that fails the hostname is kept
      */
@@ -897,7 +904,7 @@ public class Util {
      * class to make it work indepent of the platform used. JavaME's String i.e.
      * does not provide this method.
      *
-     * @param string The String to search
+     * @param string    The String to search
      * @param substring The substring to be found inside <code>string</code>
      * @return The index of the start of <code>substring</code> in <code>string</code> or -1
      */
@@ -931,7 +938,7 @@ public class Util {
      * @param enumeration The enumeration of strings to read from
      * @return A newly created array of strings as read from the <code>enumeration</code>
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static String[] enumeration2StringArray(Enumeration enumeration) {
         Vector v = new Vector();
 
@@ -950,6 +957,7 @@ public class Util {
 
     /**
      * Return whether or not the given tag has the given address.
+     *
      * @param tag
      * @param address
      * @return
@@ -969,10 +977,11 @@ public class Util {
     /**
      * Sorts a <String> vector. Can sort other type of Objects, but will always
      * return a Vector of Strings (which can be parsed of course).
+     *
      * @param toSort the <String or Object> Vector to sort
      * @return Vector<String> sorted values.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static Vector sortStringVector(Vector toSort) {
         if (toSort == null) {
             return new Vector();
@@ -1002,10 +1011,11 @@ public class Util {
 
     /**
      * Sorts an <Integer> vector.
+     *
      * @param toSort the <Integer> Vector to sort
      * @return Vector<Integer> sorted values.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static Vector sortIntegerVector(Vector toSort) {
         if (toSort == null) {
             return new Vector();
@@ -1035,9 +1045,10 @@ public class Util {
 
     /**
      * A static strings- quicksort method.
+     *
      * @param elements - the String[] elements
-     * @param low Lowest position in the array
-     * @param hi Highest position in the array
+     * @param low      Lowest position in the array
+     * @param hi       Highest position in the array
      */
     private static void stringQuicksort(String[] elements, int low, int hi) {
         int i = low, j = hi;
@@ -1072,9 +1083,10 @@ public class Util {
     /**
      * A static integer- quicksort method.
      * Was implemented because i wasn't sure if JavaME supports Comparable Objects
+     *
      * @param elements - the String[] elements
-     * @param low Lowest position in the array
-     * @param hi Highest position in the array
+     * @param low      Lowest position in the array
+     * @param hi       Highest position in the array
      */
     private static void integerQuicksort(Integer[] elements, int low, int hi) {
         int i = low, j = hi;
@@ -1126,6 +1138,7 @@ public class Util {
 
     /**
      * Return whether or not a key is marked as serializable.
+     *
      * @param key The key string to check
      * @return
      */
@@ -1140,7 +1153,7 @@ public class Util {
     /**
      * Return the proper key from the String passed, that includes to strip transfer
      * marking from the key before returning it.
-     * 
+     *
      * @param keystring A String used as a key in a property
      * @return A string which has been stripped of all transfer marks, if such were set.
      */
@@ -1158,7 +1171,7 @@ public class Util {
      * Copy all properties from PropertyHolder <code>source</code> to PropertyHolder <code>copy</code>.
      *
      * @param source The property holder used as template.
-     * @param copy The property holder to be filled with all props from source.
+     * @param copy   The property holder to be filled with all props from source.
      */
     @SuppressWarnings("rawtypes")
     public static void copyPropertiesFromPropertyHolderToPropertyHolder(SystemPropertyHolder source, SystemPropertyHolder copy) {
@@ -1170,7 +1183,7 @@ public class Util {
                 /*
                 * TODO: Handle transferable and untransferable props
                 */
-                if(value != null) {
+                if (value != null) {
                     copy.setProperty(name, value);
                 }
             }
@@ -1183,7 +1196,7 @@ public class Util {
      * Copy all properties from PropertyHolder <code>source</code> to PropertyHolder <code>copy</code>.
      *
      * @param source The property holder used as template.
-     * @param copy The property holder to be filled with all props from source.
+     * @param copy   The property holder to be filled with all props from source.
      */
     @SuppressWarnings("rawtypes")
     public static void copyPropertiesFromPropertyHolderToPropertyHolder(PropertyHolder source, PropertyHolder copy) {
@@ -1195,7 +1208,7 @@ public class Util {
                 /*
                 * TODO: Handle transferable and untransferable props
                 */
-                if(value != null) {
+                if (value != null) {
                     copy.setProperty(name, value);
                 }
             }
@@ -1206,6 +1219,7 @@ public class Util {
 
     /**
      * Return a string name for the contants from <code>Calendar</code>.
+     *
      * @param value An int value for a weekday
      * @return A string containing the name of the weekday or "unknown" if value is below 0 or above 6.
      */
@@ -1233,10 +1247,10 @@ public class Util {
 
     public static final byte[] intToByteArray(int value) {
         return new byte[]{
-                    (byte) (value >>> 24),
-                    (byte) (value >>> 16),
-                    (byte) (value >>> 8),
-                    (byte) value};
+                (byte) (value >>> 24),
+                (byte) (value >>> 16),
+                (byte) (value >>> 8),
+                (byte) value};
     }
 
     public static final int byteArrayToInt(byte[] b) {
@@ -1245,22 +1259,22 @@ public class Util {
                 + ((b[2] & 0xFF) << 8)
                 + (b[3] & 0xFF);
     }
-    
+
     public static final byte[] longToByteArray(long value) {
-      return new byte[] {
-        (byte) (value >>> 56),
-        (byte) (value >>> 48),
-        (byte) (value >>> 40),
-        (byte) (value >>> 32),
-        (byte) (value >>> 24),
-        (byte) (value >>> 16),
-        (byte) (value >>> 8),
-        (byte) (value)
-      };
+        return new byte[]{
+                (byte) (value >>> 56),
+                (byte) (value >>> 48),
+                (byte) (value >>> 40),
+                (byte) (value >>> 32),
+                (byte) (value >>> 24),
+                (byte) (value >>> 16),
+                (byte) (value >>> 8),
+                (byte) (value)
+        };
     }
-    
+
     public static final long byteArrayToLong(byte[] b) {
-       return (b[0] << 56)
+        return (b[0] << 56)
                 + ((b[1] & 0xFF) << 48)
                 + ((b[2] & 0xFF) << 40)
                 + ((b[3] & 0xFF) << 32)
@@ -1272,124 +1286,86 @@ public class Util {
 
     /**
      * Checks wheather the String is null or empty. If its not null and not empty it returns <code>true</code>.
-     * 
+     *
      * @param s string to check
      * @return false if the String is null or empty, else true
      */
-	public static boolean isValidString(String s) {
-		if(s != null && !s.equalsIgnoreCase("")) {
-			return true;
-		}
-		return false;
-	}
-        
-     public static void merge(SharkKB target, SharkCS source) throws SharkKBException {
-         
-        PeerSemanticNet peers = target.getPeersAsSemanticNet();
-        SemanticNet topics = target.getTopicsAsSemanticNet();
-        
-        // topics
-        STSet sTopics = source.getTopics();
-        if(sTopics instanceof SemanticNet) {
-            SemanticNet snTopics = (SemanticNet) sTopics;
-            topics.merge(snTopics);
-        } else {
-            topics.merge(sTopics);
+    public static boolean isValidString(String s) {
+        if (s != null && !s.equalsIgnoreCase("")) {
+            return true;
         }
-        
-        // peers
-        STSet sPeers = source.getPeers();
-        if(sPeers instanceof PeerSemanticNet) {
-            PeerSemanticNet psnPeers = (PeerSemanticNet) sPeers;
-            peers.merge(psnPeers);
-        } else {
-            peers.merge(sPeers);
-        }
-        
-        // remote peers
-        STSet sRemotePeers = source.getRemotePeers();
-        if(sRemotePeers instanceof PeerSemanticNet) {
-            PeerSemanticNet psnRemotePeers = (PeerSemanticNet) sRemotePeers;
-            peers.merge(psnRemotePeers);
-        } else {
-            peers.merge(sRemotePeers);
-        }
-        
-        peers.merge(source.getOriginator());
+        return false;
+    }
 
-        target.getSpatialSTSet().merge(source.getLocations());
-        target.getTimeSTSet().merge(source.getTimes());
-         
-     }
-     
     /**
      * Its assumed that a string (source) contains other string which
      * are separated by start and endtags. This methode produces an
      * iterator through all found substring excluding their separaters.
      * Search in source is started with index.
-     * 
+     *
      * @param starttag
      * @param endtag
      * @param source
      * @param index
      * @return
      */
-    public static Iterator<String> stringsBetween(String starttag, 
-            String endtag, String source, int index) {
-        
+    public static Iterator<String> stringsBetween(String starttag,
+                                                  String endtag, String source, int index) {
+
         List<String> stringList = new ArrayList<>();
         String stringBetween = null;
-        
+
         do {
             stringBetween = Util.stringBetween(starttag, endtag, source, index);
-            if(stringBetween == null) break;
+            if (stringBetween == null) break;
             stringList.add(stringBetween);
             index += stringBetween.length();
-        } while(stringBetween != null && index < source.length());
-        
+        } while (stringBetween != null && index < source.length());
+
         return stringList.iterator();
     }
-    
+
     /**
      * Return string between two tags. Null is returned if no tag can be found
      * which is also happens with malformed formats.
+     *
      * @param starttag tag to look for
-     * @param endtag tag to look for
-     * @param index begin search at this index in source
-     * @param source tag should be found in this string
-     * @return 
+     * @param endtag   tag to look for
+     * @param index    begin search at this index in source
+     * @param source   tag should be found in this string
+     * @return
      */
     public static String stringBetween(String starttag, String endtag, String source, int index) {
-        if(source == null || starttag == null || endtag == null || index < 0) {
+        if (source == null || starttag == null || endtag == null || index < 0) {
             return null;
         }
 
-        if(index >= source.length()) {
+        if (index >= source.length()) {
             return null;
         }
-        
-        int startIndex = 0; 
+
+        int startIndex = 0;
 
         startIndex = source.indexOf(starttag, index);
-        if(startIndex == -1) return null;
+        if (startIndex == -1) return null;
 
         int endIndex;
-        
+
         index = startIndex;
-        
+
         endIndex = source.indexOf(endtag, index);
-            
-        if(endIndex == -1) {
+
+        if (endIndex == -1) {
             return null;
         }
-        
+
         startIndex += starttag.length();
-        
+
         String retString = source.substring(startIndex, endIndex);
-        
-        if(retString.length() == 0) {
+
+        if (retString.length() == 0) {
             return null;
         }
         return retString;
-    }     
+    }
 }

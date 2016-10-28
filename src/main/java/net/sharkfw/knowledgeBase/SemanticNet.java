@@ -105,7 +105,7 @@ public interface SemanticNet extends STSet {
     *
     * @param anchor The starting point
     * @param fp Configuration information for the fragmentation process
-    * @return A SemanticNet containing the result, or null if an error occurred.
+    * @return A SemanticNet containing the resultSet, or null if an error occurred.
     */
     @Override
     public SemanticNet fragment(SemanticTag anchor, FragmentationParameter fp) 

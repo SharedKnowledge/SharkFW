@@ -397,7 +397,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * Return all KP which are currently registered in this SharkEngine.
      *
      * @return enumeration of objects of class KP
-     * @deprecated
      */
     public Enumeration<ASIPPort> getPorts() {
         return new Iterator2Enumeration(this.ports.iterator());
@@ -960,7 +959,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
          * send the kepInterest to every peer
          * on the REMOTEPEER dimension.
          */
-        SharkCS kepInterest = null;
         ASIPInterest asipInterest = null;
         PeerSTSet recipients = null;
 

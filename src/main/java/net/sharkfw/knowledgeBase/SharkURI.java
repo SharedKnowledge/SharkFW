@@ -50,13 +50,13 @@ public class SharkURI {
     public static String getDirectionSI(int direction) {
         switch (direction) {
             case ASIPSpace.DIRECTION_IN:
-                return SharkCS.INURL;
+                return ASIPSpace.INURL;
             case ASIPSpace.DIRECTION_OUT:
-                return SharkCS.OUTURL;
+                return ASIPSpace.OUTURL;
             case ASIPSpace.DIRECTION_INOUT:
-                return SharkCS.INOUTURL;
+                return ASIPSpace.INOUTURL;
             default:
-                return SharkCS.NO_DIRECTION_URL;
+                return ASIPSpace.NO_DIRECTION_URL;
         }
     }
 }

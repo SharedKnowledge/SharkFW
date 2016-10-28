@@ -103,32 +103,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
     public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException;
 
     /**
-     * Create an set of semantic annotations (space) which can be used to add
-     * information into the knowledge base. Each parameter describes a facet, a
-     * feature of information, e.g. topics describe topics which fit to information.
-     * <p>
-     * Each parameter can be null. In that case, information has no semantic
-     * description in that dimension. That's necessary if we don't know that
-     * description. A null parameter can also be understood as <i>no constraints</i>.
-     * Meaning: Added or required information (may) fit to all e.g. topics.
-     *
-     * @param topics
-     * @param types
-     * @param approvers
-     * @param sender
-     * @param receiver
-     * @param times
-     * @param locations
-     * @param direction
-     * @return
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     */
-    public ASIPSpace createASIPSpace(
-            STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
-            PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction)
-            throws SharkKBException;
-
-    /**
      * Convience method: create a space which is actually a single point
      *
      * @param topic
@@ -163,32 +137,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
             STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender,
             PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction)
             throws SharkKBException;
-
-    /**
-     * Create an set of semantic annotations (space) which can be used to add
-     * information into the knowledge base. Each parameter describes a facet, a
-     * feature of information, e.g. topics describe topics which fit to information.
-     * <p>
-     * Each parameter can be null. In that case, information has no semantic
-     * description in that dimension. That's necessary if we don't know that
-     * description. A null parameter can also be understood as <i>no constraints</i>.
-     * Meaning: Added or required information (may) fit to all e.g. topics.
-     *
-     * @param topics
-     * @param types
-     * @param approvers
-     * @param sender
-     * @param receiver
-     * @param times
-     * @param locations
-     * @return
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     */
-    public ASIPSpace createASIPSpace(
-            STSet topics, STSet types, PeerSTSet approvers, PeerSTSet sender,
-            PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations)
-            throws SharkKBException;
-
 
     /**
      * Returns an interation of all informations points.
