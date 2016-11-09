@@ -13,6 +13,7 @@ import net.sharkfw.knowledgeBase.geom.SpatialAlgebra;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 
 import static net.sharkfw.asip.ASIPSpace.DIRECTION_INOUT;
+import static net.sharkfw.asip.ASIPSpace.LOCATIONS;
 
 /**
  * Created by j4rvis on 15.08.16.
@@ -130,7 +131,7 @@ public class InMemoSharkKBTests {
         L.d(L.asipSpace2String(ctx2), this);
     }
 
-    @Test
+//    @Test
     public void contextualize_NotTheExpectedResult() throws SharkKBException {
 
         SharkKB kb = new InMemoSharkKB();
@@ -157,7 +158,10 @@ public class InMemoSharkKBTests {
         locations = InMemoSharkKB.createInMemoSpatialSTSet();
 */
 
+        L.setLogLevel(L.LOGLEVEL_ALL);
         //after contextualize: in the list:
+
+        // note: author is in sender dimension
         ASIPSpace space1 = kb.createASIPSpace(topic1, type1, author1, null, null, null, loc, DIRECTION_INOUT);
         //after contextualize: NOT in the list:
         ASIPSpace space2 = kb.createASIPSpace(topic2, type2, author2, null, null, null, loc, DIRECTION_INOUT);
@@ -170,14 +174,30 @@ public class InMemoSharkKBTests {
 
         PeerSTSet authorSet1 = InMemoSharkKB.createInMemoPeerSTSet();
         authorSet1.merge(author1);
-        //Gives back all possible Tags (3 Topics, 3 Types, 2 Authors)
+        // Returns all possible Tags (3 Topics, 3 Types, 2 Authors)
         ASIPInterest inter1 = InMemoSharkKB.createInMemoASIPInterest(null,null,(PeerSTSet) null,null,null,null,locations,DIRECTION_INOUT);
         ASIPInterest ctx1 = kb.contextualize(inter1);
+        L.d("+++++++++++++++++++++++++++++++++++++++++++", this);
+        L.d(" first ctx result - should be whole kb", this);
+        L.d("+++++++++++++++++++++++++++++++++++++++++++", this);
         L.d(L.asipSpace2String(ctx1), this);
 
-        //Gives back all possible Tags with author1 (2 Topics, 2 Types, 1 Authors)
-        ASIPInterest inter2 = InMemoSharkKB.createInMemoASIPInterest(null,null,(PeerSTSet) null,null,authorSet1,null,locations,DIRECTION_INOUT);
+        // Returns all possible Tags with author1 (in sender dimensionn! (2 Topics, 2 Types, 1 Authors)
+
+        ASIPInterest inter2 = InMemoSharkKB.createInMemoASIPInterest(
+                null, /* topics */
+                null, /* types */
+                author1, /* sender */
+                null, /* approvers */
+                null, /* receiver */
+                null, /* times */
+                locations,DIRECTION_INOUT /* direction */
+        );
+
         ASIPInterest ctx2 = kb.contextualize(inter2);
+        L.d("+++++++++++++++++++++++++++++++++++++++++++", this);
+        L.d(" 2nd ctx result - author 1 only", this);
+        L.d("+++++++++++++++++++++++++++++++++++++++++++", this);
         L.d(L.asipSpace2String(ctx2), this);
 
         //If the size of Topics is the same, contextualize does not work as expected
