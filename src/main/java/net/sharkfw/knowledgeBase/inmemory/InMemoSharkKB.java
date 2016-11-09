@@ -236,7 +236,15 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         if(stSet instanceof PeerSTSet) {
             return InMemoSharkKB.createInMemoCopy((PeerSTSet) stSet);
         }
-        
+
+        if(stSet instanceof TimeSTSet) {
+            return InMemoSharkKB.createInMemoCopy((TimeSTSet) stSet);
+        }
+
+        if(stSet instanceof SpatialSTSet) {
+            return InMemoSharkKB.createInMemoCopy((SpatialSTSet) stSet);
+        }
+
         STSet copy = InMemoSharkKB.createInMemoSTSet();
         copy.merge(stSet);
         return copy;

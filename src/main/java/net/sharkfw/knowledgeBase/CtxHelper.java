@@ -17,12 +17,24 @@ class CtxHelper {
         // test on any
         if(SharkCSAlgebra.isAny(source)) {
             // source is any - return copy of context
-            this.result = InMemoSharkKB.createInMemoCopy(context);
+            if(SharkCSAlgebra.isAny(context)) {
+                // context also any
+                this.result = null;
+            } else {
+                // not any, make copy
+                this.result = InMemoSharkKB.createInMemoCopy(context);
+            }
             this.success = true; // in any case thats a valid result
         } else {
             if(SharkCSAlgebra.isAny(context)) {
                 // source is not any but context - return source
-                this.result = InMemoSharkKB.createInMemoCopy(source);
+                if(SharkCSAlgebra.isAny(source)) {
+                    // context also any
+                    this.result = null;
+                } else {
+                    // not any, make copy
+                    this.result = InMemoSharkKB.createInMemoCopy(source);
+                }
                 this.success = true;
             } else {
                 // source and context are not any - contextualize
