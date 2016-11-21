@@ -233,6 +233,13 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                 }
                 break;
 
+            case Protocols.BLUETOOTH:
+                if(this.getAsipStub()!=null){
+                    protocolStub = this.createBluetoothStreamStub(this.getAsipStub());
+                } else if(this.getKepStub()!=null){
+                    protocolStub = this.createBluetoothStreamStub(this.getAsipStub());
+                }
+                break;
         }
 
         if (protocolStub != null) {
@@ -699,7 +706,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         throw new SharkProtocolNotSupportedException("Nfc not supported in that version");
     }
 
-    protected Stub createBluetoothStreamStub(SharkStub sharkStub) throws SharkProtocolNotSupportedException {
+    protected Stub createBluetoothStreamStub(ASIPStub sharkStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Bluetooth not supported in that version");
     }
 
