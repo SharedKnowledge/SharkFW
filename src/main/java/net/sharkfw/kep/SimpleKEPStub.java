@@ -489,7 +489,7 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
     }
 
     @Override
-    public void handleASIPInterest(ASIPInterest interest, SharkStub stub) {
+    public void handleASIPInterest(ASIPInterest interest) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

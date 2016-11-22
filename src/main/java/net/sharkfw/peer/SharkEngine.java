@@ -449,7 +449,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public void handleASIPInterest(ASIPInterest interest){
-        this.getAsipStub().handleASIPInterest(interest, this.asipStub);
+        this.getAsipStub().handleASIPInterest(interest);
     }
 
     /**

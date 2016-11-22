@@ -61,6 +61,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         this.se = se;
         this.interest = interest;
         this.sharkStub = stub;
+        this.setCommand(ASIPMessage.ASIP_EXPOSE);
     }
 
     public void parse() throws IOException, SharkSecurityException {

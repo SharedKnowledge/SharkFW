@@ -47,7 +47,7 @@ public abstract class ASIPMessage {
     private String encryptedSessionKey = "";
     private boolean signed = false;
     private String signature = "";
-    private long ttl = -1;
+    private long ttl = 1;
     private MessageStub stub;
     private int command = -1;
     private PeerSemanticTag sender;
