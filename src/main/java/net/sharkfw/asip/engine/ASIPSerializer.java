@@ -892,6 +892,9 @@ public class ASIPSerializer {
     }
 
     public static STSet deserializeSTSet(STSet target, String stSetString) throws SharkKBException {
+        if(stSetString == null || stSetString.isEmpty()) {
+            return null;
+        }
 
         if (target == null) {
             target = InMemoSharkKB.createInMemoSTSet();
@@ -899,7 +902,7 @@ public class ASIPSerializer {
 
         JSONObject jsonObject = new JSONObject(stSetString);
 
-        JSONArray semanticTagsArray = jsonObject.getJSONArray(STSet.STSET);
+        JSONArray semanticTagsArray = jsonObject.optJSONArray(STSet.STSET);
         for (int i = 0; i < semanticTagsArray.length(); i++) {
             JSONObject tag = semanticTagsArray.getJSONObject(i);
             if (tag.has(PeerSemanticTag.ADDRESSES)) {
