@@ -119,6 +119,10 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         }
     }
 
+    public String getParsedString() {
+        return this.parsedString;
+    }
+
     public ASIPConnection getConnection() {
         return this;
     }
