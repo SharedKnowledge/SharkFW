@@ -20,9 +20,6 @@ import java.nio.charset.StandardCharsets;
 public class ASIPOutMessage extends ASIPMessage {
 
     private Writer osw = null;
-    private ASIPInterest interest = null;
-    private ASIPKnowledge knowledge = null;
-    private InputStream raw = null;
     private OutputStream os = null;
     private boolean responseSent = false;
     private String recipientAddress = "";
@@ -31,28 +28,35 @@ public class ASIPOutMessage extends ASIPMessage {
     public ASIPOutMessage(SharkEngine engine,
                           StreamConnection connection,
                           long ttl,
-                          PeerSemanticTag sender,
+                          PeerSemanticTag physicalSender,
+                          PeerSemanticTag logicalSender,
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime,
                           SemanticTag topic,
                           SemanticTag type) throws SharkKBException {
 
-        super(engine, connection, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic, type);
+        super(engine, connection, ttl, physicalSender, logicalSender, receiverPeer, receiverLocation, receiverTime, topic, type);
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
 
-    public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
-        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime(), in.getTopic(), in.getType());
+    public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in, SemanticTag topic, SemanticTag type) throws SharkKBException {
+        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getLogicalSender(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime(), topic, type);
+
         this.recipientAddress = connection.getReceiverAddressString();
+        // TODO throws error!
+//        PeerSemanticTag receiver = in.getSender();
+//        receiver.addAddress(this.recipientAddress);
+//        this.setReceiverPeer(receiver);
         this.os = connection.getOutputStream();
     }
 
     public ASIPOutMessage(SharkEngine engine,
                           MessageStub stub,
                           long ttl,
-                          PeerSemanticTag sender,
+                          PeerSemanticTag physicalSender,
+                          PeerSemanticTag logicalSender,
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime,
@@ -60,7 +64,7 @@ public class ASIPOutMessage extends ASIPMessage {
                           SemanticTag type,
                           String address) throws SharkKBException {
 
-        super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic, type);
+        super(engine, stub, ttl, physicalSender, logicalSender, receiverPeer, receiverLocation, receiverTime, topic, type);
         this.outStub = stub;
         this.recipientAddress = address;
         this.os = new ByteArrayOutputStream();

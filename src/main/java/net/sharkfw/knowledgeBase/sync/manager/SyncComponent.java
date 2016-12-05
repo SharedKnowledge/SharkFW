@@ -50,7 +50,16 @@ public class SyncComponent {
     }
 
     private void sendInvite(String[] addresses) throws SharkKBException {
-        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, this.owner, null, null, null, null, null, 10);
+
+        PeerSemanticTag logicalSender = null;
+
+        if(this.owner == null){
+            logicalSender = this.engine.getOwner();
+        } else {
+            logicalSender = this.owner;
+        }
+
+        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, logicalSender, null, null, null, null, null, 10);
 
         // Create ASIPInterest
         STSet topicSTSet = InMemoSharkKB.createInMemoSTSet();

@@ -28,7 +28,6 @@ public class ASIPSerializer {
     private static final String CLASS = "ASIPSERIALIZER: ";
 
     public static final String CONTENT = "CONTENT";
-    public static final String LOGICALSENDER = "LOGICALSENDER";
     public static final String SIGNED = "SIGNED";
     public static final String INTEREST = "INTEREST";
     public static final String KNOWLEDGE = "KNOWLEDGE";
@@ -39,7 +38,7 @@ public class ASIPSerializer {
 
         JSONObject object = serializeHeader(header);
         JSONObject content = new JSONObject();
-        content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+        content.put(ASIPMessage.LOGICALSENDER, serializeTag(header.getLogicalSender())); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
         content.put(INTEREST, serializeInterest(interest));
         object.put(CONTENT, content);
@@ -51,7 +50,7 @@ public class ASIPSerializer {
 
         JSONObject object = serializeHeader(header);
         JSONObject content = new JSONObject();
-        content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+        content.put(ASIPMessage.LOGICALSENDER, serializeTag(header.getLogicalSender())); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
         content.put(KNOWLEDGE, serializeKnowledge(knowledge));
         object.put(CONTENT, content);
@@ -63,7 +62,7 @@ public class ASIPSerializer {
 
         JSONObject object = serializeHeader(header);
         JSONObject content = new JSONObject();
-        content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+        content.put(ASIPMessage.LOGICALSENDER, serializeTag(header.getLogicalSender())); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
         content.put(RAW, new String(raw, StandardCharsets.UTF_8));
         object.put(CONTENT, content);
@@ -74,7 +73,7 @@ public class ASIPSerializer {
 
         JSONObject object = serializeHeader(header);
         JSONObject content = new JSONObject();
-        content.put(LOGICALSENDER, ""); // PeerSemanticTag from Content Sender.
+        content.put(ASIPMessage.LOGICALSENDER, serializeTag(header.getLogicalSender())); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
         try {
             String text = null;
@@ -103,8 +102,8 @@ public class ASIPSerializer {
                 .put(ASIPMessage.SIGNED, header.isSigned())
                 .put(ASIPMessage.TTL, header.getTtl())
                 .put(ASIPMessage.COMMAND, header.getCommand())
-                .put(ASIPMessage.SENDER, (header.getSender() != null) ?
-                        serializeTag(header.getSender()): "")
+                .put(ASIPMessage.PHYSICALSENDER, (header.getPhysicalSender() != null) ?
+                        serializeTag(header.getPhysicalSender()): "")
                 .put(ASIPMessage.RECEIVERPEER, (header.getReceiverPeer() != null) ?
                         serializeTag(header.getReceiverPeer()) : "")
                 .put(ASIPMessage.RECEIVERLOCATION, (header.getReceiverSpatial() != null) ?
@@ -453,23 +452,22 @@ public class ASIPSerializer {
         // uncomment to see json output of serialization
 //        L.d(object.toString(4));
 
-        String version = "";
-        String format = "";
+//        String version = "";
+//        String format = "";
         boolean encrypted = false;
         String encryptedSessionKey = "";
         boolean signed = false;
         long ttl = -1;
         int command = -1;
-        PeerSemanticTag sender = null;
+        PeerSemanticTag physicalSender = null;
         PeerSemanticTag receiverPeer = null;
         SpatialSemanticTag receiverLocation = null;
         TimeSemanticTag receiverTime = null;
-        STSet receivers = null;
         SemanticTag topic = null;
         SemanticTag type = null;
 
         String senderString = "";
-        String receiverString = "";
+        String logicalSenderString = "";
         String receiverPeerString = "";
         String receiverLocationString = "";
         String receiverTimeString = "";
@@ -477,10 +475,10 @@ public class ASIPSerializer {
         String typeString = "";
 
 
-        if (object.has(ASIPMessage.VERSION))
-            version = object.getString(ASIPMessage.VERSION);
-        if (object.has(ASIPMessage.FORMAT))
-            format = object.getString(ASIPMessage.FORMAT);
+//        if (object.has(ASIPMessage.VERSION))
+//            version = object.getString(ASIPMessage.VERSION);
+//        if (object.has(ASIPMessage.FORMAT))
+//            format = object.getString(ASIPMessage.FORMAT);
         if (object.has(ASIPMessage.ENCRYPTED))
             encrypted = object.getBoolean(ASIPMessage.ENCRYPTED);
         if (object.has(ASIPMessage.ENCRYPTEDSESSIONKEY))
@@ -491,10 +489,11 @@ public class ASIPSerializer {
             ttl = object.getLong(ASIPMessage.TTL);
         if (object.has(ASIPMessage.COMMAND))
             command = object.getInt(ASIPMessage.COMMAND);
-        if (object.has(ASIPMessage.SENDER)) {
-            senderString = object.get(ASIPMessage.SENDER).toString();
+
+        if (object.has(ASIPMessage.PHYSICALSENDER)) {
+            senderString = object.get(ASIPMessage.PHYSICALSENDER).toString();
             try {
-                sender = ASIPSerializer.deserializePeerTag(senderString);
+                physicalSender = ASIPSerializer.deserializePeerTag(senderString);
             } catch (SharkKBException e) {
                 e.printStackTrace();
             }
@@ -540,44 +539,18 @@ public class ASIPSerializer {
                 e.printStackTrace();
             }
         }
-        // TODO obsolete?
-        if (object.has(ASIPMessage.RECEIVERS)) {
-            receiverString = object.getString(ASIPMessage.RECEIVERS);
-//            receivers = ASIPSerializer.deserializeAnySTSet(null, receiverString);
-        }
 
         message.setEncrypted(encrypted);
         message.setEncryptedSessionKey(encryptedSessionKey);
         message.setSigned(signed);
         message.setTtl(ttl);
         message.setCommand(command);
-        message.setSender(sender);
+        message.setPhysicalSender(physicalSender);
         message.setReceiverPeer(receiverPeer);
         message.setReceiverSpatial(receiverLocation);
         message.setReceiverTime(receiverTime);
-        message.setReceivers(receivers);
         message.setTopic(topic);
         message.setType(type);
-
-//      TODO
-//        try {
-//            L.d(CLASS + receivers.size());
-//        Iterator<SemanticTag> tags = receivers.stTags();
-//            while(receivers.stTags().hasNext()) {
-//                SemanticTag tag = receivers.stTags().next();
-//                L.d(CLASS + tag.getClass());
-//                if(tag instanceof PeerSemanticTag){
-//                    message.setReceiverPeer((PeerSemanticTag) tag);
-//                } else if (tag instanceof SpatialSemanticTag){
-//                    message.setReceiverSpatial((SpatialSemanticTag) tag);
-//                } else if(tag instanceof TimeSemanticTag){
-//                    message.setReceiverTime((TimeSemanticTag) tag);
-//                }
-//            }
-//        } catch (SharkKBException e) {
-//            e.printStackTrace();
-//        }
-
 
         // Check if content isEmpty
         if(!object.has(ASIPSerializer.CONTENT)){
@@ -585,6 +558,15 @@ public class ASIPSerializer {
         }
 
         JSONObject content = object.getJSONObject(ASIPSerializer.CONTENT);
+
+        if(content.has(ASIPMessage.LOGICALSENDER)){
+            logicalSenderString = content.get(ASIPMessage.LOGICALSENDER).toString();
+            try {
+                message.setLogicalSender(ASIPSerializer.deserializePeerTag(logicalSenderString));
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+            }
+        }
 
         switch (command) {
             case ASIPMessage.ASIP_EXPOSE:

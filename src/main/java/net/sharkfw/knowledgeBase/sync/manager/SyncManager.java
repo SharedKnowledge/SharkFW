@@ -1,9 +1,11 @@
 package net.sharkfw.knowledgeBase.sync.manager;
 
+import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.SharkTask;
 import net.sharkfw.system.SharkTaskExecutor;
@@ -24,6 +26,7 @@ public class SyncManager extends SharkTask {
     public interface SyncInviteListener {
         void onInvitation(SyncComponent component);
     }
+
     // Public CONSTANTS
     public static final String SHARK_SYNC_INVITE_TYPE_SI = "http://www.sharksystem.net/sync/invite";
     public static final String SHARK_SYNC_OFFER_TYPE_SI = "http://www.sharksystem.net/sync/offer";
@@ -52,31 +55,40 @@ public class SyncManager extends SharkTask {
         this.mergePropertyList = new SyncMergePropertyList(this.engine.getStorage());
     }
 
-    public SyncMergePropertyList getMergePropertyList(){
+    public SyncMergePropertyList getMergePropertyList() {
         return this.mergePropertyList;
     }
 
-    public void allowInvitation(boolean allow){
-        if(allow){
+    public void allowInvitation(boolean allow) {
+        if (allow) {
             this.syncInviteKP = new SyncInviteKP(this.engine, this);
         } else {
             this.syncInviteKP = null;
         }
     }
 
-    public void startUpdateProcess(long minutes){
+    public void triggerSyncReply(ASIPInMessage message) {
+        ReplySyncTask replySyncTask = new ReplySyncTask(this, message);
+        SharkTaskExecutor.getInstance().submit(replySyncTask);
+    }
+
+    public void triggerSync() {
+        SharkTaskExecutor.getInstance().submit(this);
+    }
+
+    public void startUpdateProcess(long minutes) {
         SharkTaskExecutor.getInstance().scheduleAtFixedRate(this, minutes, TimeUnit.MINUTES);
     }
 
     @Override
     protected Object process() {
         Iterator<SyncComponent> components = this.getSyncComponents();
-        while (components.hasNext()){
+        while (components.hasNext()) {
             SyncComponent next = components.next();
 
             try {
                 Enumeration<PeerSemanticTag> enumeration = next.getApprovedMembers().peerTags();
-                while (enumeration.hasMoreElements()){
+                while (enumeration.hasMoreElements()) {
                     PeerSemanticTag peerSemanticTag = enumeration.nextElement();
 
                     // get the time when lastseen OR better when the lastMerge was sent
@@ -88,7 +100,7 @@ public class SyncManager extends SharkTask {
                     long lastMerged = property.getDate();
                     long lastChanges = next.getKb().getTimeOfLastChanges();
 
-                    if(lastChanges > lastMerged){
+                    if (lastChanges > lastMerged) {
                         SharkKB changes = next.getKb().getChanges(lastMerged);
 
                         // TODO if changes are empty?
@@ -120,15 +132,35 @@ public class SyncManager extends SharkTask {
         return null;
     }
 
+    public SharkKB getChanges(SyncComponent component, PeerSemanticTag peerSemanticTag) throws SharkKBException {
+        SyncMergeProperty property = this.mergePropertyList.get(peerSemanticTag, component.getUniqueName());
+
+        long lastMerged = property.getDate();
+        long lastChanges = component.getKb().getTimeOfLastChanges();
+
+        if (lastChanges > lastMerged) {
+            SharkKB changes = component.getKb().getChanges(lastMerged);
+
+            // TODO if changes are empty?
+
+            property.updateDate();
+
+            this.mergePropertyList.add(property);
+
+            return changes;
+        }
+        return null;
+    }
+
 
     public SyncComponent createSyncComponent(
             SharkKB kb,
             SemanticTag uniqueName,
             PeerSTSet member,
             PeerSemanticTag owner,
-            boolean writable){
+            boolean writable) {
 
-        if(getComponentByName(uniqueName)!= null) return null;
+        if (getComponentByName(uniqueName) != null) return null;
 
         SyncComponent component = null;
         try {
@@ -140,33 +172,56 @@ public class SyncManager extends SharkTask {
         return component;
     }
 
-    public void removeSyncComponent(SyncComponent component){
+    public void removeSyncComponent(SyncComponent component) {
         components.remove(component);
     }
 
-    public Iterator<SyncComponent> getSyncComponents(){
+    public Iterator<SyncComponent> getSyncComponents() {
         return components.iterator();
     }
 
-    public SyncComponent getComponentByName(SemanticTag name){
-        for (SyncComponent component : components ){
-            if(SharkCSAlgebra.identical(component.getUniqueName(), name) ){
+    public SyncComponent getComponentByName(SemanticTag name) {
+        for (SyncComponent component : components) {
+            if (SharkCSAlgebra.identical(component.getUniqueName(), name)) {
                 return component;
             }
         }
         return null;
     }
 
-    public void addInviteListener(SyncInviteListener listener){
+    public Iterator<SyncComponent> getSyncComponentsWithPeer(PeerSemanticTag peerSemanticTag) throws SharkKBException {
+        ArrayList<SyncComponent> componentArrayList = new ArrayList<>();
+
+        Iterator<SyncComponent> syncComponents = getSyncComponents();
+        while (syncComponents.hasNext()){
+            SyncComponent next = syncComponents.next();
+
+            PeerSemanticTag owner = next.getOwner();
+            PeerSTSet members = next.getMembers();
+
+            if(owner.getSI().equals(peerSemanticTag.getSI())){
+                componentArrayList.add(next);
+                continue;
+            }
+
+            PeerSemanticTag membersSemanticTag = members.getSemanticTag(peerSemanticTag.getSI());
+            if(membersSemanticTag!=null){
+                componentArrayList.add(next);
+            }
+        }
+        return componentArrayList.iterator();
+    }
+
+    public void addInviteListener(SyncInviteListener listener) {
         listeners.add(listener);
     }
 
-    public void removeInviteListener(SyncInviteListener listener){
+    public void removeInviteListener(SyncInviteListener listener) {
         listeners.remove(listener);
     }
 
-    public void triggerListener(SyncComponent component){
-        for (SyncInviteListener listener : this.listeners){
+    public void triggerListener(SyncComponent component) {
+        for (SyncInviteListener listener : this.listeners) {
             listener.onInvitation(component);
         }
     }

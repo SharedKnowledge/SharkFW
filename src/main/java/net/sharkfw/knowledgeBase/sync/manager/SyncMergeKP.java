@@ -39,8 +39,9 @@ public class SyncMergeKP extends ContentPort {
         if(message.getCommand()!=ASIPMessage.ASIP_RAW)
             return false;
 
+        // TODO Message not correct serialized! no physical sender!
 
-        L.d(this.se.getOwner().getName() + " received a Merge from " + message.getSender().getName(), this);
+        L.d(this.se.getOwner().getName() + " received a Merge from " + message.getPhysicalSender().getName(), this);
 
         SyncComponent component = syncManager.getComponentByName(message.getTopic());
 

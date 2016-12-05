@@ -8,6 +8,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
+import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
@@ -52,9 +53,9 @@ public class SyncOfferKP extends KnowledgePort {
             
             if(st != null && peer != null) {
 
-                L.d(this.se.getOwner().getName() + " received an Offer from " + interest.getSender().getName(), this);
 
                 SyncMergePropertyList mergePropertyList = this.syncManager.getMergePropertyList();
+                L.d(this.se.getOwner().getName() + " received an Offer from " + interest.getSender().getName(), this);
 
 //                // remember that
 //                this.lastSeen.put(peer, System.currentTimeMillis());
@@ -90,17 +91,9 @@ public class SyncOfferKP extends KnowledgePort {
 
                             String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
 
-                            try {
-                                message.setType(SyncManager.SHARK_SYNC_MERGE_TAG);
+                            ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
 
-                                // TODO Threading?
-                                message.raw(
-                                        serializeKnowledge.getBytes(StandardCharsets.UTF_8),
-                                        message.getSender().getAddresses()
-                                );
-                            } catch (SharkException ex) {
-                                L.e(ex.getLocalizedMessage(), this);
-                            }
+                            response.raw(serializeKnowledge.getBytes(StandardCharsets.UTF_8));
                         }
 
                     }

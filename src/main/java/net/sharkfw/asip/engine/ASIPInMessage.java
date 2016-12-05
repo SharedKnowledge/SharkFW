@@ -131,8 +131,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         return true;
     }
 
-    public ASIPOutMessage createResponse(String[] address) throws SharkKBException {
-        return this.se.createASIPOutResponse(this.con, address, this);
+    public ASIPOutMessage createResponse(SemanticTag topic, SemanticTag type) throws SharkKBException {
+        return this.se.createASIPOutResponse(this.con, this, topic, type);
     }
 
     @Override
@@ -189,37 +189,6 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     public void expose(ASIPInterest interest) throws SharkException {
 
         this.expose(interest, this.con.getReceiverAddressString());
-
-//        try {
-//            STSet remotepeers = interest.getReceivers();
-//            Enumeration rPeers = null;
-//
-//            if(remotepeers != null) {
-//                rPeers = remotepeers.tags();
-//            }
-//
-//            if(rPeers == null || !rPeers.hasMoreElements()) {
-//                // there are no peer at all - maybe we got it through a stream
-//                this.expose(interest, (String[]) null);
-//                return;
-//            }
-//
-//            // Send kepInterest to every peer
-//            while (rPeers.hasMoreElements()) {
-//                PeerSemanticTag rpst = (PeerSemanticTag) rPeers.nextElement();
-//                // try every address of that peer
-//                String[] adr = rpst.getAddresses();
-//                if (adr == null) {
-//                    L.e("Peer has no addresses. Unable to proceed.", this);
-//                    continue;
-//                }
-//
-//                this.expose(interest, adr);
-//            }
-//        } catch (SharkException ex) {
-//            // KB Error
-//            L.e(ex.getMessage(), this);
-//        }
     }
 
     @Override
@@ -229,12 +198,13 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void expose(ASIPInterest interest, String[] receiveraddresses) throws SharkException {
+        //TODO address not used
         if (interest == null)
             L.d("no interest", this);
         if (receiveraddresses.length < 0)
             L.d("no address", this);
 
-        this.response = this.createResponse(receiveraddresses);
+        this.response = this.createResponse(null, null);
         if (this.response != null) {
             this.response.expose(interest);
         }
@@ -247,7 +217,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void insert(ASIPKnowledge k, String[] receiveraddresses) throws SharkException {
-        this.response = this.createResponse(receiveraddresses);
+        //TODO address not used
+        this.response = this.createResponse(null, null);
         if (this.response != null) {
             L.d("Now go insert!!!", this);
             this.response.insert(k);
@@ -261,7 +232,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void raw(InputStream stream, String[] address) throws SharkException {
-        ASIPOutMessage outMessage = this.createResponse(address);
+        //TODO address not used
+        ASIPOutMessage outMessage = this.createResponse(null, null);
         if (outMessage != null) {
             outMessage.raw(stream);
         }
@@ -274,7 +246,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void raw(byte[] bytes, String[] address) throws SharkException {
-        ASIPOutMessage outMessage = this.createResponse(address);
+        //TODO address not used
+        ASIPOutMessage outMessage = this.createResponse(null, null);
         if (outMessage != null) {
             outMessage.raw(bytes);
         }
@@ -295,6 +268,11 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     @Override
     public void sendToAllAddresses(PeerSemanticTag pst) {
 
+    }
+
+    @Override
+    public PeerSemanticTag getSender() throws SharkKBException {
+        return null;
     }
 
     @Override

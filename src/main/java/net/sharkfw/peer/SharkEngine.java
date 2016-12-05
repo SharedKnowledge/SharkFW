@@ -131,7 +131,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public SyncManager getSyncManager(){
         if(this.syncManager==null){
             this.syncManager = new SyncManager(this);
-            this.syncManager.startUpdateProcess(15);
+//            this.syncManager.startUpdateProcess(15);
         }
         return this.syncManager;
 
@@ -1017,27 +1017,23 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.connectionListener = listener;
     }
 
-    public ASIPOutMessage createASIPOutResponse(StreamConnection connection, String[] receiverAddress, ASIPInMessage inMessage) throws SharkKBException {
-
+    public ASIPOutMessage createASIPOutResponse(StreamConnection connection, ASIPInMessage inMessage, SemanticTag topic, SemanticTag type) throws SharkKBException {
 
         if(connection != null){
-//            L.d("We still have the connection", this);
             if(this.connectionListener!=null){
                 connection.addConnectionListener(this.connectionListener);
             }
-            if(inMessage.getSender()==null){
-                String receiver = connection.getReceiverAddressString();
-                int colon = receiver.lastIndexOf(":");
-                String newAddress = receiver.substring(0, colon+1);
-                newAddress+="7071";
-                PeerSemanticTag tag = InMemoSharkKB.createInMemoPeerSemanticTag("receiver", "www.receiver.de", newAddress);
-                inMessage.setSender(tag);
+
+            if(topic==null){
+                topic = inMessage.getTopic();
+            }
+            if(type==null){
+                type = inMessage.getType();
             }
 
-            return new ASIPOutMessage(this, connection, inMessage);
-        } else {
-            return this.createASIPOutMessage(receiverAddress, inMessage.getSender());
+            return new ASIPOutMessage(this, connection, inMessage, topic, type);
         }
+        return null;
     }
 
     public ASIPOutMessage createASIPOutMessage(String[] addresses, PeerSemanticTag receiver) {
@@ -1047,7 +1043,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public ASIPOutMessage createASIPOutMessage(
             String[] addresses,
-            PeerSemanticTag sender,
+            PeerSemanticTag logicalSender,
             PeerSemanticTag receiverPeer /* kann null sein*/,
             SpatialSemanticTag receiverSpatial /* kann null sein*/,
             TimeSemanticTag receiverTime /* kann null sein*/,
@@ -1100,11 +1096,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                     //    } else {
                     //  fromPool = true;
                     //  }
-                    message = new ASIPOutMessage(this, sConn, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic, type);
+                    message = new ASIPOutMessage(this, sConn, ttl, engineOwnerPeer, logicalSender, receiverPeer, receiverSpatial, receiverTime, topic, type);
                 } else {
-                    // TODO MessageStub necessary?
                     mStub = (MessageStub) protocolStub;
-                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic, type, address);
+                    message = new ASIPOutMessage(this, mStub, ttl, engineOwnerPeer, logicalSender, receiverPeer, receiverSpatial, receiverTime, topic, type, address);
                 }
             } catch (SharkNotSupportedException ex) {
                 L.e(ex.getMessage(), this);

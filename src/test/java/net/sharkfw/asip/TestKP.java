@@ -42,7 +42,6 @@ public class TestKP extends KnowledgePort {
             L.d(this.name + " says: " + this.text, this);
         }
 
-
         if (asipConnection == null) {
             L.d("Connection = null");
         }
@@ -51,12 +50,10 @@ public class TestKP extends KnowledgePort {
             L.d("Interest = null");
         }
 
-//        super.handleExpose(interest, asipConnection);
-
         try {
             asipConnection.expose(interest);
         } catch (SharkException e) {
-            L.d(e.getMessage());
+            L.d(e.getMessage(), this);
             e.printStackTrace();
         }
     }

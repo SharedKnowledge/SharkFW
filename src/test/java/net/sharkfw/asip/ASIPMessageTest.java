@@ -39,7 +39,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
 
         String rawInput = "Hello ASIP.";
 
-        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null, null, null);
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, sender, receiverPeer, null, null, null, null);
         outMessage.raw(rawInput.getBytes(StandardCharsets.UTF_8));
         this.connection.createInputStream();
 
@@ -54,7 +54,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
 
         String rawInput = "Hello ASIP.";
 
-        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null, null, null);
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, sender, receiverPeer, null, null, null, null);
         outMessage.raw(rawInput.getBytes(StandardCharsets.UTF_8));
         this.connection.createInputStream();
 
@@ -75,7 +75,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
         String rawInput = "Hello ASIP.";
         ByteArrayInputStream stream = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
 
-        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null, null, null);
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, sender, receiverPeer, null, null, null, null);
         outMessage.raw(stream);
         this.connection.createInputStream();
 
@@ -95,7 +95,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
 
         ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, sender, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
 
-        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null, null, null);
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, sender, receiverPeer, null, null, null, null);
         outMessage.expose(space);
         this.connection.createInputStream();
 
@@ -114,6 +114,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
                 this.engine,
                 this.connection,
                 10,
+                TestUtils.createRandomPeerSemanticTag(),
                 TestUtils.createRandomPeerSemanticTag(),
                 TestUtils.createRandomPeerSemanticTag(),
                 null,
@@ -157,6 +158,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
                 10,
                 TestUtils.createRandomPeerSemanticTag(),
                 TestUtils.createRandomPeerSemanticTag(),
+                TestUtils.createRandomPeerSemanticTag(),
                 null,
                 null,
                 TestUtils.createRandomSemanticTag(),
@@ -178,7 +180,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
         ASIPKnowledge knowledge = new InMemoASIPKnowledge(kb.getVocabulary());
         knowledge.addInformation(rawInput, space);
 
-        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, receiverPeer, null, null, null, null);
+        ASIPOutMessage outMessage = new ASIPOutMessage(this.engine, this.connection, 10, sender, sender, receiverPeer, null, null, null, null);
         outMessage.insert(knowledge);
         this.connection.createInputStream();
 
