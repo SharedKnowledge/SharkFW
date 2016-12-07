@@ -9,7 +9,8 @@ import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
-import net.sharkfw.asip.engine.ASIPSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.SemanticTag;
@@ -19,7 +20,6 @@ import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.peer.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
-import net.sharkfw.system.SharkException;
 import net.sharkfw.system.Util;
 
 /**
@@ -89,7 +89,7 @@ public class SyncOfferKP extends KnowledgePort {
 
                             mergePropertyList.add(property);
 
-                            String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
+                            String serializeKnowledge = ASIPMessageSerializerHelper.serializeKB(changes).toString();
 
                             L.d(serializeKnowledge, this);
                             L.d("Length of sending Merge: " + serializeKnowledge.length(), this);
@@ -123,7 +123,7 @@ public class SyncOfferKP extends KnowledgePort {
             while(peerIter.hasNext()) {
                 PeerSemanticTag peer = peerIter.next();
                 Long lastseen = this.lastSeen.get(peer);
-                buf.append(ASIPSerializer.serializeTag(peer));
+                buf.append(ASIPMessageSerializerHelper.serializeTag(peer));
                 buf.append("{" + Long.toString(lastseen) + "}");
             }
             L.d("write buf: " + buf.toString());
@@ -146,7 +146,7 @@ public class SyncOfferKP extends KnowledgePort {
                 String peerString = "{" + stringIter.next() + "}";
                 String timeString = stringIter.next();
                 
-                PeerSemanticTag peer = ASIPSerializer.deserializePeerTag(peerString);
+                PeerSemanticTag peer = ASIPMessageSerializerHelper.deserializePeerTag(peerString);
                 Long time = Long.parseLong(timeString);
                 
                 this.lastSeen.put(peer, time);

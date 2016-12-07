@@ -1,9 +1,9 @@
 package net.sharkfw.knowledgeBase.sync.manager;
 
-import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
-import net.sharkfw.asip.engine.ASIPSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -50,7 +50,7 @@ public class ReplySyncTask extends SharkTask{
                     SharkKB changes = syncManager.getChanges(next, peerSemanticTag);
 
                     if(changes!=null){
-                        String serializedChanges = ASIPSerializer.serializeKB(changes).toString();
+                        String serializedChanges = ASIPMessageSerializerHelper.serializeKB(changes).toString();
 
                         ASIPOutMessage response = this.message.createResponse(next.getUniqueName(), SyncManager.SHARK_SYNC_MERGE_TAG);
 

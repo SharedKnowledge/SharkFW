@@ -5,6 +5,7 @@
  */
 package net.sharkfw.asip;
 
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -17,8 +18,7 @@ import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.asip.engine.ASIPSerializer;
-import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.system.SharkNotSupportedException;
 import org.junit.*;
@@ -31,7 +31,7 @@ import org.junit.*;
  * Then - excepted result.
  * @author j4rvis
  */
-public class ASIPSerializerTest {
+public class ASIPMessageSerializerTest {
     
     SharkKB kb;
     String[] sis;
@@ -126,8 +126,8 @@ public class ASIPSerializerTest {
     //FIXME
     // @Test
     public void SemanticTagSerialization_SToneSI_success() throws SharkKBException {
-        String serializedTag = ASIPSerializer.serializeTag(t1).toString();
-        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        String serializedTag = ASIPMessageSerializerHelper.serializeTag(t1).toString();
+        SemanticTag deserializedTag = ASIPMessageSerializerHelper.deserializeTag(serializedTag);
         
         Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, t1));
     }
@@ -140,8 +140,8 @@ public class ASIPSerializerTest {
     //FIXME
     // @Test
     public void SemanticTagSerialization_STmultipleSIS_success() throws SharkKBException{
-        String serializedTag = ASIPSerializer.serializeTag(t5).toString();
-        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        String serializedTag = ASIPMessageSerializerHelper.serializeTag(t5).toString();
+        SemanticTag deserializedTag = ASIPMessageSerializerHelper.deserializeTag(serializedTag);
         
         Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, t5));
     }
@@ -154,8 +154,8 @@ public class ASIPSerializerTest {
     //FIXME
     // @Test
     public void SemanticTagSerialization_PSToneAddress_success() throws SharkKBException {
-        String serializedTag = ASIPSerializer.serializeTag(p1).toString();
-        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        String serializedTag = ASIPMessageSerializerHelper.serializeTag(p1).toString();
+        SemanticTag deserializedTag = ASIPMessageSerializerHelper.deserializeTag(serializedTag);
         
         Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, p1));
     }
@@ -168,8 +168,8 @@ public class ASIPSerializerTest {
     //FIXME
     // @Test
     public void SemanticTagSerialization_PSTmultipleAddresses_success() throws SharkKBException{
-        String serializedTag = ASIPSerializer.serializeTag(p5).toString();
-        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        String serializedTag = ASIPMessageSerializerHelper.serializeTag(p5).toString();
+        SemanticTag deserializedTag = ASIPMessageSerializerHelper.deserializeTag(serializedTag);
         
         Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, p5));
     }
@@ -182,8 +182,8 @@ public class ASIPSerializerTest {
     //FIXME
     // @Test
     public void SemanticTagSerialization_TSToneTime_success() throws SharkKBException {
-        String serializedTag = ASIPSerializer.serializeTag(ti1).toString();
-        SemanticTag deserializedTag = ASIPSerializer.deserializeTag(serializedTag);
+        String serializedTag = ASIPMessageSerializerHelper.serializeTag(ti1).toString();
+        SemanticTag deserializedTag = ASIPMessageSerializerHelper.deserializeTag(serializedTag);
         
         Assert.assertTrue(SharkCSAlgebra.identical(deserializedTag, ti1));
     }
@@ -201,8 +201,8 @@ public class ASIPSerializerTest {
         stSetWithOneTag.merge(t1);
         stSetWithOneTag.merge(t2);
         
-        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag).toString();
-        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
+        String serializedTopics = ASIPMessageSerializerHelper.serializeSTSet(stSetWithOneTag).toString();
+        STSet deserialized = ASIPMessageSerializerHelper.deserializeSTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
@@ -218,8 +218,8 @@ public class ASIPSerializerTest {
         STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
         stSetWithOneTag.merge(p1);
         
-        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag).toString();
-        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
+        String serializedTopics = ASIPMessageSerializerHelper.serializeSTSet(stSetWithOneTag).toString();
+        STSet deserialized = ASIPMessageSerializerHelper.deserializeSTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
@@ -235,8 +235,8 @@ public class ASIPSerializerTest {
         STSet stSetWithOneTag = InMemoSharkKB.createInMemoSTSet();
         stSetWithOneTag.merge(ti1);
         
-        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithOneTag).toString();
-        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
+        String serializedTopics = ASIPMessageSerializerHelper.serializeSTSet(stSetWithOneTag).toString();
+        STSet deserialized = ASIPMessageSerializerHelper.deserializeSTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithOneTag, deserialized));
     }
@@ -255,8 +255,8 @@ public class ASIPSerializerTest {
         stSetWithMultipleTags.merge(t3);
         stSetWithMultipleTags.merge(t5);
         
-        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithMultipleTags).toString();
-        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
+        String serializedTopics = ASIPMessageSerializerHelper.serializeSTSet(stSetWithMultipleTags).toString();
+        STSet deserialized = ASIPMessageSerializerHelper.deserializeSTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithMultipleTags, deserialized));
     }
@@ -276,8 +276,8 @@ public class ASIPSerializerTest {
         stSetWithMultipleTags.merge(p5);
         stSetWithMultipleTags.merge(t5);
         
-        String serializedTopics = ASIPSerializer.serializeSTSet(stSetWithMultipleTags).toString();
-        STSet deserialized = ASIPSerializer.deserializeAnySTSet(null, serializedTopics);
+        String serializedTopics = ASIPMessageSerializerHelper.serializeSTSet(stSetWithMultipleTags).toString();
+        STSet deserialized = ASIPMessageSerializerHelper.deserializeSTSet(null, serializedTopics);
         
         Assert.assertTrue(SharkCSAlgebra.identical(stSetWithMultipleTags, deserialized));
     }
@@ -292,7 +292,7 @@ public class ASIPSerializerTest {
 //        ContextPoint cp1 = kb.createContextPoint(co1);
 //        cp1.addInformation("ContextPoint1");
         
-        System.out.println(ASIPSerializer.serializeInterest((ASIPSpace)co1).toString(2) );
+        System.out.println(ASIPMessageSerializerHelper.serializeInterest((ASIPSpace)co1).toString(2) );
         
         Assert.assertTrue(true);
     }

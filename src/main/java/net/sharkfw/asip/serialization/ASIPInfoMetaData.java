@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.sharkfw.asip.engine;
+package net.sharkfw.asip.serialization;
 
 /**
  *
@@ -51,7 +51,4 @@ public class ASIPInfoMetaData {
     public void setLength(long length) {
         this.length = length;
     }
-    
-    
-    
 }

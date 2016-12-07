@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPStub;
 import net.sharkfw.asip.SharkStub;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
@@ -80,7 +81,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         }
 
         if(!this.parsedString.isEmpty()){
-            ASIPSerializer.deserializeInMessage(this, this.parsedString);
+            ASIPMessageSerializer.deserializeInMessage(this, this.parsedString);
             this.parsed = true;
         }
     }

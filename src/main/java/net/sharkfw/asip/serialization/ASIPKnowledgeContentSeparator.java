@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.sharkfw.asip.engine;
+package net.sharkfw.asip.serialization;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.asip.ASIPInformationSpace;
-import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Information;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
@@ -17,7 +16,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  *
  * @author j4rvis
  */
-public class ASIPInfoDataManager {
+public class ASIPKnowledgeContentSeparator {
     
     public final static String INFOCONTENT = "INFOCONTENT";
     public final static String INFODATA = "INFODATA";
@@ -26,7 +25,7 @@ public class ASIPInfoDataManager {
     private final List<ASIPPointInformation> infoPoints;
     private String infoContent;
 
-    public ASIPInfoDataManager(Iterator<ASIPInformationSpace> infoSpaces) throws SharkKBException {
+    public ASIPKnowledgeContentSeparator(Iterator<ASIPInformationSpace> infoSpaces) throws SharkKBException {
         this.infoPoints = new ArrayList<>();
         this.infoContent = "";
         while(infoSpaces.hasNext()){
@@ -44,11 +43,6 @@ public class ASIPInfoDataManager {
                 data.setOffset(currentOffset);
 
                 String content = info.getContentAsString();
-                String result = "";
-//                byte[] content = info.getContentAsByte();
-//                byte[] result = new byte[infoContent.length + content.length];
-//                System.arraycopy(infoContent, 0, result, 0, infoContent.length());
-//                System.arraycopy(content, 0, result, infoContent.length(), content.length());
                 infoContent += content;
                 currentOffset=infoContent.length();
                 
@@ -65,5 +59,4 @@ public class ASIPInfoDataManager {
     public String getInfoContent() {
         return infoContent;
     }
-    
 }

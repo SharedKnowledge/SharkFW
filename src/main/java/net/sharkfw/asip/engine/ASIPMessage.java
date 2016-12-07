@@ -5,14 +5,13 @@
  */
 package net.sharkfw.asip.engine;
 
-import java.security.PrivateKey;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.security.pki.storage.SharkPkiStorage;
-import net.sharkfw.system.L;
+
+import java.security.PrivateKey;
 
 /**
  * @author j4rvis, thsc
@@ -32,19 +31,19 @@ public abstract class ASIPMessage {
     public static final String SENDER = "SENDER";
     public static final String PHYSICALSENDER = "PHYSICALSENDER";
     public static final String LOGICALSENDER = "LOGICALSENDER";
-    public static final String RECEIVERS = "RECEIVERS";
     public static final String SIGNATURE = "SIGNATURE";
     public static final String RECEIVERPEER = "RECEIVERPEER";
     public static final String RECEIVERLOCATION = "RECEIVERLOCATION";
     public static final String RECEIVERTIME = "RECEIVERTIME";
     public static final String TOPIC = "TOPIC";
     public static final String TYPE = "TYPE";
+
     private SharkEngine engine;
-
     private StreamConnection connection;
-    private final String version = "ASIP 1.0";
 
+    private final String version = "ASIP1.0";
     private final String format = "JSON";
+
     private boolean encrypted = false;
     private String encryptedSessionKey = "";
     private boolean signed = false;
@@ -135,11 +134,11 @@ public abstract class ASIPMessage {
         this.topic = topic;
         this.type = type;
     }
-    
+
     public void initSecurity(PrivateKey privateKey, /*SharkPublicKeyStorage publicKeyStorage,*/ SharkPkiStorage sharkPkiStorage,
-            SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel, 
-            SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
-        
+                             SharkEngine.SecurityLevel encryptionLevel, SharkEngine.SecurityLevel signatureLevel,
+                             SharkEngine.SecurityReplyPolicy replyPolicy, boolean refuseUnverifiably) {
+
         this.privateKey = privateKey;
         //this.publicKeyStorage = publicKeyStorage;
         this.sharkPkiStorage = sharkPkiStorage;
@@ -209,11 +208,11 @@ public abstract class ASIPMessage {
         return receiverTime;
     }
 
-    public SemanticTag getTopic(){
+    public SemanticTag getTopic() {
         return this.topic;
     }
 
-    public SemanticTag getType(){
+    public SemanticTag getType() {
         return this.type;
     }
 
@@ -222,14 +221,14 @@ public abstract class ASIPMessage {
     }
 
     public void setSignature(String signature) {
-        if(!signature.isEmpty()){
+        if (!signature.isEmpty()) {
             this.signature = signature;
             this.signed = true;
         }
     }
 
     public void setEncryptedSessionKey(String encryptedSessionKey) {
-        if(!encryptedSessionKey.isEmpty()){
+        if (!encryptedSessionKey.isEmpty()) {
             this.encryptedSessionKey = encryptedSessionKey;
             this.encrypted = true;
         }
@@ -260,11 +259,11 @@ public abstract class ASIPMessage {
         this.signed = signed;
     }
 
-    public void setTopic(SemanticTag topic){
+    public void setTopic(SemanticTag topic) {
         this.topic = topic;
     }
 
-    public void setType(SemanticTag type){
+    public void setType(SemanticTag type) {
         this.type = type;
     }
 

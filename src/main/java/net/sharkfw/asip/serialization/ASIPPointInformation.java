@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.sharkfw.asip.engine;
+package net.sharkfw.asip.serialization;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.serialization.ASIPInfoMetaData;
 
 /**
  *

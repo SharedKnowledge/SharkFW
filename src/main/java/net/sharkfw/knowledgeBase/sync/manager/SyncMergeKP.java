@@ -3,7 +3,8 @@ package net.sharkfw.knowledgeBase.sync.manager;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPMessage;
-import net.sharkfw.asip.engine.ASIPSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.peer.ContentPort;
 import net.sharkfw.peer.SharkEngine;
@@ -61,7 +62,7 @@ public class SyncMergeKP extends ContentPort {
         SharkKB changes;
 
         try {
-            changes = (SharkKB) ASIPSerializer.deserializeASIPKnowledge(text);
+            changes = (SharkKB) ASIPMessageSerializerHelper.deserializeASIPKnowledge(text);
             syncKB.putChanges(changes);
         } catch (SharkKBException e) {
             e.printStackTrace();

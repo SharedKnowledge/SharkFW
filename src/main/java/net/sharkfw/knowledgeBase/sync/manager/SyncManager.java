@@ -2,10 +2,10 @@ package net.sharkfw.knowledgeBase.sync.manager;
 
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
-import net.sharkfw.asip.engine.ASIPSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.SharkTask;
 import net.sharkfw.system.SharkTaskExecutor;
@@ -109,7 +109,7 @@ public class SyncManager extends SharkTask {
 
                         this.mergePropertyList.add(property);
 
-                        String serializedChanges = ASIPSerializer.serializeKB(changes).toString();
+                        String serializedChanges = ASIPMessageSerializerHelper.serializeKB(changes).toString();
 
                         ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
                                 peerSemanticTag.getAddresses(),

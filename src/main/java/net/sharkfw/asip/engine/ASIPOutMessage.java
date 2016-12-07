@@ -2,6 +2,8 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
@@ -98,7 +100,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            String parse = ASIPSerializer.serializeExpose(this, interest).toString();
+            String parse = ASIPMessageSerializer.serializeExpose(this, interest).toString();
             this.osw.write(parse);
         } catch (SharkKBException e) {
             e.printStackTrace();
@@ -117,11 +119,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            if(knowledge!=null){
-                this.osw.write(ASIPSerializer.serializeInsert(this, knowledge).toString());
-            } else {
-                this.osw.write(ASIPSerializer.serializeHeader(this).toString());
-            }
+                this.osw.write(ASIPMessageSerializer.serializeInsert(this, knowledge).toString());
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -139,7 +137,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            this.osw.write(ASIPSerializer.serializeRaw(this, raw).toString());
+            this.osw.write(ASIPMessageSerializer.serializeRaw(this, raw).toString());
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();
@@ -158,7 +156,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            this.osw.write(ASIPSerializer.serializeRaw(this, inputStream).toString());
+            this.osw.write(ASIPMessageSerializer.serializeRaw(this, inputStream).toString());
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();

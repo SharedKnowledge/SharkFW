@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.sync.manager;
 
-import net.sharkfw.asip.engine.ASIPSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -33,8 +34,8 @@ public class SyncMergeProperty {
 
         if(object.has(PEER_ENTRY) && object.has(KB_NAME_ENTRY) && object.has(DATE_ENTRY)){
             try {
-                this.peer = ASIPSerializer.deserializePeerTag(object.getString(PEER_ENTRY));
-                this.kbName = ASIPSerializer.deserializeTag(object.getString(KB_NAME_ENTRY));
+                this.peer = ASIPMessageSerializerHelper.deserializePeerTag(object.getString(PEER_ENTRY));
+                this.kbName = ASIPMessageSerializerHelper.deserializeTag(object.getString(KB_NAME_ENTRY));
                 this.date = object.getLong(DATE_ENTRY);
             } catch (SharkKBException e) {
                 e.printStackTrace();
@@ -45,8 +46,8 @@ public class SyncMergeProperty {
     public String asString(){
         JSONObject object = new JSONObject();
         try {
-            object.put(PEER_ENTRY, ASIPSerializer.serializeTag(peer).toString());
-            object.put(KB_NAME_ENTRY, ASIPSerializer.serializeTag(kbName).toString());
+            object.put(PEER_ENTRY, ASIPMessageSerializerHelper.serializeTag(peer).toString());
+            object.put(KB_NAME_ENTRY, ASIPMessageSerializerHelper.serializeTag(kbName).toString());
             object.put(DATE_ENTRY, date);
         } catch (SharkKBException e) {
             e.printStackTrace();
