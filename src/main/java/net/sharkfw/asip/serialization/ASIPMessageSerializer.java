@@ -1,17 +1,12 @@
 package net.sharkfw.asip.serialization;
 
-import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.SharkGeometry;
-import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
-import net.sharkfw.knowledgeBase.inmemory.*;
 import net.sharkfw.system.L;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,9 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
+import java.util.Scanner;
 
 /**
  * @author j4rvis
@@ -37,7 +30,7 @@ public class ASIPMessageSerializer {
     public static final String KNOWLEDGE = "KNOWLEDGE";
     public static final String RAW = "RAW";
 
-    public static JSONObject serializeExpose(ASIPMessage header, ASIPSpace interest)
+    public static String serializeExpose(ASIPMessage header, ASIPSpace interest)
             throws SharkKBException, JSONException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
@@ -46,10 +39,10 @@ public class ASIPMessageSerializer {
         content.put(SIGNED, false); // If signed or not
         content.put(INTEREST, ASIPMessageSerializerHelper.serializeInterest(interest));
         object.put(CONTENT, content);
-        return object;
+        return object.toString();
     }
 
-    public static JSONObject serializeInsert(ASIPMessage header, ASIPKnowledge knowledge)
+    public static String serializeInsert(ASIPMessage header, ASIPKnowledge knowledge)
             throws JSONException, SharkKBException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
@@ -59,10 +52,10 @@ public class ASIPMessageSerializer {
         content.put(KNOWLEDGE, ASIPMessageSerializerHelper.serializeKnowledge(knowledge));
         object.put(CONTENT, content);
 
-        return object;
+        return object.toString();
     }
 
-    public static JSONObject serializeRaw(ASIPMessage header, byte[] raw) throws SharkKBException {
+    public static String serializeRaw(ASIPMessage header, byte[] raw) throws SharkKBException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
         JSONObject content = new JSONObject();
@@ -70,10 +63,10 @@ public class ASIPMessageSerializer {
         content.put(SIGNED, false); // If signed or not
         content.put(RAW, new String(raw, StandardCharsets.UTF_8));
         object.put(CONTENT, content);
-        return object;
+        return object.toString();
     }
 
-    public static JSONObject serializeRaw(ASIPMessage header, InputStream raw) throws SharkKBException {
+    public static String serializeRaw(ASIPMessage header, InputStream raw) throws SharkKBException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
         JSONObject content = new JSONObject();
@@ -93,7 +86,7 @@ public class ASIPMessageSerializer {
             }
         }
         object.put(CONTENT, content);
-        return object;
+        return object.toString();
     }
 
     public static void deserializeInMessage(ASIPInMessage message, String parsedStream) {
@@ -184,7 +177,7 @@ public class ASIPMessageSerializer {
                 e.printStackTrace();
             }
         }
-        if(object.has(ASIPMessage.TOPIC)){
+        if (object.has(ASIPMessage.TOPIC)) {
             topicString = object.get(ASIPMessage.TOPIC).toString();
             try {
                 topic = ASIPMessageSerializerHelper.deserializeTag(topicString);
@@ -193,7 +186,7 @@ public class ASIPMessageSerializer {
             }
         }
 
-        if(object.has(ASIPMessage.TYPE)){
+        if (object.has(ASIPMessage.TYPE)) {
             typeString = object.get(ASIPMessage.TYPE).toString();
             try {
                 type = ASIPMessageSerializerHelper.deserializeTag(typeString);
@@ -215,13 +208,13 @@ public class ASIPMessageSerializer {
         message.setType(type);
 
         // Check if content isEmpty
-        if(!object.has(ASIPMessageSerializer.CONTENT)){
+        if (!object.has(ASIPMessageSerializer.CONTENT)) {
             return;
         }
 
         JSONObject content = object.getJSONObject(ASIPMessageSerializer.CONTENT);
 
-        if(content.has(ASIPMessage.LOGICALSENDER)){
+        if (content.has(ASIPMessage.LOGICALSENDER)) {
             logicalSenderString = content.get(ASIPMessage.LOGICALSENDER).toString();
             try {
                 message.setLogicalSender(ASIPMessageSerializerHelper.deserializePeerTag(logicalSenderString));

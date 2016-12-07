@@ -16,7 +16,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
  *
  * @author j4rvis
  */
-public class ASIPKnowledgeContentSeparator {
+public class ASIPSerializerContainer {
     
     public final static String INFOCONTENT = "INFOCONTENT";
     public final static String INFODATA = "INFODATA";
@@ -25,7 +25,7 @@ public class ASIPKnowledgeContentSeparator {
     private final List<ASIPPointInformation> infoPoints;
     private String infoContent;
 
-    public ASIPKnowledgeContentSeparator(Iterator<ASIPInformationSpace> infoSpaces) throws SharkKBException {
+    public ASIPSerializerContainer(Iterator<ASIPInformationSpace> infoSpaces) throws SharkKBException {
         this.infoPoints = new ArrayList<>();
         this.infoContent = "";
         while(infoSpaces.hasNext()){

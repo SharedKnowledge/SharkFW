@@ -44,7 +44,7 @@ public class ASIPMessageSerializerHelper {
         }
         object.put(ASIPKnowledge.VOCABULARY, serializedVocabulary);
 
-        ASIPKnowledgeContentSeparator manager = new ASIPKnowledgeContentSeparator(knowledge.informationSpaces());
+        ASIPSerializerContainer manager = new ASIPSerializerContainer(knowledge.informationSpaces());
         Iterator pointInformations = manager.getPointInformations();
         JSONArray pointInfoArray = new JSONArray();
         while (pointInformations.hasNext()) {
@@ -66,8 +66,8 @@ public class ASIPMessageSerializerHelper {
             pointInfoJSON.put(ASIPPointInformation.INFOMETADATA, infoMetaDataArray);
             pointInfoArray.put(pointInfoJSON);
         }
-        object.put(ASIPKnowledgeContentSeparator.INFODATA, pointInfoArray);
-        object.put(ASIPKnowledgeContentSeparator.INFOCONTENT, manager.getInfoContent());
+        object.put(ASIPSerializerContainer.INFODATA, pointInfoArray);
+        object.put(ASIPSerializerContainer.INFOCONTENT, manager.getInfoContent());
 
         return object;
     }
@@ -489,10 +489,10 @@ public class ASIPMessageSerializerHelper {
         Knowledge knowledge = new InMemoASIPKnowledge();
         SharkKB kb = new InMemoSharkKB(topics, types, peers, locations, times, knowledge);
 
-//        byte[] infoContent = jsonObject.getJSONArray(ASIPKnowledgeContentSeparator.INFOCONTENT).toString().getBytes();
-        String contentString = jsonObject.getString(ASIPKnowledgeContentSeparator.INFOCONTENT);
+//        byte[] infoContent = jsonObject.getJSONArray(ASIPSerializerContainer.INFOCONTENT).toString().getBytes();
+        String contentString = jsonObject.getString(ASIPSerializerContainer.INFOCONTENT);
 
-        JSONArray infoDataArray = jsonObject.getJSONArray(ASIPKnowledgeContentSeparator.INFODATA);
+        JSONArray infoDataArray = jsonObject.getJSONArray(ASIPSerializerContainer.INFODATA);
         for (int i = 0; i < infoDataArray.length(); i++) {
 
             JSONObject infoObject = infoDataArray.getJSONObject(i);
