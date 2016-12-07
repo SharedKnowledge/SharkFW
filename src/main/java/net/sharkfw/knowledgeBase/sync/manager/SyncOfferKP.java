@@ -91,6 +91,9 @@ public class SyncOfferKP extends KnowledgePort {
 
                             String serializeKnowledge = ASIPSerializer.serializeKB(changes).toString();
 
+                            L.d(serializeKnowledge, this);
+                            L.d("Length of sending Merge: " + serializeKnowledge.length(), this);
+
                             ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
 
                             response.raw(serializeKnowledge.getBytes(StandardCharsets.UTF_8));

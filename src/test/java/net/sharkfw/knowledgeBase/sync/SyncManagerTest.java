@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.sync;
 
+import net.sharkfw.asip.engine.ASIPSerializer;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
@@ -53,7 +54,11 @@ public class SyncManagerTest {
         // Create a kb to share
         InMemoSharkKB sharkKB = new InMemoSharkKB();
         try {
-            sharkKB.addInformation("This is an information", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"an example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }

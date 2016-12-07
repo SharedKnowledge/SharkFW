@@ -56,6 +56,8 @@ public class SyncMergeKP extends ContentPort {
         Scanner s = new Scanner(message.getRaw(), StandardCharsets.UTF_8.name()).useDelimiter("\\A");
         text = s.hasNext() ? s.next() : "";
 
+        L.d("Length of received Merge: " + text.length(), this);
+
         SharkKB changes;
 
         try {

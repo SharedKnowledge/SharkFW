@@ -205,9 +205,15 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      */
     public static PeerSemanticTag createInMemoPeerSemanticTag(String name, String si, 
             String address) {
-        
-        return new InMemo_SN_TX_PeerSemanticTag(name, new String[] {si}, 
-                new String[] {address});
+
+        if(address==null){
+            return new InMemo_SN_TX_PeerSemanticTag(name, new String[] {si},
+                    null);
+        } else {
+            return new InMemo_SN_TX_PeerSemanticTag(name, new String[] {si},
+                    new String[]{ address} );
+        }
+
     }
     
     /**

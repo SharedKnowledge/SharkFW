@@ -90,6 +90,13 @@ public class InMemo_SN_TX_PeerSemanticTag extends InMemo_SN_TX_SemanticTag
 
     @Override
     public void addAddress(String address) {
+
+        if(address==null) return;
+
+        if(this.getAddresses()==null){
+            this.setAddresses(new String[0]);
+        }
+
         String[] oldAddresses = this.getAddresses();
         
         String[] newAddresses = new String[oldAddresses.length+1];

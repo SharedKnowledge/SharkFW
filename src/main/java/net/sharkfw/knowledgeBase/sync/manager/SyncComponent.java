@@ -7,6 +7,8 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.system.L;
+import net.sharkfw.system.TestUtils;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -33,23 +35,49 @@ public class SyncComponent {
         this.writable = writable;
     }
 
+    public boolean isInvited(PeerSemanticTag tag) throws SharkKBException {
+        PeerSemanticTag semanticTag = approvedMembers.getSemanticTag(tag.getSI());
+        if (semanticTag!=null){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void sendInvite() throws SharkKBException {
         Enumeration<PeerSemanticTag> enumeration = members.peerTags();
         ArrayList<String> addresses = new ArrayList();
         while (enumeration.hasMoreElements()){
             PeerSemanticTag peerSemanticTag = enumeration.nextElement();
-            String[] peerSemanticTagAddresses = peerSemanticTag.getAddresses();
-            for(String address : peerSemanticTagAddresses){
-                addresses.add(address);
+
+            if(!isInvited(peerSemanticTag)){
+                String[] peerSemanticTagAddresses = peerSemanticTag.getAddresses();
+                if(peerSemanticTagAddresses==null || peerSemanticTagAddresses.length<=0) continue;
+                for(String address : peerSemanticTagAddresses){
+                    if(address!=null){
+                        addresses.add(address);
+                    }
+                }
             }
         }
+        StringBuilder sb = new StringBuilder();
+        for (String s : addresses)
+        {
+            sb.append(s);
+            sb.append("\t");
+        }
+        L.d("addresses: " + sb.toString(), this);
         String[] addressesArray = new String[addresses.size()];
         addressesArray = addresses.toArray(addressesArray);
 
-        sendInvite(addressesArray);
+        if(addressesArray.length!=0){
+            sendInvite(addressesArray);
+        }
     }
 
     private void sendInvite(String[] addresses) throws SharkKBException {
+
+        if(addresses==null || addresses.length==0) return;
 
         PeerSemanticTag logicalSender = null;
 
@@ -91,6 +119,7 @@ public class SyncComponent {
 
     public void addMember(PeerSemanticTag member) throws SharkKBException {
         members.merge(member);
+
         sendInvite(member.getAddresses());
     }
 

@@ -194,7 +194,7 @@ public class ASIPSerializer {
 
             String[] addresses = pst.getAddresses();
             JSONArray addrArray = new JSONArray();
-            if(addresses.length > 0 && addresses[0]!=null){
+            if(addresses!=null && addresses.length > 0 && addresses[0]!=null){
                 for (String addr : addresses) {
                     addrArray.put(addr);
                 }
@@ -447,6 +447,7 @@ public class ASIPSerializer {
             object = new JSONObject(parsedStream);
         } catch (Exception e) {
             L.d(CLASS + e);
+            return;
         }
 
         // uncomment to see json output of serialization
@@ -655,7 +656,15 @@ public class ASIPSerializer {
 
 //                System.arraycopy(contentString.getBytes(), offset, buff, 0, length);
 
-                buff = contentString.substring(offset, length);
+//                L.d("ContenString.length: " + contentString.length());
+//                L.d("ContenString: " + contentString);
+//                L.d("Offset: " + offset);
+//                L.d("Length: " + length);
+//                L.d("Offset+Length: " + (offset+length));
+
+                buff = contentString.substring(offset, offset+length);
+
+//                L.d("Buffer: " + buff);
 
                 ASIPInformation info = kb.addInformation(buff, space);
                 if (object.has(ASIPInfoMetaData.NAME)) {
