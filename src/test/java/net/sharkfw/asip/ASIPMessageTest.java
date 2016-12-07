@@ -7,6 +7,7 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoASIPKnowledge;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
+import net.sharkfw.system.L;
 import net.sharkfw.system.TestUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -194,7 +195,7 @@ public class ASIPMessageTest extends ASIPBaseTest{
             Iterator<ASIPInformation> infos = informationSpace.informations();
             while (infos.hasNext()){
                 ASIPInformation info = infos.next();
-                receivedContent = new String(info.getContentAsByte(),StandardCharsets.UTF_8);
+                receivedContent = info.getContentAsString();
             }
         }
 

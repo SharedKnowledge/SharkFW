@@ -109,8 +109,6 @@ public class SyncManager extends SharkTask {
 
                         this.mergePropertyList.add(property);
 
-                        String serializedChanges = ASIPMessageSerializerHelper.serializeKB(changes).toString();
-
                         ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
                                 peerSemanticTag.getAddresses(),
                                 this.engine.getOwner(),
@@ -120,7 +118,7 @@ public class SyncManager extends SharkTask {
                                 next.getUniqueName(),
                                 SyncManager.SHARK_SYNC_MERGE_TAG, 1);
 
-                        outMessage.raw(serializedChanges.getBytes(StandardCharsets.UTF_8));
+                        outMessage.insert(changes);
                     }
 
                 }

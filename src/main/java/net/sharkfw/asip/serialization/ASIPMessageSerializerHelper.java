@@ -30,52 +30,16 @@ public class ASIPMessageSerializerHelper {
         return ASIPMessageSerializerHelper.serializeASIPSpace(space);
     }
 
-    public static JSONObject serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException {
-        if (knowledge == null) return null;
-
-        JSONObject object = new JSONObject();
-
-        SharkVocabulary vocabulary = knowledge.getVocabulary();
-
-        JSONObject serializedVocabulary = new JSONObject();
-
-        if(vocabulary!=null){
-            serializedVocabulary = ASIPMessageSerializerHelper.serializeVocabulary(vocabulary);
-        }
-        object.put(ASIPKnowledge.VOCABULARY, serializedVocabulary);
-
-        ASIPSerializerContainer manager = new ASIPSerializerContainer(knowledge.informationSpaces());
-        Iterator pointInformations = manager.getPointInformations();
-        JSONArray pointInfoArray = new JSONArray();
-        while (pointInformations.hasNext()) {
-            JSONObject pointInfoJSON = new JSONObject();
-            ASIPPointInformation pointInformation = (ASIPPointInformation) pointInformations.next();
-            ASIPSpace space = pointInformation.getSpace();
-            pointInfoJSON.put(ASIPPointInformation.ASIPSPACE, ASIPMessageSerializerHelper.serializeASIPSpace(space));
-
-            JSONArray infoMetaDataArray = new JSONArray();
-            Iterator<ASIPInfoMetaData> infoIter = pointInformation.getInfoData();
-            while (infoIter.hasNext()) {
-                ASIPInfoMetaData infoMetaData = infoIter.next();
-                JSONObject infoMetaDataJSON = new JSONObject();
-                infoMetaDataJSON.put(ASIPInfoMetaData.NAME, infoMetaData.getName());
-                infoMetaDataJSON.put(ASIPInfoMetaData.OFFSET, infoMetaData.getOffset());
-                infoMetaDataJSON.put(ASIPInfoMetaData.LENGTH, infoMetaData.getLength());
-                infoMetaDataArray.put(infoMetaDataJSON);
-            }
-            pointInfoJSON.put(ASIPPointInformation.INFOMETADATA, infoMetaDataArray);
-            pointInfoArray.put(pointInfoJSON);
-        }
-        object.put(ASIPSerializerContainer.INFODATA, pointInfoArray);
-        object.put(ASIPSerializerContainer.INFOCONTENT, manager.getInfoContent());
-
-        return object;
+    public static ASIPKnowledgeConverter serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException {
+        return new ASIPKnowledgeConverter(knowledge);
     }
 
-    public static JSONObject serializeKB(SharkKB kb) throws SharkKBException {
-        JSONObject jsonObject = serializeKnowledge(kb);
+    public static ASIPKnowledgeConverter serializeKB(SharkKB kb) throws SharkKBException {
+        ASIPKnowledgeConverter knowledgeConverter = new ASIPKnowledgeConverter(kb);
+        JSONObject jsonObject = knowledgeConverter.getSerializedKnowledgeAsJSON();
         jsonObject.put(PropertyHolder.PROPERTIES, serializeProperties(kb));
-        return jsonObject;
+        knowledgeConverter.setSerializedKnowledgeAsJSON(jsonObject);
+        return knowledgeConverter;
     }
 
     public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
@@ -447,95 +411,6 @@ public class ASIPMessageSerializerHelper {
     }
 
     // DESERIALIZATION
-
-    /**
-     * TODO SharkInputStream as param
-     * Deserializes knowledge and return a newly created knowledge object..
-     *
-     * @return
-     * @throws SharkKBException
-     */
-    public static ASIPKnowledge deserializeASIPKnowledge(String string) throws SharkKBException {
-
-        if (string == null) return null;
-
-        JSONObject jsonObject = new JSONObject(string);
-
-        JSONObject vocabularyJSON = jsonObject.getJSONObject(ASIPKnowledge.VOCABULARY);
-
-        SemanticNet topics = InMemoSharkKB.createInMemoSemanticNet();
-        SemanticNet types = InMemoSharkKB.createInMemoSemanticNet();
-        PeerTaxonomy peers = InMemoSharkKB.createInMemoPeerTaxonomy();
-        SpatialSTSet locations = InMemoSharkKB.createInMemoSpatialSTSet();
-        TimeSTSet times = InMemoSharkKB.createInMemoTimeSTSet();
-        if(vocabularyJSON.has(SharkVocabulary.TOPICS)){
-            ASIPMessageSerializerHelper.deserializeSTSet(topics, vocabularyJSON.get(SharkVocabulary.TOPICS).toString());
-        }
-        if(vocabularyJSON.has(SharkVocabulary.TYPES)){
-            ASIPMessageSerializerHelper.deserializeSTSet(types, vocabularyJSON.get(SharkVocabulary.TYPES).toString());
-        }
-        if(vocabularyJSON.has(SharkVocabulary.PEERS)){
-            ASIPMessageSerializerHelper.deserializePeerTaxonomy(peers, vocabularyJSON.get(SharkVocabulary.PEERS).toString());
-        }
-        if(vocabularyJSON.has(SharkVocabulary.LOCATIONS)){
-            ASIPMessageSerializerHelper.deserializeSpatialSTSet(locations, vocabularyJSON.get(SharkVocabulary.LOCATIONS).toString());
-        }
-        if(vocabularyJSON.has(SharkVocabulary.TIMES)){
-            ASIPMessageSerializerHelper.deserializeTimeSTSet(times, vocabularyJSON.get(SharkVocabulary.TIMES).toString());
-        }
-
-        // create knowledge which actuall IS a SharkKB
-        InMemoSemanticNet stnet = new InMemoSemanticNet();
-        Knowledge knowledge = new InMemoASIPKnowledge();
-        SharkKB kb = new InMemoSharkKB(topics, types, peers, locations, times, knowledge);
-
-//        byte[] infoContent = jsonObject.getJSONArray(ASIPSerializerContainer.INFOCONTENT).toString().getBytes();
-        String contentString = jsonObject.getString(ASIPSerializerContainer.INFOCONTENT);
-
-        JSONArray infoDataArray = jsonObject.getJSONArray(ASIPSerializerContainer.INFODATA);
-        for (int i = 0; i < infoDataArray.length(); i++) {
-
-            JSONObject infoObject = infoDataArray.getJSONObject(i);
-            ASIPSpace space = deserializeASIPInterest(infoObject.get(ASIPPointInformation.ASIPSPACE).toString());
-
-            JSONArray infoMetaDataArray = infoObject.getJSONArray(ASIPPointInformation.INFOMETADATA);
-            for (int k = 0; k < infoMetaDataArray.length(); k++) {
-
-                JSONObject object = infoMetaDataArray.getJSONObject(k);
-
-                int offset = object.getInt(ASIPInfoMetaData.OFFSET);
-                int length = object.getInt(ASIPInfoMetaData.LENGTH);
-//                byte[] buff = new byte[length];
-                String buff = "";
-
-//                System.arraycopy(contentString.getBytes(), offset, buff, 0, length);
-
-//                L.d("ContenString.length: " + contentString.length());
-//                L.d("ContenString: " + contentString);
-//                L.d("Offset: " + offset);
-//                L.d("Length: " + length);
-//                L.d("Offset+Length: " + (offset+length));
-
-                buff = contentString.substring(offset, offset+length);
-
-//                L.d("Buffer: " + buff);
-
-                ASIPInformation info = kb.addInformation(buff, space);
-                if (object.has(ASIPInfoMetaData.NAME)) {
-                    info.setName(object.getString(ASIPInfoMetaData.NAME));
-                }
-            }
-        }
-        if (infoDataArray.length() <= 0 && contentString.length() > 0) {
-            kb.addInformation(contentString, null);
-        }
-
-        if(jsonObject.has(PropertyHolder.PROPERTIES)){
-            ASIPMessageSerializerHelper.deserializeProperties(kb, jsonObject.get(PropertyHolder.PROPERTIES).toString());
-        }
-
-        return kb;
-    }
 
     public static SemanticTag deserializeTag(STSet targetSet, String tagString) throws SharkKBException {
 

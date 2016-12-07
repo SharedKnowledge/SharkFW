@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
+import net.sharkfw.system.L;
 
 import java.io.InputStream;
 
@@ -22,7 +23,7 @@ public class ASIPSerializationHolder {
      * The next seven bytes represent the versionof the protocol. For ASIP it will be 'ASIP1.0'
      * The last nine bytes will represent the length of the actual json message. The value will be prepended with zeros
      */
-    private String protocolConfig;
+    private String protocolConfig = "";
     private String format;
     private String version;
     private int messageLength = 0;
@@ -37,14 +38,30 @@ public class ASIPSerializationHolder {
             protocolConfig = message.substring(0, jsonMessageBeginIndex);
             format = protocolConfig.substring(0, fieldLengthFormat);
             version = protocolConfig.substring(fieldLengthFormat, fieldLengthFormat + fieldLengthVersion);
-            messageLength = Integer.getInteger(protocolConfig.substring(fieldLengthFormat + fieldLengthVersion, jsonMessageBeginIndex));
+            String messageLengthTemp = protocolConfig.substring(fieldLengthFormat + fieldLengthVersion, jsonMessageBeginIndex);
+            messageLengthTemp = messageLengthTemp.replaceFirst("^0+(?!$)", "");
 
-            serializedJSONMessage = message.substring(jsonMessageBeginIndex, jsonMessageBeginIndex + messageLength);
-            content = message.substring(jsonMessageBeginIndex + messageLength);
+            messageLength = Integer.parseInt(messageLengthTemp);
+
+            if(message.length() >= jsonMessageBeginIndex + messageLength){
+                serializedJSONMessage = message.substring(jsonMessageBeginIndex, jsonMessageBeginIndex + messageLength);
+                if(message.length() > jsonMessageBeginIndex + messageLength){
+                    content = message.substring(jsonMessageBeginIndex + messageLength);
+                }
+            } else {
+                L.d("The message is too short.", this);
+            }
         }
     }
 
-    private void prepareProtocolConfig(ASIPMessage message){
+    public ASIPSerializationHolder(ASIPMessage message, String jsonString, String content){
+        this.prepareProtocolConfig(message, jsonString);
+        this.serializedJSONMessage = jsonString;
+        this.content = content;
+    }
+
+    private void prepareProtocolConfig(ASIPMessage message, String serializedMessage){
+
 
         if(message.getFormat().length() <= 4){
             protocolConfig += message.getFormat();
@@ -52,20 +69,28 @@ public class ASIPSerializationHolder {
         if(message.getVersion().length() <= 7){
             protocolConfig += message.getVersion();
         }
-//        protocolInfo += String.format("%09d", serializedMessage.length());
+        protocolConfig += String.format("%09d", serializedMessage.length());
     }
 
-    public ASIPSerializationHolder(ASIPOutMessage message, ASIPInterest interest){
-        this.prepareProtocolConfig(message);
+    public String getProtocolConfig() {
+        return protocolConfig;
     }
 
-    public ASIPSerializationHolder(ASIPOutMessage message, ASIPKnowledge knowledge){
-        this.prepareProtocolConfig(message);
+    public String getSerializedJSONMessage() {
+        return serializedJSONMessage;
     }
-    public ASIPSerializationHolder(ASIPOutMessage message, InputStream inputStream){
-        this.prepareProtocolConfig(message);
+
+    public String getContent() {
+        return content;
     }
-    public ASIPSerializationHolder(ASIPOutMessage message, byte[] bytes){
-        this.prepareProtocolConfig(message);
+
+    public String asString(){
+        String temp = "";
+        temp += protocolConfig;
+        temp += serializedJSONMessage;
+        if(content!=null && !content.isEmpty()){
+            temp += content;
+        }
+        return temp;
     }
 }

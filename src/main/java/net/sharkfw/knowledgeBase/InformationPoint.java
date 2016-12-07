@@ -6,7 +6,7 @@ package net.sharkfw.knowledgeBase;
  */
 public interface InformationPoint extends ContextPoint {
     
-    public final static String INFORMATIONS = "INFORMATIONS";
+    public final static String INFORMATIONS = "INFORMATION";
     public final static String INFOCOORDINATES = "INFOCOORDINATES";
     
 

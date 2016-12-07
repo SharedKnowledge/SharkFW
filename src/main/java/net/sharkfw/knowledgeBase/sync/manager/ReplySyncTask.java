@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.sync.manager;
 
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
+import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
 import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
@@ -50,11 +51,9 @@ public class ReplySyncTask extends SharkTask{
                     SharkKB changes = syncManager.getChanges(next, peerSemanticTag);
 
                     if(changes!=null){
-                        String serializedChanges = ASIPMessageSerializerHelper.serializeKB(changes).toString();
 
                         ASIPOutMessage response = this.message.createResponse(next.getUniqueName(), SyncManager.SHARK_SYNC_MERGE_TAG);
-
-                        response.raw(serializedChanges.getBytes(StandardCharsets.UTF_8));
+                        response.insert(changes);
                     }
 
                 }

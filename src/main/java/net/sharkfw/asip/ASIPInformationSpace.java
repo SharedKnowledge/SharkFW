@@ -23,7 +23,7 @@ import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 public interface ASIPInformationSpace extends SystemPropertyHolder {
     
     public final static String ASIPSPACE = "ASIPSPACE";
-    public final static String INFORMATIONS = "INFORMATIONS";
+    public final static String INFORMATION = "INFORMATION";
     
     ASIPSpace getASIPSpace() throws SharkKBException;
 

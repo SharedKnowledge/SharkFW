@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
+import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;

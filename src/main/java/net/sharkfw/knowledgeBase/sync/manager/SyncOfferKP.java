@@ -89,14 +89,14 @@ public class SyncOfferKP extends KnowledgePort {
 
                             mergePropertyList.add(property);
 
-                            String serializeKnowledge = ASIPMessageSerializerHelper.serializeKB(changes).toString();
+//                            String serializeKnowledge = ASIPMessageSerializerHelper.serializeKB(changes).toString();
 
-                            L.d(serializeKnowledge, this);
-                            L.d("Length of sending Merge: " + serializeKnowledge.length(), this);
+//                            L.d(serializeKnowledge, this);
+//                            L.d("Length of sending Merge: " + serializeKnowledge.length(), this);
 
                             ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
 
-                            response.raw(serializeKnowledge.getBytes(StandardCharsets.UTF_8));
+                            response.insert(changes);
                         }
 
                     }
