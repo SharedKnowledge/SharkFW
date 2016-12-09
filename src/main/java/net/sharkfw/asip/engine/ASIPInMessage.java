@@ -81,8 +81,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         }
 
         if(!this.parsedString.isEmpty()){
-            ASIPMessageSerializer.deserializeInMessage(this, this.parsedString);
-            this.parsed = true;
+            this.parsed = ASIPMessageSerializer.deserializeInMessage(this, this.parsedString);
         }
     }
 

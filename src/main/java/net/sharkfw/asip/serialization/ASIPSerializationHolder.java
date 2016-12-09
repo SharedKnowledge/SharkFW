@@ -33,7 +33,7 @@ public class ASIPSerializationHolder {
     // Only if raw or insert
     private String content;
 
-    public ASIPSerializationHolder(String message) {
+    public ASIPSerializationHolder(String message) throws ASIPSerializerException {
         if(!message.isEmpty()){
             protocolConfig = message.substring(0, jsonMessageBeginIndex);
             format = protocolConfig.substring(0, fieldLengthFormat);
@@ -41,7 +41,11 @@ public class ASIPSerializationHolder {
             String messageLengthTemp = protocolConfig.substring(fieldLengthFormat + fieldLengthVersion, jsonMessageBeginIndex);
             messageLengthTemp = messageLengthTemp.replaceFirst("^0+(?!$)", "");
 
-            messageLength = Integer.parseInt(messageLengthTemp);
+            try {
+                messageLength = Integer.parseInt(messageLengthTemp);
+            } catch (NumberFormatException e){
+                throw new ASIPSerializerException("String can't be converted to an Integer: " + e.getMessage());
+            }
 
             if(message.length() >= jsonMessageBeginIndex + messageLength){
                 serializedJSONMessage = message.substring(jsonMessageBeginIndex, jsonMessageBeginIndex + messageLength);
@@ -49,8 +53,10 @@ public class ASIPSerializationHolder {
                     content = message.substring(jsonMessageBeginIndex + messageLength);
                 }
             } else {
-                L.d("The message is too short.", this);
+                throw new ASIPSerializerException("The message is too short.");
             }
+        } else {
+            throw new ASIPSerializerException("Message is empty.");
         }
     }
 

@@ -97,8 +97,8 @@
                     <configuration>
                         <source>${compile.source.jdk}</source>
                         <target>${compile.target.jdk}</target>
-                        <showDeprecation>true</showDeprecation>
-                        <showWarnings>true</showWarnings>
+                        <showDeprecation>false</showDeprecation>
+                        <showWarnings>false</showWarnings>
                     </configuration>
                 </plugin>
                 <plugin>

@@ -111,9 +111,8 @@ public class SyncKB implements SharkKB{
         try {
             return Long.getLong(this.targetKB.getProperty(SyncKB.TIME_PROPERTY_NAME));
         } catch (SharkKBException e) {
-            e.printStackTrace();
+            return 0L;
         }
-        return null;
     }
     
     /**

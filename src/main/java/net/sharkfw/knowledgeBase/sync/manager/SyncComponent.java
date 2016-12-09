@@ -18,7 +18,7 @@ import java.util.Enumeration;
  */
 public class SyncComponent {
 
-    private final SharkEngine engine;
+    private final SyncManager manager;
     private SyncKB syncKB;
     private SemanticTag uniqueName;
     private PeerSTSet members;
@@ -26,8 +26,8 @@ public class SyncComponent {
     private PeerSemanticTag owner;
     private boolean writable;
 
-    public SyncComponent(SharkEngine engine, SharkKB kb, SemanticTag uniqueName, PeerSTSet members, PeerSemanticTag owner, boolean writable) throws SharkKBException {
-        this.engine = engine;
+    public SyncComponent(SyncManager manager, SharkKB kb, SemanticTag uniqueName, PeerSTSet members, PeerSemanticTag owner, boolean writable) throws SharkKBException {
+        this.manager = manager;
         this.syncKB = new SyncKB(kb);
         this.uniqueName = uniqueName;
         this.members = members;
@@ -36,91 +36,22 @@ public class SyncComponent {
     }
 
     public boolean isInvited(PeerSemanticTag tag) throws SharkKBException {
-        PeerSemanticTag semanticTag = approvedMembers.getSemanticTag(tag.getSI());
-        if (semanticTag!=null){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void sendInvite() throws SharkKBException {
-        Enumeration<PeerSemanticTag> enumeration = members.peerTags();
-        ArrayList<String> addresses = new ArrayList();
-        while (enumeration.hasMoreElements()){
-            PeerSemanticTag peerSemanticTag = enumeration.nextElement();
-
-            if(!isInvited(peerSemanticTag)){
-                String[] peerSemanticTagAddresses = peerSemanticTag.getAddresses();
-                if(peerSemanticTagAddresses==null || peerSemanticTagAddresses.length<=0) continue;
-                for(String address : peerSemanticTagAddresses){
-                    if(address!=null){
-                        addresses.add(address);
-                    }
-                }
-            }
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String s : addresses)
-        {
-            sb.append(s);
-            sb.append("\t");
-        }
-        L.d("addresses: " + sb.toString(), this);
-        String[] addressesArray = new String[addresses.size()];
-        addressesArray = addresses.toArray(addressesArray);
-
-        if(addressesArray.length!=0){
-            sendInvite(addressesArray);
-        }
-    }
-
-    private void sendInvite(String[] addresses) throws SharkKBException {
-
-        if(addresses==null || addresses.length==0) return;
-
-        PeerSemanticTag logicalSender = null;
-
-        if(this.owner == null){
-            logicalSender = this.engine.getOwner();
-        } else {
-            logicalSender = this.owner;
-        }
-
-        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, logicalSender, null, null, null, null, null, 10);
-
-        // Create ASIPInterest
-        STSet topicSTSet = InMemoSharkKB.createInMemoSTSet();
-        STSet typeSTSet = InMemoSharkKB.createInMemoSTSet();
-        PeerSTSet approverSTSet = InMemoSharkKB.createInMemoPeerSTSet();
-        topicSTSet.merge(this.uniqueName);
-        typeSTSet.merge(SyncManager.SHARK_SYNC_INVITE_TAG);
-        approverSTSet.merge(this.owner);
-
-        int direction  = ASIPSpace.DIRECTION_IN;;
-        if(this.writable){
-            direction = ASIPSpace.DIRECTION_INOUT;
-        }
-        ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest(topicSTSet, typeSTSet, this.owner, approverSTSet, members, null, null, direction);
-
-        // TODO expose Thread???
-        // TODO send Invitation again if not accepted?
-        message.expose(interest);
+        return approvedMembers.getSemanticTag(tag.getSI()) == null;
     }
 
     public void addApprovedMember(PeerSemanticTag peerSemanticTag) throws SharkKBException {
         approvedMembers.merge(peerSemanticTag);
-
+        manager.sendMerge(this, peerSemanticTag);
     }
 
     public void addApprovedMember(PeerSTSet members) throws SharkKBException {
         approvedMembers.merge(members);
+        manager.sendMerge(this);
     }
 
     public void addMember(PeerSemanticTag member) throws SharkKBException {
         members.merge(member);
-
-        sendInvite(member.getAddresses());
+        manager.sendInvite(this, member);
     }
 
     public void removeMember(PeerSemanticTag member) throws SharkKBException {

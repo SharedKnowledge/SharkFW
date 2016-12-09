@@ -51,19 +51,35 @@ public class SyncMergeKP extends KnowledgePort {
 
         L.d(this.se.getOwner().getName() + " received a Merge from " + message.getPhysicalSender().getName(), this);
 
+
         SyncComponent component = syncManager.getComponentByName(message.getTopic());
 
         if(component == null) return;
 
         SyncKB syncKB = component.getKb();
 
+        L.d("Do I have changes on my own?", this);
+
+        try {
+            SharkKB changes = syncManager.getChanges(component, message.getLogicalSender());
+
+            if(changes!=null){
+                L.d("Looks like we have changes as well. Next time we'll send them away!", this);
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            L.d(e.getMessage(), this);
+        }
+
         // check allowed sender .. better make that with black-/whitelist
         // deserialize kb from content
 
         try {
             syncKB.putChanges((SharkKB) asipKnowledge);
+            L.d("The changes were merged!", this);
         } catch (SharkKBException e) {
             e.printStackTrace();
+            L.d(e.getMessage(), this);
         }
     }
 

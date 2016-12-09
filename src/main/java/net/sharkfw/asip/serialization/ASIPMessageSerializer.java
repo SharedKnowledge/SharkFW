@@ -107,14 +107,20 @@ public class ASIPMessageSerializer {
         return serializationHolder.asString();
     }
 
-    public static void deserializeInMessage(ASIPInMessage message, String parsedStream) {
+    public static boolean deserializeInMessage(ASIPInMessage message, String parsedStream) {
         if (parsedStream.isEmpty()) {
 //            L.d(CLASS + "Stream is empty.");
-            return;
+            return false;
         }
 
         //
-        ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(parsedStream);
+        ASIPSerializationHolder serializationHolder = null;
+        try {
+            serializationHolder = new ASIPSerializationHolder(parsedStream);
+        } catch (ASIPSerializerException e) {
+            L.d(e.getMessage());
+            return false;
+        }
 
         JSONObject object = null;
 
@@ -122,7 +128,7 @@ public class ASIPMessageSerializer {
             object = new JSONObject(serializationHolder.getSerializedJSONMessage());
         } catch (Exception e) {
             L.d(CLASS + e);
-            return;
+            return false;
         }
 
         // uncomment to see json output of serialization
@@ -230,7 +236,7 @@ public class ASIPMessageSerializer {
 
         // Check if content isEmpty
         if (!object.has(ASIPMessageSerializer.CONTENT)) {
-            return;
+            return false;
         }
 
         JSONObject content = object.getJSONObject(ASIPMessageSerializer.CONTENT);
@@ -269,8 +275,6 @@ public class ASIPMessageSerializer {
                 message.setRaw(new ByteArrayInputStream(raw));
                 break;
         }
-
+        return true;
     }
-
-
 }

@@ -125,15 +125,15 @@ public class ASIPKnowledgeConverter {
 
         JSONArray informationSpacesArray = jsonObject.getJSONArray(ASIPKnowledge.INFORMATIONSPACES);
 
-        for (Object informationSpace : informationSpacesArray) {
-            JSONObject nextInformationSpace = (JSONObject) informationSpace;
+        for (int i = 0; i <informationSpacesArray.length(); i++) {
+            JSONObject nextInformationSpace = informationSpacesArray.getJSONObject(i);
 
             if (nextInformationSpace.has(ASIPInformationSpace.ASIPSPACE) && nextInformationSpace.has(ASIPInformationSpace.INFORMATION)) {
                 ASIPInterest interest = ASIPMessageSerializerHelper.deserializeASIPInterest(nextInformationSpace.getString(ASIPInformationSpace.ASIPSPACE));
 
                 JSONArray informationJSONArray = nextInformationSpace.getJSONArray(ASIPInformationSpace.INFORMATION);
-                for (Object information : informationJSONArray) {
-                    JSONObject nextInformation = (JSONObject) information;
+                for (int k = 0; k < informationJSONArray.length(); k++) {
+                    JSONObject nextInformation = informationJSONArray.getJSONObject(k);
 
                     int offset = nextInformation.getInt(OFFSET);
                     int length = nextInformation.getInt(LENGTH);

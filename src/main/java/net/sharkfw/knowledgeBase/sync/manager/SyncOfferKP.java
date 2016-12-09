@@ -1,6 +1,5 @@
 package net.sharkfw.knowledgeBase.sync.manager;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -9,7 +8,6 @@ import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
-import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.PropertyHolder;
@@ -53,9 +51,7 @@ public class SyncOfferKP extends KnowledgePort {
             
             if(st != null && peer != null) {
 
-
-                SyncMergePropertyList mergePropertyList = this.syncManager.getMergePropertyList();
-                L.d(this.se.getOwner().getName() + " received an Offer from " + interest.getSender().getName(), this);
+                L.d(this.se.getOwner().getName() + " received an Offer from " + message.getPhysicalSender().getName(), this);
 
 //                // remember that
 //                this.lastSeen.put(peer, System.currentTimeMillis());
@@ -65,39 +61,39 @@ public class SyncOfferKP extends KnowledgePort {
                     SemanticTag next = iterator.next();
                     SyncComponent component = syncManager.getComponentByName(next);
                     if (component!=null){
-                        // Get Component and update approved group members
                         component.addApprovedMember(interest.getApprovers());
 
-                        // Now send the latest changes to the sender
-                        SyncKB kb = component.getKb();
-                        if(kb != null) {
-                            SharkKB changes = kb;
-                            Long peerLastSeen = null;
-
-                            SyncMergeProperty property = mergePropertyList.get(peer, next);
-
-                            if(property!=null){
-                                peerLastSeen = property.getDate();
-                                property.updateDate();
-                            } else {
-                                property = new SyncMergeProperty(peer, next, System.currentTimeMillis());
-                            }
-
-                            if(peerLastSeen!=null){
-                                changes = kb.getChanges(peerLastSeen);
-                            }
-
-                            mergePropertyList.add(property);
-
-//                            String serializeKnowledge = ASIPMessageSerializerHelper.serializeKB(changes).toString();
-
-//                            L.d(serializeKnowledge, this);
-//                            L.d("Length of sending Merge: " + serializeKnowledge.length(), this);
-
-                            ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
-
-                            response.insert(changes);
-                        }
+                        this.syncManager.sendMerge(component, asipConnection);
+//
+//                        // Get Component and update approved group members
+//
+//                        // Now send the latest changes to the sender
+//                        SyncKB kb = component.getKb();
+//                        if(kb != null) {
+//                            SharkKB changes = kb;
+//                            Long peerLastSeen = null;
+//
+//                            SyncMergeInfo property = mergePropertyList.get(peer, next);
+//
+//                            if(property!=null){
+//                                peerLastSeen = property.getDate();
+//                                property.updateDate();
+//                            } else {
+//                                property = new SyncMergeInfo(peer, next, System.currentTimeMillis());
+//                            }
+//
+//                            if(peerLastSeen!=null){
+//                                changes = kb.getChanges(peerLastSeen);
+//                            }
+//
+//                            mergePropertyList.add(property);
+//
+//                            L.d("mergePropertyList after add: " + mergePropertyList.toString(), this);
+//
+//                            ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
+//
+//                            response.insert(changes);
+//                        }
 
                     }
                 }
