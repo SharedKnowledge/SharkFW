@@ -94,7 +94,6 @@ public class ASIPSession extends Thread {
             }*/
 
             if(!handled) {
-                L.d("Message not yet handled.", this);
 //                L.d("Checking for more ASIP Messages", this);
                 // no listener handled that request
                 // maybe there is another KEP methode in the stream

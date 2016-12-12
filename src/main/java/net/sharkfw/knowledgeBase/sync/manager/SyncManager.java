@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by j4rvis on 14.09.16.
  */
-public class SyncManager extends SharkTask {
+public class SyncManager {
 
     // Interfaces
     public interface SyncInviteListener {
@@ -78,93 +78,6 @@ public class SyncManager extends SharkTask {
         }
     }
 
-    public void triggerSyncReply(ASIPInMessage message) {
-        ReplySyncTask replySyncTask = new ReplySyncTask(this, message);
-        SharkTaskExecutor.getInstance().submit(replySyncTask);
-    }
-
-    public void triggerSync() {
-        L.d("Trigger sync started!", this);
-        SharkTaskExecutor.getInstance().submit(this);
-    }
-
-    public void startUpdateProcess(long minutes) {
-        SharkTaskExecutor.getInstance().scheduleAtFixedRate(this, minutes, TimeUnit.MINUTES);
-    }
-
-    @Override
-    protected Object process() {
-        L.d("Sync Process started.", this);
-        Iterator<SyncComponent> components = this.getSyncComponents();
-        while (components.hasNext()) {
-            SyncComponent next = components.next();
-
-            L.d("We have a SyncComponent", this);
-
-            try {
-                Enumeration<PeerSemanticTag> enumeration = next.getApprovedMembers().peerTags();
-                L.d("Do we have approved Members?", this);
-                while (enumeration.hasMoreElements()) {
-
-                    PeerSemanticTag peerSemanticTag = enumeration.nextElement();
-
-                    L.d("We have found " + peerSemanticTag.getName(), this);
-
-                    // get the time when lastseen OR better when the lastMerge was sent
-
-                    // get the changes since that date
-
-                    L.d("peerSemanticTag: " + ASIPMessageSerializerHelper.serializeTag(peerSemanticTag).toString(), this);
-                    L.d("next.getUniqueName(): " + ASIPMessageSerializerHelper.serializeTag(next.getUniqueName()).toString(), this);
-
-                    L.d("mergeInfoSerializer: " + this.mergeInfoSerializer.toString(), this);
-
-                    SyncMergeInfo property = this.mergeInfoSerializer.get(peerSemanticTag, next.getUniqueName());
-
-                    L.d("Property is null? " + (property==null), this);
-
-                    L.d(property.asString());
-
-                    long lastMerged = property.getDate();
-                    long lastChanges = next.getKb().getTimeOfLastChanges();
-
-                    L.d("lastMerged: " + lastMerged, this);
-                    L.d("lastChanges: " + lastChanges, this);
-
-                    if (lastChanges > lastMerged) {
-
-                        L.d("Yeah so start Syncing!!! Send out the Merge!", this);
-
-                        SharkKB changes = next.getKb().getChanges(lastMerged);
-
-                        // TODO if changes are empty?
-
-                        property.updateDate();
-
-                        this.mergeInfoSerializer.add(property);
-
-                        ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
-                                peerSemanticTag.getAddresses(),
-                                this.engine.getOwner(),
-                                peerSemanticTag,
-                                null,
-                                null,
-                                next.getUniqueName(),
-                                SyncManager.SHARK_SYNC_MERGE_TAG, 1);
-
-                        outMessage.insert(changes);
-                    }
-
-                }
-
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-                L.d(e.getMessage(), this);
-            }
-        }
-        return null;
-    }
-
     /**
      * Get the changes of the Component regarding the given Peer. It will  be checked when we have seen the peer the last
      * time and therefor the changes inside if the knowledgeBase will be retrieved
@@ -203,8 +116,12 @@ public class SyncManager extends SharkTask {
             // So our changes represent the whole kb
             changes = component.getKb();
         }
+        // TODO Just checked for information inside the kb not for its changes regarding the STSets
         if(changes!=null){
-            this.mergeInfoSerializer.add(mergeInfo);
+            if(changes.getNumberInformation()==0){
+                changes=null;
+                this.mergeInfoSerializer.add(mergeInfo);
+            }
         }
 
         return changes;
@@ -459,7 +376,7 @@ public class SyncManager extends SharkTask {
             logicalSender = component.getOwner();
         }
 
-        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, logicalSender, null, null, null, null, null, 10);
+        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, logicalSender, null, null, null, component.getUniqueName(), null, 10);
 
         // Create ASIPInterest
         STSet topicSTSet = InMemoSharkKB.createInMemoSTSet();

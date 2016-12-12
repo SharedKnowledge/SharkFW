@@ -230,9 +230,10 @@ public class SyncKB implements SharkKB{
                         long changed = SyncKB.getTimeStamp(info);
                         if(changed > since) {
                             // add info - its a copy
-                            kb.addInformation(info.getContentAsByte(), 
+                            ASIPInformation information = kb.addInformation(info.getContentAsByte(),
                                     info.getASIPSpace());
-                            
+                            information.setName(info.getName());
+
                             infoNumber++;
                         }
                     }

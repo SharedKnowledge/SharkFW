@@ -57,6 +57,9 @@ public class SyncInviteKP extends KnowledgePort {
                 isNewInvite = false;
             }
         }
+
+        L.d("Do we already know the component? " + !isNewInvite, this);
+
         // TODO create an empty SyncComponent based on the interest?
 
         if(isNewInvite){
