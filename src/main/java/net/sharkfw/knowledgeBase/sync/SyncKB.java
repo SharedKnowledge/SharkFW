@@ -592,21 +592,36 @@ public class SyncKB implements SharkKB{
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        ASIPInformation asipInformation = this.targetKB.addInformation(content, semanticAnnotations);
-        this.changed();
-        return asipInformation;
+        return this.addInformation(null, content, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        ASIPInformation asipInformation = this.targetKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
+        return this.addInformation(null, contentIS, numberOfBytes, semanticAnnotations);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        return this.addInformation(null, content, semanticAnnotations);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = this.targetKB.addInformation(name, content, semanticAnnotations);
         this.changed();
         return asipInformation;
     }
 
     @Override
-    public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        ASIPInformation asipInformation = this.targetKB.addInformation(content, semanticAnnotations);
+    public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = this.targetKB.addInformation(name, content, semanticAnnotations);
+        this.changed();
+        return asipInformation;
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = this.targetKB.addInformation(name, contentIS, numberOfBytes, semanticAnnotations);
         this.changed();
         return asipInformation;
     }

@@ -420,8 +420,6 @@ public class SharkAlgebra {
 
     public static void mergeInformation(SharkKB target, ASIPInformation info) throws SharkKBException {
 
-        // TODO check if we already have information in the space
-
         Iterator<ASIPInformation> information = target.getInformation(info.getASIPSpace());
         boolean infoExists = false;
         if(information!=null){
@@ -447,7 +445,7 @@ public class SharkAlgebra {
 
         while(cInfoIter.hasNext()) {
             ASIPInformation cInfo = cInfoIter.next();
-            SharkAlgebra.mergeInformation(target, cInfo);
+            target.addInformation(cInfo.getName(), cInfo.getContentAsByte(), cInfo.getASIPSpace());
         }
     }
 }

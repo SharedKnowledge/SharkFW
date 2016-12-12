@@ -50,19 +50,60 @@ public interface ASIPKnowledge {
     public ASIPInformation addInformation(InputStream contentIS, 
             int numberOfBytes, ASIPSpace semanticAnnotations) 
             throws SharkKBException;
-    
+
     /**
      * Add information with it semantical annotations to knowledge base.
-     * 
+     *
      * @param content
      * @param semanticAnnotations
      * @return
-     * @throws SharkKBException 
+     * @throws SharkKBException
      */
-    public ASIPInformation addInformation(String content, 
-            ASIPSpace semanticAnnotations) 
+    public ASIPInformation addInformation(String content,
+                                          ASIPSpace semanticAnnotations)
+    throws SharkKBException;
+
+    /**
+     * Add information with it semantical annotations to knowledge base.
+     *
+     * @param name
+     * @param content
+     * @param semanticAnnotations
+     * @return
+     * @throws SharkKBException
+     */
+    public ASIPInformation addInformation(String name, String content,
+            ASIPSpace semanticAnnotations)
             throws SharkKBException;
-    
+
+    /**
+     * Add information with it semantical annotations to knowledge base.
+     *
+     * @param name
+     * @param content
+     * @param semanticAnnotations
+     * @return
+     * @throws SharkKBException
+     */
+    public ASIPInformation addInformation(String name, byte[] content,
+                                          ASIPSpace semanticAnnotations)
+            throws SharkKBException;
+
+    /**
+     * Add information with it semantical annotations to knowledge base.
+     *
+     * @param name
+     * @param contentIS
+     * @param numberOfBytes
+     * @param semanticAnnotations
+     * @return
+     * @throws SharkKBException
+     */
+    public ASIPInformation addInformation(String name, InputStream contentIS,
+                                          int numberOfBytes, ASIPSpace semanticAnnotations)
+            throws SharkKBException;
+
+
     /**
      * Remove information from described space. The infoSpace does not have to
      * be the same as during adding that information. That method just takes that

@@ -1464,19 +1464,34 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
-        return this.getKnowledge().addInformation(content, mergeASIPSpace);
+        return this.addInformation(null, content, semanticalAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
-        return this.getKnowledge().addInformation(contentIS, numberOfBytes, mergeASIPSpace);
+        return this.addInformation(null, contentIS, numberOfBytes, semanticalAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
-        return this.getKnowledge().addInformation(content, mergeASIPSpace);
+        return this.addInformation(null, content, semanticalAnnotations);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticAnnotations);
+        return this.getKnowledge().addInformation(name, content, mergeASIPSpace);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticAnnotations);
+        return this.getKnowledge().addInformation(null, contentIS, numberOfBytes, mergeASIPSpace);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticAnnotations);
+        return this.getKnowledge().addInformation(name, content, mergeASIPSpace);
     }
 }

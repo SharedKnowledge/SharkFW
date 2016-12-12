@@ -1171,7 +1171,6 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
      *
      * @param as
      * @param fps
-     * @param fp
      * @return
      * @throws SharkKBException
      */
