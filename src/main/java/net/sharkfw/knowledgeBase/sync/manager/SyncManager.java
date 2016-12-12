@@ -2,7 +2,6 @@ package net.sharkfw.knowledgeBase.sync.manager;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
@@ -12,8 +11,6 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkTask;
 import net.sharkfw.system.SharkTaskExecutor;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -45,7 +42,7 @@ public class SyncManager extends SharkTask {
     private SyncInviteKP syncInviteKP;
 
     // Lists
-    private final SyncMergeInfoSerializer mergePropertyList;
+    private final SyncMergeInfoSerializer mergeInfoSerializer;
     // TODO you will just be notified but can't decide if you ant to accept
     private List<SyncInviteListener> listeners = new ArrayList<>();
     private List<SyncComponent> components = new ArrayList<>();
@@ -54,18 +51,28 @@ public class SyncManager extends SharkTask {
 
     public SyncManager(SharkEngine engine) {
         this.engine = engine;
-        this.offerKP = new SyncOfferKP(this.engine, this, this.engine.getStorage());
+        this.offerKP = new SyncOfferKP(this.engine, this);
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
-        this.mergePropertyList = new SyncMergeInfoSerializer(this.engine.getStorage());
+        this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
     }
 
-    public SyncMergeInfoSerializer getMergePropertyList() {
-        return this.mergePropertyList;
+    /**
+     * Activate Invitation, so that other peers can invite us to their components.
+     * @param allow
+     */
+    public void allowInvitation(boolean allow){
+        this.allowInvitation(allow, null);
     }
 
-    public void allowInvitation(boolean allow) {
+    /**
+     * Activate Invitation, so that other peers can invite us to their components.
+     * With a rootKb to share the same Peers
+     * @param allow
+     * @param sharkKB
+     */
+    public void allowInvitation(boolean allow, SharkKB sharkKB) {
         if (allow) {
-            this.syncInviteKP = new SyncInviteKP(this.engine, this);
+            this.syncInviteKP = new SyncInviteKP(this.engine, this, sharkKB);
         } else {
             this.syncInviteKP = null;
         }
@@ -110,9 +117,9 @@ public class SyncManager extends SharkTask {
                     L.d("peerSemanticTag: " + ASIPMessageSerializerHelper.serializeTag(peerSemanticTag).toString(), this);
                     L.d("next.getUniqueName(): " + ASIPMessageSerializerHelper.serializeTag(next.getUniqueName()).toString(), this);
 
-                    L.d("mergePropertyList: " + this.mergePropertyList.toString(), this);
+                    L.d("mergeInfoSerializer: " + this.mergeInfoSerializer.toString(), this);
 
-                    SyncMergeInfo property = this.mergePropertyList.get(peerSemanticTag, next.getUniqueName());
+                    SyncMergeInfo property = this.mergeInfoSerializer.get(peerSemanticTag, next.getUniqueName());
 
                     L.d("Property is null? " + (property==null), this);
 
@@ -134,7 +141,7 @@ public class SyncManager extends SharkTask {
 
                         property.updateDate();
 
-                        this.mergePropertyList.add(property);
+                        this.mergeInfoSerializer.add(property);
 
                         ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
                                 peerSemanticTag.getAddresses(),
@@ -158,19 +165,28 @@ public class SyncManager extends SharkTask {
         return null;
     }
 
+    /**
+     * Get the changes of the Component regarding the given Peer. It will  be checked when we have seen the peer the last
+     * time and therefor the changes inside if the knowledgeBase will be retrieved
+     * @param component
+     * @param peerSemanticTag
+     * @return A SharkKB consisting of the changes or even null if there are no changes!
+     * @throws SharkKBException
+     */
     public SharkKB getChanges(SyncComponent component, PeerSemanticTag peerSemanticTag) throws SharkKBException {
 
         SharkKB changes = null;
 
-        SyncMergeInfo property = this.mergePropertyList.get(peerSemanticTag, component.getUniqueName());
+        SyncMergeInfo mergeInfo = this.mergeInfoSerializer.get(peerSemanticTag, component.getUniqueName());
 
-        if(property!=null) {
+        L.d("Is " + peerSemanticTag.getName() + " already listed? " + (mergeInfo!=null), this);
+
+        if(mergeInfo!=null) {
             // It seems that we have merged with the peer at least once.
             // Now get the changes since the last merge
-            long lastMerged = property.getDate();
-            long lastChanges = component.getKb().getTimeOfLastChanges();
-
+            long lastMerged = mergeInfo.getDate();
             L.d("lastMerged: " + lastMerged, this);
+            long lastChanges = component.getKb().getTimeOfLastChanges();
             L.d("lastChanges: " + lastChanges, this);
 
             if (lastChanges > lastMerged) {
@@ -178,17 +194,31 @@ public class SyncManager extends SharkTask {
                 changes = component.getKb().getChanges(lastMerged);
 
                 // TODO  here we are just presuming, that we will do the merge. But what if not? Should be triggered after sendMerge
-//                property.updateDate();
-//                this.mergePropertyList.add(property);
+                mergeInfo.updateDate();
+//                this.mergeInfoSerializer.add(mergeInfo);
             }
         } else {
+            mergeInfo = new SyncMergeInfo(peerSemanticTag, component.getUniqueName(), System.currentTimeMillis());
             // Okay we haven't merged with our peer yet.
             // So our changes represent the whole kb
             changes = component.getKb();
         }
+        if(changes!=null){
+            this.mergeInfoSerializer.add(mergeInfo);
+        }
+
         return changes;
     }
 
+    /**
+     * Create a syncComponent
+     * @param kb
+     * @param uniqueName
+     * @param member
+     * @param owner
+     * @param writable
+     * @return
+     */
     public SyncComponent createSyncComponent(
             SharkKB kb,
             SemanticTag uniqueName,
@@ -200,7 +230,7 @@ public class SyncManager extends SharkTask {
 
         SyncComponent component = null;
         try {
-            component = new SyncComponent(this, kb, uniqueName, member, owner, writable);
+            component = new SyncComponent(kb, uniqueName, member, owner, writable);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -216,6 +246,11 @@ public class SyncManager extends SharkTask {
         return components.iterator();
     }
 
+    /**
+     * Get the component by its uniwue name
+     * @param name
+     * @return
+     */
     public SyncComponent getComponentByName(SemanticTag name) {
         for (SyncComponent component : components) {
             if (SharkCSAlgebra.identical(component.getUniqueName(), name)) {
@@ -225,6 +260,12 @@ public class SyncManager extends SharkTask {
         return null;
     }
 
+    /**
+     * Get all components where the peer is involved in
+     * @param peerSemanticTag
+     * @return
+     * @throws SharkKBException
+     */
     public Iterator<SyncComponent> getSyncComponentsWithPeer(PeerSemanticTag peerSemanticTag) throws SharkKBException {
         ArrayList<SyncComponent> componentArrayList = new ArrayList<>();
 
@@ -248,6 +289,11 @@ public class SyncManager extends SharkTask {
         return componentArrayList.iterator();
     }
 
+    /**
+     * Check if we have any approved Members and trigger Invitations if necessary.
+     * @param component
+     * @return
+     */
     private boolean checkInvitation(SyncComponent component){
         /**
          * Okay so we have a component and want to send out a merge!
@@ -286,6 +332,10 @@ public class SyncManager extends SharkTask {
 
     }
 
+    /**
+     * Send a Merge to all approved Members
+     * @param component
+     */
     public void sendMerge(SyncComponent component){
 
         if(!checkInvitation(component)) return;
@@ -303,6 +353,11 @@ public class SyncManager extends SharkTask {
         }
     }
 
+    /**
+     * Send a Merge to a given peer
+     * @param component
+     * @param peer
+     */
     public void sendMerge(SyncComponent component, PeerSemanticTag peer){
 
         SharkKB changes = null;
@@ -329,13 +384,28 @@ public class SyncManager extends SharkTask {
         }
     }
 
-    public void sendMerge(SyncComponent component, ASIPConnection connection){
+    /**
+     * Reply to a Message from a given Peer!
+     * @param component
+     * @param peer
+     * @param message
+     * @throws SharkKBException
+     */
+    public void sendMerge(SyncComponent component, PeerSemanticTag peer, ASIPInMessage message) throws SharkKBException {
 
-
-//        ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
-//        response.insert(changes);
+        SharkKB changes = getChanges(component, peer);
+        L.d("Do i have any changes? " + (changes!=null), this);
+        if(changes!=null){
+            ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
+            response.insert(changes);
+        }
     }
 
+    /**
+     * Send an Invite to all members of the component who are not approved Members yet
+     * @param component
+     * @throws SharkKBException
+     */
     public void sendInvite(SyncComponent component) throws SharkKBException {
         Enumeration<PeerSemanticTag> enumeration = component.getMembers().peerTags();
         ArrayList<String> addresses = new ArrayList<>();
@@ -360,8 +430,16 @@ public class SyncManager extends SharkTask {
         }
     }
 
+    /**
+     * Send an Invite of a component to a peer
+     * @param component
+     * @param peerSemanticTag
+     */
     public void sendInvite(SyncComponent component, PeerSemanticTag peerSemanticTag){
         try {
+            if(!component.isInvited(peerSemanticTag)){
+                component.addMember(peerSemanticTag);
+            }
             sendInvite(component, peerSemanticTag.getAddresses());
         } catch (SharkKBException e) {
             e.printStackTrace();
@@ -409,231 +487,9 @@ public class SyncManager extends SharkTask {
         listeners.remove(listener);
     }
 
-    public void triggerListener(SyncComponent component) {
+    public void triggerInviteListener(SyncComponent component) {
         for (SyncInviteListener listener : this.listeners) {
             listener.onInvitation(component);
-        }
-    }
-
-    private class SyncMergeInfoSerializer {
-
-        private final static String SYNC_MERGE_PROPERTY_LIST = "SYNC_MERGE_PROPERTY_LIST";
-        private final SharkKB storage;
-
-        public SyncMergeInfoSerializer(SharkKB storage) {
-            this.storage = storage;
-        }
-
-        public void add(PeerSemanticTag peer, SemanticTag kbName, long date){
-            SyncMergeInfo syncMergeProperty = new SyncMergeInfo(peer, kbName, date);
-            add(syncMergeProperty);
-        }
-
-        public void add(SyncMergeInfo syncMergeInfo){
-            ArrayList<SyncMergeInfo> list = pullList();
-
-            ArrayList<SyncMergeInfo> temp = getByPeer(list, syncMergeInfo.getPeer());
-
-            if(!temp.isEmpty()){
-                temp = getByKbName(temp, syncMergeInfo.getKbName());
-
-                if(!temp.isEmpty()){
-                    for(SyncMergeInfo property : temp){
-                        if(property.getDate() < syncMergeInfo.getDate()){
-                            list.remove(property);
-                            list.add(syncMergeInfo);
-                        }
-                    }
-                }
-            }
-
-            list.add(syncMergeInfo);
-            pushList(list);
-        }
-
-        public ArrayList<SyncMergeInfo> getByPeer(ArrayList<SyncMergeInfo> infos, PeerSemanticTag peer){
-            ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-            for (SyncMergeInfo mergeDate : infos){
-                if(SharkCSAlgebra.identical(mergeDate.getPeer(), peer)){
-                    list.add(mergeDate);
-                }
-            }
-            return list;
-        }
-
-        public SyncMergeInfo get(PeerSemanticTag peer, SemanticTag kbName){
-            ArrayList<SyncMergeInfo> syncMergeProperties = pullList();
-            L.d("syncMergeProperties.size: " + syncMergeProperties.size(), this);
-            ArrayList<SyncMergeInfo> byPeer = getByPeer(syncMergeProperties, peer);
-            L.d("byPeer.size: " + byPeer.size(), this);
-            ArrayList<SyncMergeInfo> byKbName = getByKbName(byPeer, kbName);
-            L.d("byKbName.size: " + byKbName.size(), this);
-
-            if(byKbName.isEmpty()) return null;
-
-            // Can not be more than one entity - SHOULD not be! --> Test!
-            return byKbName.iterator().next();
-        }
-
-        public ArrayList<SyncMergeInfo> getByKbName(ArrayList<SyncMergeInfo> infos, SemanticTag kbName){
-            ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-            for (SyncMergeInfo mergeDate : infos){
-                if(SharkCSAlgebra.identical(mergeDate.getKbName(), kbName)){
-                    list.add(mergeDate);
-                }
-            }
-            return list;
-        }
-
-        public ArrayList<SyncMergeInfo> getBeforeDate(ArrayList<SyncMergeInfo> infos, long date){
-            ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-            for (SyncMergeInfo mergeDate : infos){
-                if(mergeDate.getDate() < date){
-                    list.add(mergeDate);
-                }
-            }
-            return list;
-        }
-
-        public ArrayList<SyncMergeInfo> getAfterDate(ArrayList<SyncMergeInfo> infos, long date){
-            ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-            for (SyncMergeInfo mergeDate : infos){
-                if(mergeDate.getDate() > date){
-                    list.add(mergeDate);
-                }
-            }
-            return list;
-        }
-
-        private ArrayList<SyncMergeInfo> pullList(){
-            ArrayList<SyncMergeInfo> temp = new ArrayList<>();
-
-            String property = "";
-            try {
-                property = this.storage.getProperty(SYNC_MERGE_PROPERTY_LIST);
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-            }
-            if(property != null){
-                temp = asList(property);
-            }
-            return temp;
-        }
-
-        private void pushList(ArrayList<SyncMergeInfo> list ){
-            if(list.isEmpty()) return;
-
-            String s = asString(list);
-
-            try {
-                this.storage.setProperty(SYNC_MERGE_PROPERTY_LIST, s);
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private String asString(ArrayList<SyncMergeInfo> list){
-            JSONObject object = new JSONObject();
-            JSONArray array = new JSONArray();
-
-            for ( SyncMergeInfo date : list){
-                array.put(date.asJSON());
-            }
-
-            object.put(SYNC_MERGE_PROPERTY_LIST, array);
-
-            return object.toString();
-        }
-
-        private ArrayList<SyncMergeInfo> asList(String serialized){
-            if(serialized.isEmpty()) return null;
-
-            ArrayList<SyncMergeInfo> tempList = new ArrayList<>();
-
-            JSONObject object = new JSONObject(serialized);
-
-            if(object.has(SYNC_MERGE_PROPERTY_LIST)){
-                JSONArray jsonArray = object.getJSONArray(SYNC_MERGE_PROPERTY_LIST);
-                for(int i = 0;i<jsonArray.length();i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    SyncMergeInfo date = new SyncMergeInfo(jsonObject);
-                    tempList.add(date);
-                }
-            }
-            return tempList;
-        }
-
-        @Override
-        public String toString() {
-            return asString(pullList());
-        }
-    }
-
-    private class SyncMergeInfo {
-
-        public final static String PEER_ENTRY = "PEER";
-        public final static String KB_NAME_ENTRY = "KB_NAME";
-        public final static String DATE_ENTRY = "DATE";
-
-
-        private PeerSemanticTag peer;
-        private SemanticTag kbName;
-        private long date;
-
-        public SyncMergeInfo(PeerSemanticTag peer, SemanticTag kbName, long date) {
-            this.peer = peer;
-            this.kbName = kbName;
-            this.date = date;
-        }
-
-        public SyncMergeInfo(JSONObject serialized){
-            JSONObject object = serialized;
-
-            if(object.has(PEER_ENTRY) && object.has(KB_NAME_ENTRY) && object.has(DATE_ENTRY)){
-                try {
-                    this.peer = ASIPMessageSerializerHelper.deserializePeerTag(object.getString(PEER_ENTRY));
-                    this.kbName = ASIPMessageSerializerHelper.deserializeTag(object.getString(KB_NAME_ENTRY));
-                    this.date = object.getLong(DATE_ENTRY);
-                } catch (SharkKBException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public String asString(){
-            return this.asJSON().toString();
-        }
-
-        public JSONObject asJSON(){
-            JSONObject object = new JSONObject();
-            try {
-                object.put(PEER_ENTRY, ASIPMessageSerializerHelper.serializeTag(peer).toString());
-                object.put(KB_NAME_ENTRY, ASIPMessageSerializerHelper.serializeTag(kbName).toString());
-                object.put(DATE_ENTRY, date);
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-            }
-            return object;
-        }
-
-        public PeerSemanticTag getPeer() {
-            return peer;
-        }
-
-        public SemanticTag getKbName() {
-            return kbName;
-        }
-
-        public long getDate() {
-            return date;
-        }
-
-        public void updateDate(){
-            this.date = System.currentTimeMillis();
         }
     }
 }

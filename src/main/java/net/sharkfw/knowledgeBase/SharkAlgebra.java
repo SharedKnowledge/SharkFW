@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase;
 
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 
@@ -418,10 +419,27 @@ public class SharkAlgebra {
     }
 
     public static void mergeInformation(SharkKB target, ASIPInformation info) throws SharkKBException {
-        ASIPInformation newInfo = target.addInformation(info.getContentAsByte(), info.getASIPSpace());
 
-        // copy properties
-        Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, newInfo);
+        // TODO check if we already have information in the space
+
+        Iterator<ASIPInformation> information = target.getInformation(info.getASIPSpace());
+        boolean infoExists = false;
+        if(information!=null){
+            while (information.hasNext()){
+                ASIPInformation next = information.next();
+                if (Arrays.equals(next.getContentAsByte(), info.getContentAsByte())){
+                    infoExists = true;
+                }
+            }
+        }
+
+        if(!infoExists){
+            ASIPInformation newInfo = target.addInformation(info.getContentAsByte(), info.getASIPSpace());
+
+            // copy properties
+            Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, newInfo);
+        }
+
     }
 
     public static void mergeInformations(SharkKB target, Iterator<ASIPInformation> cInfoIter) throws SharkKBException {

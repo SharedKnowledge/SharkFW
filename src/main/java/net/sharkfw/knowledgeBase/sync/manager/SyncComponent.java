@@ -18,7 +18,6 @@ import java.util.Enumeration;
  */
 public class SyncComponent {
 
-    private final SyncManager manager;
     private SyncKB syncKB;
     private SemanticTag uniqueName;
     private PeerSTSet members;
@@ -26,8 +25,7 @@ public class SyncComponent {
     private PeerSemanticTag owner;
     private boolean writable;
 
-    public SyncComponent(SyncManager manager, SharkKB kb, SemanticTag uniqueName, PeerSTSet members, PeerSemanticTag owner, boolean writable) throws SharkKBException {
-        this.manager = manager;
+    public SyncComponent(SharkKB kb, SemanticTag uniqueName, PeerSTSet members, PeerSemanticTag owner, boolean writable) throws SharkKBException {
         this.syncKB = new SyncKB(kb);
         this.uniqueName = uniqueName;
         this.members = members;
@@ -36,22 +34,19 @@ public class SyncComponent {
     }
 
     public boolean isInvited(PeerSemanticTag tag) throws SharkKBException {
-        return approvedMembers.getSemanticTag(tag.getSI()) == null;
+        return approvedMembers.getSemanticTag(tag.getSI()) != null;
     }
 
     public void addApprovedMember(PeerSemanticTag peerSemanticTag) throws SharkKBException {
         approvedMembers.merge(peerSemanticTag);
-        manager.sendMerge(this, peerSemanticTag);
     }
 
     public void addApprovedMember(PeerSTSet members) throws SharkKBException {
         approvedMembers.merge(members);
-        manager.sendMerge(this);
     }
 
     public void addMember(PeerSemanticTag member) throws SharkKBException {
         members.merge(member);
-        manager.sendInvite(this, member);
     }
 
     public void removeMember(PeerSemanticTag member) throws SharkKBException {

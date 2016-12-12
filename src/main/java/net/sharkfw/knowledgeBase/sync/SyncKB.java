@@ -109,8 +109,14 @@ public class SyncKB implements SharkKB{
 
     public Long getTimeOfLastChanges(){
         try {
-            return Long.getLong(this.targetKB.getProperty(SyncKB.TIME_PROPERTY_NAME));
-        } catch (SharkKBException e) {
+            String property = this.targetKB.getProperty(SyncKB.TIME_PROPERTY_NAME);
+            if (property == null || property.isEmpty()){
+                return 0L;
+            } else {
+                return Long.parseLong(property);
+            }
+        } catch (SharkKBException | NumberFormatException e ) {
+            L.e(e.getMessage(), this);
             return 0L;
         }
     }

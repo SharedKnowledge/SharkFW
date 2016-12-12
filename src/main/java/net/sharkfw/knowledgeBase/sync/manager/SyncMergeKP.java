@@ -47,8 +47,6 @@ public class SyncMergeKP extends KnowledgePort {
         if(message.getCommand()!=ASIPMessage.ASIP_INSERT)
             return;
 
-        // TODO Message not correct serialized! no physical sender!
-
         L.d(this.se.getOwner().getName() + " received a Merge from " + message.getPhysicalSender().getName(), this);
 
 
@@ -58,25 +56,22 @@ public class SyncMergeKP extends KnowledgePort {
 
         SyncKB syncKB = component.getKb();
 
-        L.d("Do I have changes on my own?", this);
-
         try {
-            SharkKB changes = syncManager.getChanges(component, message.getLogicalSender());
-
-            if(changes!=null){
-                L.d("Looks like we have changes as well. Next time we'll send them away!", this);
-            }
+            L.d("Changes: " + L.kb2String((SharkKB) asipKnowledge), this);
+            L.d("--------------------------------------------------------", this);
+            L.d("SyncKB: " + L.kb2String((SharkKB) syncKB), this);
+            L.d("--------------------------------------------------------", this);
+            L.d("--------------------------------------------------------", this);
+            L.d("--------------------------------------------------------", this);
+            syncKB.putChanges((SharkKB) asipKnowledge);
+            L.d("Merged SyncKB: " + L.kb2String((SharkKB) syncKB), this);
         } catch (SharkKBException e) {
             e.printStackTrace();
             L.d(e.getMessage(), this);
         }
-
-        // check allowed sender .. better make that with black-/whitelist
-        // deserialize kb from content
-
         try {
-            syncKB.putChanges((SharkKB) asipKnowledge);
-            L.d("The changes were merged!", this);
+            L.d("Now send my own changes to " + message.getPhysicalSender().getName(), this);
+            syncManager.sendMerge(component, message.getPhysicalSender(), message);
         } catch (SharkKBException e) {
             e.printStackTrace();
             L.d(e.getMessage(), this);

@@ -35,11 +35,6 @@ public class SyncManagerTest {
         // Create alice
         PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice.de", "tcp://localhost:7070");
         aliceEngine.setEngineOwnerPeer(alice);
-//        try {
-//            aliceEngine.startTCP(7070);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         // Create bob
         PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob.de", "tcp://localhost:7071");
@@ -75,7 +70,7 @@ public class SyncManagerTest {
 
         SyncComponent component = aliceManager.createSyncComponent(sharkKB, kbName, peerSTSet, alice, true);
         try {
-            component.sendInvite();
+            aliceManager.sendInvite(component);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }

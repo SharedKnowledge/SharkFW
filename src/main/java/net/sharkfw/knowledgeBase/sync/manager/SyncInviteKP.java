@@ -19,10 +19,16 @@ import java.util.Iterator;
 public class SyncInviteKP extends KnowledgePort {
 
     private final SyncManager syncManager;
+    private final SharkKB rootKB;
 
-    public SyncInviteKP(SharkEngine se, SyncManager syncManager) {
+    public SyncInviteKP(SharkEngine se, SyncManager syncManager, SharkKB rootKB) {
         super(se);
         this.syncManager = syncManager;
+        if(rootKB!=null){
+            this.rootKB = rootKB;
+        } else {
+            this.rootKB = new InMemoSharkKB();
+        }
     }
 
     @Override
@@ -57,10 +63,20 @@ public class SyncInviteKP extends KnowledgePort {
             Iterator<SemanticTag> topics = interest.getTopics().stTags();
             // Create an empty kb based on the first topic
             SemanticTag next = topics.next();
-            SyncComponent component = syncManager.createSyncComponent(new InMemoSharkKB(), next, interest.getApprovers(), interest.getSender(), true);
+
+            // Necessary to share same peers!
+            InMemoSharkKB inMemoSharkKB = new InMemoSharkKB(
+                    InMemoSharkKB.createInMemoSemanticNet(),
+                    InMemoSharkKB.createInMemoSemanticNet(),
+                    this.rootKB.getPeersAsTaxonomy(),
+                    InMemoSharkKB.createInMemoSpatialSTSet(),
+                    InMemoSharkKB.createInMemoTimeSTSet()
+            );
+
+            SyncComponent component = syncManager.createSyncComponent(inMemoSharkKB, next, interest.getApprovers(), interest.getSender(), true);
             component.addApprovedMember(this.se.getOwner());
             // Trigger the listeners
-            syncManager.triggerListener(component);
+            syncManager.triggerInviteListener(component);
         }
 
         // set myself in approver aswell and reply with an OfferTypeTag

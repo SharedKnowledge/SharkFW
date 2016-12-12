@@ -67,33 +67,34 @@ public class ASIPSession extends Thread {
                 inMessage.parse();
 
                 // Used for WifiCommunication.
-                if(this.knowledge!=null && !knowledgeSendTriggered){
-                    L.d("I have a knowledge, I need to reply.", this);
-                    // Now create a response with that knowledge
-                    final String receiver = this.connection.getReceiverAddressString();
-                    knowledgeSendTriggered = true;
-
-                    inMessage.insert(this.knowledge, new String[]{receiver});
-                    //Knowledge sent so set it to null
-                    this.knowledge = null;
-//                    knowledgeSendTriggered = inMessage.responseSent();
-                }
+//                if(this.knowledge!=null && !knowledgeSendTriggered){
+//                    L.d("I have a knowledge, I need to reply.", this);
+//                    // Now create a response with that knowledge
+//                    final String receiver = this.connection.getReceiverAddressString();
+//                    knowledgeSendTriggered = true;
+//
+//                    inMessage.insert(this.knowledge, new String[]{receiver});
+//                    //Knowledge sent so set it to null
+//                    this.knowledge = null;
+////                    knowledgeSendTriggered = inMessage.responseSent();
+//                }
 
                 if(inMessage.isParsed()){
                     handled = this.stub.callListener(inMessage);
                     handled = handled && inMessage.keepOpen();
 
-                    if(handled) Thread.sleep(1000);
+//                    if(handled) Thread.sleep(1000);
                 }
 
             } catch (IOException | SharkException e) {
                 handled=false;
                 e.printStackTrace();
-            } catch (InterruptedException e) {
+            } /*catch (InterruptedException e){
                 e.printStackTrace();
-            }
+            }*/
 
             if(!handled) {
+                L.d("Message not yet handled.", this);
 //                L.d("Checking for more ASIP Messages", this);
                 // no listener handled that request
                 // maybe there is another KEP methode in the stream
@@ -131,7 +132,6 @@ public class ASIPSession extends Thread {
         } catch (IOException e) {
             L.l("Closing TCPConnection although there is more data on the stream: " + e.getMessage(), this);
         }
-
         this.connection.close();
     }
 }
