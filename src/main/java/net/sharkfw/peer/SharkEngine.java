@@ -204,9 +204,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         switch (type) {
             case net.sharkfw.protocols.Protocols.TCP:
                 if(this.getAsipStub()!=null){
-                    protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false, null);
+                    protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false);
                 } else if(this.getKepStub()!=null){
-                    protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false, null);
+                    protocolStub = this.createTCPStreamStub(this.getKepStub(), DEFAULT_TCP_PORT, false);
                 }
                 break;
 //            case net.sharkfw.protocols.Protocols.UDP:
@@ -652,7 +652,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
         switch (protocol) {
             case net.sharkfw.protocols.Protocols.TCP:
-                protocolStub = this.createTCPStreamStub(handler, port, false, knowledge);
+                protocolStub = this.createTCPStreamStub(handler, port, false);
                 break;
 
 //            case net.sharkfw.protocols.Protocols.HTTP:
@@ -682,7 +682,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     /***************************************************************
      * following methods should be overwritten in derived classes  *
      ***************************************************************/
-    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException {
+    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP) throws SharkProtocolNotSupportedException {
         if (isHTTP) {
             throw new SharkProtocolNotSupportedException("HTTP no supported");
         } else {

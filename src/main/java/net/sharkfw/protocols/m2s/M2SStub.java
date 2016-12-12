@@ -271,13 +271,6 @@ public class M2SStub implements StreamStub, RequestHandler {
     }
 
     @Override
-    public void handleStream(StreamConnection con, ASIPKnowledge knowledge) {
-        throw new UnsupportedOperationException(
-                "wrong usage of this class: don't wrap a Stream Stub with this class: "
-                        + this.getClass().getName());
-    }
-
-    @Override
     public void setHandler(RequestHandler handler) {
         this.handler = handler;
     }

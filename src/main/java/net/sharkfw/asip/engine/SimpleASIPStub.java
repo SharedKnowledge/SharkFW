@@ -69,26 +69,10 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
      */
     @Override
     public final void handleStream(StreamConnection con) {
-        ASIPSession session = new ASIPSession(this.se, con, this, null);
+        ASIPSession session = new ASIPSession(this.se, con, this);
         session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
                 this.encryptionLevel, this.signatureLevel,
                 this.replyPolicy, this.refuseUnverifiably);
-        session.start();
-    }
-
-    /**
-     * this message is called by underlying stream protocols
-     * whenever a new Stream is established.
-     *
-     * @param con The received stream.
-     */
-    @Override
-    public final void handleStream(StreamConnection con, ASIPKnowledge knowledge) {
-        L.d("handleStream called", this);
-        ASIPSession session = new ASIPSession(this.se, con, this, knowledge);
-//        session.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ this.sharkPkiStorage,
-//                this.encryptionLevel, this.signatureLevel,
-//                this.replyPolicy, this.refuseUnverifiably);
         session.start();
     }
 

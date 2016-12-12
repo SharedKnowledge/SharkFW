@@ -20,7 +20,6 @@ import java.security.PrivateKey;
  */
 public class ASIPSession extends Thread {
 
-    private ASIPKnowledge knowledge;
     private SharkEngine engine;
     private StreamConnection connection;
     private ASIPStub stub;
@@ -32,11 +31,10 @@ public class ASIPSession extends Thread {
     private SharkEngine.SecurityReplyPolicy replyPolicy;
     private boolean refuseUnverifiably;
 
-    ASIPSession(SharkEngine engine, StreamConnection connection, ASIPStub stub, ASIPKnowledge knowledge){
+    ASIPSession(SharkEngine engine, StreamConnection connection, ASIPStub stub){
         this.engine = engine;
         this.connection = connection;
         this.stub = stub;
-        this.knowledge = knowledge;
     }
 
     public void initSecurity(PrivateKey privateKey, SharkPkiStorage sharkPkiStorage,
@@ -55,47 +53,25 @@ public class ASIPSession extends Thread {
     @Override
     public void run() {
         boolean handled = false;
-        boolean knowledgeSendTriggered = false;
         int looper = 3;
         int currentLoop = 0;
 
         do{
             try {
                 ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
-//                inMessage.initSecurity(this.privateKey, this.sharkPkiStorage, this.encryptionLevel,
-//                        this.signatureLevel, this.replyPolicy, this.refuseUnverifiably);
                 inMessage.parse();
-
-                // Used for WifiCommunication.
-//                if(this.knowledge!=null && !knowledgeSendTriggered){
-//                    L.d("I have a knowledge, I need to reply.", this);
-//                    // Now create a response with that knowledge
-//                    final String receiver = this.connection.getReceiverAddressString();
-//                    knowledgeSendTriggered = true;
-//
-//                    inMessage.insert(this.knowledge, new String[]{receiver});
-//                    //Knowledge sent so set it to null
-//                    this.knowledge = null;
-////                    knowledgeSendTriggered = inMessage.responseSent();
-//                }
 
                 if(inMessage.isParsed()){
                     handled = this.stub.callListener(inMessage);
                     handled = handled && inMessage.keepOpen();
-
-//                    if(handled) Thread.sleep(1000);
                 }
 
             } catch (IOException | SharkException e) {
                 handled=false;
                 e.printStackTrace();
-            } /*catch (InterruptedException e){
-                e.printStackTrace();
-            }*/
+            }
 
             if(!handled) {
-//                L.d("Checking for more ASIP Messages", this);
-                // no listener handled that request
                 // maybe there is another KEP methode in the stream
                 try {
                     if(this.connection.getInputStream().available() > 0) {
@@ -125,11 +101,11 @@ public class ASIPSession extends Thread {
         try {
             final InputStream inputStream = this.connection.getInputStream();
             if (inputStream.available() > 0) {
-                L.e("Closing TCPConnection although there is more data on the stream: ", this);
+                L.e("Closing connection although there is more data on the stream: ", this);
                 Streamer.stream(inputStream, System.err, 5);
             }
         } catch (IOException e) {
-            L.l("Closing TCPConnection although there is more data on the stream: " + e.getMessage(), this);
+            L.l("Closing connection although there is more data on the stream: " + e.getMessage(), this);
         }
         this.connection.close();
     }

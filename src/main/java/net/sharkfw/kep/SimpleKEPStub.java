@@ -74,13 +74,6 @@ public class SimpleKEPStub extends AbstractSharkStub implements KEPStub {
         session.start();
     }
 
-    @Override
-    public void handleStream(StreamConnection con, ASIPKnowledge knowledge) {
-        throw new UnsupportedOperationException(
-                "wrong usage of this class: don't wrap a Stream Stub with this class: "
-                        + this.getClass().getName());
-    }
-
     /**
      * This message is to be called when a new connection was establised e.g.
      * in a spontaneous network and this peer shall try to start KEP message

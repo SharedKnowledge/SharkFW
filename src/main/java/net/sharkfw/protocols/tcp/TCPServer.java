@@ -21,7 +21,6 @@ import net.sharkfw.system.L;
  */
 class TCPServer implements SharkServer {
 
-    private final ASIPKnowledge knowledge;
     private final ConnectionStatusListener listener;
     protected int port;
     protected ServerSocket listen_socket;
@@ -38,7 +37,7 @@ class TCPServer implements SharkServer {
      * @param stub the Stub which created the Server (here TCPStreamstub) used to get the local address of the device
      * @throws IOException
      */
-    public TCPServer(int port, RequestHandler handler, StreamStub stub, ASIPKnowledge knowledge, ConnectionStatusListener listener)
+    public TCPServer(int port, RequestHandler handler, StreamStub stub, ConnectionStatusListener listener)
             throws IOException {
         try {
             if (port == Protocols.ARBITRARY_PORT) {
@@ -53,7 +52,6 @@ class TCPServer implements SharkServer {
         this.port = listen_socket.getLocalPort();
         this.handler = handler;
         this.stub = stub;
-        this.knowledge = knowledge;
         this.listener = listener;
 
         L.l("TCP Server is bound to port " + this.port, this);
@@ -114,7 +112,7 @@ class TCPServer implements SharkServer {
                 }
 
                 L.d("Calling handler for stream on: " + this.port, this);
-                handler.handleStream(con, this.knowledge);
+                handler.handleStream(con);
             }
             //L.d("Closing socket", this);
             this.listen_socket.close();
