@@ -66,14 +66,14 @@ public class SyncMergeKP extends KnowledgePort {
             boolean anyChanges = kb1 != null;
             L.d("Before syncing, do we have any changes to reply? " + anyChanges, this);
 
-            L.d("Changes: " + L.kb2String((SharkKB) asipKnowledge), this);
-            L.d("--------------------------------------------------------", this);
-            L.d("SyncKB: " + L.kb2String((SharkKB) syncKB), this);
-            L.d("--------------------------------------------------------", this);
-            L.d("--------------------------------------------------------", this);
-            L.d("--------------------------------------------------------", this);
+//            L.d("Changes: " + L.kb2String((SharkKB) asipKnowledge), this);
+//            L.d("--------------------------------------------------------", this);
+//            L.d("SyncKB: " + L.kb2String((SharkKB) syncKB), this);
+//            L.d("--------------------------------------------------------", this);
+//            L.d("--------------------------------------------------------", this);
+//            L.d("--------------------------------------------------------", this);
             syncKB.putChanges((SharkKB) asipKnowledge);
-            L.d("Merged SyncKB: " + L.kb2String((SharkKB) syncKB), this);
+//            L.d("Merged SyncKB: " + L.kb2String((SharkKB) syncKB), this);
 
             if(anyChanges){
                 L.d("Now send my own changes to " + message.getPhysicalSender().getName(), this);

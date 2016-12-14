@@ -277,10 +277,9 @@ public class SyncManager {
      */
     public void sendMerge(SyncComponent component, PeerSemanticTag peer){
 
-        SharkKB changes = null;
         try {
             if (!component.isInvited(peer)) return;
-            changes = getChanges(component, peer);
+            SharkKB changes = getChanges(component, peer);
             if(changes!=null){
                 // We do have some changes we can send!
                 ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
@@ -293,8 +292,6 @@ public class SyncManager {
                         SyncManager.SHARK_SYNC_MERGE_TAG, 1);
 
                 outMessage.insert(changes);
-                // TODO !!!THREAD!!!
-                // TODO Now trigger the changes in the mergeList
             }
         } catch (SharkKBException e) {
             L.e(e.getMessage(), this);
@@ -392,7 +389,6 @@ public class SyncManager {
         }
         ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest(topicSTSet, typeSTSet, component.getOwner(), approverSTSet, component.getMembers(), null, null, direction);
 
-        // TODO expose Thread!!!
         message.expose(interest);
     }
 

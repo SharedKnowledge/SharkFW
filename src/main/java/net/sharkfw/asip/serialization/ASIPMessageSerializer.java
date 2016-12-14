@@ -257,6 +257,7 @@ public class ASIPMessageSerializer {
                     message.setInterest(interest);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
+                    return false;
                 }
                 break;
             case ASIPMessage.ASIP_INSERT:
@@ -266,8 +267,9 @@ public class ASIPMessageSerializer {
                                     content.get(ASIPMessageSerializer.KNOWLEDGE).toString(),
                                     serializationHolder.getContent());
                     message.setKnowledge(knowledgeConverter.getKnowledge());
-                } catch (SharkKBException e) {
+                } catch (SharkKBException | ASIPSerializerException e) {
                     e.printStackTrace();
+                    return false;
                 }
                 break;
             case ASIPMessage.ASIP_RAW:

@@ -90,7 +90,7 @@ public class ASIPKnowledgeConverter {
      * @param content
      * @throws SharkKBException
      */
-    public ASIPKnowledgeConverter(String serializedKnowledge, String content) throws SharkKBException {
+    public ASIPKnowledgeConverter(String serializedKnowledge, String content) throws SharkKBException, ASIPSerializerException {
         this.serializedKnowledge = serializedKnowledge;
         this.content = content;
 
@@ -143,13 +143,17 @@ public class ASIPKnowledgeConverter {
                         name = nextInformation.getString(NAME);
                     }
 
-                    String informationContent = this.content.substring(offset, offset + length);
-
-                    ASIPInformation asipInformation = kb.addInformation(informationContent, interest);
-                    asipInformation.setContentType(contentType);
-                    if(!name.isEmpty()){
-                        asipInformation.setName(name);
+                    try {
+                        String informationContent = this.content.substring(offset, offset + length);
+                        ASIPInformation asipInformation = kb.addInformation(informationContent, interest);
+                        asipInformation.setContentType(contentType);
+                        if(!name.isEmpty()){
+                            asipInformation.setName(name);
+                        }
+                    } catch (StringIndexOutOfBoundsException e){
+                        throw new ASIPSerializerException("Message not complete yet");
                     }
+
                 }
 
             }
