@@ -63,7 +63,6 @@ public class ASIPMessageSerializer {
         content.put(KNOWLEDGE, knowledgeConverter.getSerializedKnowledgeAsJSON());
         object.put(CONTENT, content);
 
-        // TODO Use holder to set Content!
         ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), knowledgeConverter.getContent());
 
         return serializationHolder.asString();
@@ -118,7 +117,7 @@ public class ASIPMessageSerializer {
         try {
             serializationHolder = new ASIPSerializationHolder(parsedStream);
         } catch (ASIPSerializerException e) {
-            L.d(e.getMessage());
+            L.d(e.getMessage(), "ASIPMessageSerializer");
             return false;
         }
 

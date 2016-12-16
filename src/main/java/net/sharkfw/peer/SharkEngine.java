@@ -1088,10 +1088,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                         if(this.connectionListener!=null){
                             sConn.addConnectionListener(this.connectionListener);
                         }
-                    } catch (RuntimeException re) {
+                    } catch (RuntimeException | IOException re) {
                         throw new SharkException(re.getMessage(), re.getCause());
-                    } catch (IOException ioe){
-                        ioe.printStackTrace();
                     }
                     //    } else {
                     //  fromPool = true;
@@ -1119,10 +1117,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             }
 
             if (sConn != null /*&& !fromPool*/) {
+                // TODO is called to create Session if other peer is sending?
                 this.asipStub.handleStream(sConn);
             }
 
-            // one kep message is enough
             if (message != null) {
                 return message;
             }

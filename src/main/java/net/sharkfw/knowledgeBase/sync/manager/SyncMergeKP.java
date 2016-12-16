@@ -49,11 +49,11 @@ public class SyncMergeKP extends KnowledgePort {
 
         L.d(this.se.getOwner().getName() + " received a Merge from " + message.getPhysicalSender().getName(), this);
 
-        try {
-            L.d("Message.topic: " + L.semanticTag2String(message.getTopic()), this);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            L.d("Message.topic: " + L.semanticTag2String(message.getTopic()), this);
+//        } catch (SharkKBException e) {
+//            e.printStackTrace();
+//        }
 
         SyncComponent component = syncManager.getComponentByName(message.getTopic());
 
@@ -64,7 +64,7 @@ public class SyncMergeKP extends KnowledgePort {
         try {
             SharkKB kb1 = syncManager.getChanges(component, message.getPhysicalSender());
             boolean anyChanges = kb1 != null;
-            L.d("Before syncing, do we have any changes to reply? " + anyChanges, this);
+            L.d("Before syncing, does " + this.se.getOwner().getName() + " has any changes to reply? " + anyChanges, this);
 
 //            L.d("Changes: " + L.kb2String((SharkKB) asipKnowledge), this);
 //            L.d("--------------------------------------------------------", this);
@@ -76,7 +76,7 @@ public class SyncMergeKP extends KnowledgePort {
 //            L.d("Merged SyncKB: " + L.kb2String((SharkKB) syncKB), this);
 
             if(anyChanges){
-                L.d("Now send my own changes to " + message.getPhysicalSender().getName(), this);
+                L.d("Now send " + this.se.getOwner().getName() + "'s changes to " + message.getPhysicalSender().getName(), this);
                 syncManager.sendMerge(component, message.getPhysicalSender(), message);
             }
 

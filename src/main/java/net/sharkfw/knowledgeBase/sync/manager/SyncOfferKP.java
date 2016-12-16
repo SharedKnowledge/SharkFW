@@ -53,40 +53,8 @@ public class SyncOfferKP extends KnowledgePort {
                     SemanticTag next = iterator.next();
                     SyncComponent component = syncManager.getComponentByName(next);
                     if (component!=null){
-
                         component.addApprovedMember(interest.getApprovers());
                         this.syncManager.sendMerge(component, peer, message);
-
-//                        // Get Component and update approved group members
-//
-//                        // Now send the latest changes to the sender
-//                        SyncKB kb = component.getKb();
-//                        if(kb != null) {
-//                            SharkKB changes = kb;
-//                            Long peerLastSeen = null;
-//
-//                            SyncMergeInfo property = mergePropertyList.get(peer, next);
-//
-//                            if(property!=null){
-//                                peerLastSeen = property.getDate();
-//                                property.updateDate();
-//                            } else {
-//                                property = new SyncMergeInfo(peer, next, System.currentTimeMillis());
-//                            }
-//
-//                            if(peerLastSeen!=null){
-//                                changes = kb.getChanges(peerLastSeen);
-//                            }
-//
-//                            mergePropertyList.add(property);
-//
-//                            L.d("mergePropertyList after add: " + mergePropertyList.toString(), this);
-//
-//                            ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
-//
-//                            response.insert(changes);
-//                        }
-//
                     }
                 }
             }

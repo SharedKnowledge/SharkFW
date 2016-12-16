@@ -2,6 +2,7 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
 import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.asip.serialization.ASIPSerializationHolder;
@@ -93,6 +94,29 @@ public class ASIPOutMessage extends ASIPMessage {
         this.responseSent = true;
     }
 
+    public void expose(ASIPInterest interest, String string) {
+        this.setCommand(ASIPMessage.ASIP_EXPOSE);
+
+//        this.initSecurity();
+
+        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+
+        try {
+            String parse;
+            if(string != null){
+                parse = string;
+            } else {
+                parse = ASIPMessageSerializer.serializeExpose(this, interest).toString();
+            }
+            this.osw.write(parse);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.sent();
+    }
+
     public void expose(ASIPInterest interest) {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
 
@@ -120,7 +144,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-                this.osw.write(ASIPMessageSerializer.serializeInsert(this, knowledge).toString());
+            this.osw.write(ASIPMessageSerializer.serializeInsert(this, knowledge));
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -138,6 +162,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
+            // TODO it's not possible to see, that the serialisation holder already was applied
             this.osw.write(ASIPMessageSerializer.serializeRaw(this, raw).toString());
         } catch (SharkKBException e) {
             L.d("Serialize failed");

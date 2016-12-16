@@ -5,6 +5,7 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
+import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
@@ -108,7 +109,6 @@ public class SyncManager {
 
                 // TODO  here we are just presuming, that we will do the merge. But what if not? Should be triggered after sendMerge
                 mergeInfo.updateDate();
-//                this.mergeInfoSerializer.add(mergeInfo);
             }
         } else {
             mergeInfo = new SyncMergeInfo(peerSemanticTag, component.getUniqueName(), System.currentTimeMillis());
@@ -116,14 +116,8 @@ public class SyncManager {
             // So our changes represent the whole kb
             changes = component.getKb();
         }
+        this.mergeInfoSerializer.add(mergeInfo);
         // TODO Just checked for information inside the kb not for its changes regarding the STSets
-        if(changes!=null){
-            if(changes.getNumberInformation()==0){
-                changes=null;
-                this.mergeInfoSerializer.add(mergeInfo);
-            }
-        }
-
         return changes;
     }
 
@@ -224,28 +218,33 @@ public class SyncManager {
 
         try {
             if(members.isEmpty()){
-                // Oh okay we don't have anyone who should participate
+                // Oh okay we don't have anyone who can participate
                 // Should not be possible because the creator of the component will be added as well.
                 return false;
-            }
-            if(approvedMembers.isEmpty()){
-                // for now we have no one who participates in our syncGroup
-                // We have to send invites to everyone!
-                this.sendInvite(component);
-                return false;
-            } else {
-                // There is at least someone who participates, so we can send out our merge!
-                if (!SharkCSAlgebra.identical(members, approvedMembers)) {
-                    // There are still some people missing so we are sending out our invites!
+            } else{
+                PeerSTSet inMemoCopy = InMemoSharkKB.createInMemoCopy(approvedMembers);
+                inMemoCopy.removeSemanticTag(this.engine.getOwner());
+                // Remove ourself from the list
+                if(inMemoCopy.isEmpty()){
+                    // for now we have no one who participates in our syncGroup
+                    // We have to send invites to everyone!
                     this.sendInvite(component);
+                    return false;
+                } else {
+                    // There is at least someone who participates, so we can send out our merge!
+                    // Now check if we are the one
+                    if (!SharkCSAlgebra.identical(members, approvedMembers)) {
+                        // There are still some people missing so we are sending out our invites!
+                        // TODO SendInvite?
+//                        this.sendInvite(component);
+                    }
+                    return true;
                 }
-                return true;
             }
         } catch (SharkKBException e) {
             L.e(e.getMessage(), this);
-        } finally {
-            return false;
         }
+        return false;
 
     }
 
@@ -255,7 +254,11 @@ public class SyncManager {
      */
     public void sendMerge(SyncComponent component){
 
-        if(!checkInvitation(component)) return;
+        L.d("Initiated sending a Merge to all approvedMembers.", this);
+
+        if(checkInvitation(component) == false) return;
+
+        L.d("Invitation successful.", this);
 
         PeerSTSet approvedMembers = component.getApprovedMembers();
         // Okay so now we are finished with our invites!
@@ -266,7 +269,11 @@ public class SyncManager {
             PeerSemanticTag peerSemanticTag = approvedMemberEnumeration.nextElement();
             // Okay now that we have a peer we can send our changes to
             // we have to check if we have already merged with the peer and get the date of the last merge.
-            sendMerge(component, peerSemanticTag);
+
+            // Now check if we are the peer
+            if(!SharkCSAlgebra.identical(peerSemanticTag, this.engine.getOwner())){
+                sendMerge(component, peerSemanticTag);
+            }
         }
     }
 
@@ -276,6 +283,8 @@ public class SyncManager {
      * @param peer
      */
     public void sendMerge(SyncComponent component, PeerSemanticTag peer){
+
+        L.d("Initiated sending a merge to a special peer.", this);
 
         try {
             if (!component.isInvited(peer)) return;
@@ -307,8 +316,10 @@ public class SyncManager {
      */
     public void sendMerge(SyncComponent component, PeerSemanticTag peer, ASIPInMessage message) throws SharkKBException {
 
+        L.d("Initiated sending a Merge to reply to an already established connection.", this);
+
         SharkKB changes = getChanges(component, peer);
-        L.d("Do i have any changes? " + (changes!=null), this);
+        L.d(this.engine.getOwner().getName() + " wants to send a Merge to " + peer.getName() + ". Are there any changes? " + (changes!=null), this);
         if(changes!=null){
             ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
             response.insert(changes);

@@ -31,6 +31,7 @@ public class SyncComponent {
         this.members = members;
         this.owner = owner;
         this.writable = writable;
+        this.approvedMembers.merge(this.owner);
     }
 
     public boolean isInvited(PeerSemanticTag tag) throws SharkKBException {

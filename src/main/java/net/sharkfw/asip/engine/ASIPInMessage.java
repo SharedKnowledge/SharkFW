@@ -5,6 +5,7 @@ import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPStub;
 import net.sharkfw.asip.SharkStub;
 import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.KEPConnection;
 import net.sharkfw.peer.SharkEngine;
@@ -31,7 +32,6 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     private ASIPKnowledge knowledge;
     private ASIPInterest interest;
     private InputStream raw;
-    private String parsedString = "";
     private ASIPOutMessage response;
     private boolean parsed = false;
 //    private boolean isEmpty = true;
@@ -69,7 +69,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         char[] buffer = new char[1024];
         BufferedReader in = new BufferedReader(new InputStreamReader(this.is, StandardCharsets.UTF_8));
         StringBuilder response= new StringBuilder();
-        int charsRead = 0;
+        int charsRead;
 
         if(in.ready()){
             do{
@@ -77,12 +77,14 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
                 response.append(buffer, 0, charsRead) ;
             } while(charsRead == buffer.length);
 
-            this.parsedString = response.toString();
+            L.d("Read " + response.toString().length() + " Bytes of Data.", this);
+//            L.d(response.toString(), this);
+
+            if(!response.toString().isEmpty()){
+                this.parsed = ASIPMessageSerializer.deserializeInMessage(this, response.toString());
+            }
         }
 
-        if(!this.parsedString.isEmpty()){
-            this.parsed = ASIPMessageSerializer.deserializeInMessage(this, this.parsedString);
-        }
     }
 
 //    public boolean isEmpty() {
@@ -117,10 +119,6 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         if (this.se.getAsipStub() != null && this.con != null) {
             this.se.getAsipStub().handleStream(this.con);
         }
-    }
-
-    public String getParsedString() {
-        return this.parsedString;
     }
 
     public ASIPConnection getConnection() {

@@ -24,8 +24,6 @@ public class ASIPSerializationHolder {
      * The last nine bytes will represent the length of the actual json message. The value will be prepended with zeros
      */
     private String protocolConfig = "";
-    private String format;
-    private String version;
     private int messageLength = 0;
 
     private String serializedJSONMessage;
@@ -36,13 +34,17 @@ public class ASIPSerializationHolder {
     public ASIPSerializationHolder(String message) throws ASIPSerializerException {
         if(!message.isEmpty()){
             protocolConfig = message.substring(0, jsonMessageBeginIndex);
-            format = protocolConfig.substring(0, fieldLengthFormat);
-            version = protocolConfig.substring(fieldLengthFormat, fieldLengthFormat + fieldLengthVersion);
+            L.d("ProtocolConfig: " + protocolConfig, this);
+            String format = protocolConfig.substring(0, fieldLengthFormat);
+            String version = protocolConfig.substring(fieldLengthFormat, fieldLengthFormat + fieldLengthVersion);
             String messageLengthTemp = protocolConfig.substring(fieldLengthFormat + fieldLengthVersion, jsonMessageBeginIndex);
             messageLengthTemp = messageLengthTemp.replaceFirst("^0+(?!$)", "");
 
             try {
                 messageLength = Integer.parseInt(messageLengthTemp);
+                L.d("MessageLength=" + messageLength, this);
+                L.d("message.length=" + message.length(), this);
+                L.d("jsonMessageBeginIndex + messageLength=" + (jsonMessageBeginIndex + messageLength), this);
             } catch (NumberFormatException e){
                 throw new ASIPSerializerException("String can't be converted to an Integer: " + e.getMessage());
             }
@@ -68,18 +70,9 @@ public class ASIPSerializationHolder {
 
     private void prepareProtocolConfig(ASIPMessage message, String serializedMessage){
 
-
-        if(message.getFormat().length() <= 4){
-            protocolConfig += message.getFormat();
-        }
-        if(message.getVersion().length() <= 7){
-            protocolConfig += message.getVersion();
-        }
+        protocolConfig += message.getFormat();
+        protocolConfig += message.getVersion();
         protocolConfig += String.format("%09d", serializedMessage.length());
-    }
-
-    public String getProtocolConfig() {
-        return protocolConfig;
     }
 
     public String getSerializedJSONMessage() {
