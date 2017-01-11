@@ -96,7 +96,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public SyncManager getSyncManager() {
         if (this.syncManager == null) {
             this.syncManager = new SyncManager(this);
-            this.syncManager.startUpdateProcess(15);
+//            this.syncManager.startUpdateProcess(15);
         }
         return this.syncManager;
 
@@ -164,7 +164,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         switch (type) {
             case net.sharkfw.protocols.Protocols.TCP:
                 if (this.getAsipStub() != null) {
-                    protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false, null);
+                    protocolStub = this.createTCPStreamStub(this.getAsipStub(), DEFAULT_TCP_PORT, false);
                 }
                 break;
 //            case net.sharkfw.protocols.Protocols.UDP:
@@ -187,6 +187,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                 }
                 break;
 
+            case Protocols.BLUETOOTH:
+                if(this.getAsipStub()!=null) {
+                    protocolStub = this.createBluetoothStreamStub(this.getAsipStub());
+                }
+                break;
         }
 
         if (protocolStub != null) {
@@ -363,7 +368,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public void handleASIPInterest(ASIPInterest interest) {
-        this.getAsipStub().handleASIPInterest(interest, this.asipStub);
+        this.getAsipStub().handleASIPInterest(interest);
     }
 
     /**
@@ -565,7 +570,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
         switch (protocol) {
             case net.sharkfw.protocols.Protocols.TCP:
-                protocolStub = this.createTCPStreamStub(handler, port, false, knowledge);
+                protocolStub = this.createTCPStreamStub(handler, port, false);
                 break;
 
 //            case net.sharkfw.protocols.Protocols.HTTP:
@@ -595,7 +600,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     /***************************************************************
      * following methods should be overwritten in derived classes  *
      ***************************************************************/
-    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException {
+    protected StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP) throws SharkProtocolNotSupportedException {
         if (isHTTP) {
             throw new SharkProtocolNotSupportedException("HTTP no supported");
         } else {
@@ -619,7 +624,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         throw new SharkProtocolNotSupportedException("Nfc not supported in that version");
     }
 
-    protected Stub createBluetoothStreamStub(SharkStub sharkStub) throws SharkProtocolNotSupportedException {
+    protected Stub createBluetoothStreamStub(ASIPStub sharkStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Bluetooth not supported in that version");
     }
 
@@ -824,27 +829,23 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.connectionListener = listener;
     }
 
-    public ASIPOutMessage createASIPOutResponse(StreamConnection connection, String[] receiverAddress, ASIPInMessage inMessage) throws SharkKBException {
+    public ASIPOutMessage createASIPOutResponse(StreamConnection connection, ASIPInMessage inMessage, SemanticTag topic, SemanticTag type) throws SharkKBException {
 
-
-        if (connection != null) {
-//            L.d("We still have the connection", this);
-            if (this.connectionListener != null) {
+        if(connection != null){
+            if(this.connectionListener!=null){
                 connection.addConnectionListener(this.connectionListener);
             }
-            if (inMessage.getSender() == null) {
-                String receiver = connection.getReceiverAddressString();
-                int colon = receiver.lastIndexOf(":");
-                String newAddress = receiver.substring(0, colon + 1);
-                newAddress += "7071";
-                PeerSemanticTag tag = InMemoSharkKB.createInMemoPeerSemanticTag("receiver", "www.receiver.de", newAddress);
-                inMessage.setSender(tag);
+
+            if(topic==null){
+                topic = inMessage.getTopic();
+            }
+            if(type==null){
+                type = inMessage.getType();
             }
 
-            return new ASIPOutMessage(this, connection, inMessage);
-        } else {
-            return this.createASIPOutMessage(receiverAddress, inMessage.getSender());
+            return new ASIPOutMessage(this, connection, inMessage, topic, type);
         }
+        return null;
     }
 
     public ASIPOutMessage createASIPOutMessage(String[] addresses, PeerSemanticTag receiver) {
@@ -854,7 +855,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public ASIPOutMessage createASIPOutMessage(
             String[] addresses,
-            PeerSemanticTag sender,
+            PeerSemanticTag logicalSender,
             PeerSemanticTag receiverPeer /* kann null sein*/,
             SpatialSemanticTag receiverSpatial /* kann null sein*/,
             TimeSemanticTag receiverTime /* kann null sein*/,
@@ -899,19 +900,16 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                         if (this.connectionListener != null) {
                             sConn.addConnectionListener(this.connectionListener);
                         }
-                    } catch (RuntimeException re) {
+                    } catch (RuntimeException | IOException re) {
                         throw new SharkException(re.getMessage(), re.getCause());
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
                     }
                     //    } else {
                     //  fromPool = true;
                     //  }
-                    message = new ASIPOutMessage(this, sConn, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic, type);
+                    message = new ASIPOutMessage(this, sConn, ttl, engineOwnerPeer, logicalSender, receiverPeer, receiverSpatial, receiverTime, topic, type);
                 } else {
-                    // TODO MessageStub necessary?
                     mStub = (MessageStub) protocolStub;
-                    message = new ASIPOutMessage(this, mStub, ttl, sender, receiverPeer, receiverSpatial, receiverTime, topic, type, address);
+                    message = new ASIPOutMessage(this, mStub, ttl, engineOwnerPeer, logicalSender, receiverPeer, receiverSpatial, receiverTime, topic, type, address);
                 }
             } catch (SharkNotSupportedException ex) {
                 L.e(ex.getMessage(), this);
@@ -931,10 +929,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             }
 
             if (sConn != null /*&& !fromPool*/) {
+                // TODO is called to create Session if other peer is sending?
                 this.asipStub.handleStream(sConn);
             }
 
-            // one kep message is enough
             if (message != null) {
                 return message;
             }

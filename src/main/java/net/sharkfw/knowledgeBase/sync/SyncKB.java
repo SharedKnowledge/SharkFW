@@ -19,7 +19,11 @@ import java.util.Iterator;
  *
  * @author thsc42
  */
-public class SyncKB implements SharkKB {
+public class SyncKB implements SharkKB{
+
+    public interface SyncChangeListener{
+        void onChange();
+    }
     private final SyncSTSet topics;
     private final SyncSemanticNet snTopics;
     private final SyncTaxonomy txTopics;
@@ -37,6 +41,8 @@ public class SyncKB implements SharkKB {
 
     private final SharkKB targetKB;
     public final static String TIME_PROPERTY_NAME = "Shark_System_Last_Modified";
+
+    private ArrayList<SyncChangeListener> syncChangeListeners = new ArrayList<>();
 
     public SyncKB(SharkKB target) throws SharkKBException {
         this.targetKB = target;
@@ -77,6 +83,10 @@ public class SyncKB implements SharkKB {
         */
     }
 
+    public void addSyncChangeListener(SyncChangeListener listener){
+        this.syncChangeListeners.add(listener);
+    }
+
     /**
      * This method will be called after each changes made to the targetKB.
      */
@@ -89,15 +99,24 @@ public class SyncKB implements SharkKB {
         } catch (SharkKBException e) {
             L.e("cannot write time stamp - sync won't work accordingly");
         }
+
+        for (SyncChangeListener listener : this.syncChangeListeners){
+            listener.onChange();
+        }
     }
 
     public Long getTimeOfLastChanges() {
         try {
-            return Long.getLong(this.targetKB.getProperty(SyncKB.TIME_PROPERTY_NAME));
-        } catch (SharkKBException e) {
-            e.printStackTrace();
+            String property = this.targetKB.getProperty(SyncKB.TIME_PROPERTY_NAME);
+            if (property == null || property.isEmpty()){
+                return 0L;
+            } else {
+                return Long.parseLong(property);
+            }
+        } catch (SharkKBException | NumberFormatException e ) {
+            L.e(e.getMessage(), this);
+            return 0L;
         }
-        return null;
     }
 
     /**
@@ -209,8 +228,9 @@ public class SyncKB implements SharkKB {
                         long changed = SyncKB.getTimeStamp(info);
                         if (changed > since) {
                             // add info - its a copy
-                            kb.addInformation(info.getContentAsByte(),
+                            ASIPInformation information = kb.addInformation(info.getContentAsByte(),
                                     info.getASIPSpace());
+                            information.setName(info.getName());
 
                             infoNumber++;
                         }
@@ -388,8 +408,9 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
+        ArrayList<ASIPSpace> assimilate = this.targetKB.assimilate(target, interest, backgroundFP, knowledge, learnTags, deleteAssimilated);
         this.changed();
-        return this.targetKB.assimilate(target, interest, backgroundFP, knowledge, learnTags, deleteAssimilated);
+        return assimilate;
     }
 
     @Override
@@ -424,14 +445,16 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        ASIPSpace asipSpace = this.targetKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
         this.changed();
-        return this.targetKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
+        return asipSpace;
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+        ASIPSpace asipSpace = this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
         this.changed();
-        return this.targetKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
+        return asipSpace;
     }
 
     @Override
@@ -461,26 +484,45 @@ public class SyncKB implements SharkKB {
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        ASIPInformationSpace informationSpace = this.targetKB.mergeInformation(information, space);
         this.changed();
-        return this.targetKB.mergeInformation(information, space);
+        return informationSpace;
     }
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        this.changed();
-        return this.targetKB.addInformation(content, semanticAnnotations);
+        return this.addInformation(null, content, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        this.changed();
-        return this.targetKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
+        return this.addInformation(null, contentIS, numberOfBytes, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        return this.addInformation(null, content, semanticAnnotations);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = this.targetKB.addInformation(name, content, semanticAnnotations);
         this.changed();
-        return this.targetKB.addInformation(content, semanticAnnotations);
+        return asipInformation;
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = this.targetKB.addInformation(name, content, semanticAnnotations);
+        this.changed();
+        return asipInformation;
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = this.targetKB.addInformation(name, contentIS, numberOfBytes, semanticAnnotations);
+        this.changed();
+        return asipInformation;
     }
 
     @Override

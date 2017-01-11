@@ -19,10 +19,16 @@ import java.util.Iterator;
 public class SyncInviteKP extends KnowledgePort {
 
     private final SyncManager syncManager;
+    private final SharkKB rootKB;
 
-    public SyncInviteKP(SharkEngine se, SyncManager syncManager) {
+    public SyncInviteKP(SharkEngine se, SyncManager syncManager, SharkKB rootKB) {
         super(se);
         this.syncManager = syncManager;
+        if(rootKB!=null){
+            this.rootKB = rootKB;
+        } else {
+            this.rootKB = new InMemoSharkKB();
+        }
     }
 
     @Override
@@ -51,16 +57,30 @@ public class SyncInviteKP extends KnowledgePort {
                 isNewInvite = false;
             }
         }
+
+        L.d("Do we already know the component? " + !isNewInvite, this);
+
         // TODO create an empty SyncComponent based on the interest?
 
         if(isNewInvite){
             Iterator<SemanticTag> topics = interest.getTopics().stTags();
             // Create an empty kb based on the first topic
             SemanticTag next = topics.next();
-            SyncComponent component = syncManager.createSyncComponent(new InMemoSharkKB(), next, interest.getApprovers(), interest.getSender(), true);
-            component.addApprovedMember(this.se.getOwner());
+
+            // Necessary to share same peers!
+            InMemoSharkKB inMemoSharkKB = new InMemoSharkKB(
+                    InMemoSharkKB.createInMemoSemanticNet(),
+                    InMemoSharkKB.createInMemoSemanticNet(),
+                    this.rootKB.getPeersAsTaxonomy(),
+                    InMemoSharkKB.createInMemoSpatialSTSet(),
+                    InMemoSharkKB.createInMemoTimeSTSet()
+            );
+
+            interest.getApprovers().merge(this.se.getOwner());
+
+            SyncComponent component = syncManager.createSyncComponent(inMemoSharkKB, next, interest.getApprovers(), interest.getSender(), true);
             // Trigger the listeners
-            syncManager.triggerListener(component);
+            syncManager.triggerInviteListener(component);
         }
 
         // set myself in approver aswell and reply with an OfferTypeTag
@@ -69,8 +89,6 @@ public class SyncInviteKP extends KnowledgePort {
         STSet typeSet = InMemoSharkKB.createInMemoSTSet();
         typeSet.merge(SyncManager.SHARK_SYNC_OFFER_TAG);
         interest.setTypes(typeSet);
-
-        interest.getApprovers().merge(this.se.getOwner());
 
         // Set myself as sender
         interest.setSender(this.se.getOwner());

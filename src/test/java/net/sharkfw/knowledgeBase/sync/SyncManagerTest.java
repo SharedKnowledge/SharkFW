@@ -9,6 +9,7 @@ import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.system.L;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,11 +36,6 @@ public class SyncManagerTest {
         // Create alice
         PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice.de", "tcp://localhost:7070");
         aliceEngine.setEngineOwnerPeer(alice);
-//        try {
-//            aliceEngine.startTCP(7070);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         // Create bob
         PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob.de", "tcp://localhost:7071");
@@ -53,7 +49,11 @@ public class SyncManagerTest {
         // Create a kb to share
         InMemoSharkKB sharkKB = new InMemoSharkKB();
         try {
-            sharkKB.addInformation("This is an information", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"an example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -71,15 +71,45 @@ public class SyncManagerTest {
 
         SyncComponent component = aliceManager.createSyncComponent(sharkKB, kbName, peerSTSet, alice, true);
         try {
-            component.sendInvite();
+            aliceManager.sendInvite(component);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
 
         try {
-            Thread.sleep(15000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void getComponentByName_success(){
+        L.setLogLevel(L.LOGLEVEL_ALL);
+
+        // Basics
+        J2SEAndroidSharkEngine aliceEngine = new J2SEAndroidSharkEngine();
+        SyncManager aliceManager = aliceEngine.getSyncManager();
+        // Create alice
+        PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice.de", "tcp://localhost:7070");
+        aliceEngine.setEngineOwnerPeer(alice);
+        InMemoSharkKB sharkKB = new InMemoSharkKB();
+        PeerSTSet peerSTSet = sharkKB.createInMemoPeerSTSet();
+
+        SemanticTag kbName = sharkKB.createInMemoSemanticTag("kbName", "kbsi.de");
+        SemanticTag kbName1 = sharkKB.createInMemoSemanticTag("kbName1", "kbsi1.de");
+        SemanticTag kbName2 = sharkKB.createInMemoSemanticTag("kbName2", "kbsi2.de");
+        SemanticTag kbName3 = sharkKB.createInMemoSemanticTag("kbName3", "kbsi3.de");
+
+        // Now create the component
+
+        SyncComponent component = aliceManager.createSyncComponent(sharkKB, kbName, peerSTSet, alice, true);
+        SyncComponent component1 = aliceManager.createSyncComponent(sharkKB, kbName1, peerSTSet, alice, true);
+        SyncComponent component2 = aliceManager.createSyncComponent(sharkKB, kbName2, peerSTSet, alice, true);
+        SyncComponent component3 = aliceManager.createSyncComponent(sharkKB, kbName3, peerSTSet, alice, true);
+
+        SyncComponent componentByName = aliceManager.getComponentByName(kbName1);
+
+        Assert.assertTrue(component1.getUniqueName().getName().equals(componentByName.getUniqueName().getName()));
     }
 }

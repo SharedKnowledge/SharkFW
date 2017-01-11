@@ -1,20 +1,16 @@
 package net.sharkfw.knowledgeBase.sync.manager;
 
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPMessage;
-import net.sharkfw.asip.engine.ASIPSerializer;
-import net.sharkfw.knowledgeBase.sync.SyncKB;
-import net.sharkfw.ports.ContentPort;
-import net.sharkfw.peer.SharkEngine;
-
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
-
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.sync.SyncKB;
+import net.sharkfw.ports.KnowledgePort;
+import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 
 /**
@@ -22,7 +18,7 @@ import net.sharkfw.system.L;
  * 
  * @author thsc
  */
-public class SyncMergeKP extends ContentPort {
+public class SyncMergeKP extends KnowledgePort {
 
     private SyncManager syncManager;
 
@@ -32,38 +28,54 @@ public class SyncMergeKP extends ContentPort {
     }
 
     @Override
-    protected boolean handleRaw(ASIPInMessage message, ASIPConnection connection, InputStream inputStream) {
+    protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
         if(!SharkCSAlgebra.identical(message.getType(), SyncManager.SHARK_SYNC_MERGE_TAG))
-            return false;
+            return;
 
-        if(message.getCommand()!=ASIPMessage.ASIP_RAW)
-            return false;
+        if(message.getCommand()!=ASIPMessage.ASIP_INSERT)
+            return;
 
+        L.d(this.se.getOwner().getName() + " received a Merge from " + message.getPhysicalSender().getName(), this);
 
-        L.d(this.se.getOwner().getName() + " received a Merge from " + message.getSender().getName(), this);
+//        try {
+//            L.d("Message.topic: " + L.semanticTag2String(message.getTopic()), this);
+//        } catch (SharkKBException e) {
+//            e.printStackTrace();
+//        }
 
         SyncComponent component = syncManager.getComponentByName(message.getTopic());
 
-        if(component == null) return false;
+        if(component == null) return;
 
         SyncKB syncKB = component.getKb();
 
-        // check allowed sender .. better make that with black-/whitelist
-        // deserialize kb from content
-
-        String text = "";
-        Scanner s = new Scanner(message.getRaw(), StandardCharsets.UTF_8.name()).useDelimiter("\\A");
-        text = s.hasNext() ? s.next() : "";
-
-        SharkKB changes;
-
         try {
-            changes = (SharkKB) ASIPSerializer.deserializeASIPKnowledge(text);
-            syncKB.putChanges(changes);
+            SharkKB kb1 = syncManager.getChanges(component, message.getPhysicalSender());
+            boolean anyChanges = kb1 != null;
+            L.d("Before syncing, does " + this.se.getOwner().getName() + " has any changes to reply? " + anyChanges, this);
+
+//            L.d("Changes: " + L.kb2String((SharkKB) asipKnowledge), this);
+//            L.d("--------------------------------------------------------", this);
+//            L.d("SyncKB: " + L.kb2String((SharkKB) syncKB), this);
+//            L.d("--------------------------------------------------------", this);
+//            L.d("--------------------------------------------------------", this);
+//            L.d("--------------------------------------------------------", this);
+            syncKB.putChanges((SharkKB) asipKnowledge);
+//            L.d("Merged SyncKB: " + L.kb2String((SharkKB) syncKB), this);
+
+            if(anyChanges){
+                L.d("Now send " + this.se.getOwner().getName() + "'s changes to " + message.getPhysicalSender().getName(), this);
+                syncManager.sendMerge(component, message.getPhysicalSender(), message);
+            }
+
         } catch (SharkKBException e) {
             e.printStackTrace();
+            L.d(e.getMessage(), this);
         }
+    }
 
-        return true;
+    @Override
+    protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
+
     }
 }

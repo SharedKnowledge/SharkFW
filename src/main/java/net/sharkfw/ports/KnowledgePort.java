@@ -296,7 +296,6 @@ public abstract class KnowledgePort extends ContentPort {
     protected void doProcess(ASIPInMessage msg, ASIPConnection con) /*TODO what is here todo?*/{
 
         // Do a lot of other stuff here.. add what is required, see below
-
         // ...
 
         if(msg.getTtl() <= 0){

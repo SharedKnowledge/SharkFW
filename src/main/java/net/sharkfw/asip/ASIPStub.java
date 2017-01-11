@@ -10,7 +10,8 @@ import java.util.Iterator;
  * @author thsc
  */
 public interface ASIPStub extends SharkStub, RequestHandler {
-    public boolean callListener(ASIPInMessage msg);
+
+    boolean callListener(ASIPInMessage msg);
 
     Iterator<ASIPInterest> getSentInterests(long since);
 

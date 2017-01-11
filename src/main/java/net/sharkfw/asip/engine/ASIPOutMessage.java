@@ -2,6 +2,10 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
+import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
@@ -20,9 +24,6 @@ import java.nio.charset.StandardCharsets;
 public class ASIPOutMessage extends ASIPMessage {
 
     private Writer osw = null;
-    private ASIPInterest interest = null;
-    private ASIPKnowledge knowledge = null;
-    private InputStream raw = null;
     private OutputStream os = null;
     private boolean responseSent = false;
     private String recipientAddress = "";
@@ -31,28 +32,35 @@ public class ASIPOutMessage extends ASIPMessage {
     public ASIPOutMessage(SharkEngine engine,
                           StreamConnection connection,
                           long ttl,
-                          PeerSemanticTag sender,
+                          PeerSemanticTag physicalSender,
+                          PeerSemanticTag logicalSender,
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime,
                           SemanticTag topic,
                           SemanticTag type) throws SharkKBException {
 
-        super(engine, connection, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic, type);
+        super(engine, connection, ttl, physicalSender, logicalSender, receiverPeer, receiverLocation, receiverTime, topic, type);
         this.recipientAddress = connection.getReceiverAddressString();
         this.os = connection.getOutputStream();
     }
 
-    public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in) throws SharkKBException {
-        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getSender(), in.getReceiverSpatial(), in.getReceiverTime(), in.getTopic(), in.getType());
+    public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in, SemanticTag topic, SemanticTag type) throws SharkKBException {
+        super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getLogicalSender(), in.getPhysicalSender(), in.getReceiverSpatial(), in.getReceiverTime(), topic, type);
+
         this.recipientAddress = connection.getReceiverAddressString();
+        // TODO throws error!
+//        PeerSemanticTag receiver = in.getSender();
+//        receiver.addAddress(this.recipientAddress);
+//        this.setReceiverPeer(receiver);
         this.os = connection.getOutputStream();
     }
 
     public ASIPOutMessage(SharkEngine engine,
                           MessageStub stub,
                           long ttl,
-                          PeerSemanticTag sender,
+                          PeerSemanticTag physicalSender,
+                          PeerSemanticTag logicalSender,
                           PeerSemanticTag receiverPeer,
                           SpatialSemanticTag receiverLocation,
                           TimeSemanticTag receiverTime,
@@ -60,7 +68,7 @@ public class ASIPOutMessage extends ASIPMessage {
                           SemanticTag type,
                           String address) throws SharkKBException {
 
-        super(engine, stub, ttl, sender, receiverPeer, receiverLocation, receiverTime, topic, type);
+        super(engine, stub, ttl, physicalSender, logicalSender, receiverPeer, receiverLocation, receiverTime, topic, type);
         this.outStub = stub;
         this.recipientAddress = address;
         this.os = new ByteArrayOutputStream();
@@ -86,6 +94,29 @@ public class ASIPOutMessage extends ASIPMessage {
         this.responseSent = true;
     }
 
+    public void expose(ASIPInterest interest, String string) {
+        this.setCommand(ASIPMessage.ASIP_EXPOSE);
+
+//        this.initSecurity();
+
+        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
+
+        try {
+            String parse;
+            if(string != null){
+                parse = string;
+            } else {
+                parse = ASIPMessageSerializer.serializeExpose(this, interest).toString();
+            }
+            this.osw.write(parse);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.sent();
+    }
+
     public void expose(ASIPInterest interest) {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
 
@@ -94,7 +125,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            String parse = ASIPSerializer.serializeExpose(this, interest).toString();
+            String parse = ASIPMessageSerializer.serializeExpose(this, interest).toString();
             this.osw.write(parse);
         } catch (SharkKBException e) {
             e.printStackTrace();
@@ -113,11 +144,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            if(knowledge!=null){
-                this.osw.write(ASIPSerializer.serializeInsert(this, knowledge).toString());
-            } else {
-                this.osw.write(ASIPSerializer.serializeHeader(this).toString());
-            }
+            this.osw.write(ASIPMessageSerializer.serializeInsert(this, knowledge));
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -135,7 +162,8 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            this.osw.write(ASIPSerializer.serializeRaw(this, raw).toString());
+            // TODO it's not possible to see, that the serialisation holder already was applied
+            this.osw.write(ASIPMessageSerializer.serializeRaw(this, raw).toString());
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();
@@ -154,7 +182,7 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            this.osw.write(ASIPSerializer.serializeRaw(this, inputStream).toString());
+            this.osw.write(ASIPMessageSerializer.serializeRaw(this, inputStream).toString());
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();

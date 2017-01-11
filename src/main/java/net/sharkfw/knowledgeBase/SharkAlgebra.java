@@ -1,13 +1,14 @@
 package net.sharkfw.knowledgeBase;
 
-import java.util.Iterator;
-
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInterest;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.Util;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  *
@@ -418,10 +419,25 @@ public class SharkAlgebra {
     }
 
     public static void mergeInformation(SharkKB target, ASIPInformation info) throws SharkKBException {
-        ASIPInformation newInfo = target.addInformation(info.getContentAsByte(), info.getASIPSpace());
 
-        // copy properties
-        Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, newInfo);
+        Iterator<ASIPInformation> information = target.getInformation(info.getASIPSpace());
+        boolean infoExists = false;
+        if(information!=null){
+            while (information.hasNext()){
+                ASIPInformation next = information.next();
+                if (Arrays.equals(next.getContentAsByte(), info.getContentAsByte())){
+                    infoExists = true;
+                }
+            }
+        }
+
+        if(!infoExists){
+            ASIPInformation newInfo = target.addInformation(info.getContentAsByte(), info.getASIPSpace());
+
+            // copy properties
+            Util.copyPropertiesFromPropertyHolderToPropertyHolder(info, newInfo);
+        }
+
     }
 
     public static void mergeInformations(SharkKB target, Iterator<ASIPInformation> cInfoIter) throws SharkKBException {
@@ -429,7 +445,7 @@ public class SharkAlgebra {
 
         while(cInfoIter.hasNext()) {
             ASIPInformation cInfo = cInfoIter.next();
-            SharkAlgebra.mergeInformation(target, cInfo);
+            target.addInformation(cInfo.getName(), cInfo.getContentAsByte(), cInfo.getASIPSpace());
         }
     }
 }

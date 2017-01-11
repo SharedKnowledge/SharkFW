@@ -64,5 +64,4 @@ public interface ASIPConnection {
      */
     void sendToAllAddresses(PeerSemanticTag pst);
 
-    PeerSemanticTag getSender() throws SharkKBException;
 }

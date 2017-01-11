@@ -43,7 +43,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
             done = true;
 
         } catch (ClassNotFoundException | java.lang.NoClassDefFoundError ex) {
-            L.d("no JTS Spatial Algebra found - take default: " + ex.getMessage());
+//            L.d("no JTS Spatial Algebra found - take default: " + ex.getMessage());
         } catch (InstantiationException | IllegalAccessException ex) {
             L.d("couldn't instantiate JTS Spatial Algebra - take default: " + ex.getMessage());
         } catch (ClassCastException ex) {
@@ -52,7 +52,7 @@ public abstract class SharkCSAlgebra extends SharkAlgebra {
 
         if (!done) {
             SharkCSAlgebra.spatialAlgebra = new net.sharkfw.knowledgeBase.geom.SpatialAlgebra();
-            L.d("Default Spatial Algebra instantiated");
+//            L.d("Default Spatial Algebra instantiated");
         }
     }
 

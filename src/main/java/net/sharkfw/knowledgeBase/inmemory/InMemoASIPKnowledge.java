@@ -1,13 +1,14 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
+import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.knowledgeBase.*;
+
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
-
-import net.sharkfw.asip.*;
-import net.sharkfw.knowledgeBase.*;
 
 /**
  *
@@ -165,34 +166,84 @@ public class InMemoASIPKnowledge implements Knowledge {
     @Override
     public ASIPInformation addInformation(byte[] content, 
             ASIPSpace semanticAnnotations) throws SharkKBException {
-        
-        InMemoInformation info = new InMemoInformation(semanticAnnotations);
-        info.setContent(content);
-        this.addInfoToInformationSpace(info, semanticAnnotations);
-        
-        return info;
+        return this.addInformation(null, content, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, 
             int numberOfBytes, ASIPSpace semanticAnnotations) 
             throws SharkKBException {
-        
+
+        return this.addInformation(null, contentIS, numberOfBytes, semanticAnnotations);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        Iterator<ASIPInformation> information = this.getInformation(semanticAnnotations);
+        if(information!=null){
+            while (information.hasNext()){
+                ASIPInformation next = information.next();
+
+                if((next.getName() == null && name == null) || next.getName().equals(name)){
+                    if (next.getContentAsString().equals(content)){
+                        return next;
+                    }
+                }
+            }
+        }
         InMemoInformation info = new InMemoInformation(semanticAnnotations);
+        if(name!=null){
+            info.setName(name);
+        }
+        info.setContent(content);
+        this.addInfoToInformationSpace(info, semanticAnnotations);
+
+        return info;
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        Iterator<ASIPInformation> information = this.getInformation(semanticAnnotations);
+        if(information!=null){
+            while (information.hasNext()){
+                ASIPInformation next = information.next();
+                if((next.getName() == null && name == null) || next.getName().equals(name)){
+                    if (Arrays.equals(next.getContentAsByte(), content)){
+                        return next;
+                    }
+                }
+            }
+        }
+
+        InMemoInformation info = new InMemoInformation(semanticAnnotations);
+        if(name!=null){
+            info.setName(name);
+        }
+        info.setContent(content);
+        this.addInfoToInformationSpace(info, semanticAnnotations);
+
+        return info;
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+
+        // TODO check if information already exists
+
+        InMemoInformation info = new InMemoInformation(semanticAnnotations);
+        if(name!=null){
+            info.setName(name);
+        }
         info.setContent(contentIS, numberOfBytes);
         this.addInfoToInformationSpace(info, semanticAnnotations);
-        
+
         return info;
     }
 
     @Override
     public ASIPInformation addInformation(String content, 
             ASIPSpace semanticAnnotations) throws SharkKBException {
-        
-        InMemoInformation info = new InMemoInformation(semanticAnnotations);
-        info.setContent(content);
-        this.addInfoToInformationSpace(info, semanticAnnotations);
-        
-        return info;
+
+        return this.addInformation(null, content, semanticAnnotations);
     }
 }

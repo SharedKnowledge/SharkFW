@@ -1,20 +1,21 @@
-package net.sharkfw.asip;
+package net.sharkfw.asip.engine;
 
-import net.sharkfw.asip.engine.ASIPOutMessage;
+import net.sharkfw.asip.ASIPBaseTest;
+import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.TestKP;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import org.junit.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Created by j4rvis on 21.03.16.
+ * Created by j4rvis on 12/15/16.
  */
-public class ASIPStubTest extends ASIPBaseTest {
+public class ASIPSessionTest extends ASIPBaseTest{
 
     PeerSemanticTag sender;
     PeerSemanticTag receiverPeer;
@@ -28,6 +29,7 @@ public class ASIPStubTest extends ASIPBaseTest {
     J2SEAndroidSharkEngine engineB;
     PeerSemanticTag peerA;
     PeerSemanticTag peerB;
+
 
     @Before
     public void setUp() throws Exception {
@@ -62,34 +64,15 @@ public class ASIPStubTest extends ASIPBaseTest {
         engineB.stopTCP();
     }
 
+
     @Test
-    public void KPCommunication_replyToIncomingData_success() throws Exception {
+    public void testSerializationASIPSession() throws Exception {
         ASIPInterest space = InMemoSharkKB.createInMemoASIPInterest(topics, types, peerA, peers, peers, null, null, ASIPSpace.DIRECTION_INOUT);
-        Thread.sleep(2000);
-
-
-//        String rawInput = "Hello ASIP.";
-//        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
-//        engineA.sendRaw(is, peerB,  testKPA);
-
-//        engineA.sendASIPInterest(space, peerB, testKPA);
 
         ASIPOutMessage outMessage = engineA.createASIPOutMessage(peerB.getAddresses(), peerA, peerB, null, null, null, null, 10);
-        outMessage.expose(space);
+
+        outMessage.expose(space, "ajkdsbgöjkasdbgjklasdgjknasdjkgöasjdkgbhadsbgöknasdbgkhbasdgnkbasdkgnasdk");
 
         Thread.sleep(10000);
-    }
-
-    @Ignore
-    @Test
-    public void ASIPMessage_sendRawViaEngine_success() throws Exception {
-        InputStream is = new ByteArrayInputStream(rawInput.getBytes(StandardCharsets.UTF_8));
-
-        engineA.sendRaw(is, peerB, testKPA);
-
-        Thread.sleep(1000);
-
-        Assert.assertEquals(testKPB.getRawContentOnce(), rawInput);
-        Assert.assertNotEquals(testKPB.getRawContentOnce(), rawInput);
     }
 }

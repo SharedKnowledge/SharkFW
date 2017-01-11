@@ -225,10 +225,15 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
      * @return
      */
     public static PeerSemanticTag createInMemoPeerSemanticTag(String name, String si,
-                                                              String address) {
+            String address) {
 
-        return new InMemo_SN_TX_PeerSemanticTag(name, new String[]{si},
-                new String[]{address});
+        if(address==null){
+            return new InMemo_SN_TX_PeerSemanticTag(name, new String[] {si},
+                    null);
+        } else {
+            return new InMemo_SN_TX_PeerSemanticTag(name, new String[] {si},
+                    new String[]{ address} );
+        }
     }
 
     /**
@@ -254,6 +259,14 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         // looks weird but necessary...
         if (stSet instanceof PeerSTSet) {
             return InMemoSharkKB.createInMemoCopy((PeerSTSet) stSet);
+        }
+
+        if(stSet instanceof TimeSTSet) {
+            return InMemoSharkKB.createInMemoCopy((TimeSTSet) stSet);
+        }
+
+        if(stSet instanceof SpatialSTSet) {
+            return InMemoSharkKB.createInMemoCopy((SpatialSTSet) stSet);
         }
 
         STSet copy = InMemoSharkKB.createInMemoSTSet();
@@ -757,19 +770,34 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
-        return this.getKnowledge().addInformation(content, mergeASIPSpace);
+        return this.addInformation(null, content, semanticalAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
-        return this.getKnowledge().addInformation(contentIS, numberOfBytes, mergeASIPSpace);
+        return this.addInformation(null, contentIS, numberOfBytes, semanticalAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticalAnnotations) throws SharkKBException {
-        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticalAnnotations);
-        return this.getKnowledge().addInformation(content, mergeASIPSpace);
+        return this.addInformation(null, content, semanticalAnnotations);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticAnnotations);
+        return this.getKnowledge().addInformation(name, content, mergeASIPSpace);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticAnnotations);
+        return this.getKnowledge().addInformation(null, contentIS, numberOfBytes, mergeASIPSpace);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticAnnotations);
+        return this.getKnowledge().addInformation(name, content, mergeASIPSpace);
     }
 }

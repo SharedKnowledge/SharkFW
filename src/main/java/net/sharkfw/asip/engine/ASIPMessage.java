@@ -6,7 +6,6 @@
 package net.sharkfw.asip.engine;
 
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
@@ -29,28 +28,30 @@ public abstract class ASIPMessage {
     public static final String TTL = "TTL";
     public static final String COMMAND = "COMMAND";
     public static final String SENDER = "SENDER";
-    public static final String RECEIVERS = "RECEIVERS";
+    public static final String PHYSICALSENDER = "PHYSICALSENDER";
+    public static final String LOGICALSENDER = "LOGICALSENDER";
     public static final String SIGNATURE = "SIGNATURE";
     public static final String RECEIVERPEER = "RECEIVERPEER";
     public static final String RECEIVERLOCATION = "RECEIVERLOCATION";
     public static final String RECEIVERTIME = "RECEIVERTIME";
     public static final String TOPIC = "TOPIC";
     public static final String TYPE = "TYPE";
+
     private SharkEngine engine;
-
     private StreamConnection connection;
-    private final String version = "ASIP 1.0";
 
+    private final String version = "ASIP1.0";
     private final String format = "JSON";
+
     private boolean encrypted = false;
     private String encryptedSessionKey = "";
     private boolean signed = false;
     private String signature = "";
-    private long ttl = -1;
+    private long ttl = 1;
     private MessageStub stub;
     private int command = -1;
-    private PeerSemanticTag sender;
-    private STSet receivers;
+    private PeerSemanticTag physicalSender;
+    private PeerSemanticTag logicalSender;
     private PeerSemanticTag receiverPeer = null;
     private SpatialSemanticTag receiverSpatial = null;
     private TimeSemanticTag receiverTime = null;
@@ -72,7 +73,8 @@ public abstract class ASIPMessage {
     public ASIPMessage(SharkEngine engine,
                        StreamConnection connection,
                        long ttl,
-                       PeerSemanticTag sender,
+                       PeerSemanticTag physicalSender,
+                       PeerSemanticTag logicalSender,
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
                        TimeSemanticTag receiverTime,
@@ -83,20 +85,18 @@ public abstract class ASIPMessage {
         this.connection = connection;
         this.ttl = ttl;
 
-        this.receivers = InMemoSharkKB.createInMemoSTSet();
 
-        this.sender = sender;
+        this.physicalSender = physicalSender;
+        this.logicalSender = logicalSender;
+
         if (receiverPeer != null) {
             this.receiverPeer = receiverPeer;
-            this.receivers.merge(receiverPeer);
         }
         if (receiverSpatial != null) {
             this.receiverSpatial = receiverSpatial;
-            this.receivers.merge(receiverSpatial);
         }
         if (receiverTime != null) {
             this.receiverTime = receiverTime;
-            this.receivers.merge(receiverTime);
         }
 
         this.topic = topic;
@@ -106,7 +106,8 @@ public abstract class ASIPMessage {
     public ASIPMessage(SharkEngine engine,
                        MessageStub stub,
                        long ttl,
-                       PeerSemanticTag sender,
+                       PeerSemanticTag physicalSender,
+                       PeerSemanticTag logicalSender,
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
                        TimeSemanticTag receiverTime,
@@ -117,20 +118,17 @@ public abstract class ASIPMessage {
         this.stub = stub;
         this.ttl = ttl;
 
-        this.receivers = InMemoSharkKB.createInMemoSTSet();
+        this.physicalSender = physicalSender;
+        this.logicalSender = logicalSender;
 
-        this.sender = sender;
         if (receiverPeer != null) {
             this.receiverPeer = receiverPeer;
-            this.receivers.merge(receiverPeer);
         }
         if (receiverSpatial != null) {
             this.receiverSpatial = receiverSpatial;
-            this.receivers.merge(receiverSpatial);
         }
         if (receiverTime != null) {
             this.receiverTime = receiverTime;
-            this.receivers.merge(receiverTime);
         }
         this.topic = topic;
         this.type = type;
@@ -181,12 +179,20 @@ public abstract class ASIPMessage {
         return command;
     }
 
-    public PeerSemanticTag getSender() {
-        return sender;
+    public PeerSemanticTag getPhysicalSender() {
+        return physicalSender;
     }
 
-    public STSet getReceivers() {
-        return receivers;
+    public void setPhysicalSender(PeerSemanticTag physicalSender) {
+        this.physicalSender = physicalSender;
+    }
+
+    public PeerSemanticTag getLogicalSender() {
+        return logicalSender;
+    }
+
+    public void setLogicalSender(PeerSemanticTag logicalSender) {
+        this.logicalSender = logicalSender;
     }
 
     public PeerSemanticTag getReceiverPeer() {
@@ -230,14 +236,6 @@ public abstract class ASIPMessage {
 
     public void setTtl(long ttl) {
         this.ttl = ttl;
-    }
-
-    public void setSender(PeerSemanticTag sender) {
-        this.sender = sender;
-    }
-
-    public void setReceivers(STSet receivers) {
-        this.receivers = receivers;
     }
 
     public void setReceiverPeer(PeerSemanticTag receiverPeer) {
@@ -284,8 +282,6 @@ public abstract class ASIPMessage {
         if (encryptedSessionKey != null ? !encryptedSessionKey.equals(that.encryptedSessionKey) : that.encryptedSessionKey != null)
             return false;
         if (signature != null ? !signature.equals(that.signature) : that.signature != null) return false;
-        if (sender != null ? !sender.equals(that.sender) : that.sender != null) return false;
-//        if (receivers != null ? !receivers.equals(that.receivers) : that.receivers != null) return false;
         if (receiverPeer != null ? !receiverPeer.equals(that.receiverPeer) : that.receiverPeer != null) return false;
         if (topic != null ? !topic.equals(that.topic) : that.topic != null) return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
@@ -305,7 +301,6 @@ public abstract class ASIPMessage {
         result = 31 * result + (signature != null ? signature.hashCode() : 0);
         result = 31 * result + (int) (ttl ^ (ttl >>> 32));
         result = 31 * result + command;
-        result = 31 * result + (sender != null ? sender.hashCode() : 0);
 //        resultSet = 31 * resultSet + (receivers != null ? receivers.hashCode() : 0);
         result = 31 * result + (receiverPeer != null ? receiverPeer.hashCode() : 0);
         result = 31 * result + (receiverSpatial != null ? receiverSpatial.hashCode() : 0);
@@ -324,8 +319,6 @@ public abstract class ASIPMessage {
                 ", signature='" + signature + '\'' +
                 ", ttl=" + ttl +
                 ", command=" + command +
-                ", sender=" + sender +
-//                ", receivers=" + receivers +
                 ", receiverPeer=" + receiverPeer +
                 ", receiverSpatial=" + receiverSpatial +
                 ", receiverTime=" + receiverTime +

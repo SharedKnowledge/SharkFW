@@ -32,8 +32,8 @@ public class ASIPBaseTest {
     SpatialSTSet locations;
     TimeSTSet times;
 
-    STSet topics;
-    STSet types;
+    public STSet topics;
+    public STSet types;
 
 
     @Before

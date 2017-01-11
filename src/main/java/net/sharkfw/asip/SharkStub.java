@@ -43,5 +43,5 @@ public interface SharkStub {
      */
     public void handleInterest(Interest interest);
     
-    public void handleASIPInterest(ASIPInterest interest, SharkStub stub);
+    public void handleASIPInterest(ASIPInterest interest);
 }
