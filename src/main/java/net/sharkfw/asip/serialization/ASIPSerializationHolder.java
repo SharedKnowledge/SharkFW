@@ -34,7 +34,7 @@ public class ASIPSerializationHolder {
     public ASIPSerializationHolder(String message) throws ASIPSerializerException {
         if(!message.isEmpty()){
             protocolConfig = message.substring(0, jsonMessageBeginIndex);
-            L.d("ProtocolConfig: " + protocolConfig, this);
+//            L.d("ProtocolConfig: " + protocolConfig, this);
             String format = protocolConfig.substring(0, fieldLengthFormat);
             String version = protocolConfig.substring(fieldLengthFormat, fieldLengthFormat + fieldLengthVersion);
             String messageLengthTemp = protocolConfig.substring(fieldLengthFormat + fieldLengthVersion, jsonMessageBeginIndex);
@@ -42,9 +42,9 @@ public class ASIPSerializationHolder {
 
             try {
                 messageLength = Integer.parseInt(messageLengthTemp);
-                L.d("MessageLength=" + messageLength, this);
-                L.d("message.length=" + message.length(), this);
-                L.d("jsonMessageBeginIndex + messageLength=" + (jsonMessageBeginIndex + messageLength), this);
+//                L.d("MessageLength=" + messageLength, this);
+//                L.d("message.length=" + message.length(), this);
+//                L.d("jsonMessageBeginIndex + messageLength=" + (jsonMessageBeginIndex + messageLength), this);
             } catch (NumberFormatException e){
                 throw new ASIPSerializerException("String can't be converted to an Integer: " + e.getMessage());
             }

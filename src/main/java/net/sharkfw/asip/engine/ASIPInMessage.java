@@ -77,7 +77,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
                 response.append(buffer, 0, charsRead) ;
             } while(charsRead == buffer.length);
 
-            L.d("Read " + response.toString().length() + " Bytes of Data.", this);
+//            L.d("Read " + response.toString().length() + " Bytes of Data.", this);
 //            L.d(response.toString(), this);
 
             if(!response.toString().isEmpty()){

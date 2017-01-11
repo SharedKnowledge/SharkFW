@@ -222,10 +222,7 @@ public class SyncManager {
                 // Should not be possible because the creator of the component will be added as well.
                 return false;
             } else{
-                PeerSTSet inMemoCopy = InMemoSharkKB.createInMemoCopy(approvedMembers);
-                inMemoCopy.removeSemanticTag(this.engine.getOwner());
-                // Remove ourself from the list
-                if(inMemoCopy.isEmpty()){
+                if(approvedMembers.isEmpty()){
                     // for now we have no one who participates in our syncGroup
                     // We have to send invites to everyone!
                     this.sendInvite(component);
@@ -236,7 +233,12 @@ public class SyncManager {
                     if (!SharkCSAlgebra.identical(members, approvedMembers)) {
                         // There are still some people missing so we are sending out our invites!
                         // TODO SendInvite?
-//                        this.sendInvite(component);
+                        Enumeration<PeerSemanticTag> enumeration = members.peerTags();
+                        while (enumeration.hasMoreElements()){
+                            PeerSemanticTag peerSemanticTag = enumeration.nextElement();
+                        }
+                        this.sendInvite(component);
+                        return false;
                     }
                     return true;
                 }
@@ -258,8 +260,6 @@ public class SyncManager {
 
         if(checkInvitation(component) == false) return;
 
-        L.d("Invitation successful.", this);
-
         PeerSTSet approvedMembers = component.getApprovedMembers();
         // Okay so now we are finished with our invites!
         // Let's send our merge!
@@ -269,7 +269,7 @@ public class SyncManager {
             PeerSemanticTag peerSemanticTag = approvedMemberEnumeration.nextElement();
             // Okay now that we have a peer we can send our changes to
             // we have to check if we have already merged with the peer and get the date of the last merge.
-
+            L.d("Name of approvedMember: " + peerSemanticTag.getName(), this);
             // Now check if we are the peer
             if(!SharkCSAlgebra.identical(peerSemanticTag, this.engine.getOwner())){
                 sendMerge(component, peerSemanticTag);
@@ -287,20 +287,23 @@ public class SyncManager {
         L.d("Initiated sending a merge to a special peer.", this);
 
         try {
-            if (!component.isInvited(peer)) return;
-            SharkKB changes = getChanges(component, peer);
-            if(changes!=null){
-                // We do have some changes we can send!
-                ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
-                        peer.getAddresses(),
-                        this.engine.getOwner(),
-                        peer,
-                        null,
-                        null,
-                        component.getUniqueName(),
-                        SyncManager.SHARK_SYNC_MERGE_TAG, 1);
+            if (component.isInvited(peer)){
+                SharkKB changes = getChanges(component, peer);
+                if(changes!=null){
+                    // We do have some changes we can send!
+                    ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
+                            peer.getAddresses(),
+                            this.engine.getOwner(),
+                            peer,
+                            null,
+                            null,
+                            component.getUniqueName(),
+                            SyncManager.SHARK_SYNC_MERGE_TAG, 1);
 
-                outMessage.insert(changes);
+                    outMessage.insert(changes);
+                }
+            } else {
+                sendInvite(component, peer);
             }
         } catch (SharkKBException e) {
             L.e(e.getMessage(), this);
@@ -336,6 +339,8 @@ public class SyncManager {
         ArrayList<String> addresses = new ArrayList<>();
         while (enumeration.hasMoreElements()){
             PeerSemanticTag peerSemanticTag = enumeration.nextElement();
+
+            if (SharkCSAlgebra.identical(peerSemanticTag, this.engine.getOwner())) continue;
 
             if(!component.isInvited(peerSemanticTag)){
                 String[] peerSemanticTagAddresses = peerSemanticTag.getAddresses();

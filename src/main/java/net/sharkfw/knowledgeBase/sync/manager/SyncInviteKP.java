@@ -76,8 +76,9 @@ public class SyncInviteKP extends KnowledgePort {
                     InMemoSharkKB.createInMemoTimeSTSet()
             );
 
+            interest.getApprovers().merge(this.se.getOwner());
+
             SyncComponent component = syncManager.createSyncComponent(inMemoSharkKB, next, interest.getApprovers(), interest.getSender(), true);
-            component.addApprovedMember(this.se.getOwner());
             // Trigger the listeners
             syncManager.triggerInviteListener(component);
         }
@@ -88,8 +89,6 @@ public class SyncInviteKP extends KnowledgePort {
         STSet typeSet = InMemoSharkKB.createInMemoSTSet();
         typeSet.merge(SyncManager.SHARK_SYNC_OFFER_TAG);
         interest.setTypes(typeSet);
-
-        interest.getApprovers().merge(this.se.getOwner());
 
         // Set myself as sender
         interest.setSender(this.se.getOwner());
