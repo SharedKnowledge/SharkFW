@@ -2,6 +2,7 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.*;
 import net.sharkfw.asip.engine.serializer.AbstractSharkStub;
+import net.sharkfw.asip.serialization.ASIPSerializerException;
 import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -44,7 +45,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
     }
 
     @Override
-    public void handleMessage(byte[] msg, MessageStub stub) {
+    public void handleMessage(byte[] msg, MessageStub stub) throws ASIPSerializerException {
         // TODO implement MessageStub
         L.d("ASIPStub: message with length of " + msg.length + " bytes received: " + Arrays.toString(msg), this);
         try {
@@ -53,7 +54,12 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
                     this.encryptionLevel, this.signatureLevel,
                     this.replyPolicy, this.refuseUnverifiably);
             inMsg.parse();
-            this.callListener(inMsg);
+
+            if(inMsg.isParsed()){
+                this.callListener(inMsg);
+            } else {
+                throw new ASIPSerializerException("Message can't be serialized to ASIP.");
+            }
         } catch (IOException ioe) {
             L.e("IOException while reading ASIP message: " + ioe.getMessage(), this);
             ioe.printStackTrace();

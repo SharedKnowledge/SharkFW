@@ -47,11 +47,9 @@ public abstract class KnowledgePort extends ContentPort {
     protected ASIPInterest asipInterest;
     protected ASIPInterest receiverASIPInterest;
     protected SharkKB kb;
-//    protected SharkStub sharkStub;
 //    private boolean isStarted = false;
 //    protected ArrayList<KPListener> listeners = new ArrayList();
     private String id = null;
-//    protected SharkEngine se;
     private PrivateKey privateKey;
     private AccessListManager accessList;
 
@@ -96,16 +94,6 @@ public abstract class KnowledgePort extends ContentPort {
     public AccessListManager getAccessListManager() {
         return this.accessList;
     }
-
-    /**
-     * Set the <code>KEPStub</code> that is used as a protocol engine.
-     *
-     * @param stub An instance of <code>KEPStub</code> that is used as the protocol engine by the local <code>SharkEngine</code>
-     */
-//    public void setSharkStub(SharkStub stub) {
-//        this.sharkStub = stub;
-//        this.sharkStub.addListener(this);
-//    }
 
     /**
      * Return whether the {@link net.sharkfw.knowledgeBase.Interest} inside the KP is a sending kepInterest.
@@ -267,15 +255,6 @@ public abstract class KnowledgePort extends ContentPort {
 //
 //        return responded;
 //    }
-
-    /**
-     * Place logic for handling an insert command in this method.
-     *
-     * @param knowledge
-     * @param kepConnection
-     * @deprecated 
-     */
-//    protected abstract void handleInsert(Knowledge knowledge, KEPConnection kepConnection);
 
     /**
      * Place logic for handling an insert command in this method.

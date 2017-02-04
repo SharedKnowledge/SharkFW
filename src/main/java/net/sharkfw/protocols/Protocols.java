@@ -28,7 +28,6 @@ public abstract class Protocols {
      * Constant value representing Mail (namely POP3 and IMAP)
      */
     public static final int MAIL = 1;
-
     public static final int WIFI_DIRECT = 2;
     public static final int NFC = 3;
     public static final int BLUETOOTH = 4;
@@ -89,6 +88,8 @@ public abstract class Protocols {
 
     public static final String BLUETOOTH_PREFIX = "bt://";
 
+    public static final String NFC_PREFIX = "nfc://";
+
     /**
      * Returns a string representation for a constant value
      *
@@ -109,6 +110,8 @@ public abstract class Protocols {
                 return "BLUETOOTH";
             case MAIL:
                 return "MAIL";
+            case NFC:
+                return "NFC";
         }
 
         return "unknown protocol type: " + type;
@@ -130,6 +133,7 @@ public abstract class Protocols {
 //        if(address.startsWith(BT_RFCOMM_PREFIX)) return Protocols.BT_RFCOMM;
 //        if(address.startsWith(HTTP_PREFIX)) return Protocols.HTTP;
         if (address.startsWith(MAIL_PREFIX)) return Protocols.MAIL;
+        if (address.startsWith(NFC_PREFIX)) return Protocols.NFC;
 
         throw new SharkProtocolNotSupportedException("unknown protocol type: " + address);
     }
@@ -155,6 +159,8 @@ public abstract class Protocols {
 //            case Protocols.HTTP: return true;
             case Protocols.MAIL:
                 return false;
+            case Protocols.NFC:
+                return false;
         }
 
         throw new SharkProtocolNotSupportedException("unknown protocol type: " + type);
@@ -177,6 +183,8 @@ public abstract class Protocols {
                 return address.replaceFirst(Protocols.TCP_PREFIX, "");
             case Protocols.WIFI_DIRECT:
                 return address.replaceFirst(Protocols.WIFI_DIRECT_PREFIX, "");
+            case Protocols.NFC:
+                return address.replaceFirst(Protocols.NFC_PREFIX, "");
 //			case Protocols.UDP:
 //				return address.replaceFirst(Protocols.UDP_PREFIX, "");
         }

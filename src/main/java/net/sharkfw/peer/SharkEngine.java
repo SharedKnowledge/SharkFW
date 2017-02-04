@@ -181,6 +181,12 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                 }
                 break;
 
+            case net.sharkfw.protocols.Protocols.NFC:
+                if (this.getAsipStub() != null) {
+                    protocolStub = this.createNFCMessageStub(this.getAsipStub());
+                }
+                break;
+
             case net.sharkfw.protocols.Protocols.WIFI_DIRECT:
                 if (this.getAsipStub() != null) {
                     protocolStub = this.createWifiDirectStreamStub(this.getAsipStub());
@@ -620,7 +626,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         throw new SharkProtocolNotSupportedException("Wifi not supported in that version");
     }
 
-    protected Stub createNfcStreamStub(SharkStub sharkStub) throws SharkProtocolNotSupportedException {
+    protected Stub createNFCMessageStub(SharkStub sharkStub) throws SharkProtocolNotSupportedException {
         throw new SharkProtocolNotSupportedException("Nfc not supported in that version");
     }
 

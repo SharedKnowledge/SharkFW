@@ -1,6 +1,7 @@
 package net.sharkfw.protocols;
 
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.serialization.ASIPSerializerException;
 
 /**
  * An interface that defines a generic handler for received requests.
@@ -20,7 +21,7 @@ public interface RequestHandler {
    * @param msg The message to handle as byte[].
    * @param stub The <code>MessageStub</code> through which this message has been received.
    */
-  public void handleMessage(byte[] msg, MessageStub stub);
+  public void handleMessage(byte[] msg, MessageStub stub) throws ASIPSerializerException;
 
   /**
    * Handle an incoming <code>StreamConnection</code>.

@@ -31,6 +31,7 @@ public class L {
     
     static {
         L.setLogLevel(L.LOGLEVEL_SILENT);
+        L.setInMemoPersistenceActivated(false);
     }
     
     public static void setLogLevel(int level) {
@@ -57,9 +58,15 @@ public class L {
         String loglevelString = "LOG";
 
         switch(level) {
-            case LOGLEVEL_ERROR: loglevelString = "ERROR"; break;
-            case LOGLEVEL_WARNING: loglevelString = "WARNING"; break;
-            case LOGLEVEL_DEBUG: loglevelString = "DEBUG"; break;
+            case LOGLEVEL_ERROR:
+                loglevelString = "ERROR";
+                break;
+            case LOGLEVEL_WARNING:
+                loglevelString = "WARNING";
+                break;
+            case LOGLEVEL_DEBUG:
+                loglevelString = "DEBUG";
+                break;
         }
         
         String className = "noClass";
@@ -67,9 +74,9 @@ public class L {
         if(o != null) {
             className = o.getClass().getName();
         }
-        
-        String logString = getTimestamp() + " ["+ className +"] " + loglevelString + ": " + msg;
-        
+
+        String logString = getLongTimestamp() + " ["+ className +"] " + loglevelString + ": " + msg;
+
         if(loglevel == LOGLEVEL_ERROR) {
             L.err.println(logString);
             L.err.flush();
@@ -86,6 +93,11 @@ public class L {
      * @param o
      */
     public static void l(String msg, Object o) {
+
+        if(isPersistenceActivated){
+            L.doPersistenceLog(o, msg, LOGLEVEL_ALL);
+        }
+
         if(loglevel == LOGLEVEL_ALL) {
             L.doLog(o, msg, LOGLEVEL_ALL);
         }
@@ -99,18 +111,17 @@ public class L {
      */
     public static void d(String msg, Object o) {
 
-        if(loglevel == LOGLEVEL_ALL 
+        if(isPersistenceActivated){
+            L.doPersistenceLog(o, msg, LOGLEVEL_DEBUG);
+        }
+
+        if(loglevel == LOGLEVEL_ALL
                 || loglevel == LOGLEVEL_DEBUG
                 ) {
             L.doLog(o, msg, LOGLEVEL_DEBUG);
         }
     }
 
-    public static void d(String msg) { L.d(msg, null); }
-    public static void w(String msg) { L.w(msg, null); }
-    public static void e(String msg) { L.e(msg, null); }
-    public static void l(String msg) { L.l(msg, null); }
-    
     /**
      * Create an Error-Message
      *
@@ -119,7 +130,11 @@ public class L {
      */
     public static void e(String msg, Object o) {
 
-        if(loglevel == LOGLEVEL_ALL 
+        if(isPersistenceActivated){
+            L.doPersistenceLog(o, msg, LOGLEVEL_ERROR);
+        }
+
+        if(loglevel == LOGLEVEL_ALL
                 || loglevel == LOGLEVEL_DEBUG
                 || loglevel == LOGLEVEL_WARNING
                 || loglevel == LOGLEVEL_ERROR
@@ -128,7 +143,6 @@ public class L {
         }
     }
 
-
     /**
      * Create a Warning-Message
      *
@@ -136,8 +150,12 @@ public class L {
      * @param o
      */
     public static void w(String msg, Object o) {
-    
-        if(loglevel == LOGLEVEL_ALL 
+
+        if(isPersistenceActivated){
+            L.doPersistenceLog(o, msg, LOGLEVEL_WARNING);
+        }
+
+        if(loglevel == LOGLEVEL_ALL
                 || loglevel == LOGLEVEL_DEBUG
                 || loglevel == LOGLEVEL_WARNING
                 || loglevel == LOGLEVEL_ERROR
@@ -146,12 +164,90 @@ public class L {
         }
     }
 
-    private static String getTimestamp() {
+    public static void d(String msg) { L.d(msg, null); }
+    public static void w(String msg) { L.w(msg, null); }
+    public static void e(String msg) { L.e(msg, null); }
+    public static void l(String msg) { L.l(msg, null); }
+
+    private static String getLongTimestamp() {
       long currentTime = System.currentTimeMillis();
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-      
+
       return sdf.format(new Date(currentTime));
     }
+
+    private static String getShortTimestamp() {
+        long currentTime = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+
+        return sdf.format(new Date(currentTime));
+    }
+
+    /**
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     * Logging InMemoPersistence
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     */
+
+    private static boolean isPersistenceActivated;
+
+    public static void setInMemoPersistenceActivated(boolean activated){
+        isPersistenceActivated = activated;
+    }
+
+    private static ArrayList<String> debugList = new ArrayList<>();
+    private static ArrayList<String> warningList = new ArrayList<>();
+    private static ArrayList<String> errorList = new ArrayList<>();
+    private static ArrayList<String> allList = new ArrayList<>();
+
+    private static void doPersistenceLog(Object o, String msg, int level){
+        ArrayList<String> logList = allList;
+
+        switch(level) {
+            case LOGLEVEL_ERROR:
+                logList = errorList;
+                break;
+            case LOGLEVEL_WARNING:
+                logList = warningList;
+                break;
+            case LOGLEVEL_DEBUG:
+                logList = debugList;
+                break;
+        }
+
+        String className = "noClass";
+
+        if(o != null) {
+            className = o.getClass().getSimpleName();
+        }
+
+        String logString = getShortTimestamp() + " ["+ className +"] " + ": " + msg;
+
+        logList.add(logString);
+    }
+
+    public static ArrayList<String> getDebugList(){
+        return debugList;
+    }
+
+    public static ArrayList<String> getErrorList(){
+        return errorList;
+    }
+
+    public static ArrayList<String> getWarningList(){
+        return warningList;
+    }
+
+    public static ArrayList<String> getAllList(){
+        return allList;
+    }
+
+
+    /**
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     * Shark specific logging
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     */
     
     public static String kb2String(SharkKB kb) {
         return L.kb2String(kb, false);
