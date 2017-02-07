@@ -80,6 +80,31 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
 
     @Override
     public ASIPInterest asASIPInterest() throws SharkKBException {
+        
+        STSet topicsSet = this.getTopicSTSet();
+        STSet typesSet = this.getTypeSTSet();
+        PeerSTSet peersSet = this.getPeerSTSet();
+        SpatialSTSet locationsSet = this.getSpatialSTSet();
+        TimeSTSet timesSet = this.getTimeSTSet();
+        
+
+        // hide semantic tags
+        locationsSet.setEnumerateHiddenTags(true);
+        timesSet.setEnumerateHiddenTags(true);
+        topicsSet.setEnumerateHiddenTags(true);
+        typesSet.setEnumerateHiddenTags(true);
+        peersSet.setEnumerateHiddenTags(true);
+
+        return InMemoSharkKB.createInMemoASIPInterest(
+                topicsSet,
+                typesSet,
+                this.getOwner(),
+                peersSet,
+                peersSet,
+                timesSet,
+                locationsSet,
+                ASIPSpace.DIRECTION_INOUT);
+/*        
         STSet topicsSet = this.topics.asSTSet();
         PeerSTSet peersSet;
         try {
@@ -103,6 +128,7 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
                 this.times,
                 this.locations,
                 ASIPSpace.DIRECTION_INOUT);
+        */
     }
 
 //    /**
