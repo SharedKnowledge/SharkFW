@@ -43,36 +43,51 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 public abstract class PersistentSharkKB implements SharkKB {
     private final InMemoSharkKB inmemoKB;
     
-    PersistentSharkKB() {
+    public PersistentSharkKB() {
         // create empty sharkKB
         this.inmemoKB = new InMemoSharkKB();
+    }
+    
+    public InMemoSharkKB getInMemoSharkKB() {
+        return this.inmemoKB;
     }
 
     @Override
     public void setOwner(PeerSemanticTag owner) {
         this.inmemoKB.setOwner(owner);
-        this.storageSetOwner(owner);
+        
+        try {
+            this.storageSetOwner(owner);
+        } catch (SharkKBException ex) {
+            // TODO
+        }
     }
 
     private boolean restoredOwner = false;
     
     @Override
     public PeerSemanticTag getOwner() {
-        if(this.restoredOwner) {
-            return this.inmemoKB.getOwner();
+        try {
+            if(this.restoredOwner) {
+                return this.inmemoKB.getOwner();
+            }
+            
+            // else
+            PeerSemanticTag owner = this.storageGetOwner();
+            this.inmemoKB.setOwner(owner);
+            this.restoredOwner = true;
+            
+            return owner;
+        } catch (SharkKBException ex) {
+            // TODO
         }
         
-        // else
-        PeerSemanticTag owner = this.storageGetOwner();
-        this.inmemoKB.setOwner(owner);
-        this.restoredOwner = true;
-        
-        return owner;
+        return null;
     }
     
     private boolean restoredAll = false;
     
-    private void restoreAll() {
+    private void restoreAll() throws SharkKBException {
         if(!this.restoredAll) {
             this.storageRestoreAll(this.inmemoKB);
             this.restoredAll = true;
@@ -86,7 +101,7 @@ public abstract class PersistentSharkKB implements SharkKB {
         
         this.storageSaveAll(this.inmemoKB);
         
-        return this.wrapASIPSpace(this, assimilate);
+        return this.wrapASIPSpaceList(this, assimilate);
     }
 
     @Override
@@ -273,7 +288,7 @@ public abstract class PersistentSharkKB implements SharkKB {
     }
 
     private boolean propertiesRestored = false;
-    private void restoreProperties() {
+    private void restoreProperties() throws SharkKBException {
         if(!this.propertiesRestored) {
             this.storageRestoreProperties(inmemoKB);
             this.propertiesRestored = true;
@@ -282,15 +297,27 @@ public abstract class PersistentSharkKB implements SharkKB {
     
     @Override
     public void setSystemProperty(String name, String value) {
-        this.restoreProperties();
-        this.inmemoKB.setSystemProperty(name, value);
-        this.storageSaveProperties(this, inmemoKB);
+        try {
+            this.restoreProperties();
+            this.inmemoKB.setSystemProperty(name, value);
+            this.storageSaveProperties(this, inmemoKB);
+        }
+        catch(SharkKBException se) {
+            // TODO
+        }
     }
 
     @Override
     public String getSystemProperty(String name) {
-        this.restoreProperties();
-        return this.inmemoKB.getSystemProperty(name);
+        try {
+            this.restoreProperties();
+            return this.inmemoKB.getSystemProperty(name);
+        }
+        catch(SharkKBException se) {
+            // TODO
+        }
+        
+        return null;
     }
 
     @Override
@@ -506,20 +533,20 @@ public abstract class PersistentSharkKB implements SharkKB {
     //   abstract methods - to be implemented by actual implementations   //
     ////////////////////////////////////////////////////////////////////////
     
-    public abstract void storageSetOwner(PeerSemanticTag owner);
+    public abstract void storageSetOwner(PeerSemanticTag owner) throws SharkKBException;
 
-    public abstract PeerSemanticTag storageGetOwner();
+    public abstract PeerSemanticTag storageGetOwner() throws SharkKBException;
 
-    public abstract void storageSaveAll(InMemoSharkKB inmemoKB);
+    public abstract void storageSaveAll(InMemoSharkKB inmemoKB) throws SharkKBException;
 
-    public abstract void storageRestoreAll(InMemoSharkKB inmemoKB);
+    public abstract void storageRestoreAll(InMemoSharkKB inmemoKB) throws SharkKBException;
     
-    public abstract void storageSaveProperties(PersistentSharkKB persistentKB, InMemoSharkKB inmemoKB);
+    public abstract void storageSaveProperties(PersistentSharkKB persistentKB, InMemoSharkKB inmemoKB) throws SharkKBException;
 
-    public abstract void storageRestoreProperties(InMemoSharkKB inmemoKB);
+    public abstract void storageRestoreProperties(InMemoSharkKB inmemoKB) throws SharkKBException;
 
     // wrapper
-    public abstract ArrayList<ASIPSpace> wrapASIPSpace(PersistentSharkKB persistentKB, ArrayList<ASIPSpace> assimilate);
+    public abstract ArrayList<ASIPSpace> wrapASIPSpaceList(PersistentSharkKB persistentKB, ArrayList<ASIPSpace> assimilate);
 
     public abstract Knowledge wrapKnowledge(PersistentSharkKB persistentKB, Knowledge extract);
 
