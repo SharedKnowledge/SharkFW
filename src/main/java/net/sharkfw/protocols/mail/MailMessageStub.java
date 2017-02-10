@@ -322,7 +322,7 @@ public final class MailMessageStub implements MessageStub, Runnable {
                     
                     MailSSLSocketFactory socketFactory= new MailSSLSocketFactory();
                     // that's hards stuff, though - I trust anyone, means: encryption is useless
-                    // nevertheless - shark makes its own security.
+                    // nevertheless - shark makes its own security_deprecated.
                     socketFactory.setTrustAllHosts(true);
                     props.put("mail.pop3s.socketFactory", socketFactory);
 

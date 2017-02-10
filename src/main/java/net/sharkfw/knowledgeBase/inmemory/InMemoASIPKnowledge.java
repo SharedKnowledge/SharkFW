@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.inmemory;
 
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 
@@ -9,6 +10,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -119,7 +121,7 @@ public class InMemoASIPKnowledge implements Knowledge {
     }
     
     @Override
-    public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
+    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -127,7 +129,27 @@ public class InMemoASIPKnowledge implements Knowledge {
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
         return this.getInformation(infoSpace, false, true);
     }
-    
+
+    @Override
+    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
+        Iterator<ASIPInformationSpace> informationSpaces = informationSpaces();
+        List<ASIPInformationSpace> resultSet = new ArrayList<>();
+        while(informationSpaces.hasNext()) {
+            ASIPInformationSpace next = informationSpaces.next();
+
+            ASIPSpace asipSpace = next.getASIPSpace();
+            ASIPInterest mutualInterest = InMemoSharkKB.createInMemoASIPInterest(); // just a container
+
+            if(SharkAlgebra.contextualize(mutualInterest,
+                    asipSpace, space, FPSet.getZeroFPSet())) {
+
+                // they have something in common - add next
+                resultSet.add(next);
+            }
+        }
+
+        return resultSet.iterator();
+    }
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
         // iterate information and see what space fits..

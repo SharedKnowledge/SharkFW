@@ -54,7 +54,7 @@ public abstract class AbstractSharkStub implements SharkStub {
         return this.ports.iterator();
     }
 
-    // security stuff
+    // security_deprecated stuff
     //protected SharkPublicKeyStorage publicKeyStorage;
 //    protected SharkPkiStorage sharkPkiStorage;
     protected SharkEngine.SecurityReplyPolicy replyPolicy;

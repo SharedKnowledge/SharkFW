@@ -1,4 +1,4 @@
-package net.sharkfw.security.utility;
+package net.sharkfw.security.utilities;
 
 import java.security.*;
 
@@ -19,7 +19,7 @@ public class SharkSign {
      * Calculates the signature of a given bytearray.
      * @param data byte-array
      * @param privateKey {@link PrivateKey}
-     * @param sharkSignatureAlgorithm {@link net.sharkfw.security.utility.SharkSign.SharkSignatureAlgorithm}
+     * @param sharkSignatureAlgorithm {@link net.sharkfw.security.utilities.SharkSign.SharkSignatureAlgorithm}
      * @return Signature
      */
     public static byte[] sign(byte[] data, PrivateKey privateKey, SharkSignatureAlgorithm sharkSignatureAlgorithm) {
@@ -42,7 +42,7 @@ public class SharkSign {
      * @param data byte-array
      * @param signature byte-array
      * @param publicKey {@link PublicKey}
-     * @param sharkSignatureAlgorithm {@link net.sharkfw.security.utility.SharkSign.SharkSignatureAlgorithm}
+     * @param sharkSignatureAlgorithm {@link net.sharkfw.security.utilities.SharkSign.SharkSignatureAlgorithm}
      * @return true or false
      */
     public static boolean verify(byte[] data, byte[] signature, PublicKey publicKey, SharkSignatureAlgorithm sharkSignatureAlgorithm) {

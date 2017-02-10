@@ -230,7 +230,7 @@ public abstract class KnowledgePort extends ContentPort {
 //            this.receivedKEPInterest = msgInterest;
 //        }
 //
-//        // set security setting
+//        // set security_deprecated setting
 //        this.se.initSecurity(msg);
 //
 //        switch (cmd) {

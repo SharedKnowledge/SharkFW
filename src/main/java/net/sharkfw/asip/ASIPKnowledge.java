@@ -114,7 +114,7 @@ public interface ASIPKnowledge {
      * @param infoSpace
      * @throws SharkKBException 
      */
-    public void removeInformation(Information info, ASIPSpace infoSpace)
+    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace)
           throws SharkKBException;
     
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace)
@@ -162,7 +162,9 @@ public interface ASIPKnowledge {
      */
     public Iterator<ASIPInformationSpace> informationSpaces()
           throws SharkKBException;
-            
+
+    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException;
+
     /**
      * Clean up that space by removing all information. Removing does not
      * necessarily mean that any information is lost. Information which are
@@ -182,7 +184,6 @@ public interface ASIPKnowledge {
    * 
    *
      * @throws net.sharkfw.knowledgeBase.SharkKBException
-   * @see net.sharkfw.knowledgeBase.ContextSpace
    *
    * @return A ContextSpace with the above characteristics
    */

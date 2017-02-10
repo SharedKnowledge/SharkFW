@@ -8,12 +8,12 @@ package net.sharkfw.system;
  *
  * @author df
  */
-public class SharkPKVerifiyException extends SharkException{
-    public SharkPKVerifiyException() {
+public class SharkPKVerifyException extends SharkException{
+    public SharkPKVerifyException() {
         super();
     }
 
-    public SharkPKVerifiyException(String s) {
+    public SharkPKVerifyException(String s) {
         super(s);
     }
 
@@ -26,7 +26,7 @@ public class SharkPKVerifiyException extends SharkException{
      *      the Throwable.getCause() method). (A null value is permitted, and
      *      indicates that the cause is nonexistent or unknown.)
      */
-    public SharkPKVerifiyException(String msg, Throwable cause) {
+    public SharkPKVerifyException(String msg, Throwable cause) {
         super(msg + cause.getMessage());
     }
 }

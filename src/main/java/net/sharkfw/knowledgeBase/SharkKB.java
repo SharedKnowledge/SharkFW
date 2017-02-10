@@ -149,6 +149,8 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
      */
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException;
 
+    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException;
+
     /**
      * Register a new listener for changes on this SharkKB
      *

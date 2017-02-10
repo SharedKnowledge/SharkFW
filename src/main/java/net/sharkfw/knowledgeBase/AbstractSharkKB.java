@@ -613,10 +613,10 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
         this.knowledge.removeInformation(space);
     }
 
-//    @Override
-//    public Iterator<InformationPoint> informationPoints() throws SharkKBException {
-//        return this.asipKnowledge.informationPoints();
-//    }
+    @Override
+    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
+        this.knowledge.removeInformation(info, infoSpace);
+    }
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {

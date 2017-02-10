@@ -635,8 +635,13 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     @Override
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
         if (this.knowledge == null) return null;
-
         return this.knowledge.informationSpaces();
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
+        if (this.knowledge == null) return null;
+        return this.knowledge.getInformationSpaces(space);
     }
 
     @Override
@@ -712,11 +717,6 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
         if (defaultFPValue != null) {
             this.standardFP = Util.string2fragmentationParameter(defaultFPValue);
         }
-    }
-
-    @Override
-    public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
-        this.getKnowledge().removeInformation(infoSpace);
     }
 
     @Override

@@ -42,7 +42,7 @@ import java.util.*;
  */
 abstract public class SharkEngine implements WhiteAndBlackListManager {
 
-    // security settings
+    // security_deprecated settings
     private PrivateKey privateKey = null;
     private PeerSemanticTag engineOwnerPeer;
     //private SharkPublicKeyStorage publicKeyStorage;

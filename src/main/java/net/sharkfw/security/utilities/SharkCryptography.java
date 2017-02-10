@@ -1,7 +1,5 @@
-package net.sharkfw.security.utility;
+package net.sharkfw.security.utilities;
 
-import net.sharkfw.security.key.SharkKeyAlgorithm;
-import net.sharkfw.security.key.SharkKeyPairAlgorithm;
 import net.sharkfw.system.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -25,7 +23,8 @@ public class SharkCryptography {
 
     /**
      * Encode byte-array.
-     * @param data byte-array
+     *
+     * @param data       byte-array
      * @param privateKey {@link PrivateKey}
      * @return Base64 encoded string
      */
@@ -49,8 +48,9 @@ public class SharkCryptography {
 
     /**
      * Decode Base64 string.
-     * @param base64String {@link String}
-     * @param publicKey {@link PublicKey}
+     *
+     * @param base64String          {@link String}
+     * @param publicKey             {@link PublicKey}
      * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
      * @return byte-array
      */
@@ -77,8 +77,9 @@ public class SharkCryptography {
 
     /**
      * Encode data stored in a byte-array.
-     * @param data byte-array
-     * @param sessionKey byte-array
+     *
+     * @param data              byte-array
+     * @param sessionKey        byte-array
      * @param sharkKeyAlgorithm {@link SharkKeyAlgorithm}
      * @return Base64 encoded string
      */
@@ -103,8 +104,9 @@ public class SharkCryptography {
 
     /**
      * Encode data stored in a byte-array.
-     * @param data byte-array
-     * @param publicKey {@link PublicKey}
+     *
+     * @param data                  byte-array
+     * @param publicKey             {@link PublicKey}
      * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
      * @return Encoded data as a {@link String}
      */
@@ -128,8 +130,9 @@ public class SharkCryptography {
 
     /**
      * Decode Base64 data.
-     * @param base64String {@link String}
-     * @param sessionKey byte-array
+     *
+     * @param base64String      {@link String}
+     * @param sessionKey        byte-array
      * @param sharkKeyAlgorithm {@link SharkKeyAlgorithm}
      * @return byte-array
      */
@@ -157,8 +160,9 @@ public class SharkCryptography {
 
     /**
      * Decode Base64 data.
-     * @param base64String {@link String}
-     * @param privateKey {@link PrivateKey}
+     *
+     * @param base64String          {@link String}
+     * @param privateKey            {@link PrivateKey}
      * @param sharkKeyPairAlgorithm {@link SharkKeyPairAlgorithm}
      * @return byte-array
      */

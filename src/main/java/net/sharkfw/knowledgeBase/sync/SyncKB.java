@@ -463,6 +463,12 @@ public class SyncKB implements SharkKB{
     }
 
     @Override
+    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
+        if (this.targetKB == null) return null;
+        return this.targetKB.getInformationSpaces(space);
+    }
+
+    @Override
     public void addListener(KnowledgeBaseListener kbl) {
         this.targetKB.addListener(kbl);
     }
@@ -526,7 +532,7 @@ public class SyncKB implements SharkKB{
     }
 
     @Override
-    public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
+    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
         this.targetKB.removeInformation(info, infoSpace);
         this.changed();
     }
