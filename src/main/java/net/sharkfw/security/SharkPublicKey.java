@@ -1,11 +1,8 @@
 package net.sharkfw.security;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.system.SharkException;
 
 import java.security.PublicKey;
-import java.util.Date;
 
 /**
  * Created by j4rvis on 2/8/17.
@@ -29,13 +26,14 @@ public interface SharkPublicKey {
     /**
      * @return Validity of the certificate.
      */
-    long getValidity() throws SharkKBException;
+    long getValidity();
 
     /**
      * @return Fingerprint byte-array
      */
-    byte[] getFingerprint() throws SharkException;
+    byte[] getFingerprint();
 
-    long receiveDate() throws SharkKBException;
+    long receiveDate();
 
+    void delete();
 }

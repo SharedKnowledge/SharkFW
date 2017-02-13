@@ -632,5 +632,4 @@ public abstract class AbstractSharkKB extends PropertyHolderDelegate
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
         return this.knowledge.mergeInformation(information, space);
     }
-
 }

@@ -6,44 +6,62 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.KnowledgeUtils;
+import net.sharkfw.system.SharkException;
 
 import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Iterator;
 
 /**
  * Created by j4rvis on 2/7/17.
  */
-public class ASIPSpaceSharkCertificate extends ASIPSpaceSharkPublicKey implements SharkCertificate {
+public class ASIPSpaceSharkCertificate implements SharkCertificate {
 
     private PeerSemanticTag signer;
+    private SharkKB kb;
+    private ASIPSpace space;
 
-    public ASIPSpaceSharkCertificate(SharkKB kb, ASIPSpace space, PeerSemanticTag signer) throws SharkKBException {
-        super(kb, space);
-        this.signer = signer;
+    public ASIPSpaceSharkCertificate(SharkKB kb, ASIPSpace space) throws SharkKBException {
+        this.kb = kb;
+        this.space = space;
+    }
 
-        SharkCSAlgebra.isIn(this.space.getApprovers(), signer);
+    public ASIPSpaceSharkCertificate(SharkKB kb, Iterator<ASIPInformation> information){
+        try {
+            if (information.hasNext()){
+                this.space = information.next().getASIPSpace();
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
     }
 
     public ASIPSpaceSharkCertificate(SharkKB kb, PeerSemanticTag owner, PublicKey publicKey, long validity,
                                      PeerSemanticTag signer, byte[] signature, long signingDate) {
 
-        super(kb, owner, publicKey, validity);
-        PeerSTSet approvers = this.space.getApprovers();
+        this.kb = kb;
 
         try {
-            if (approvers == null) {
-                PeerSTSet peerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
-                peerSTSet.merge(signer);
-                ASIPInterest interest = SharkCSAlgebra.Space2Interest(this.space);
-                // TODO Will the approver really be set??
-                interest.setApprovers(peerSTSet);
-            } else {
-                approvers.merge(signer);
-            }
 
+            this.space = this.kb.createASIPSpace(
+                    null,
+                    SharkCertificate.CERTIFICATE_TAG,
+                    signer,
+                    owner,
+                    null,
+                    null,
+                    null,
+                    ASIPSpace.DIRECTION_INOUT);
+
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_OWNER_PUBLIC_KEY, publicKey.getEncoded());
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_VALIDITY, validity);
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNATURE, signature);
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNING_DATE, signingDate);
-
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -52,14 +70,92 @@ public class ASIPSpaceSharkCertificate extends ASIPSpaceSharkPublicKey implement
     }
 
     @Override
+    public PublicKey getOwnerPublicKey() {
+        try {
+            ASIPInformation information = KnowledgeUtils.getInfoByName(
+                    this.kb,
+                    this.space,
+                    SharkPublicKey.INFO_OWNER_PUBLIC_KEY);
+            if (information != null) {
+                byte[] informationContentAsByte = information.getContentAsByte();
+                KeyFactory kf = KeyFactory.getInstance("RSA");
+                return kf.generatePublic(new X509EncodedKeySpec(informationContentAsByte));
+            }
+        } catch (SharkKBException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public PeerSemanticTag getOwner() {
+        return this.space.getSender();
+    }
+
+    /**
+     * TODO where will it be set??
+     *
+     * @return
+     */
+    @Override
+    public long getValidity(){
+        try {
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_VALIDITY);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * TODO is this correct?
+     *
+     * @return
+     * @throws SharkException
+     */
+    @Override
+    public byte[] getFingerprint()  {
+        byte[] kBytes = getOwnerPublicKey().getEncoded();
+
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA1");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        digest.update((byte) 0x99);
+        digest.update((byte) (kBytes.length >> 8));
+        digest.update((byte) kBytes.length);
+        digest.update(kBytes);
+
+        return digest.digest();
+    }
+
+    @Override
+    public long receiveDate(){
+        try {
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_RECEIVE_DATE);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
     public PeerSemanticTag getSigner() {
         return this.signer;
     }
 
     @Override
-    public byte[] getSignature() throws SharkKBException {
+    public byte[] getSignature() {
         String signatureName = SharkCertificate.INFO_SIGNATURE + "_" + signer.getSI()[0];
-        ASIPInformation information = KnowledgeUtils.getInfoByName(this.kb, this.space, signatureName);
+        ASIPInformation information = null;
+        try {
+            information = KnowledgeUtils.getInfoByName(this.kb, this.space, signatureName);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
         if (information != null) {
             return information.getContentAsByte();
         }
@@ -67,25 +163,34 @@ public class ASIPSpaceSharkCertificate extends ASIPSpaceSharkPublicKey implement
     }
 
     @Override
-    public long signingDate() throws SharkKBException {
-        return KnowledgeUtils.getInfoAsLong(this.kb, this.space, INFO_SIGNING_DATE);
+    public long signingDate() {
+        try {
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, INFO_SIGNING_DATE);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override
-    public void delete() throws SharkKBException {
+    public void delete() {
         PeerSTSet approvers = this.space.getApprovers();
 
         // Remove signature
         // TODO not yet implemented
-        kb.removeInformation((Information) KnowledgeUtils.getInfoByName(this.kb, this.space, INFO_SIGNATURE), this.space);
+        try {
+            kb.removeInformation(KnowledgeUtils.getInfoByName(this.kb, this.space, INFO_SIGNATURE), this.space);
+            // Remove all information if signer is last approver
+            // TODO not yet implemented
+            if (approvers.size() == 1) {
+                kb.removeInformation(this.space);
+            }
 
-        // Remove all information if signer is last approver
-        // TODO not yet implemented
-        if (approvers.size() == 1) {
-            kb.removeInformation(this.space);
+            // remove approver from space
+            approvers.removeSemanticTag(signer);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
         }
 
-        // remove approver from space
-        approvers.removeSemanticTag(signer);
     }
 }

@@ -1,16 +1,8 @@
 package net.sharkfw.security;
 
-import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.system.SharkException;
-
-import java.security.PublicKey;
-import java.security.Signature;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author ac
@@ -33,9 +25,8 @@ public interface SharkCertificate extends SharkPublicKey {
     /**
      * @return
      */
-    byte[] getSignature() throws SharkKBException;
+    byte[] getSignature();
 
-    long signingDate() throws SharkKBException;
+    long signingDate();
 
-    void delete() throws SharkKBException;
 }

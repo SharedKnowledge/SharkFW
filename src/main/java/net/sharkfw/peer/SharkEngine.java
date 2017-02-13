@@ -14,6 +14,8 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.protocols.*;
+import net.sharkfw.security.PkiStorage;
+import net.sharkfw.security.SharkPkiStorage;
 import net.sharkfw.system.*;
 
 import java.io.IOException;
@@ -42,6 +44,35 @@ import java.util.*;
  */
 abstract public class SharkEngine implements WhiteAndBlackListManager {
 
+    public static final String STRING_ENCODING = "ISO-8859-1";
+    public final static int DEFAULT_SILTENT_PERIOD = 500;
+    private static final String PERSISTED_PORT_PROPERTY_NAME = "SharkFW_INTERNAL_PERSISTED_ASIPPORT_NAMES";
+    private static final String SHARK_ENGINE_STRING_SEPARATOR = "_SHARK_FW_DELIM";
+    private static final String SHARK_ENGINE_CLASSNAME = "net.sharkfw.peer.SharkEngine";
+    private static final String UNSENTMESSAGE_SI = "http://www.sharksystem.net/vocabulary/unsentMesssages";
+    private static final String INTEREST_CONTENT_TYPE = "x-shark/kepInterest";
+    private static final String KNOWLEDGE_CONTENT_TYPE = "x-shark/knowledge";
+    private static int DEFAULT_TCP_PORT = 7070;
+    @SuppressWarnings("unused")
+    private static int DEFAULT_HTTP_PORT = 8080;
+    /**
+     * Storage for opened stubs to certain underlying protocols.
+     */
+    private final Stub[] protocolStubs = new Stub[Protocols.NUMBERPROTOCOLS];
+    private final HashMap<Integer, String> deliveredInformation =
+            new HashMap<>();
+    protected ASIPStub asipStub;
+    /**
+     * A collection containing all active <code>LocalInterest</code>'s wrapped up
+     * in <code>KnowledgePort</code>s.
+     */
+    protected List<ASIPPort> ports;
+    /**
+     * The address (in gcf notation) of the relay to use. If set to <code>null</code>
+     * no relay will be used.
+     */
+    protected String relaisaddress;
+    protected ConnectionStatusListener connectionListener = null;
     // security_deprecated settings
     private PrivateKey privateKey = null;
     private PeerSemanticTag engineOwnerPeer;
@@ -50,30 +81,86 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private boolean refuseUnverifiably;
     private SecurityLevel encryptionLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
     private SecurityLevel signatureLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
-
-    protected ASIPStub asipStub;
-
-    /**
-     * A collection containing all active <code>LocalInterest</code>'s wrapped up
-     * in <code>KnowledgePort</code>s.
-     */
-    protected List<ASIPPort> ports;
-    /**
-     * Storage for opened stubs to certain underlying protocols.
-     */
-    private final Stub[] protocolStubs = new Stub[Protocols.NUMBERPROTOCOLS];
-    /**
-     * The address (in gcf notation) of the relay to use. If set to <code>null</code>
-     * no relay will be used.
-     */
-    protected String relaisaddress;
-
-    private static int DEFAULT_TCP_PORT = 7070;
-    @SuppressWarnings("unused")
-    private static int DEFAULT_HTTP_PORT = 8080;
-    protected ConnectionStatusListener connectionListener = null;
     private SharkKB storage;
     private SyncManager syncManager;
+    private SharkPkiStorage pkiStorage;
+    /*********************************************************************
+     * moved from system factory to here                   *
+     *********************************************************************/
+//    boolean udpAvailable = true, tcpAvailable = true, b2l2capAvailable = true, btrfcommAvailable = true, httpAvailable = true;
+
+//    private MessageStub startBTRFCOMMMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
+//        if (this.btrfcomm == null && this.btrfcommAvailable) {
+//            try {
+//                this.btrfcomm = this.createBTRFCOMMStub(handler);
+//            } catch (SharkProtocolNotSupportedException e) {
+//                this.btrfcommAvailable = false;
+//                throw e;
+//            }
+//        }
+//
+//        return this.btrfcomm;
+//    }
+
+//    private StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP) throws SharkProtocolNotSupportedException {
+//        if (isHTTP) {
+//            try {
+//                this.http = this.createTCPStreamStub(handler, port, true);
+//            } catch (SharkProtocolNotSupportedException e) {
+//                this.httpAvailable = false;
+//                throw e;
+//            }
+//            return this.http;
+//        } else {
+//            try {
+//                this.tcp = this.createTCPStreamStub(handler, port, false);
+//            } catch (SharkProtocolNotSupportedException e) {
+//                this.tcpAvailable = false;
+//                throw e;
+//            }
+//            return this.tcp;
+//        }
+//    }
+
+//    private StreamStub startTCPStreamStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
+//        return this.createTCPStreamStub(handler, Protocols.ARBITRARY_PORT, false);
+//    }
+
+//    private MessageStub startUDPMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
+//        if (this.udp == null && this.udpAvailable) {
+//            try {
+//                this.udp = this.createUDPMessageStub(handler);
+//            } catch (SharkProtocolNotSupportedException e) {
+//                this.udpAvailable = false;
+//                throw e;
+//            }
+//        }
+//
+//        return this.udp;
+//    }
+//
+//    private MessageStub startBTL2CAPMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
+//        if (this.btl2cap == null && this.b2l2capAvailable) {
+//            try {
+//                this.btl2cap = this.createBTL2CAPStub(handler);
+//            } catch (SharkProtocolNotSupportedException e) {
+//                this.b2l2capAvailable = false;
+//                throw e;
+//            }
+//        }
+//
+//        return this.btl2cap;
+//    }
+    @SuppressWarnings("unused")
+    private boolean mailAvailable = true; // a guess
+    private long sessionTimeOut = 3000;
+    private Set<String> persistPortNames;
+    private boolean allowEmptyContextPoints = true;
+    private SharkKB unsentMessagesKB;
+    private SemanticTag unsentMessagesST = InMemoSharkKB.createInMemoSemanticTag("UnsentMessage", UNSENTMESSAGE_SI);
+    private XMLSerializer xs = null;
+    // reimplemented with with delegate
+    private AccessListManager accessList = new AccessListManager("Shark_SharkEngine", this.getSystemPropertyHolder());
 
     /**
      * Empty constructor for new API
@@ -81,11 +168,13 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public SharkEngine() {
         this.ports = new ArrayList<>();
         this.storage = new InMemoSharkKB();
+        this.pkiStorage = new SharkPkiStorage(this.storage);
     }
 
     public SharkEngine(SharkKB storage) {
-        this();
+        this.ports = new ArrayList<>();
         this.storage = storage;
+        this.pkiStorage = new SharkPkiStorage(storage);
         this.refreshPersistedASIPPort();
     }
 
@@ -104,6 +193,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public void setEngineOwnerPeer(PeerSemanticTag tag) {
         this.engineOwnerPeer = tag;
+        this.pkiStorage.setPkiStorageOwner(tag);
     }
 
     protected void setASIPStub(SimpleASIPStub asipStub) {
@@ -194,7 +284,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
                 break;
 
             case Protocols.BLUETOOTH:
-                if(this.getAsipStub()!=null) {
+                if (this.getAsipStub() != null) {
                     protocolStub = this.createBluetoothStreamStub(this.getAsipStub());
                 }
                 break;
@@ -259,6 +349,33 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     /**
+     * Define a default KP that handles messages that no other KP likes to
+     * reply to.
+     *
+     * KEP messages are handled with knowledge ports. It happens that no 
+     * KP is willing to handle a request which won't be seldom.
+     *
+     * Applications can define a <i>default knowledge port</i>. It will only 
+     * be called if no other KP has handled the request. 
+     *
+     * It's behaves like the default branch in a switch statement. If any
+     * comparision fails - default will be called.
+     *
+     * @param kp
+     */
+//    public void setDefaultKP(KnowledgePort kp) {
+//        // remove this kp from usual KP list
+//        this.ports.remove(kp);
+//        
+//        // add as default
+//        this.kepStub.setNotHandledRequestKP(kp);
+//    }
+//
+//    public void resetDefaultKP() {
+//        this.kepStub.resetNotHandledRequestKP();
+//    }
+
+    /**
      * Starting all available protocols:
      * <ul>
      * <li>TCP</li>
@@ -292,9 +409,51 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         throw new SharkProtocolNotSupportedException("device does not support tcp");
     }
 
+    /*********************************************************************
+     *               black- and white list management                    *
+     *********************************************************************/
+
+    /**
+     * can be overwritten and will be replace soon when black-/white list
+     * management is integrated into the framework
+     *
+     * @param sender
+     * @return
+     */
+//    public boolean isAccepted(PeerSemanticTag sender) {
+//        return true;
+//    }
     public void startTCP(int port, ASIPKnowledge knowledge) throws SharkProtocolNotSupportedException, IOException {
         throw new SharkProtocolNotSupportedException("device does not support tcp");
     }
+
+//    private MessageStub startMailMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
+//        if (this.mailMessageStub == null && this.mailAvailable) {
+//            try {
+//                this.mailMessageStub = this.createMailStub(handler);
+//            } catch (SharkProtocolNotSupportedException e) {
+//                this.mailAvailable = false; // obviously not available
+//                L.w("Mail Stub not available", e);
+//                throw e;
+//            }
+//        }
+//
+//        return this.mailMessageStub;
+//    }
+
+//    private StreamStub createMailStreamStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
+//        if (this.mailStreamStub == null && this.mailAvailable) {
+//            try {
+//                this.mailStreamStub = this.createMailStreamStub(handler);
+//            } catch (SharkProtocolNotSupportedException ex) {
+//                this.mailAvailable = false;
+//                L.w("Mail Streamstub not available", this);
+//                throw ex;
+//            }
+//        }
+//        return this.mailStreamStub;
+//    }
+//
 
     public void startMail() throws SharkProtocolNotSupportedException, IOException {
         throw new SharkProtocolNotSupportedException("device does not support e-mail");
@@ -378,33 +537,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     /**
-     * Define a default KP that handles messages that no other KP likes to
-     * reply to.
-     *
-     * KEP messages are handled with knowledge ports. It happens that no 
-     * KP is willing to handle a request which won't be seldom.
-     *
-     * Applications can define a <i>default knowledge port</i>. It will only 
-     * be called if no other KP has handled the request. 
-     *
-     * It's behaves like the default branch in a switch statement. If any
-     * comparision fails - default will be called.
-     *
-     * @param kp
-     */
-//    public void setDefaultKP(KnowledgePort kp) {
-//        // remove this kp from usual KP list
-//        this.ports.remove(kp);
-//        
-//        // add as default
-//        this.kepStub.setNotHandledRequestKP(kp);
-//    }
-//
-//    public void resetDefaultKP() {
-//        this.kepStub.resetNotHandledRequestKP();
-//    }
-
-    /**
      * Return all KP which are currently registered in this SharkEngine.
      *
      * @return enumeration of objects of class KP
@@ -449,118 +581,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public PeerSemanticTag getOwner() {
         return this.engineOwnerPeer;
     }
-
-    /*********************************************************************
-     *               black- and white list management                    *
-     *********************************************************************/
-
-    /**
-     * can be overwritten and will be replace soon when black-/white list
-     * management is integrated into the framework
-     * @param sender
-     * @return
-     */
-//    public boolean isAccepted(PeerSemanticTag sender) {
-//        return true;
-//    }
-
-    /*********************************************************************
-     * moved from system factory to here                   *
-     *********************************************************************/
-//    boolean udpAvailable = true, tcpAvailable = true, b2l2capAvailable = true, btrfcommAvailable = true, httpAvailable = true;
-
-//    private MessageStub startBTRFCOMMMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
-//        if (this.btrfcomm == null && this.btrfcommAvailable) {
-//            try {
-//                this.btrfcomm = this.createBTRFCOMMStub(handler);
-//            } catch (SharkProtocolNotSupportedException e) {
-//                this.btrfcommAvailable = false;
-//                throw e;
-//            }
-//        }
-//        
-//        return this.btrfcomm;
-//    }
-
-//    private StreamStub createTCPStreamStub(RequestHandler handler, int port, boolean isHTTP) throws SharkProtocolNotSupportedException {
-//        if (isHTTP) {
-//            try {
-//                this.http = this.createTCPStreamStub(handler, port, true);
-//            } catch (SharkProtocolNotSupportedException e) {
-//                this.httpAvailable = false;
-//                throw e;
-//            }
-//            return this.http;
-//        } else {
-//            try {
-//                this.tcp = this.createTCPStreamStub(handler, port, false);
-//            } catch (SharkProtocolNotSupportedException e) {
-//                this.tcpAvailable = false;
-//                throw e;
-//            }
-//            return this.tcp;
-//        }
-//    }
-
-//    private StreamStub startTCPStreamStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
-//        return this.createTCPStreamStub(handler, Protocols.ARBITRARY_PORT, false);
-//    }
-
-//    private MessageStub startUDPMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
-//        if (this.udp == null && this.udpAvailable) {
-//            try {
-//                this.udp = this.createUDPMessageStub(handler);
-//            } catch (SharkProtocolNotSupportedException e) {
-//                this.udpAvailable = false;
-//                throw e;
-//            }
-//        }
-//
-//        return this.udp;
-//    }
-//
-//    private MessageStub startBTL2CAPMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
-//        if (this.btl2cap == null && this.b2l2capAvailable) {
-//            try {
-//                this.btl2cap = this.createBTL2CAPStub(handler);
-//            } catch (SharkProtocolNotSupportedException e) {
-//                this.b2l2capAvailable = false;
-//                throw e;
-//            }
-//        }
-//
-//        return this.btl2cap;
-//    }
-    @SuppressWarnings("unused")
-    private boolean mailAvailable = true; // a guess
-
-//    private MessageStub startMailMessageStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
-//        if (this.mailMessageStub == null && this.mailAvailable) {
-//            try {
-//                this.mailMessageStub = this.createMailStub(handler);
-//            } catch (SharkProtocolNotSupportedException e) {
-//                this.mailAvailable = false; // obviously not available
-//                L.w("Mail Stub not available", e);
-//                throw e;
-//            }
-//        }
-//
-//        return this.mailMessageStub;
-//    }
-
-//    private StreamStub createMailStreamStub(RequestHandler handler) throws SharkProtocolNotSupportedException {
-//        if (this.mailStreamStub == null && this.mailAvailable) {
-//            try {
-//                this.mailStreamStub = this.createMailStreamStub(handler);
-//            } catch (SharkProtocolNotSupportedException ex) {
-//                this.mailAvailable = false;
-//                L.w("Mail Streamstub not available", this);
-//                throw ex;
-//            }
-//        }
-//        return this.mailStreamStub;
-//    }
-//
 
     /**
      * Start a new protocol server for the given protocol.
@@ -644,8 +664,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public ASIPStub getAsipStub() {
         return this.asipStub;
     }
-
-    private long sessionTimeOut = 3000;
 
     /**
      * Return the connectionout in milliseconds, which is used for KEPSessions.
@@ -837,15 +855,15 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public ASIPOutMessage createASIPOutResponse(StreamConnection connection, ASIPInMessage inMessage, SemanticTag topic, SemanticTag type) throws SharkKBException {
 
-        if(connection != null){
-            if(this.connectionListener!=null){
+        if (connection != null) {
+            if (this.connectionListener != null) {
                 connection.addConnectionListener(this.connectionListener);
             }
 
-            if(topic==null){
+            if (topic == null) {
                 topic = inMessage.getTopic();
             }
-            if(type==null){
+            if (type == null) {
                 type = inMessage.getType();
             }
 
@@ -857,7 +875,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public ASIPOutMessage createASIPOutMessage(String[] addresses, PeerSemanticTag receiver) {
         return this.createASIPOutMessage(addresses, this.engineOwnerPeer, receiver, null, null, null, null, 10);
     }
-
 
     public ASIPOutMessage createASIPOutMessage(
             String[] addresses,
@@ -947,7 +964,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return null;
     }
 
-
     /**
      * That message iterates all remote peers in kp kepInterest and exposes that
      * kepInterest to them
@@ -1001,6 +1017,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     }
 
+    public PkiStorage getPKIStorage() {
+        return this.getPKIStorage();
+    }
+
     public void publishAllKP(PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {
         L.d("Publishing all KPs", this);
 
@@ -1014,6 +1034,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////
+    //                    don't sent information again                    //
+    ////////////////////////////////////////////////////////////////////////
+
     public void stop() {
         for (int i = 0; i < Protocols.NUMBERPROTOCOLS; i++) {
             try {
@@ -1025,12 +1049,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public abstract void persist() throws SharkKBException;
-
-    public static final String STRING_ENCODING = "ISO-8859-1";
-    private static final String PERSISTED_PORT_PROPERTY_NAME = "SharkFW_INTERNAL_PERSISTED_ASIPPORT_NAMES";
-    private static final String SHARK_ENGINE_STRING_SEPARATOR = "_SHARK_FW_DELIM";
-
-    private Set<String> persistPortNames;
 
     private void persistPersistedPorts() throws SharkException {
         SharkKB storageKB = this.getStorage();
@@ -1073,7 +1091,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
         // split it
 //        StringTokenizer st = new StringTokenizer(nameList, SHARK_ENGINE_STRING_SEPARATOR);
-//        
+//
 //        while(st.hasMoreTokens()) {
 //            String name = st.nextToken();
 //            if(name.length() > 0) {
@@ -1098,8 +1116,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         String name = nameList.substring(SHARK_ENGINE_STRING_SEPARATOR.length());
         this.persistPortNames.add(name);
     }
-
-    private static final String SHARK_ENGINE_CLASSNAME = "net.sharkfw.peer.SharkEngine";
 
     /**
      * This method re-creates ASIP ports from their dormant state. Note
@@ -1186,6 +1202,10 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
     }
 
+    /////////////////////////////////////////////////////////////////
+    //                 remember unsent messages                    //
+    /////////////////////////////////////////////////////////////////
+
     private String getPersistPortName(ASIPPort port) throws SharkException {
         SharkKB storageKB = this.getStorage();
         if (storageKB == null) {
@@ -1257,13 +1277,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.persistPersistedPorts();
     }
 
-    public enum SecurityLevel {MUST, IF_POSSIBLE, NO}
-
-    public enum SecurityReplyPolicy {SAME, TRY_SAME, AS_DEFINED}
-
-    ////////////////////////////////////////////////////////////////////////
-    //                    don't sent information again                    //
-    ////////////////////////////////////////////////////////////////////////
+    public boolean getAllowSendingEmptyContextPoints() {
+        return this.allowEmptyContextPoints;
+    }
 
     /**
      * Knowledge can be sent. It is a number of context points.
@@ -1288,33 +1304,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         this.allowEmptyContextPoints = allowed;
     }
 
-    public boolean getAllowSendingEmptyContextPoints() {
-        return this.allowEmptyContextPoints;
-    }
-
-    private final HashMap<Integer, String> deliveredInformation =
-            new HashMap<>();
-
-    private boolean allowEmptyContextPoints = true;
-
-    public final static int DEFAULT_SILTENT_PERIOD = 500;
-
-    /////////////////////////////////////////////////////////////////
-    //                 remember unsent messages                    //
-    /////////////////////////////////////////////////////////////////
-
-    private SharkKB unsentMessagesKB;
-    private static final String UNSENTMESSAGE_SI = "http://www.sharksystem.net/vocabulary/unsentMesssages";
-    private SemanticTag unsentMessagesST = InMemoSharkKB.createInMemoSemanticTag("UnsentMessage", UNSENTMESSAGE_SI);
-
-    private static final String INTEREST_CONTENT_TYPE = "x-shark/kepInterest";
-    private static final String KNOWLEDGE_CONTENT_TYPE = "x-shark/knowledge";
-
     public void setUnsentMessagesKB(SharkKB kb) {
         this.unsentMessagesKB = kb;
     }
-
-    private XMLSerializer xs = null;
 
     private XMLSerializer getXMLSerializer() {
         if (this.xs == null) {
@@ -1324,14 +1316,11 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return this.xs;
     }
 
+    abstract protected SystemPropertyHolder getSystemPropertyHolder();
+
     /////////////////////////////////////////////////////////////////////////
     //                        list manager methods                         //
     /////////////////////////////////////////////////////////////////////////
-
-    abstract protected SystemPropertyHolder getSystemPropertyHolder();
-
-    // reimplemented with with delegate
-    private AccessListManager accessList = new AccessListManager("Shark_SharkEngine", this.getSystemPropertyHolder());
 
     public void acceptPeer(PeerSemanticTag peer, boolean accept) {
         this.accessList.acceptPeer(peer, accept);
@@ -1348,5 +1337,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public boolean isAccepted(PeerSemanticTag peer) {
         return this.accessList.isAccepted(peer);
     }
+
+    public enum SecurityLevel {MUST, IF_POSSIBLE, NO}
+
+    public enum SecurityReplyPolicy {SAME, TRY_SAME, AS_DEFINED}
 }
 

@@ -23,6 +23,8 @@ public interface PkiStorage {
     String OWNERSPACE_TAG_SI = "st:ownerspace";
     SemanticTag OWNERSPACE_TAG = InMemoSharkKB.createInMemoSemanticTag(OWNERSPACE_TAG_NAME, OWNERSPACE_TAG_SI);
 
+    public void setPkiStorageOwner(PeerSemanticTag owner);
+
     List<SharkPublicKey> getUnsignedPublicKeys() throws SharkKBException;
 
     /**
@@ -55,7 +57,6 @@ public interface PkiStorage {
     PublicKey getOldOwnerPublicKey() throws SharkKBException;
 
     void generateNewKeyPair();
-
 
     List<SharkCertificate> getSharkCertificates(PeerSemanticTag owner) throws SharkKBException;
 

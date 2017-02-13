@@ -2,9 +2,7 @@ package net.sharkfw.security;
 
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SharkKB;
-import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.KnowledgeUtils;
 import net.sharkfw.system.SharkException;
 
@@ -80,6 +78,9 @@ public class ASIPSpaceSharkPublicKey implements SharkPublicKey {
         }
     }
 
+    public ASIPSpaceSharkPublicKey() {
+    }
+
     @Override
     public PublicKey getOwnerPublicKey() {
         try {
@@ -109,8 +110,13 @@ public class ASIPSpaceSharkPublicKey implements SharkPublicKey {
      * @return
      */
     @Override
-    public long getValidity() throws SharkKBException {
-        return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_VALIDITY);
+    public long getValidity(){
+        try {
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_VALIDITY);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     /**
@@ -120,7 +126,7 @@ public class ASIPSpaceSharkPublicKey implements SharkPublicKey {
      * @throws SharkException
      */
     @Override
-    public byte[] getFingerprint() throws SharkException {
+    public byte[] getFingerprint()  {
         byte[] kBytes = getOwnerPublicKey().getEncoded();
 
         MessageDigest digest = null;
@@ -139,7 +145,26 @@ public class ASIPSpaceSharkPublicKey implements SharkPublicKey {
     }
 
     @Override
-    public long receiveDate() throws SharkKBException {
-        return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_RECEIVE_DATE);
+    public long receiveDate(){
+        try {
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_RECEIVE_DATE);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public void delete(){
+
+        // Remove signature
+        // TODO not yet implemented
+        try {
+            kb.removeInformation(KnowledgeUtils.getInfoByName(this.kb, this.space, INFO_OWNER_PUBLIC_KEY), this.space);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+
+//        kb.removeSpace()
     }
 }

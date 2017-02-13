@@ -158,26 +158,26 @@ public class InMemoASIPKnowledge implements Knowledge {
             return null;
         }
 
-        return this.getInformationSpace(infoSpace).informations();
+//        return this.getInformationSpace(infoSpace).informations();
 
-//        List<ASIPInformation> resultSet = new ArrayList<>();
-//
-//        Iterator<ASIPInformation> infoIter = this.getInformationSpace(infoSpace).informations();
-//        while(infoIter.hasNext()) {
-//            ASIPInformation info = infoIter.next();
-//
-//            ASIPSpace asipSpace = info.getASIPSpace();
-//            ASIPInterest mutualInterest = InMemoSharkKB.createInMemoASIPInterest(); // just a container
-//
-//            if(SharkAlgebra.contextualize(mutualInterest,
-//                    asipSpace, infoSpace, FPSet.getZeroFPSet())) {
-//
-//                // they have something in common - add info
-//                resultSet.add(info);
-//            }
-//        }
-//
-//        return resultSet.iterator();
+        List<ASIPInformation> resultSet = new ArrayList<>();
+
+        Iterator<ASIPInformation> infoIter = this.getInformationSpace(infoSpace).informations();
+        while(infoIter.hasNext()) {
+            ASIPInformation info = infoIter.next();
+
+            ASIPSpace asipSpace = info.getASIPSpace();
+            ASIPInterest mutualInterest = InMemoSharkKB.createInMemoASIPInterest(); // just a container
+
+            if(SharkAlgebra.contextualize(mutualInterest,
+                    asipSpace, infoSpace, FPSet.getZeroFPSet())) {
+
+                // they have something in common - add info
+                resultSet.add(info);
+            }
+        }
+
+        return resultSet.iterator();
     }
 
     @Override
