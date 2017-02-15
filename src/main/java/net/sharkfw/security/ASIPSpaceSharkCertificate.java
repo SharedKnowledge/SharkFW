@@ -1,10 +1,11 @@
 package net.sharkfw.security;
 
 import net.sharkfw.asip.ASIPInformation;
-import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.PeerSTSet;
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SharkKB;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.system.KnowledgeUtils;
 import net.sharkfw.system.SharkException;
 
@@ -15,7 +16,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Iterator;
 
 /**
  * Created by j4rvis on 2/7/17.
@@ -26,28 +26,18 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
     private SharkKB kb;
     private ASIPSpace space;
 
-    public ASIPSpaceSharkCertificate(SharkKB kb, ASIPSpace space) throws SharkKBException {
+    public ASIPSpaceSharkCertificate(SharkKB kb, ASIPSpace space, PeerSemanticTag signer) {
         this.kb = kb;
         this.space = space;
+        this.signer = signer;
     }
 
-    public ASIPSpaceSharkCertificate(SharkKB kb, Iterator<ASIPInformation> information){
-        try {
-            if (information.hasNext()){
-                this.space = information.next().getASIPSpace();
-            }
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public ASIPSpaceSharkCertificate(SharkKB kb, PeerSemanticTag owner, PublicKey publicKey, long validity,
-                                     PeerSemanticTag signer, byte[] signature, long signingDate) {
+    public ASIPSpaceSharkCertificate(
+            SharkKB kb, PeerSemanticTag owner, PublicKey publicKey, long validity,
+            PeerSemanticTag signer, byte[] signature, long signingDate) {
 
         this.kb = kb;
-
         try {
-
             this.space = this.kb.createASIPSpace(
                     null,
                     SharkCertificate.CERTIFICATE_TAG,
@@ -60,8 +50,9 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
 
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_OWNER_PUBLIC_KEY, publicKey.getEncoded());
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_VALIDITY, validity);
-            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNATURE, signature);
-            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNING_DATE, signingDate);
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNATURE + "_" + signer.getSI()[0], signature);
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getSI()[0], signingDate);
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_RECEIVE_DATE + "_" + signer.getSI()[0], System.currentTimeMillis());
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -98,7 +89,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
      * @return
      */
     @Override
-    public long getValidity(){
+    public long getValidity() {
         try {
             return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_VALIDITY);
         } catch (SharkKBException e) {
@@ -114,7 +105,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
      * @throws SharkException
      */
     @Override
-    public byte[] getFingerprint()  {
+    public byte[] getFingerprint() {
         byte[] kBytes = getOwnerPublicKey().getEncoded();
 
         MessageDigest digest = null;
@@ -133,9 +124,9 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
     }
 
     @Override
-    public long receiveDate(){
+    public long receiveDate() {
         try {
-            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_RECEIVE_DATE);
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_RECEIVE_DATE + "_" + signer.getSI()[0]);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -165,7 +156,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
     @Override
     public long signingDate() {
         try {
-            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, INFO_SIGNING_DATE);
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getSI()[0]);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }

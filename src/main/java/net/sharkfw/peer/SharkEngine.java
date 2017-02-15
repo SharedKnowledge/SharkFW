@@ -168,13 +168,13 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     public SharkEngine() {
         this.ports = new ArrayList<>();
         this.storage = new InMemoSharkKB();
-        this.pkiStorage = new SharkPkiStorage(this.storage);
+        this.pkiStorage = new SharkPkiStorage(new InMemoSharkKB());
     }
 
     public SharkEngine(SharkKB storage) {
         this.ports = new ArrayList<>();
         this.storage = storage;
-        this.pkiStorage = new SharkPkiStorage(storage);
+        this.pkiStorage = new SharkPkiStorage(new InMemoSharkKB());
         this.refreshPersistedASIPPort();
     }
 
@@ -417,7 +417,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
      * can be overwritten and will be replace soon when black-/white list
      * management is integrated into the framework
      *
-     * @param sender
+     * @param
      * @return
      */
 //    public boolean isAccepted(PeerSemanticTag sender) {
@@ -1018,7 +1018,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     }
 
     public PkiStorage getPKIStorage() {
-        return this.getPKIStorage();
+        return this.pkiStorage;
     }
 
     public void publishAllKP(PeerSemanticTag recipient) throws SharkSecurityException, SharkKBException, IOException {

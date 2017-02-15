@@ -25,6 +25,8 @@ public interface PkiStorage {
 
     public void setPkiStorageOwner(PeerSemanticTag owner);
 
+    SharkPublicKey addUnsignedKey(PeerSemanticTag owner, PublicKey key, long validity);
+
     List<SharkPublicKey> getUnsignedPublicKeys() throws SharkKBException;
 
     /**

@@ -93,15 +93,15 @@ public class SyncManager {
 
         SyncMergeInfo mergeInfo = this.mergeInfoSerializer.get(peerSemanticTag, component.getUniqueName());
 
-        L.d("Is " + peerSemanticTag.getName() + " already listed? " + (mergeInfo!=null), this);
+//        L.d("Is " + peerSemanticTag.getName() + " already listed? " + (mergeInfo!=null), this);
 
         if(mergeInfo!=null) {
             // It seems that we have merged with the peer at least once.
             // Now get the changes since the last merge
             long lastMerged = mergeInfo.getDate();
-            L.d("lastMerged: " + lastMerged, this);
+//            L.d("lastMerged: " + lastMerged, this);
             long lastChanges = component.getKb().getTimeOfLastChanges();
-            L.d("lastChanges: " + lastChanges, this);
+//            L.d("lastChanges: " + lastChanges, this);
 
             if (lastChanges > lastMerged) {
                 // the last changes are newer than the last time of the merge.
@@ -256,7 +256,7 @@ public class SyncManager {
      */
     public void sendMerge(SyncComponent component){
 
-        L.d("Initiated sending a Merge to all approvedMembers.", this);
+//        L.d("Initiated sending a Merge to all approvedMembers.", this);
 
         if(checkInvitation(component) == false) return;
 
@@ -269,7 +269,7 @@ public class SyncManager {
             PeerSemanticTag peerSemanticTag = approvedMemberEnumeration.nextElement();
             // Okay now that we have a peer we can send our changes to
             // we have to check if we have already merged with the peer and get the date of the last merge.
-            L.d("Name of approvedMember: " + peerSemanticTag.getName(), this);
+//            L.d("Name of approvedMember: " + peerSemanticTag.getName(), this);
             // Now check if we are the peer
             if(!SharkCSAlgebra.identical(peerSemanticTag, this.engine.getOwner())){
                 sendMerge(component, peerSemanticTag);
@@ -284,7 +284,7 @@ public class SyncManager {
      */
     public void sendMerge(SyncComponent component, PeerSemanticTag peer){
 
-        L.d("Initiated sending a merge to a special peer.", this);
+//        L.d("Initiated sending a merge to a special peer.", this);
 
         try {
             if (component.isInvited(peer)){
@@ -319,10 +319,10 @@ public class SyncManager {
      */
     public void sendMerge(SyncComponent component, PeerSemanticTag peer, ASIPInMessage message) throws SharkKBException {
 
-        L.d("Initiated sending a Merge to reply to an already established connection.", this);
+//        L.d("Initiated sending a Merge to reply to an already established connection.", this);
 
         SharkKB changes = getChanges(component, peer);
-        L.d(this.engine.getOwner().getName() + " wants to send a Merge to " + peer.getName() + ". Are there any changes? " + (changes!=null), this);
+//        L.d(this.engine.getOwner().getName() + " wants to send a Merge to " + peer.getName() + ". Are there any changes? " + (changes!=null), this);
         if(changes!=null){
             ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
             response.insert(changes);

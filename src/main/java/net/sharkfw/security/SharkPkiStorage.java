@@ -85,6 +85,11 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
+    public SharkPublicKey addUnsignedKey(PeerSemanticTag owner, PublicKey key, long validity) {
+        return new ASIPSpaceSharkPublicKey(this.kb, owner, key, validity);
+    }
+
+    @Override
     public List<SharkPublicKey> getUnsignedPublicKeys() throws SharkKBException {
         return this.getSharkPublicKeysBySpace(InMemoSharkKB.createInMemoASIPInterest());
     }
@@ -265,7 +270,38 @@ public class SharkPkiStorage implements PkiStorage {
 
     @Override
     public List<SharkCertificate> getAllSharkCertificates() throws SharkKBException {
+
+//        STSet stSet = InMemoSharkKB.createInMemoSTSet();
+//        stSet.merge(SharkCertificate.CERTIFICATE_TAG);
+//        ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest(
+//                null,
+//                stSet,
+//                null,
+//                null,
+//                null,
+//                null,
+//                null,
+//                ASIPSpace.DIRECTION_INOUT
+//        );
+//
+//        Iterator<ASIPInformation> information = this.kb.getInformation(interest);
+//        // So....
+//        // Wir haben jetzt alle Informationen vom Type 'certificate'
+//        // Diese müssen wir jetzt Stück für Stück nach ihren Spaces mappen.
+//        // also brauchen wir erstmal eine Liste aller spaces....
+//
+//        List<ASIPSpace> spaces = new ArrayList<>();
+//
+//
+//        while (information.hasNext()){
+//            ASIPInformation next = information.next();
+//
+//
+//        }
+
+
         return this.getSharkCertificatesBySpace(certificateSpace);
+//        return null;
     }
 
     @Override
@@ -297,29 +333,27 @@ public class SharkPkiStorage implements PkiStorage {
     private List<SharkCertificate> getSharkCertificatesBySpace(ASIPSpace space) throws SharkKBException {
         List<SharkCertificate> resultSet = new ArrayList<>();
 
-        Iterator<ASIPInformation> informationIterator = this.kb.getInformation(space, true, false);
+//        Iterator<ASIPInformation> informationIterator = this.kb.getInformation(space, true, false);
 
-        resultSet.add(new ASIPSpaceSharkCertificate(this.kb, informationIterator));
+//        resultSet.add(new ASIPSpaceSharkCertificate(this.kb, informationIterator));
 
-
-
-//        Iterator<ASIPInformationSpace> informationSpaces = this.kb.getInformationSpaces(space);
-//        while (informationSpaces.hasNext()) {
-//            ASIPInformationSpace next = informationSpaces.next();
-//            // now we need to differentiate the certificates from the simple unsigned pub keys.
-//            // the difference between these two is the existence of a set of approvers.
-//            // certificates has a list off approvers/signers
-//            ASIPSpace nextASIPSpace = next.getASIPSpace();
-//            PeerSTSet approvers = nextASIPSpace.getApprovers();
-//            if (approvers != null) {
-//                // Now create a certificate for each approver
-//                Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = approvers.peerTags();
-//                while (peerSemanticTagEnumeration.hasMoreElements()) {
-//                    PeerSemanticTag peerSemanticTag = peerSemanticTagEnumeration.nextElement();
-//                    resultSet.add(new ASIPSpaceSharkCertificate(this.kb, nextASIPSpace, peerSemanticTag));
-//                }
-//            }
-//        }
+        Iterator<ASIPInformationSpace> informationSpaces = this.kb.getInformationSpaces(space);
+        while (informationSpaces.hasNext()) {
+            ASIPInformationSpace next = informationSpaces.next();
+            // now we need to differentiate the certificates from the simple unsigned pub keys.
+            // the difference between these two is the existence of a set of approvers.
+            // certificates has a list off approvers/signers
+            ASIPSpace nextASIPSpace = next.getASIPSpace();
+            PeerSTSet approvers = nextASIPSpace.getApprovers();
+            if (approvers != null) {
+                // Now create a certificate for each approver
+                Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = approvers.peerTags();
+                while (peerSemanticTagEnumeration.hasMoreElements()) {
+                    PeerSemanticTag peerSemanticTag = peerSemanticTagEnumeration.nextElement();
+                    resultSet.add(new ASIPSpaceSharkCertificate(this.kb, nextASIPSpace, peerSemanticTag));
+                }
+            }
+        }
         return resultSet;
     }
 
