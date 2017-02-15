@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.util.*;
 
@@ -193,7 +194,6 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 
     public void setEngineOwnerPeer(PeerSemanticTag tag) {
         this.engineOwnerPeer = tag;
-        this.pkiStorage.setPkiStorageOwner(tag);
     }
 
     protected void setASIPStub(SimpleASIPStub asipStub) {

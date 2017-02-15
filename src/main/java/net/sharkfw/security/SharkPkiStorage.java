@@ -8,6 +8,7 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.security.utilities.SharkSign;
 import net.sharkfw.system.KnowledgeUtils;
+import net.sharkfw.system.L;
 
 import java.io.IOException;
 import java.security.*;
@@ -56,32 +57,28 @@ public class SharkPkiStorage implements PkiStorage {
                     null,
                     null,
                     null,
-                    ASIPSpace.DIRECTION_NOTHING);
+                    ASIPSpace.DIRECTION_INOUT);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void setPkiStorageOwner(PeerSemanticTag owner) {
+    public void setPkiStorageOwner(PeerSemanticTag owner) throws SharkKBException {
         this.owner = owner;
         // generate the owner space
         STSet set = InMemoSharkKB.createInMemoSTSet();
-        try {
-            set.merge(PkiStorage.OWNERSPACE_TAG);
-            ownerSpace = InMemoSharkKB.createInMemoASIPInterest(
-                    null,
-                    set,
-                    owner,
-                    null,
-                    null,
-                    null,
-                    null,
-                    ASIPSpace.DIRECTION_NOTHING
-            );
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
+        set.merge(PkiStorage.OWNERSPACE_TAG);
+        ownerSpace = InMemoSharkKB.createInMemoASIPInterest(
+                null,
+                set,
+                owner,
+                null,
+                null,
+                null,
+                null,
+                ASIPSpace.DIRECTION_INOUT
+        );
     }
 
     @Override
@@ -91,25 +88,34 @@ public class SharkPkiStorage implements PkiStorage {
 
     @Override
     public List<SharkPublicKey> getUnsignedPublicKeys() throws SharkKBException {
-        return this.getSharkPublicKeysBySpace(InMemoSharkKB.createInMemoASIPInterest());
+        return this.getSharkPublicKeysBySpace(certificateSpace);
     }
 
     @Override
-    public SharkCertificate sign(SharkPublicKey sharkPublicKey) throws SharkKBException {
+    public SharkCertificate sign(SharkPublicKey sharkPublicKey) throws SharkKBException, SecurityException {
         byte[] sign = SharkSign.sign(
                 sharkPublicKey.getOwnerPublicKey().getEncoded(),
                 this.getOwnerPrivateKey(),
                 SharkSign.SharkSignatureAlgorithm.SHA1withRSA);
 
+        if (sign == null) throw new SecurityException("Signature is null");
+
         long signingDate = System.currentTimeMillis();
 
         // TODO wird der alter Space genutzt und somit die Änderungen überschrieben? Oder bleibt der alte Key erhalten?
+
+
+        PeerSemanticTag owner = sharkPublicKey.getOwner();
+        PeerSemanticTag signer = this.owner;
+        PublicKey ownerPublicKey = sharkPublicKey.getOwnerPublicKey();
+        long validity = sharkPublicKey.getValidity();
+
         return new ASIPSpaceSharkCertificate(
                 this.kb,
-                sharkPublicKey.getOwner(),
-                sharkPublicKey.getOwnerPublicKey(),
-                sharkPublicKey.getValidity(),
-                this.owner,
+                owner,
+                ownerPublicKey,
+                validity,
+                signer,
                 sign,
                 signingDate);
     }
@@ -140,14 +146,10 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public PrivateKey getOldOwnerPrivateKey() throws SharkKBException {
+    public PrivateKey getOldOwnerPrivateKey() throws SharkKBException, InvalidKeySpecException {
         ASIPInformation information = KnowledgeUtils.getInfoByName(this.kb, this.ownerSpace, INFO_OLD_OWNER_PRIVATE_KEY);
         if (information != null) {
-            try {
-                return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(information.getContentAsByte()));
-            } catch (InvalidKeySpecException e) {
-                e.printStackTrace();
-            }
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(information.getContentAsByte()));
         }
         return null;
     }
@@ -166,40 +168,37 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public PublicKey getOldOwnerPublicKey() throws SharkKBException {
+    public PublicKey getOldOwnerPublicKey() throws SharkKBException, InvalidKeySpecException {
         ASIPInformation information = KnowledgeUtils.getInfoByName(this.kb, this.ownerSpace, INFO_OLD_OWNER_PUBLIC_KEY);
         if (information != null) {
-            try {
-                return keyFactory.generatePublic(new X509EncodedKeySpec(information.getContentAsByte()));
-            } catch (InvalidKeySpecException e) {
-                e.printStackTrace();
-            }
+            return keyFactory.generatePublic(new X509EncodedKeySpec(information.getContentAsByte()));
         }
         return null;
     }
 
     @Override
-    public void generateNewKeyPair() {
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA/ECB/PKCS1Padding");
-            keyPairGenerator.initialize(4096);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+    public void generateNewKeyPair() throws NoSuchAlgorithmException, SharkKBException, IOException {
 
+        L.d("Init KeyPairGeneration", this);
+
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+
+        L.d("Keys generated", this);
+
+        if (getOwnerPrivateKey() != null && getOwnerPublicKey() != null) {
             // replace the old keys with the current keys
             KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OLD_OWNER_PRIVATE_KEY, getOwnerPrivateKey().getEncoded());
             KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OLD_OWNER_PUBLIC_KEY, getOwnerPublicKey().getEncoded());
-
-            // now replace the current keys with the new created keys
-            KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PRIVATE_KEY, keyPair.getPrivate().getEncoded());
-            KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PUBLIC_KEY, keyPair.getPublic().getEncoded());
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SharkKBException e) {
-            e.printStackTrace();
         }
+
+        // now replace the current keys with the new created keys
+        KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PRIVATE_KEY, keyPair.getPrivate().getEncoded());
+        KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PUBLIC_KEY, keyPair.getPublic().getEncoded());
+
+        L.d("Keys set", this);
+
     }
 
     @Override
@@ -262,8 +261,9 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public SharkCertificate addSharkCertificate(PeerSemanticTag owner, PublicKey ownerKey, long validity,
-                                                PeerSemanticTag signer, byte[] signature, long signingDate) {
+    public SharkCertificate addSharkCertificate(
+            PeerSemanticTag owner, PublicKey ownerKey, long validity,
+            PeerSemanticTag signer, byte[] signature, long signingDate) {
 
         return new ASIPSpaceSharkCertificate(this.kb, owner, ownerKey, validity, signer, signature, signingDate);
     }
@@ -312,19 +312,15 @@ public class SharkPkiStorage implements PkiStorage {
 
     // TODO ??? whats the data?? used PubKey
     @Override
-    public boolean verifySharkCertificate(SharkCertificate certificate, PeerSemanticTag signer) {
+    public boolean verifySharkCertificate(SharkCertificate certificate, PeerSemanticTag signer) throws SharkKBException {
 
-        try {
-            // Iterate through all possible certificates to retrieve a valid pubkey from the signer
-            Iterator<SharkCertificate> iterator = getSharkCertificates(signer).iterator();
-            while (iterator.hasNext()) {
-                SharkCertificate next = iterator.next();
+        // Iterate through all possible certificates to retrieve a valid pubkey from the signer
+        Iterator<SharkCertificate> iterator = getSharkCertificates(signer).iterator();
+        while (iterator.hasNext()) {
+            SharkCertificate next = iterator.next();
 
-                boolean verify = SharkSign.verify(certificate.getOwnerPublicKey().getEncoded(), certificate.getSignature(), next.getOwnerPublicKey(), SharkSign.SharkSignatureAlgorithm.SHA1withRSA);
-                if (verify) return true;
-            }
-        } catch (SharkKBException e) {
-            e.printStackTrace();
+            boolean verify = SharkSign.verify(certificate.getOwnerPublicKey().getEncoded(), certificate.getSignature(), next.getOwnerPublicKey(), SharkSign.SharkSignatureAlgorithm.SHA1withRSA);
+            if (verify) return true;
         }
 
         return false;
@@ -368,7 +364,7 @@ public class SharkPkiStorage implements PkiStorage {
             // certificates has a list off approvers/signers
             ASIPSpace nextASIPSpace = next.getASIPSpace();
             PeerSTSet approvers = nextASIPSpace.getApprovers();
-            if (approvers == null) {
+            if (approvers == null || approvers.isEmpty()) {
                 resultSet.add(new ASIPSpaceSharkPublicKey(this.kb, nextASIPSpace));
             }
         }

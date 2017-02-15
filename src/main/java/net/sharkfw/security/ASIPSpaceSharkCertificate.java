@@ -50,9 +50,9 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
 
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_OWNER_PUBLIC_KEY, publicKey.getEncoded());
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_VALIDITY, validity);
-            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNATURE + "_" + signer.getSI()[0], signature);
-            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getSI()[0], signingDate);
-            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_RECEIVE_DATE + "_" + signer.getSI()[0], System.currentTimeMillis());
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNATURE + "_" + signer.getName(), signature);
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getName(), signingDate);
+            KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_RECEIVE_DATE + "_" + signer.getName(), System.currentTimeMillis());
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -126,7 +126,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
     @Override
     public long receiveDate() {
         try {
-            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_RECEIVE_DATE + "_" + signer.getSI()[0]);
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, SharkPublicKey.INFO_RECEIVE_DATE + "_" + signer.getName());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -140,7 +140,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
 
     @Override
     public byte[] getSignature() {
-        String signatureName = SharkCertificate.INFO_SIGNATURE + "_" + signer.getSI()[0];
+        String signatureName = SharkCertificate.INFO_SIGNATURE + "_" + signer.getName();
         ASIPInformation information = null;
         try {
             information = KnowledgeUtils.getInfoByName(this.kb, this.space, signatureName);
@@ -156,7 +156,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
     @Override
     public long signingDate() {
         try {
-            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getSI()[0]);
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getName());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -170,7 +170,9 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
         // Remove signature
         // TODO not yet implemented
         try {
-            kb.removeInformation(KnowledgeUtils.getInfoByName(this.kb, this.space, INFO_SIGNATURE), this.space);
+            kb.removeInformation(KnowledgeUtils.getInfoByName(this.kb, this.space, INFO_SIGNATURE + "_" + signer.getName()), this.space);
+            kb.removeInformation(KnowledgeUtils.getInfoByName(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getName()), this.space);
+            kb.removeInformation(KnowledgeUtils.getInfoByName(this.kb, this.space, INFO_RECEIVE_DATE + "_" + signer.getName()), this.space);
             // Remove all information if signer is last approver
             // TODO not yet implemented
             if (approvers.size() == 1) {

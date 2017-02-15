@@ -6,6 +6,8 @@ import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -23,7 +25,7 @@ public interface PkiStorage {
     String OWNERSPACE_TAG_SI = "st:ownerspace";
     SemanticTag OWNERSPACE_TAG = InMemoSharkKB.createInMemoSemanticTag(OWNERSPACE_TAG_NAME, OWNERSPACE_TAG_SI);
 
-    public void setPkiStorageOwner(PeerSemanticTag owner);
+    public void setPkiStorageOwner(PeerSemanticTag owner) throws SharkKBException;
 
     SharkPublicKey addUnsignedKey(PeerSemanticTag owner, PublicKey key, long validity);
 
@@ -52,13 +54,13 @@ public interface PkiStorage {
      */
     void setOwnerPrivateKey(PrivateKey newPrivateKey) throws SharkKBException;
 
-    PrivateKey getOldOwnerPrivateKey() throws SharkKBException;
+    PrivateKey getOldOwnerPrivateKey() throws SharkKBException, InvalidKeySpecException;
 
     PublicKey getOwnerPublicKey() throws SharkKBException;
 
-    PublicKey getOldOwnerPublicKey() throws SharkKBException;
+    PublicKey getOldOwnerPublicKey() throws SharkKBException, InvalidKeySpecException;
 
-    void generateNewKeyPair();
+    void generateNewKeyPair() throws NoSuchAlgorithmException, SharkKBException, IOException;
 
     List<SharkCertificate> getSharkCertificates(PeerSemanticTag owner) throws SharkKBException;
 
@@ -95,5 +97,5 @@ public interface PkiStorage {
      */
     boolean deleteSharkCertificate(SharkCertificate certificate) throws SharkKBException;
 
-    boolean verifySharkCertificate(SharkCertificate certificate, PeerSemanticTag signer);
+    boolean verifySharkCertificate(SharkCertificate certificate, PeerSemanticTag signer) throws SharkKBException;
 }

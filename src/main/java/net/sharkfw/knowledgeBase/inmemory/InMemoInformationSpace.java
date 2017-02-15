@@ -83,9 +83,18 @@ public class InMemoInformationSpace extends PropertyHolderDelegate implements AS
     }
 
 
-    final void addInformation(Information info) {
+    public void addInformation(Information info) {
         this.infoList.add(info);
     }
+
+    public void removeInformation(Information info){
+        this.infoList.remove(info);
+    }
+
+    public void removeAllInformation(){
+        this.infoList.clear();
+    }
+
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {

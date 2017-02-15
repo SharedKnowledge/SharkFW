@@ -5,6 +5,7 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.system.L;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -59,7 +60,13 @@ public class InMemoASIPKnowledge implements Knowledge {
 
     @Override
     public void removeInformation(ASIPSpace space) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        InMemoInformationSpace informationSpace = null;
+        try {
+            informationSpace = (InMemoInformationSpace) this.getInformationSpace(space);
+            informationSpace.removeAllInformation();
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -122,7 +129,8 @@ public class InMemoASIPKnowledge implements Knowledge {
     
     @Override
     public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        InMemoInformationSpace informationSpace = (InMemoInformationSpace) this.getInformationSpace(infoSpace);
+        informationSpace.removeInformation((Information) info);
     }
 
     @Override
@@ -138,6 +146,7 @@ public class InMemoASIPKnowledge implements Knowledge {
             ASIPInformationSpace next = informationSpaces.next();
 
             ASIPSpace asipSpace = next.getASIPSpace();
+
             ASIPInterest mutualInterest = InMemoSharkKB.createInMemoASIPInterest(); // just a container
 
             if(SharkAlgebra.contextualize(mutualInterest,

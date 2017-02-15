@@ -91,7 +91,7 @@ public class KnowledgeUtils {
     public static int getInfoAsInteger(SharkKB kb, ASIPSpace space, String name) throws SharkKBException {
         ASIPInformation information = getInfoByName(kb, space, name);
         if (information != null) {
-            return Integer.getInteger(information.getContentAsString());
+            return Integer.parseInt(information.getContentAsString());
         }
         return 0;
     }
@@ -100,7 +100,7 @@ public class KnowledgeUtils {
     public static Long getInfoAsLong(SharkKB kb, ASIPSpace space, String name) throws SharkKBException {
         ASIPInformation information = getInfoByName(kb, space, name);
         if (information != null) {
-            return Long.getLong(information.getContentAsString());
+            return Long.parseLong(information.getContentAsString());
         }
         return 0L;
     }

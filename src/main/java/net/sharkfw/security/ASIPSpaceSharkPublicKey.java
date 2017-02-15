@@ -53,7 +53,7 @@ public class ASIPSpaceSharkPublicKey implements SharkPublicKey {
                     null,
                     null,
                     null,
-                    ASIPSpace.DIRECTION_NOTHING);
+                    ASIPSpace.DIRECTION_INOUT);
 
             KnowledgeUtils.setInfoWithName(
                     this.kb,
