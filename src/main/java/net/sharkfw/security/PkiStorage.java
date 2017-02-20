@@ -27,10 +27,6 @@ public interface PkiStorage {
 
     public void setPkiStorageOwner(PeerSemanticTag owner) throws SharkKBException;
 
-    SharkPublicKey addUnsignedKey(PeerSemanticTag owner, PublicKey key, long validity);
-
-    List<SharkPublicKey> getUnsignedPublicKeys() throws SharkKBException;
-
     /**
      * remove pubkey from Infospace
      *
@@ -62,19 +58,19 @@ public interface PkiStorage {
 
     void generateNewKeyPair() throws NoSuchAlgorithmException, SharkKBException, IOException;
 
-    List<SharkCertificate> getSharkCertificates(PeerSemanticTag owner) throws SharkKBException;
+    List<SharkCertificate> getSharkCertificatesByOwner(PeerSemanticTag owner) throws SharkKBException;
 
     /**
      * Returns a {@link SharkCertificate} via {@link PeerSemanticTag} for subject and issuer.
      *
-     * @param issuer  {@link PeerSemanticTag}
-     * @param subject {@link PeerSemanticTag}
+     * @param owner  {@link PeerSemanticTag}
+     * @param signer {@link PeerSemanticTag}
      * @return SharkCertificate
      * @throws SharkKBException
      */
-    SharkCertificate getSharkCertificate(PeerSemanticTag issuer, PeerSemanticTag subject) throws SharkKBException;
+    SharkCertificate getSharkCertificate(PeerSemanticTag owner, PeerSemanticTag signer) throws SharkKBException;
 
-    List<SharkCertificate> getSignedSharkCertificates(PeerSemanticTag signer) throws SharkKBException;
+    List<SharkCertificate> getSharkCertificatesBySigner(PeerSemanticTag signer) throws SharkKBException;
 
     /**
      * Add a {@link net.sharkfw.security.SharkCertificate} to the {@link PkiStorage}
