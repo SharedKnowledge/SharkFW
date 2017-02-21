@@ -106,21 +106,29 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
      */
     @Override
     public byte[] getFingerprint() {
-        byte[] kBytes = getOwnerPublicKey().getEncoded();
-
-        MessageDigest digest = null;
+        MessageDigest messageDigest = null;
         try {
-            digest = MessageDigest.getInstance("SHA1");
+            messageDigest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-
-        digest.update((byte) 0x99);
-        digest.update((byte) (kBytes.length >> 8));
-        digest.update((byte) kBytes.length);
-        digest.update(kBytes);
-
-        return digest.digest();
+        String concatenatedDataSet = this.getOwner().getName() + this.signer.getName() + this.getOwnerPublicKey().toString() + this.getValidity();
+        return messageDigest.digest(concatenatedDataSet.getBytes());
+//        byte[] kBytes = getOwnerPublicKey().getEncoded();
+//
+//        MessageDigest digest = null;
+//        try {
+//            digest = MessageDigest.getInstance("SHA1");
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//
+//        digest.update((byte) 0x99);
+//        digest.update((byte) (kBytes.length >> 8));
+//        digest.update((byte) kBytes.length);
+//        digest.update(kBytes);
+//
+//        return digest.digest();
     }
 
     @Override

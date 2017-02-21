@@ -82,10 +82,19 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public SharkCertificate sign(SharkPublicKey sharkPublicKey) throws SharkKBException, SecurityException {
+    public SharkPublicKey addUnsignedKey(PeerSemanticTag owner, PublicKey key, long validity) {
+        return new ASIPSpaceSharkPublicKey(this.kb, owner, key, validity);
+    }
+
+    @Override
+    public List<SharkPublicKey> getUnsignedPublicKeys() throws SharkKBException {
+        return this.getSharkPublicKeysBySpace(certificateSpace);
+    }
+
+    public SharkCertificate sign(SharkPublicKey sharkPublicKey, PeerSemanticTag signer, PrivateKey signerPrivateKey){
         byte[] sign = SharkSign.sign(
                 sharkPublicKey.getOwnerPublicKey().getEncoded(),
-                this.getOwnerPrivateKey(),
+                signerPrivateKey,
                 SharkSign.SharkSignatureAlgorithm.SHA1withRSA);
 
         if (sign == null) throw new SecurityException("Signature is null");
@@ -96,7 +105,6 @@ public class SharkPkiStorage implements PkiStorage {
 
 
         PeerSemanticTag owner = sharkPublicKey.getOwner();
-        PeerSemanticTag signer = this.owner;
         PublicKey ownerPublicKey = sharkPublicKey.getOwnerPublicKey();
         long validity = sharkPublicKey.getValidity();
 
@@ -108,6 +116,11 @@ public class SharkPkiStorage implements PkiStorage {
                 signer,
                 sign,
                 signingDate);
+    }
+
+    @Override
+    public SharkCertificate sign(SharkPublicKey sharkPublicKey) throws SharkKBException, SecurityException {
+        return this.sign(sharkPublicKey, this.owner, this.getOwnerPrivateKey());
     }
 
     @Override
@@ -304,12 +317,15 @@ public class SharkPkiStorage implements PkiStorage {
     @Override
     public boolean verifySharkCertificate(SharkCertificate certificate, PeerSemanticTag signer) throws SharkKBException {
 
-        // Iterate through all possible certificates to retrieve a valid pubkey from the signerbb
+        // Iterate through all possible certificates to retrieve a valid pubkey from the signer
         Iterator<SharkCertificate> iterator = getSharkCertificatesByOwner(signer).iterator();
         while (iterator.hasNext()) {
             SharkCertificate next = iterator.next();
 
-            boolean verify = SharkSign.verify(certificate.getOwnerPublicKey().getEncoded(), certificate.getSignature(), next.getOwnerPublicKey(), SharkSign.SharkSignatureAlgorithm.SHA1withRSA);
+            boolean verify = SharkSign.verify(certificate.getOwnerPublicKey().getEncoded(),
+                    certificate.getSignature(),
+                    next.getOwnerPublicKey(),
+                    SharkSign.SharkSignatureAlgorithm.SHA1withRSA);
             if (verify) return true;
         }
 
@@ -343,4 +359,21 @@ public class SharkPkiStorage implements PkiStorage {
         return resultSet;
     }
 
+    private List<SharkPublicKey> getSharkPublicKeysBySpace(ASIPSpace space) throws SharkKBException {
+        List<SharkPublicKey> resultSet = new ArrayList<>();
+
+        Iterator<ASIPInformationSpace> informationSpaces = this.kb.getInformationSpaces(space);
+        while (informationSpaces.hasNext()) {
+            ASIPInformationSpace next = informationSpaces.next();
+            // now we need to differentiate the certificates from the simple unsigned pub keys.
+            // the difference between these two is the existence of a set of approvers.
+            // certificates has a list off approvers/signers
+            ASIPSpace nextASIPSpace = next.getASIPSpace();
+            PeerSTSet approvers = nextASIPSpace.getApprovers();
+            if (approvers == null || approvers.isEmpty()) {
+                resultSet.add(new ASIPSpaceSharkPublicKey(this.kb, nextASIPSpace));
+            }
+        }
+        return resultSet;
+    }
 }

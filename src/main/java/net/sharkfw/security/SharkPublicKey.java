@@ -1,6 +1,7 @@
 package net.sharkfw.security;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.system.SharkException;
 
 import java.security.PublicKey;
 

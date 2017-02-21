@@ -27,6 +27,10 @@ public interface PkiStorage {
 
     public void setPkiStorageOwner(PeerSemanticTag owner) throws SharkKBException;
 
+    SharkPublicKey addUnsignedKey(PeerSemanticTag owner, PublicKey key, long validity);
+
+    List<SharkPublicKey> getUnsignedPublicKeys() throws SharkKBException;
+
     /**
      * remove pubkey from Infospace
      *
