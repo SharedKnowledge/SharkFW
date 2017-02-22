@@ -8,6 +8,8 @@ import net.sharkfw.system.L;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -22,7 +24,7 @@ public class ASIPKnowledgeConverter {
 
     private ASIPKnowledge knowledge;
     private String serializedKnowledge = "";
-    private String content = "";
+    private byte[] content = null;
     private JSONObject serializedKnowledgeAsJSON;
 
     // Vice Versa Constructors
@@ -47,7 +49,7 @@ public class ASIPKnowledgeConverter {
         object.put(ASIPKnowledge.VOCABULARY, serializedVocabulary);
 
         JSONArray informationSpaceArray = new JSONArray();
-        long currentOffset = 0;
+        int currentOffset = 0;
         Iterator<ASIPInformationSpace> informationSpaceIterator = this.knowledge.informationSpaces();
         while (informationSpaceIterator.hasNext()){
 
@@ -67,8 +69,9 @@ public class ASIPKnowledgeConverter {
                 jsonInformationObject.put(OFFSET, currentOffset);
                 jsonInformationObject.put(CONTENT_TYPE, nextInformation.getContentType());
 
-                this.content += nextInformation.getContentAsString();
-                currentOffset=this.content.length();
+                System.arraycopy(nextInformation.getContentAsByte(), 0, this.content, currentOffset,(int) nextInformation.getContentLength());
+//                this.content += nextInformation.getContentAsString();
+                currentOffset=this.content.length;
 
                 jsonInformationArray.put(jsonInformationObject);
             }
@@ -90,7 +93,7 @@ public class ASIPKnowledgeConverter {
      * @param content
      * @throws SharkKBException
      */
-    public ASIPKnowledgeConverter(String serializedKnowledge, String content) throws SharkKBException, ASIPSerializerException {
+    public ASIPKnowledgeConverter(String serializedKnowledge, byte[] content) throws SharkKBException, ASIPSerializerException {
         this.serializedKnowledge = serializedKnowledge;
         this.content = content;
 
@@ -144,8 +147,9 @@ public class ASIPKnowledgeConverter {
                     }
 
                     try {
-                        String informationContent = this.content.substring(offset, offset + length);
-                        ASIPInformation asipInformation = kb.addInformation(informationContent, interest);
+//                        String informationContent = this.content.substring(offset, offset + length);
+                        byte[] infoContent = Arrays.copyOfRange(this.content, offset, offset + length);
+                        ASIPInformation asipInformation = kb.addInformation(infoContent, interest);
                         asipInformation.setContentType(contentType);
                         if(!name.isEmpty()){
                             asipInformation.setName(name);
@@ -175,7 +179,7 @@ public class ASIPKnowledgeConverter {
         return serializedKnowledge;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 

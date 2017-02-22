@@ -83,6 +83,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
         try {
             this.osw.flush();
+            this.os.flush();
             if (outStub != null) {
                 final byte[] msg = ((ByteArrayOutputStream) this.os).toByteArray();
                 this.outStub.sendMessage(msg, this.recipientAddress);
@@ -144,7 +145,9 @@ public class ASIPOutMessage extends ASIPMessage {
         this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
 
         try {
-            this.osw.write(ASIPMessageSerializer.serializeInsert(this, knowledge));
+            ASIPSerializationHolder serializationHolder = ASIPMessageSerializer.serializeInsert(this, knowledge);
+            this.osw.write(serializationHolder.asString());
+            this.os.write(serializationHolder.getContent());
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -164,6 +167,7 @@ public class ASIPOutMessage extends ASIPMessage {
         try {
             // TODO it's not possible to see, that the serialisation holder already was applied
             this.osw.write(ASIPMessageSerializer.serializeRaw(this, raw).toString());
+            this.os.write(raw);
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();

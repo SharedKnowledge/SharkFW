@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +20,6 @@ import java.util.Scanner;
 /**
  * @author j4rvis
  */
-@SuppressWarnings("Duplicates")
 public class ASIPMessageSerializer {
 
     private static final String CLASS = "ASIPSERIALIZER: ";
@@ -45,7 +45,7 @@ public class ASIPMessageSerializer {
         return serializationHolder.asString();
     }
 
-    public static String serializeInsert(ASIPMessage header, ASIPKnowledge knowledge)
+    public static ASIPSerializationHolder serializeInsert(ASIPMessage header, ASIPKnowledge knowledge)
             throws JSONException, SharkKBException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
@@ -65,7 +65,7 @@ public class ASIPMessageSerializer {
 
         ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), knowledgeConverter.getContent());
 
-        return serializationHolder.asString();
+        return serializationHolder;
     }
 
     public static String serializeRaw(ASIPMessage header, byte[] raw) throws SharkKBException {
@@ -77,7 +77,7 @@ public class ASIPMessageSerializer {
         content.put(RAW, raw.length);
         object.put(CONTENT, content);
 
-        ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), new String(raw, StandardCharsets.UTF_8));
+        ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), raw);
         return serializationHolder.asString();
     }
 
@@ -87,12 +87,29 @@ public class ASIPMessageSerializer {
         JSONObject content = new JSONObject();
         content.put(ASIPMessage.LOGICALSENDER, ASIPMessageSerializerHelper.serializeTag(header.getLogicalSender())); // PeerSemanticTag from Content Sender.
         content.put(SIGNED, false); // If signed or not
-        String text = null;
+//        String text = null;
+        byte[] byteArray = null;
         try {
-            try (Scanner scanner = new Scanner(raw, StandardCharsets.UTF_8.name())) {
-                text = scanner.useDelimiter("\\A").next();
+//            raw.
+//            try (Scanner scanner = new Scanner(raw, StandardCharsets.UTF_8.name())) {
+//                text = scanner.useDelimiter("\\A").next();
+//            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            int nRead;
+            byte[] data = new byte[16384];
+
+            while ((nRead = raw.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
             }
-            content.put(RAW, text.length());
+
+            buffer.flush();
+
+            byteArray = buffer.toByteArray();
+
+            content.put(RAW, byteArray.length);
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             try {
                 raw.close();
@@ -102,7 +119,7 @@ public class ASIPMessageSerializer {
         }
         object.put(CONTENT, content);
 
-        ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), text);
+        ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), byteArray);
         return serializationHolder.asString();
     }
 
@@ -272,7 +289,7 @@ public class ASIPMessageSerializer {
                 }
                 break;
             case ASIPMessage.ASIP_RAW:
-                byte[] raw = serializationHolder.getContent().getBytes(StandardCharsets.UTF_8);
+                byte[] raw = serializationHolder.getContent();
                 message.setRaw(new ByteArrayInputStream(raw));
                 break;
         }

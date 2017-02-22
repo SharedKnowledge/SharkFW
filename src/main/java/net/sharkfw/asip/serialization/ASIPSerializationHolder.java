@@ -7,6 +7,7 @@ import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.system.Base64;
 import net.sharkfw.system.L;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -17,6 +18,8 @@ public class ASIPSerializationHolder {
     private final int fieldLengthFormat = 4;
     private int fieldLengthVersion = 7;
     private int fieldLengthMessage = 9;
+
+    public final int CONFIG_LENGTH = fieldLengthFormat + fieldLengthVersion + fieldLengthMessage;
 
     /**
      * Length of the Information standing before the JSON object.
@@ -30,7 +33,7 @@ public class ASIPSerializationHolder {
     private String serializedJSONMessage;
     private int jsonMessageBeginIndex = fieldLengthFormat + fieldLengthVersion + fieldLengthMessage;
     // Only if raw or insert
-    private String content;
+    private byte[] content;
 
     public ASIPSerializationHolder(String message) throws ASIPSerializerException {
         if(!message.isEmpty()){
@@ -53,7 +56,11 @@ public class ASIPSerializationHolder {
             if(message.length() >= jsonMessageBeginIndex + messageLength){
                 serializedJSONMessage = message.substring(jsonMessageBeginIndex, jsonMessageBeginIndex + messageLength);
                 if(message.length() > jsonMessageBeginIndex + messageLength){
-                    content = message.substring(jsonMessageBeginIndex + messageLength);
+                    try {
+                        content = Base64.decode(message.substring(jsonMessageBeginIndex + messageLength));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 throw new ASIPSerializerException("The message is too short.");
@@ -63,7 +70,7 @@ public class ASIPSerializationHolder {
         }
     }
 
-    public ASIPSerializationHolder(ASIPMessage message, String jsonString, String content){
+    public ASIPSerializationHolder(ASIPMessage message, String jsonString, byte[] content){
         this.prepareProtocolConfig(message, jsonString);
         this.serializedJSONMessage = jsonString;
         this.content = content;
@@ -80,7 +87,7 @@ public class ASIPSerializationHolder {
         return serializedJSONMessage;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
@@ -88,9 +95,6 @@ public class ASIPSerializationHolder {
         String temp = "";
         temp += protocolConfig;
         temp += serializedJSONMessage;
-        if(content!=null && !content.isEmpty()){
-            temp += content;
-        }
         return temp;
     }
 }
