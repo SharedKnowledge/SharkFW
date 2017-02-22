@@ -1,11 +1,11 @@
 package net.sharkfw.security;
 
 import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInformationSpace;
+import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.SharkKB;
-import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.KnowledgeUtils;
 import net.sharkfw.system.SharkException;
 
@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Iterator;
 
 /**
  * Created by j4rvis on 2/7/17.
@@ -37,6 +38,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
             PeerSemanticTag signer, byte[] signature, long signingDate) {
 
         this.kb = kb;
+
         try {
             this.space = this.kb.createASIPSpace(
                     null,
@@ -53,6 +55,7 @@ public class ASIPSpaceSharkCertificate implements SharkCertificate {
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNATURE + "_" + signer.getName(), signature);
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_SIGNING_DATE + "_" + signer.getName(), signingDate);
             KnowledgeUtils.setInfoWithName(this.kb, this.space, INFO_RECEIVE_DATE + "_" + signer.getName(), System.currentTimeMillis());
+
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {

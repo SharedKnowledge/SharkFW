@@ -234,7 +234,7 @@ public class TCPStreamStub implements StreamStub {
     }
 
     @Override
-    public void offer(Knowledge knowledge) throws SharkNotSupportedException {
+    public void offer(ASIPKnowledge knowledge) throws SharkNotSupportedException {
         throw new SharkNotSupportedException();
     }
 }

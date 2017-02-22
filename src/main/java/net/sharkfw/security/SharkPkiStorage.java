@@ -269,7 +269,21 @@ public class SharkPkiStorage implements PkiStorage {
 
     @Override
     public boolean addSharkCertificate(SharkCertificate certificate) throws SharkKBException {
-        return false;
+        // first check if we already have a certificate regarding the owner
+
+        SharkCertificate sharkCertificate = this.getSharkCertificate(certificate.getOwner(), certificate.getSigner());
+        if(sharkCertificate==null){
+            new ASIPSpaceSharkCertificate(this.kb,
+                    certificate.getOwner(),
+                    certificate.getOwnerPublicKey(),
+                    certificate.getValidity(),
+                    certificate.getSigner(),
+                    certificate.getSignature(),
+                    certificate.signingDate());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -348,7 +362,8 @@ public class SharkPkiStorage implements PkiStorage {
         SharkPkiStorage tempPkiStorage = new SharkPkiStorage(tempKb);
 
         try {
-            tempPkiStorage.addUnsignedKey(this.owner, this.getOwnerPublicKey(), this.getOwnerPublicKeyValidity());
+            SharkPublicKey sharkPublicKey = tempPkiStorage.addUnsignedKey(this.owner, this.getOwnerPublicKey(), this.getOwnerPublicKeyValidity());
+            sharkPublicKey.getOwnerPublicKey();
 
             List<SharkCertificate> sharkCertificatesBySigner = this.getSharkCertificatesBySigner(this.owner);
             for (SharkCertificate sharkCertificate : sharkCertificatesBySigner) {

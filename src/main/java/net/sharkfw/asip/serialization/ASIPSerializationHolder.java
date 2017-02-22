@@ -4,6 +4,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
+import net.sharkfw.system.Base64;
 import net.sharkfw.system.L;
 
 import java.io.InputStream;

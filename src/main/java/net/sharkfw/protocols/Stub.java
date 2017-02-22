@@ -1,6 +1,8 @@
 package net.sharkfw.protocols;
 
 import java.io.IOException;
+
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.system.SharkNotSupportedException;
@@ -33,5 +35,5 @@ public interface Stub {
      */
     void offer(ASIPSpace interest) throws SharkNotSupportedException;
     
-    void offer(Knowledge knowledge) throws SharkNotSupportedException;
+    void offer(ASIPKnowledge knowledge) throws SharkNotSupportedException;
 }

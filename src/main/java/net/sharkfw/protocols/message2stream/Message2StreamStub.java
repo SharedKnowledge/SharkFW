@@ -1,5 +1,6 @@
 package net.sharkfw.protocols.message2stream;
 
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.protocols.MessageStub;
@@ -40,7 +41,7 @@ public class Message2StreamStub implements StreamStub, RequestHandler {
     }
 
     @Override
-    public void offer(Knowledge knowledge) throws SharkNotSupportedException {
+    public void offer(ASIPKnowledge knowledge) throws SharkNotSupportedException {
 
     }
 

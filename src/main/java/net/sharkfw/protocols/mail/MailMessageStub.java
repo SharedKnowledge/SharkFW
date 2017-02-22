@@ -9,6 +9,8 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.protocols.MessageStub;
@@ -444,7 +446,7 @@ public final class MailMessageStub implements MessageStub, Runnable {
     }
 
     @Override
-    public void offer(Knowledge knowledge) throws SharkNotSupportedException {
+    public void offer(ASIPKnowledge knowledge) throws SharkNotSupportedException {
         throw new SharkNotSupportedException();
     }
 }	
