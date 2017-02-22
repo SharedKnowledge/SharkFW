@@ -46,8 +46,7 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
 
     @Override
     public void handleMessage(byte[] msg, MessageStub stub) throws ASIPSerializerException {
-        // TODO implement MessageStub
-        L.d("ASIPStub: message with length of " + msg.length + " bytes received: " + Arrays.toString(msg), this);
+//        L.d("ASIPStub: message with length of " + msg.length + " bytes received: " + Arrays.toString(msg), this);
         try {
             ASIPInMessage inMsg = new ASIPInMessage(this.se, msg, stub);
             inMsg.initSecurity(this.privateKey, /*this.publicKeyStorage,*/ /*this.sharkPkiStorage,*/
@@ -56,7 +55,8 @@ public class SimpleASIPStub extends AbstractSharkStub implements ASIPStub {
             inMsg.parse();
 
             if(inMsg.isParsed()){
-                this.callListener(inMsg);
+                // TODO Needs to return boolean?
+                boolean listener = this.callListener(inMsg);
             } else {
                 throw new ASIPSerializerException("Message can't be serialized to ASIP.");
             }

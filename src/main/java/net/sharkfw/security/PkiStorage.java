@@ -1,5 +1,6 @@
 package net.sharkfw.security;
 
+import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
@@ -60,7 +61,9 @@ public interface PkiStorage {
 
     PublicKey getOldOwnerPublicKey() throws SharkKBException, InvalidKeySpecException;
 
-    void generateNewKeyPair() throws NoSuchAlgorithmException, SharkKBException, IOException;
+    void generateNewKeyPair(long validityFromNow) throws NoSuchAlgorithmException, SharkKBException, IOException;
+
+    long getOwnerPublicKeyValidity();
 
     List<SharkCertificate> getSharkCertificatesByOwner(PeerSemanticTag owner) throws SharkKBException;
 
@@ -98,4 +101,6 @@ public interface PkiStorage {
     boolean deleteSharkCertificate(SharkCertificate certificate) throws SharkKBException;
 
     boolean verifySharkCertificate(SharkCertificate certificate, PeerSemanticTag signer) throws SharkKBException;
+
+    ASIPKnowledge getPublicKeyAsKnowledge(boolean withSelfSignedCertificates);
 }

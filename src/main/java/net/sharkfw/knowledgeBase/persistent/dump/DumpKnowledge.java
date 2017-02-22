@@ -55,8 +55,8 @@ class DumpKnowledge implements Knowledge {
     }
 
     @Override
-    public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
+
     }
 
     @Override
@@ -72,6 +72,11 @@ class DumpKnowledge implements Knowledge {
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
+        return null;
     }
 
     @Override

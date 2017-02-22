@@ -424,7 +424,7 @@ public abstract class PersistentSharkKB implements SharkKB {
     }
 
     @Override
-    public void removeInformation(Information info, ASIPSpace infoSpace) throws SharkKBException {
+    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
         this.restoreAll();
         this.inmemoKB.removeInformation(info, infoSpace);
         this.storageSaveAll(inmemoKB);

@@ -1,9 +1,6 @@
 package net.sharkfw.security;
 
-import net.sharkfw.asip.ASIPInformation;
-import net.sharkfw.asip.ASIPInformationSpace;
-import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.*;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.security.utilities.SharkSign;
@@ -27,6 +24,7 @@ public class SharkPkiStorage implements PkiStorage {
 
     public static final String INFO_OWNER_PRIVATE_KEY = "INFO_OWNER_PRIVATE_KEY";
     public static final String INFO_OWNER_PUBLIC_KEY = "INFO_OWNER_PUBLIC_KEY";
+    public static final String INFO_OWNER_PUBLIC_KEY_VALIDITY = "INFO_OWNER_PUBLIC_KEY_VALIDITY";
     public static final String INFO_OLD_OWNER_PRIVATE_KEY = "INFO_OLD_OWNER_PRIVATE_KEY";
     public static final String INFO_OLD_OWNER_PUBLIC_KEY = "INFO_OLD_OWNER_PUBLIC_KEY";
 
@@ -91,7 +89,7 @@ public class SharkPkiStorage implements PkiStorage {
         return this.getSharkPublicKeysBySpace(certificateSpace);
     }
 
-    public SharkCertificate sign(SharkPublicKey sharkPublicKey, PeerSemanticTag signer, PrivateKey signerPrivateKey){
+    public SharkCertificate sign(SharkPublicKey sharkPublicKey, PeerSemanticTag signer, PrivateKey signerPrivateKey) {
         byte[] sign = SharkSign.sign(
                 sharkPublicKey.getOwnerPublicKey().getEncoded(),
                 signerPrivateKey,
@@ -180,7 +178,7 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public void generateNewKeyPair() throws NoSuchAlgorithmException, SharkKBException, IOException {
+    public void generateNewKeyPair(long validityFromNow) throws NoSuchAlgorithmException, SharkKBException, IOException {
 
         L.d("Init KeyPairGeneration", this);
 
@@ -199,9 +197,20 @@ public class SharkPkiStorage implements PkiStorage {
         // now replace the current keys with the new created keys
         KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PRIVATE_KEY, keyPair.getPrivate().getEncoded());
         KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PUBLIC_KEY, keyPair.getPublic().getEncoded());
+        KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PUBLIC_KEY_VALIDITY, System.currentTimeMillis() + validityFromNow);
 
         L.d("Keys set", this);
 
+    }
+
+    @Override
+    public long getOwnerPublicKeyValidity() {
+        try {
+            return KnowledgeUtils.getInfoAsLong(this.kb, this.ownerSpace, INFO_OWNER_PUBLIC_KEY_VALIDITY);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override
@@ -330,6 +339,26 @@ public class SharkPkiStorage implements PkiStorage {
         }
 
         return false;
+    }
+
+    @Override
+    public ASIPKnowledge getPublicKeyAsKnowledge(boolean withSelfSignedCertificates) {
+
+        InMemoSharkKB tempKb = new InMemoSharkKB();
+        SharkPkiStorage tempPkiStorage = new SharkPkiStorage(tempKb);
+
+        try {
+            tempPkiStorage.addUnsignedKey(this.owner, this.getOwnerPublicKey(), this.getOwnerPublicKeyValidity());
+
+            List<SharkCertificate> sharkCertificatesBySigner = this.getSharkCertificatesBySigner(this.owner);
+            for (SharkCertificate sharkCertificate : sharkCertificatesBySigner) {
+                tempPkiStorage.addSharkCertificate(sharkCertificate);
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+
+        return tempKb;
     }
 
     private List<SharkCertificate> getSharkCertificatesBySpace(ASIPSpace space) throws SharkKBException {
