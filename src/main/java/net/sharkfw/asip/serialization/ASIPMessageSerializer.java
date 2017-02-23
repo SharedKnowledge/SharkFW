@@ -14,8 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 /**
  * @author j4rvis
@@ -30,7 +28,7 @@ public class ASIPMessageSerializer {
     public static final String KNOWLEDGE = "KNOWLEDGE";
     public static final String RAW = "RAW";
 
-    public static String serializeExpose(ASIPMessage header, ASIPSpace interest)
+    public static ASIPSerializationHolder serializeExpose(ASIPMessage header, ASIPSpace interest)
             throws SharkKBException, JSONException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
@@ -42,7 +40,7 @@ public class ASIPMessageSerializer {
 
         ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), null);
 
-        return serializationHolder.asString();
+        return serializationHolder;
     }
 
     public static ASIPSerializationHolder serializeInsert(ASIPMessage header, ASIPKnowledge knowledge)
@@ -68,7 +66,7 @@ public class ASIPMessageSerializer {
         return serializationHolder;
     }
 
-    public static String serializeRaw(ASIPMessage header, byte[] raw) throws SharkKBException {
+    public static ASIPSerializationHolder serializeRaw(ASIPMessage header, byte[] raw) throws SharkKBException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
         JSONObject content = new JSONObject();
@@ -78,10 +76,10 @@ public class ASIPMessageSerializer {
         object.put(CONTENT, content);
 
         ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), raw);
-        return serializationHolder.asString();
+        return serializationHolder;
     }
 
-    public static String serializeRaw(ASIPMessage header, InputStream raw) throws SharkKBException {
+    public static ASIPSerializationHolder serializeRaw(ASIPMessage header, InputStream raw) throws SharkKBException {
 
         JSONObject object = ASIPMessageSerializerHelper.serializeHeader(header);
         JSONObject content = new JSONObject();
@@ -120,28 +118,19 @@ public class ASIPMessageSerializer {
         object.put(CONTENT, content);
 
         ASIPSerializationHolder serializationHolder = new ASIPSerializationHolder(header, object.toString(), byteArray);
-        return serializationHolder.asString();
+        return serializationHolder;
     }
 
-    public static boolean deserializeInMessage(ASIPInMessage message, String parsedStream) {
-        if (parsedStream.isEmpty()) {
-//            L.d(CLASS + "Stream is empty.");
-            return false;
-        }
-
-        //
-        ASIPSerializationHolder serializationHolder = null;
-        try {
-            serializationHolder = new ASIPSerializationHolder(parsedStream);
-        } catch (ASIPSerializerException e) {
-            L.d(e.getMessage(), "ASIPMessageSerializer");
+    public static boolean deserializeInMessage(ASIPInMessage message, ASIPSerializationHolder serializationHolder) {
+        if (serializationHolder.getMessage().isEmpty()) {
+            L.d(CLASS + "Stream is empty.");
             return false;
         }
 
         JSONObject object = null;
 
         try {
-            object = new JSONObject(serializationHolder.getSerializedJSONMessage());
+            object = new JSONObject(serializationHolder.getMessage());
         } catch (Exception e) {
             L.d(CLASS + e);
             return false;
@@ -277,6 +266,10 @@ public class ASIPMessageSerializer {
                 }
                 break;
             case ASIPMessage.ASIP_INSERT:
+                if(serializationHolder.getContent()==null){
+                    L.d("No content available", CLASS);
+                    return false;
+                }
                 try {
                     ASIPKnowledgeConverter knowledgeConverter =
                             new ASIPKnowledgeConverter(
@@ -289,6 +282,10 @@ public class ASIPMessageSerializer {
                 }
                 break;
             case ASIPMessage.ASIP_RAW:
+                if(serializationHolder.getContent()==null){
+                    L.d("No content available", CLASS);
+                    return false;
+                }
                 byte[] raw = serializationHolder.getContent();
                 message.setRaw(new ByteArrayInputStream(raw));
                 break;

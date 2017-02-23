@@ -43,7 +43,7 @@ public class SyncOfferKP extends KnowledgePort {
 
             PeerSemanticTag peer = interest.getSender();
             SemanticTag st = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_OFFER_TYPE_SI);
-            
+
             if(st != null && peer != null) {
 
                 L.d(this.se.getOwner().getName() + " received an Offer from " + message.getPhysicalSender().getName(), this);

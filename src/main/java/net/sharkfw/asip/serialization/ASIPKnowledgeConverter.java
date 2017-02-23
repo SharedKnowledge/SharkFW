@@ -24,7 +24,7 @@ public class ASIPKnowledgeConverter {
 
     private ASIPKnowledge knowledge;
     private String serializedKnowledge = "";
-    private byte[] content = null;
+    private byte[] content = new byte[0];
     private JSONObject serializedKnowledgeAsJSON;
 
     // Vice Versa Constructors
@@ -69,10 +69,14 @@ public class ASIPKnowledgeConverter {
                 jsonInformationObject.put(OFFSET, currentOffset);
                 jsonInformationObject.put(CONTENT_TYPE, nextInformation.getContentType());
 
-                System.arraycopy(nextInformation.getContentAsByte(), 0, this.content, currentOffset,(int) nextInformation.getContentLength());
+                byte[] c = new byte[nextInformation.getContentAsByte().length + this.content.length];
+                System.arraycopy(this.content, 0, c, 0, this.content.length);
+                System.arraycopy(nextInformation.getContentAsByte(), 0, c, this.content.length, nextInformation.getContentAsByte().length);
+                this.content = c;
+
+//                System.arraycopy(nextInformation.getContentAsByte(), 0, this.content, currentOffset,(int) nextInformation.getContentLength());
 //                this.content += nextInformation.getContentAsString();
                 currentOffset=this.content.length;
-
                 jsonInformationArray.put(jsonInformationObject);
             }
 

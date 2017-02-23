@@ -82,7 +82,7 @@ public class ASIPOutMessage extends ASIPMessage {
     private void sent() {
 
         try {
-            this.osw.flush();
+//            this.osw.flush();
             this.os.flush();
             if (outStub != null) {
                 final byte[] msg = ((ByteArrayOutputStream) this.os).toByteArray();
@@ -95,39 +95,14 @@ public class ASIPOutMessage extends ASIPMessage {
         this.responseSent = true;
     }
 
-    public void expose(ASIPInterest interest, String string) {
-        this.setCommand(ASIPMessage.ASIP_EXPOSE);
-
-//        this.initSecurity();
-
-        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
-
-        try {
-            String parse;
-            if(string != null){
-                parse = string;
-            } else {
-                parse = ASIPMessageSerializer.serializeExpose(this, interest).toString();
-            }
-            this.osw.write(parse);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.sent();
-    }
-
     public void expose(ASIPInterest interest) {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
 
 //        this.initSecurity();
 
-        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
-
         try {
-            String parse = ASIPMessageSerializer.serializeExpose(this, interest).toString();
-            this.osw.write(parse);
+            ASIPSerializationHolder holder = ASIPMessageSerializer.serializeExpose(this, interest);
+            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -142,12 +117,10 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
-        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
-
         try {
-            ASIPSerializationHolder serializationHolder = ASIPMessageSerializer.serializeInsert(this, knowledge);
-            this.osw.write(serializationHolder.asString());
-            this.os.write(serializationHolder.getContent());
+            ASIPSerializationHolder holder = ASIPMessageSerializer.serializeInsert(this, knowledge);
+            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
+            this.os.write(holder.getContent());
         } catch (SharkKBException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -162,12 +135,12 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
-        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
-
         try {
-            // TODO it's not possible to see, that the serialisation holder already was applied
-            this.osw.write(ASIPMessageSerializer.serializeRaw(this, raw).toString());
-            this.os.write(raw);
+
+            ASIPSerializationHolder holder = ASIPMessageSerializer.serializeRaw(this, raw);
+            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
+            this.os.write(holder.getContent());
+
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();
@@ -183,10 +156,12 @@ public class ASIPOutMessage extends ASIPMessage {
 
 //        this.initSecurity();
 
-        this.osw = new OutputStreamWriter(this.os, StandardCharsets.UTF_8);
-
         try {
-            this.osw.write(ASIPMessageSerializer.serializeRaw(this, inputStream).toString());
+
+            ASIPSerializationHolder holder = ASIPMessageSerializer.serializeRaw(this, inputStream);
+            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
+            this.os.write(holder.getContent());
+
         } catch (SharkKBException e) {
             L.d("Serialize failed");
             e.printStackTrace();

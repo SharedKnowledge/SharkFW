@@ -51,9 +51,9 @@ public class SyncManagerTest {
         try {
             sharkKB.addInformation("This is just \"an example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
             sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
-            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
-            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
-            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"anothasder example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"anothasfer easfasxample\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"anotherasfasfa example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }

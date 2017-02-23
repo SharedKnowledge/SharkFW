@@ -71,7 +71,7 @@ public class ASIPSessionTest extends ASIPBaseTest{
 
         ASIPOutMessage outMessage = engineA.createASIPOutMessage(peerB.getAddresses(), peerA, peerB, null, null, null, null, 10);
 
-        outMessage.expose(space, "ajkdsbgöjkasdbgjklasdgjknasdjkgöasjdkgbhadsbgöknasdbgkhbasdgnkbasdkgnasdk");
+        outMessage.expose(space);
 
         Thread.sleep(10000);
     }

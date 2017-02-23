@@ -60,9 +60,10 @@ public class TCPConnection extends ConnectionListenerManager implements StreamCo
         this.out = s.getOutputStream();
         this.in = s.getInputStream();
         L.d("Creating TCPConnection w/ local address of:" + s.getLocalAddress() + ":" + s.getLocalPort(), this);
-
         this.localAddress = replyAddressString;
         this.replyAddressString = replyAddressString;
+//        this.localAddress = s.getLocalAddress() + ":" + s.getLocalPort();
+//        this.replyAddressString = localAddress;
     }
 
     /**

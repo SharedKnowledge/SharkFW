@@ -952,6 +952,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
             }
 
             if (sConn != null /*&& !fromPool*/) {
+//                L.d("creating an own session: " + this.getOwner().getName(), this);
                 // TODO is called to create Session if other peer is sending?
                 this.asipStub.handleStream(sConn);
             }
