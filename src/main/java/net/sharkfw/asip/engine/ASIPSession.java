@@ -68,14 +68,14 @@ public class ASIPSession extends Thread {
         do {
             try {
                 ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
-                inMessage.parse();
+                boolean parse = inMessage.parse();
 
-                if(inMessage.isParsed()){
+                if(parse){
                     handled = this.stub.callListener(inMessage);
                     handled = handled && inMessage.keepOpen();
                 }
 
-            } catch (IOException | SharkException | ASIPSerializerException e) {
+            } catch (IOException | SharkException e) {
                 handled = false;
                 e.printStackTrace();
             }

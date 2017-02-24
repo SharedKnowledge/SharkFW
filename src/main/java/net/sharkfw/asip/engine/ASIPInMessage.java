@@ -71,53 +71,106 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
     }
 
-    public void parse() throws IOException, SharkSecurityException, ASIPSerializerException {
+    public boolean parse() throws IOException, SharkSecurityException {
 
-
-//        L.d("this.is.available: " + this.is.available(), this);
-        if(this.holder==null){
+        if(this.is.available()>0){
             int availableAtStart = this.is.available();
             byte[] configBuffer = new byte[ASIPSerializationHolder.CONFIG_LENGTH];
             int configRead = this.is.read(configBuffer);
-            this.holder = new ASIPSerializationHolder(new String(configBuffer, StandardCharsets.UTF_8));
-//        L.d("configRead: "+ configRead, this);
-//        L.d("this.is.available: " + this.is.available(), this);
-        }
+            ASIPSerializationHolder holder = null;
+            try {
+                holder = new ASIPSerializationHolder(new String(configBuffer, StandardCharsets.UTF_8));
+            } catch (ASIPSerializerException e) {
+                e.printStackTrace();
+                L.d(e.getMessage(), this);
+                return false;
+            }
 
-        if(!holder.isASIP()){
-            throw new ASIPSerializerException("Is no ASIP");
-        }
+            if(!holder.isASIP()){
+                return false;
+            }
 
-        if(this.is.available() >= this.holder.getMessageLength() && holder.getMessage()==null){
             byte[] messageBuffer = new byte[holder.getMessageLength()];
             int messageRead = this.is.read(messageBuffer);
-            holder.setMessage(new String(messageBuffer, StandardCharsets.UTF_8));
-        }
 
-//        L.d("this.is.available: " + this.is.available(), this);
-//        L.d("messageBuffer: "+ messageBuffer.length, this);
-//        L.d("messageRead: "+ messageRead, this);
-        if(this.is.available()>0){
-            L.d("We do have some content", this);
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            int nRead;
-            byte[] data = new byte[1024];
+            if(messageRead>0){
+                holder.setMessage(new String(messageBuffer, StandardCharsets.UTF_8));
+                if(this.is.available()>0){
+                    L.d("We do have some content", this);
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    int nRead;
+                    byte[] data = new byte[1024];
 
-            L.d("Yeah " + this.is.available());
-            while ((nRead = this.is.read(data, 0, data.length)) != -1) {
-//                L.d("reading from this.is", this);
-                buffer.write(data, 0, nRead);
-            }
-            L.d("Yeah2 " + this.is.available());
+                    L.d("Yeah " + this.is.available());
+                    while ((nRead = this.is.read(data, 0, data.length)) != -1) {
+                        buffer.write(data, 0, nRead);
+                        L.d("reading from this.is " + nRead, this);
+                    }
 
-
-            buffer.flush();
-            // TODO pass the content as inputStream?
+                    buffer.flush();
+                    // TODO pass the content as inputStream?
 //            L.d("buffer.length: " + buffer.toByteArray().length, this);
-            holder.setContent(buffer.toByteArray());
+                    holder.setContent(buffer.toByteArray());
+                }
+                this.parsed = ASIPMessageSerializer.deserializeInMessage(this, holder);
+                return this.parsed;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
         }
 
-        this.parsed = ASIPMessageSerializer.deserializeInMessage(this, holder);
+//        boolean configSet = false;
+//        try {
+//        } catch (ASIPSerializerException e) {
+//            this.holder = null;
+//            e.printStackTrace();
+//        }
+//        configSet=true;
+////        L.d("this.is.available: " + this.is.available(), this);
+//        if(this.holder==null){
+////        L.d("configRead: "+ configRead, this);
+////        L.d("this.is.available: " + this.is.available(), this);
+//        }
+//
+//        if(this.holder == null || !holder.isASIP()){
+//            holder = null;
+//            throw new ASIPSerializerException("Is no ASIP");
+//        }
+//
+//        if(this.is.available() >= this.holder.getMessageLength() && holder.getMessage()==null){
+//            byte[] messageBuffer = new byte[holder.getMessageLength()];
+//            int messageRead = this.is.read(messageBuffer);
+//            holder.setMessage(new String(messageBuffer, StandardCharsets.UTF_8));
+//        }
+//
+////        L.d("this.is.available: " + this.is.available(), this);
+////        L.d("messageBuffer: "+ messageBuffer.length, this);
+////        L.d("messageRead: "+ messageRead, this);
+//        if(this.is.available()>0){
+//            L.d("We do have some content", this);
+//            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+//            int nRead;
+//            byte[] data = new byte[1024];
+//
+//            L.d("Yeah " + this.is.available());
+//            while ((nRead = this.is.read(data, 0, data.length)) != -1) {
+//                buffer.write(data, 0, nRead);
+//                L.d("reading from this.is " + nRead, this);
+//            }
+//
+//            buffer.flush();
+//            // TODO pass the content as inputStream?
+////            L.d("buffer.length: " + buffer.toByteArray().length, this);
+//            holder.setContent(buffer.toByteArray());
+//        }
+//
+//        if (holder.getMessage()!=null && configSet){
+//            this.parsed = ASIPMessageSerializer.deserializeInMessage(this, holder);
+//        }
+
 
 
 
