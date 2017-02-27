@@ -29,19 +29,16 @@ public class SyncMergeKP extends KnowledgePort {
 
     @Override
     protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
-        if(!SharkCSAlgebra.identical(message.getType(), SyncManager.SHARK_SYNC_MERGE_TAG))
-            return;
 
-        if(message.getCommand()!=ASIPMessage.ASIP_INSERT)
+        if(message.getType()==null || message.getType().isAny()) {
             return;
+        }
+
+        if(!SyncManager.SHARK_SYNC_MERGE_TAG.getName().equals(message.getType().getName())){
+            return;
+        }
 
         L.d(this.se.getOwner().getName() + " received a Merge from " + message.getPhysicalSender().getName(), this);
-
-//        try {
-//            L.d("Message.topic: " + L.semanticTag2String(message.getTopic()), this);
-//        } catch (SharkKBException e) {
-//            e.printStackTrace();
-//        }
 
         SyncComponent component = syncManager.getComponentByName(message.getTopic());
 
