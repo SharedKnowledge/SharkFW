@@ -62,7 +62,6 @@ public class ASIPSpaceSharkPublicKey implements SharkPublicKey {
                     SharkPublicKey.INFO_OWNER_PUBLIC_KEY,
                     publicKey.getEncoded());
 
-            L.d("SetKey: " +String.format("%064x", new java.math.BigInteger(1, publicKey.getEncoded())), this);
             KnowledgeUtils.setInfoWithName(
                     this.kb,
                     this.space,
@@ -92,7 +91,6 @@ public class ASIPSpaceSharkPublicKey implements SharkPublicKey {
                     SharkPublicKey.INFO_OWNER_PUBLIC_KEY);
             if (information != null) {
                 byte[] informationContentAsByte = information.getContentAsByte();
-                L.d("GetKey: " + String.format("%064x", new java.math.BigInteger(1, informationContentAsByte)), this);
                 KeyFactory kf = KeyFactory.getInstance("RSA");
                 return kf.generatePublic(new X509EncodedKeySpec(informationContentAsByte));
             }

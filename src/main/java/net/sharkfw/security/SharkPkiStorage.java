@@ -180,13 +180,9 @@ public class SharkPkiStorage implements PkiStorage {
     @Override
     public void generateNewKeyPair(long validityFromNow) throws NoSuchAlgorithmException, SharkKBException, IOException {
 
-        L.d("Init KeyPairGeneration", this);
-
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
-
-        L.d("Keys generated", this);
 
         if (getOwnerPrivateKey() != null && getOwnerPublicKey() != null) {
             // replace the old keys with the current keys
@@ -198,8 +194,6 @@ public class SharkPkiStorage implements PkiStorage {
         KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PRIVATE_KEY, keyPair.getPrivate().getEncoded());
         KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PUBLIC_KEY, keyPair.getPublic().getEncoded());
         KnowledgeUtils.setInfoWithName(this.kb, this.ownerSpace, INFO_OWNER_PUBLIC_KEY_VALIDITY, System.currentTimeMillis() + validityFromNow);
-
-        L.d("Keys set", this);
 
     }
 
@@ -270,7 +264,6 @@ public class SharkPkiStorage implements PkiStorage {
     @Override
     public boolean addSharkCertificate(SharkCertificate certificate) throws SharkKBException {
         // first check if we already have a certificate regarding the owner
-
         SharkCertificate sharkCertificate = this.getSharkCertificate(certificate.getOwner(), certificate.getSigner());
         if(sharkCertificate==null){
             new ASIPSpaceSharkCertificate(this.kb,
@@ -367,6 +360,8 @@ public class SharkPkiStorage implements PkiStorage {
 
             List<SharkCertificate> sharkCertificatesBySigner = this.getSharkCertificatesBySigner(this.owner);
             for (SharkCertificate sharkCertificate : sharkCertificatesBySigner) {
+                L.d("Certificate found from " + sharkCertificate.getOwner().getName()
+                        + " signed by " + sharkCertificate.getSigner().getName(), this);
                 tempPkiStorage.addSharkCertificate(sharkCertificate);
             }
         } catch (SharkKBException e) {
@@ -379,10 +374,6 @@ public class SharkPkiStorage implements PkiStorage {
     private List<SharkCertificate> getSharkCertificatesBySpace(ASIPSpace space) throws SharkKBException {
         List<SharkCertificate> resultSet = new ArrayList<>();
 
-//        Iterator<ASIPInformation> informationIterator = this.kb.getInformation(space, true, false);
-
-//        resultSet.add(new ASIPSpaceSharkCertificate(this.kb, informationIterator));
-
         Iterator<ASIPInformationSpace> informationSpaces = this.kb.getInformationSpaces(space);
         while (informationSpaces.hasNext()) {
             ASIPInformationSpace next = informationSpaces.next();
@@ -393,10 +384,24 @@ public class SharkPkiStorage implements PkiStorage {
             PeerSTSet approvers = nextASIPSpace.getApprovers();
             if (approvers != null) {
                 // Now create a certificate for each approver
-                Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = approvers.peerTags();
-                while (peerSemanticTagEnumeration.hasMoreElements()) {
-                    PeerSemanticTag peerSemanticTag = peerSemanticTagEnumeration.nextElement();
-                    resultSet.add(new ASIPSpaceSharkCertificate(this.kb, nextASIPSpace, peerSemanticTag));
+
+                // If I'm searching by signer/approver
+
+                if(space.getApprovers() == null || space.getApprovers().isEmpty()){
+                    Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = approvers.peerTags();
+                    while (peerSemanticTagEnumeration.hasMoreElements()) {
+                        PeerSemanticTag peerSemanticTag = peerSemanticTagEnumeration.nextElement();
+                        resultSet.add(new ASIPSpaceSharkCertificate(this.kb, nextASIPSpace, peerSemanticTag));
+                    }
+                } else {
+                    Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = approvers.peerTags();
+                    while (peerSemanticTagEnumeration.hasMoreElements()) {
+                        PeerSemanticTag peerSemanticTag = peerSemanticTagEnumeration.nextElement();
+
+                        if(SharkCSAlgebra.isIn(space.getApprovers(), peerSemanticTag)){
+                            resultSet.add(new ASIPSpaceSharkCertificate(this.kb, nextASIPSpace, peerSemanticTag));
+                        }
+                    }
                 }
             }
         }
