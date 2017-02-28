@@ -10,7 +10,7 @@ import java.util.Enumeration;
  */
 public class FileDumpPropertyHolder implements SystemPropertyHolder {
 
-    private final FileDumpSharkKB kb;
+    protected final FileDumpSharkKB kb;
     private final SystemPropertyHolder propertyHolder;
 
     public FileDumpPropertyHolder(FileDumpSharkKB fileDumpSharkKB, SystemPropertyHolder systemPropertyHolder) {
