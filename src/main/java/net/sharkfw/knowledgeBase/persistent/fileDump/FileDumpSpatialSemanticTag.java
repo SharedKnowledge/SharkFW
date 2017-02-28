@@ -18,6 +18,6 @@ public class FileDumpSpatialSemanticTag extends FileDumpSemanticTag implements S
 
     @Override
     public SharkGeometry getGeometry() {
-        return this.spatialSemanticTag.getGeometry();
+        return new FileDumpSharkGeometry(this.kb, this.spatialSemanticTag.getGeometry());
     }
 }
