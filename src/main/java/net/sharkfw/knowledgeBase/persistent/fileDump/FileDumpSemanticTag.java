@@ -10,7 +10,7 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/27/17.
  */
-public class FileDumpSemanticTag extends FileDumpPropertyHolder implements SemanticTag {
+public class FileDumpSemanticTag extends FileDumpSystemPropertyHolder implements SemanticTag {
 
     private final SemanticTag semanticTag;
 

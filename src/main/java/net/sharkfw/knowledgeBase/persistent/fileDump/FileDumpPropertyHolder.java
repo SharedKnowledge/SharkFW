@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.persistent.fileDump;
 
+import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 
@@ -8,25 +9,14 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/27/17.
  */
-public class FileDumpPropertyHolder implements SystemPropertyHolder {
+public class FileDumpPropertyHolder implements PropertyHolder {
 
     protected final FileDumpSharkKB kb;
-    private final SystemPropertyHolder propertyHolder;
+    private final PropertyHolder propertyHolder;
 
-    public FileDumpPropertyHolder(FileDumpSharkKB fileDumpSharkKB, SystemPropertyHolder systemPropertyHolder) {
+    public FileDumpPropertyHolder(FileDumpSharkKB fileDumpSharkKB, PropertyHolder propertyHolder) {
         this.kb = fileDumpSharkKB;
-        this.propertyHolder = systemPropertyHolder;
-    }
-
-    @Override
-    public void setSystemProperty(String name, String value) {
-        this.propertyHolder.setSystemProperty(name, value);
-        this.kb.persist();
-    }
-
-    @Override
-    public String getSystemProperty(String name) {
-        return this.propertyHolder.getSystemProperty(name);
+        this.propertyHolder = propertyHolder;
     }
 
     @Override
