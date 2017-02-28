@@ -1,12 +1,12 @@
 package net.sharkfw.knowledgeBase.persistent.fileDump;
 
-import net.sharkfw.knowledgeBase.FragmentationParameter;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SpatialSTSet;
-import net.sharkfw.knowledgeBase.SpatialSemanticTag;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created by j4rvis on 2/28/17.
@@ -67,7 +67,11 @@ public class FileDumpSpatialSTSet extends FileDumpSTSet implements SpatialSTSet 
 
     @Override
     public Enumeration<SpatialSemanticTag> spatialTags() throws SharkKBException {
-        return this.spatialSTSet.spatialTags();
-    }
+        Enumeration<SpatialSemanticTag> spatialSemanticTagEnumeration = this.spatialSTSet.spatialTags();
+        List<SpatialSemanticTag> list = new ArrayList<>();
+        while (spatialSemanticTagEnumeration.hasMoreElements()){
+            list.add(new FileDumpSpatialSemanticTag(this.kb, spatialSemanticTagEnumeration.nextElement()));
+        }
+        return Collections.enumeration(list);    }
 
 }

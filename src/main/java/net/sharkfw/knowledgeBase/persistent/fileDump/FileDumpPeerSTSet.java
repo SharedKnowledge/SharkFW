@@ -2,7 +2,10 @@ package net.sharkfw.knowledgeBase.persistent.fileDump;
 
 import net.sharkfw.knowledgeBase.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created by j4rvis on 2/28/17.
@@ -103,7 +106,11 @@ public class FileDumpPeerSTSet extends FileDumpSTSet implements PeerSTSet {
 
     @Override
     public Enumeration<PeerSemanticTag> peerTags() {
-        return this.peerSTSet.peerTags();
+        Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = this.peerSTSet.peerTags();
+        List<PeerSemanticTag> list = new ArrayList<>();
+        while (peerSemanticTagEnumeration.hasMoreElements()){
+            list.add(new FileDumpPeerSemanticTag(this.kb, peerSemanticTagEnumeration.nextElement()));
+        }
+        return Collections.enumeration(list);
     }
-
 }
