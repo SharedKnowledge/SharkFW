@@ -106,5 +106,4 @@ public class FileDumpPeerSTSet extends FileDumpSTSet implements PeerSTSet {
         return this.peerSTSet.peerTags();
     }
 
-
 }
