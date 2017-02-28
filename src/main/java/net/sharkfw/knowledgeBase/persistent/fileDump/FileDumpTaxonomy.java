@@ -93,7 +93,6 @@ public class FileDumpTaxonomy extends FileDumpSTSet implements Taxonomy {
 
     }
 
-
     @Override
     public TXSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
         return new FileDumpTXSemanticTag(this.kb, taxonomy.getSemanticTag(sis));

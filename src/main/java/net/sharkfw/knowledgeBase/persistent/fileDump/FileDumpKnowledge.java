@@ -127,8 +127,7 @@ public class FileDumpKnowledge implements Knowledge {
 
     @Override
     public SharkVocabulary getVocabulary() {
-        // TODO
-        return null;
+        return new FileDumpSharkVocabulary(kb, knowledge.getVocabulary());
     }
 
     @Override
