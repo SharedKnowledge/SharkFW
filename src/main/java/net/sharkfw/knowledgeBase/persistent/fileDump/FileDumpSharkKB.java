@@ -46,7 +46,7 @@ public class FileDumpSharkKB implements SharkKB {
     @Override
     public void setSystemProperty(String name, String value) {
         this.sharkKB.setSystemProperty(name, value);
-        writeToFile();
+        this.persist();
     }
 
     @Override
