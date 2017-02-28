@@ -8,7 +8,7 @@ import net.sharkfw.knowledgeBase.*;
  */
 public class FileDumpASIPSpace implements ASIPSpace {
 
-    private final FileDumpSharkKB kb;
+    protected final FileDumpSharkKB kb;
     private final ASIPSpace space;
 
     public FileDumpASIPSpace(FileDumpSharkKB kb, ASIPSpace space) {
