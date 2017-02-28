@@ -18,7 +18,7 @@ import java.util.Iterator;
  */
 public class FileDumpSharkKB implements SharkKB {
 
-    private final InMemoSharkKB sharkKB;
+    private final SharkKB sharkKB;
     private final File file;
 
     public FileDumpSharkKB(InMemoSharkKB sharkKB, File file) {
@@ -29,14 +29,6 @@ public class FileDumpSharkKB implements SharkKB {
     public FileDumpSharkKB(File file) {
         this.sharkKB = new InMemoSharkKB();
         this.file = file;
-    }
-
-    private void readFromFile(){
-
-    }
-
-    private void writeToFile(){
-
     }
 
     public void persist(){
@@ -55,243 +47,268 @@ public class FileDumpSharkKB implements SharkKB {
     }
 
     @Override
-    public void semanticTagCreated(SemanticTag tag, STSet stset) {
-        this.sharkKB.semanticTagCreated(tag, stset);
-    }
-
-    @Override
-    public void semanticTagRemoved(SemanticTag tag, STSet stset) {
-        this.sharkKB.semanticTagRemoved(tag, stset);
-    }
-
-    @Override
-    public void semanticTagChanged(SemanticTag tag, STSet stset) {
-        this.sharkKB.semanticTagChanged(tag, stset);
-    }
-
-    @Override
-    public ASIPSpace asASIPSpace() throws SharkKBException {
-        return this.sharkKB.asASIPSpace();
-    }
-
-    @Override
-    public ASIPInterest asASIPInterest() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public STSet getTopicSTSet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public STSet getTypeSTSet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public SemanticNet getTypesAsSemanticNet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Taxonomy getTypesAsTaxonomy() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public PeerSTSet getPeerSTSet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public TimeSTSet getTimeSTSet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
-
-    }
-
-    @Override
-    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
-        return null;
-    }
-
-    @Override
     public void setOwner(PeerSemanticTag owner) {
-
+        sharkKB.setOwner(owner);
+        this.persist();
     }
 
     @Override
     public PeerSemanticTag getOwner() {
-        return null;
+        return new FileDumpPeerSemanticTag(this, sharkKB.getOwner());
     }
 
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
-        return null;
+        ArrayList<ASIPSpace> assimilate = this.sharkKB.assimilate(target, interest, backgroundFP, knowledge, learnTags, deleteAssimilated);
+        this.persist();
+        ArrayList<ASIPSpace> list = new ArrayList<>();
+        for (ASIPSpace asipSpace : assimilate) {
+            list.add(new FileDumpASIPSpace(this, asipSpace));
+        }
+        return list;
     }
 
     @Override
     public Knowledge extract(ASIPSpace context) throws SharkKBException {
-        return null;
+        Knowledge extract = this.sharkKB.extract(context);
+        persist();
+        return new FileDumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] fp) throws SharkKBException {
-        return null;
+        Knowledge extract = this.sharkKB.extract(context, fp);
+        persist();
+        return new FileDumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) throws SharkKBException {
-        return null;
+        Knowledge extract = this.sharkKB.extract(context, backgroundFP, recipient);
+        persist();
+        return new FileDumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups) throws SharkKBException {
-        return null;
+        Knowledge extract = this.sharkKB.extract(context, backgroundFP, cutGroups);
+        persist();
+        return new FileDumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(SharkKB target, ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups, PeerSemanticTag recipient) throws SharkKBException {
-        return null;
+        Knowledge extract = this.sharkKB.extract(context, backgroundFP, recipient);
+        persist();
+        return new FileDumpKnowledge(this, extract);
     }
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException {
-        return null;
+        Iterator<ASIPInformationSpace> asipInformationSpaceIterator = this.sharkKB.informationSpaces(as, matchAny);
+        ArrayList<ASIPInformationSpace> list = new ArrayList<>();
+        while (asipInformationSpaceIterator.hasNext()){
+            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+        }
+        return list.iterator();
     }
 
     @Override
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        return null;
+        ASIPSpace asipSpace = this.sharkKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
+        persist();
+        return new FileDumpASIPSpace(this, asipSpace);
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        return null;
+        ASIPSpace asipSpace = this.sharkKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
+        persist();
+        return new FileDumpASIPSpace(this, asipSpace);
     }
 
     @Override
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
-        return null;
+        Iterator<ASIPInformationSpace> asipInformationSpaceIterator = this.sharkKB.getAllInformationSpaces();
+        ArrayList<ASIPInformationSpace> list = new ArrayList<>();
+        while (asipInformationSpaceIterator.hasNext()){
+            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+        }
+        return list.iterator();
+    }
+
+    @Override
+    public ASIPSpace asASIPSpace() throws SharkKBException {
+        return new FileDumpASIPSpace(this, sharkKB.asASIPSpace());
+    }
+
+    @Override
+    public ASIPInterest asASIPInterest() throws SharkKBException {
+        return new FileDumpASIPInterest(this, sharkKB.asASIPInterest());
+    }
+
+    @Override
+    public STSet getTopicSTSet() throws SharkKBException {
+        return new FileDumpSTSet(this, sharkKB.getTopicSTSet());
+    }
+
+    @Override
+    public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
+        return new FileDumpSemanticNet(this, sharkKB.getTopicsAsSemanticNet());
+    }
+
+    @Override
+    public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
+        return new FileDumpTaxonomy(this, sharkKB.getTopicsAsTaxonomy());
+    }
+
+    @Override
+    public STSet getTypeSTSet() throws SharkKBException {
+        return new FileDumpSTSet(this, sharkKB.getTypeSTSet());
+    }
+
+    @Override
+    public SemanticNet getTypesAsSemanticNet() throws SharkKBException {
+        return new FileDumpSemanticNet(this, sharkKB.getTypesAsSemanticNet());
+    }
+
+    @Override
+    public Taxonomy getTypesAsTaxonomy() throws SharkKBException {
+        return new FileDumpTaxonomy(this, sharkKB.getTypesAsTaxonomy());
+    }
+
+    @Override
+    public PeerSTSet getPeerSTSet() throws SharkKBException {
+        return new FileDumpPeerSTSet(this, sharkKB.getPeerSTSet());
+    }
+
+    @Override
+    public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
+        return new FileDumpPeerSemanticNet(this, sharkKB.getPeersAsSemanticNet());
+    }
+
+    @Override
+    public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
+        return new FileDumpPeerTaxonomy(this, sharkKB.getPeersAsTaxonomy());
+    }
+
+    @Override
+    public TimeSTSet getTimeSTSet() throws SharkKBException {
+        return new FileDumpTimeSTSet(this, sharkKB.getTimeSTSet());
+    }
+
+    @Override
+    public SpatialSTSet getSpatialSTSet() throws SharkKBException {
+        return new FileDumpSpatialSTSet(this, sharkKB.getSpatialSTSet());
+    }
+
+    @Override
+    public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
+        ASIPInterest contextualize = sharkKB.contextualize(as);
+        this.persist();
+        return new FileDumpASIPInterest(this, contextualize);
+    }
+
+    @Override
+    public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
+        ASIPInterest contextualize = sharkKB.contextualize(as, fps);
+        this.persist();
+        return new FileDumpASIPInterest(this, contextualize);
+    }
+
+    @Override
+    public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        ASIPInformationSpace asipInformationSpace = sharkKB.mergeInformation(information, space);
+        this.persist();
+        return new FileDumpASIPInformationSpace(this, asipInformationSpace);
+    }
+
+    @Override
+    public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = sharkKB.addInformation(content, semanticAnnotations);
+        this.persist();
+        return new FileDumpASIPInformation(this, asipInformation);
+    }
+
+    @Override
+    public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = sharkKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
+        this.persist();
+        return new FileDumpASIPInformation(this, asipInformation);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = sharkKB.addInformation(content, semanticAnnotations);
+        this.persist();
+        return new FileDumpASIPInformation(this, asipInformation);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = sharkKB.addInformation(name, content, semanticAnnotations);
+        this.persist();
+        return new FileDumpASIPInformation(this, asipInformation);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = sharkKB.addInformation(name, content, semanticAnnotations);
+        this.persist();
+        return new FileDumpASIPInformation(this, asipInformation);
+    }
+
+    @Override
+    public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
+        ASIPInformation asipInformation = sharkKB.addInformation(name, contentIS, numberOfBytes, semanticAnnotations);
+        this.persist();
+        return new FileDumpASIPInformation(this, asipInformation);
+    }
+
+    @Override
+    public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
+        this.sharkKB.removeInformation(info, infoSpace);
+        this.persist();
+    }
+
+    @Override
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+        Iterator<ASIPInformation> informations = sharkKB.getInformation(infoSpace);
+        ArrayList<ASIPInformation> list = new ArrayList<>();
+        while (informations.hasNext()){
+            list.add(new FileDumpASIPInformation(this, informations.next()));
+        }
+        return list.iterator();
+    }
+
+    @Override
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
+        Iterator<ASIPInformation> informations = sharkKB.getInformation(infoSpace, fullyInside, matchAny);
+        ArrayList<ASIPInformation> list = new ArrayList<>();
+        while (informations.hasNext()){
+            list.add(new FileDumpASIPInformation(this, informations.next()));
+        }
+        return list.iterator();
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
+        Iterator<ASIPInformationSpace> asipInformationSpaceIterator = sharkKB.informationSpaces();
+        ArrayList<ASIPInformationSpace> list = new ArrayList<>();
+        while (asipInformationSpaceIterator.hasNext()){
+            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+        }
+        return list.iterator();
     }
 
     @Override
     public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
-        return null;
+        Iterator<ASIPInformationSpace> asipInformationSpaceIterator = sharkKB.getInformationSpaces(space);
+        ArrayList<ASIPInformationSpace> list = new ArrayList<>();
+        while (asipInformationSpaceIterator.hasNext()){
+            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+        }
+        return list.iterator();
     }
 
     @Override
@@ -316,16 +333,68 @@ public class FileDumpSharkKB implements SharkKB {
 
     @Override
     public void removeInformation(ASIPSpace space) throws SharkKBException {
-
+        sharkKB.removeInformation(space);
+        this.persist();
     }
 
     @Override
     public SharkVocabulary getVocabulary() {
-        return null;
+        return new FileDumpSharkVocabulary(this, sharkKB.getVocabulary());
     }
 
     @Override
     public int getNumberInformation() throws SharkKBException {
-        return 0;
+        return sharkKB.getNumberInformation();
+    }
+
+    @Override
+    public void setProperty(String name, String value) throws SharkKBException {
+        this.sharkKB.setProperty(name, value);
+        this.persist();
+    }
+
+    @Override
+    public String getProperty(String name) throws SharkKBException {
+        return this.sharkKB.getProperty(name);
+    }
+
+    @Override
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
+        this.sharkKB.setProperty(name, value, transfer);
+        this.persist();
+    }
+
+    @Override
+    public void removeProperty(String name) throws SharkKBException {
+        this.sharkKB.removeProperty(name);
+        this.persist();
+    }
+
+    @Override
+    public Enumeration<String> propertyNames() throws SharkKBException {
+        return this.sharkKB.propertyNames();
+    }
+
+    @Override
+    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
+        return this.sharkKB.propertyNames(all);
+    }
+
+    @Override
+    public void semanticTagCreated(SemanticTag tag, STSet stset) {
+        this.sharkKB.semanticTagCreated(tag, stset);
+        this.persist();
+    }
+
+    @Override
+    public void semanticTagRemoved(SemanticTag tag, STSet stset) {
+        this.sharkKB.semanticTagRemoved(tag, stset);
+        this.persist();
+    }
+
+    @Override
+    public void semanticTagChanged(SemanticTag tag, STSet stset) {
+        this.sharkKB.semanticTagChanged(tag, stset);
+        this.persist();
     }
 }
