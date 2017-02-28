@@ -22,8 +22,7 @@ public class FileDumpASIPInformation extends FileDumpPropertyHolder implements A
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {
-        // TODO Wrap ASIPSpace
-        return null;
+        return new FileDumpASIPSpace(kb, info.getASIPSpace());
     }
 
     @Override
