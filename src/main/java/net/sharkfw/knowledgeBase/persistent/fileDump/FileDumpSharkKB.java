@@ -4,11 +4,15 @@ import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
+import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
+import net.sharkfw.asip.serialization.ASIPSerializerException;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -18,21 +22,125 @@ import java.util.Iterator;
  */
 public class FileDumpSharkKB implements SharkKB {
 
-    private final SharkKB sharkKB;
+    private final int CONFIG_JSON_LENGTH = 9;
+
+    private SharkKB sharkKB;
     private final File file;
 
     public FileDumpSharkKB(InMemoSharkKB sharkKB, File file) {
         this.sharkKB = sharkKB;
         this.file = file;
+        createFileIfNotExists();
+        this.persist();
     }
 
     public FileDumpSharkKB(File file) {
-        this.sharkKB = new InMemoSharkKB();
         this.file = file;
+        createFileIfNotExists();
+        read();
+    }
+
+    private void read(){
+        FileInputStream stream = null;
+        ByteArrayOutputStream buffer = null;
+        try {
+            stream = new FileInputStream(this.file);
+
+            byte[] msgLength = new byte[CONFIG_JSON_LENGTH];
+            stream.read(msgLength);
+            String s = new String(msgLength, StandardCharsets.UTF_8);
+            s.replaceFirst("^0+(?!$)", "");
+            int jsonLength = Integer.parseInt(s);
+
+            byte[] jsonMessage = new byte[jsonLength];
+            stream.read(jsonMessage);
+            String serializedKB = new String(jsonMessage, StandardCharsets.UTF_8);
+
+            buffer = new ByteArrayOutputStream();
+
+            int nRead;
+            byte[] data = new byte[16384];
+
+            while ((nRead = stream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+
+            buffer.flush();
+
+            byte[] content = buffer.toByteArray();
+
+            ASIPKnowledgeConverter converter = new ASIPKnowledgeConverter(serializedKB, content);
+            this.sharkKB = (SharkKB) converter.getKnowledge();
+
+//            L.d("File read: " + this.file.getName(), this);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ASIPSerializerException e) {
+            e.printStackTrace();
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                buffer.close();
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void createFileIfNotExists(){
+        if(this.file.exists()){
+//            L.d("File exists.", this);
+        } else {
+//            L.d("File doesn't exist.", this);
+            try {
+                boolean newFile = this.file.createNewFile();
+//                L.d("createNewFile: "+ newFile, this);
+//                L.d("file.exists: "+ this.file.exists(), this);
+//                L.d("file.canWrite: "+ this.file.canWrite(), this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void persist(){
+        FileOutputStream stream = null;
+        try {
+            ASIPKnowledgeConverter converter = ASIPMessageSerializerHelper.serializeKB(this.sharkKB);
 
+            stream = new FileOutputStream(this.file);
+
+            // Write length of serialized kb
+            String format = String.format("%09d", converter.getSerializedKnowledge().length());
+            stream.write(format.getBytes(StandardCharsets.UTF_8));
+
+            // Write serialized kb
+            stream.write(converter.getSerializedKnowledge().getBytes(StandardCharsets.UTF_8));
+
+            // Write content
+            stream.write(converter.getContent());
+            stream.flush();
+
+//                L.d("Flushed to file: " + this.file.getName(), this);
+
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
