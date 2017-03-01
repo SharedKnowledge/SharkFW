@@ -5,12 +5,12 @@ import net.sharkfw.knowledgeBase.PeerTXSemanticTag;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpPeerTXSemanticTag extends FileDumpTXSemanticTag implements PeerTXSemanticTag {
+public class DumpPeerTXSemanticTag extends DumpTXSemanticTag implements PeerTXSemanticTag {
 
     private final PeerTXSemanticTag peerTXSemanticTag;
 
-    public FileDumpPeerTXSemanticTag(FileDumpSharkKB fileDumpSharkKB, PeerTXSemanticTag tag) {
-        super(fileDumpSharkKB, tag);
+    public DumpPeerTXSemanticTag(DumpSharkKB dumpSharkKB, PeerTXSemanticTag tag) {
+        super(dumpSharkKB, tag);
         peerTXSemanticTag = tag;
     }
 

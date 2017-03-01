@@ -6,11 +6,11 @@ import net.sharkfw.knowledgeBase.*;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpASIPInterest extends FileDumpASIPSpace implements ASIPInterest {
+public class DumpASIPInterest extends DumpASIPSpace implements ASIPInterest {
 
     private final ASIPInterest interest;
 
-    public FileDumpASIPInterest(FileDumpSharkKB kb, ASIPInterest space) {
+    public DumpASIPInterest(DumpSharkKB kb, ASIPInterest space) {
         super(kb, space);
         interest = space;
     }

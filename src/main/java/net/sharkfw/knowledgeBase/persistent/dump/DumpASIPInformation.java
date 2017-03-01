@@ -10,18 +10,18 @@ import java.io.OutputStream;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpASIPInformation extends FileDumpPropertyHolder implements ASIPInformation {
+public class DumpASIPInformation extends DumpPropertyHolder implements ASIPInformation {
 
     private final ASIPInformation info;
 
-    public FileDumpASIPInformation(FileDumpSharkKB fileDumpSharkKB, ASIPInformation info) {
-        super(fileDumpSharkKB, info);
+    public DumpASIPInformation(DumpSharkKB dumpSharkKB, ASIPInformation info) {
+        super(dumpSharkKB, info);
         this.info = info;
     }
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {
-        return new FileDumpASIPSpace(kb, info.getASIPSpace());
+        return new DumpASIPSpace(kb, info.getASIPSpace());
     }
 
     @Override

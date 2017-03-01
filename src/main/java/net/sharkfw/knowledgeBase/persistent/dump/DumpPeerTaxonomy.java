@@ -9,11 +9,11 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpPeerTaxonomy extends FileDumpTaxonomy implements PeerTaxonomy {
+public class DumpPeerTaxonomy extends DumpTaxonomy implements PeerTaxonomy {
 
     private final PeerTaxonomy peerTaxonomy;
 
-    public FileDumpPeerTaxonomy(FileDumpSharkKB kb, PeerTaxonomy taxonomy) {
+    public DumpPeerTaxonomy(DumpSharkKB kb, PeerTaxonomy taxonomy) {
         super(kb, taxonomy);
         peerTaxonomy = taxonomy;
     }
@@ -22,40 +22,40 @@ public class FileDumpPeerTaxonomy extends FileDumpTaxonomy implements PeerTaxono
     public PeerTaxonomy resolveSuperPeers(PeerTXSemanticTag pstGroup) throws SharkKBException {
         PeerTaxonomy peerTaxonomy = this.peerTaxonomy.resolveSuperPeers(pstGroup);
         kb.persist();
-        return new FileDumpPeerTaxonomy(kb, peerTaxonomy);
+        return new DumpPeerTaxonomy(kb, peerTaxonomy);
     }
 
     @Override
     public PeerSTSet asPeerSTSet() throws SharkKBException {
-        return new FileDumpPeerSTSet(kb, peerTaxonomy.asPeerSTSet());
+        return new DumpPeerSTSet(kb, peerTaxonomy.asPeerSTSet());
     }
 
     @Override
     public PeerTXSemanticTag createPeerTXSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
         PeerTXSemanticTag peerTXSemanticTag = peerTaxonomy.createPeerTXSemanticTag(name, sis, addresses);
         kb.persist();
-        return new FileDumpPeerTXSemanticTag(kb, peerTXSemanticTag);
+        return new DumpPeerTXSemanticTag(kb, peerTXSemanticTag);
     }
 
     @Override
     public PeerTXSemanticTag createPeerTXSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
         PeerTXSemanticTag peerTXSemanticTag = peerTaxonomy.createPeerTXSemanticTag(name, si, addresses);
         kb.persist();
-        return new FileDumpPeerTXSemanticTag(kb, peerTXSemanticTag);
+        return new DumpPeerTXSemanticTag(kb, peerTXSemanticTag);
     }
 
     @Override
     public PeerTXSemanticTag createPeerTXSemanticTag(String name, String[] sis, String address) throws SharkKBException {
         PeerTXSemanticTag peerTXSemanticTag = peerTaxonomy.createPeerTXSemanticTag(name, sis, address);
         kb.persist();
-        return new FileDumpPeerTXSemanticTag(kb, peerTXSemanticTag);
+        return new DumpPeerTXSemanticTag(kb, peerTXSemanticTag);
     }
 
     @Override
     public PeerTXSemanticTag createPeerTXSemanticTag(String name, String si, String address) throws SharkKBException {
         PeerTXSemanticTag peerTXSemanticTag = peerTaxonomy.createPeerTXSemanticTag(name, si, address);
         kb.persist();
-        return new FileDumpPeerTXSemanticTag(kb, peerTXSemanticTag);
+        return new DumpPeerTXSemanticTag(kb, peerTXSemanticTag);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class FileDumpPeerTaxonomy extends FileDumpTaxonomy implements PeerTaxono
     public PeerTaxonomy contextualize(PeerSTSet context, FragmentationParameter fp) throws SharkKBException {
         PeerTaxonomy contextualize = peerTaxonomy.contextualize(context, fp);
         kb.persist();
-        return new FileDumpPeerTaxonomy(kb, contextualize);
+        return new DumpPeerTaxonomy(kb, contextualize);
     }
 
     @Override
@@ -76,13 +76,13 @@ public class FileDumpPeerTaxonomy extends FileDumpTaxonomy implements PeerTaxono
         Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = peerTaxonomy.peerTags();
         ArrayList<PeerSemanticTag> list = new ArrayList<>();
         while (peerSemanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpPeerSemanticTag(kb, peerSemanticTagEnumeration.nextElement()));
+            list.add(new DumpPeerSemanticTag(kb, peerSemanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);
     }
 
     @Override
     public PeerTXSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        return new FileDumpPeerTXSemanticTag(this.kb, peerTaxonomy.getSemanticTag(sis));
+        return new DumpPeerTXSemanticTag(this.kb, peerTaxonomy.getSemanticTag(sis));
     }
 }

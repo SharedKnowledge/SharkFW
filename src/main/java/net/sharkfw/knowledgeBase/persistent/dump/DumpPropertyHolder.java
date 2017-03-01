@@ -8,13 +8,13 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/27/17.
  */
-public class FileDumpPropertyHolder implements PropertyHolder {
+public class DumpPropertyHolder implements PropertyHolder {
 
-    protected final FileDumpSharkKB kb;
+    protected final DumpSharkKB kb;
     private final PropertyHolder propertyHolder;
 
-    public FileDumpPropertyHolder(FileDumpSharkKB fileDumpSharkKB, PropertyHolder propertyHolder) {
-        this.kb = fileDumpSharkKB;
+    public DumpPropertyHolder(DumpSharkKB dumpSharkKB, PropertyHolder propertyHolder) {
+        this.kb = dumpSharkKB;
         this.propertyHolder = propertyHolder;
     }
 

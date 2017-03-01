@@ -7,12 +7,12 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 /**
  * Created by j4rvis on 2/27/17.
  */
-public class FileDumpSemanticTag extends FileDumpSystemPropertyHolder implements SemanticTag {
+public class DumpSemanticTag extends DumpSystemPropertyHolder implements SemanticTag {
 
     private final SemanticTag semanticTag;
 
-    public FileDumpSemanticTag(FileDumpSharkKB fileDumpSharkKB, SemanticTag tag) {
-        super(fileDumpSharkKB, tag);
+    public DumpSemanticTag(DumpSharkKB dumpSharkKB, SemanticTag tag) {
+        super(dumpSharkKB, tag);
         semanticTag = tag;
     }
 

@@ -11,10 +11,10 @@ import java.util.List;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpSpatialSTSet extends FileDumpSTSet implements SpatialSTSet {
+public class DumpSpatialSTSet extends DumpSTSet implements SpatialSTSet {
     private final SpatialSTSet spatialSTSet;
 
-    public FileDumpSpatialSTSet(FileDumpSharkKB kb, SpatialSTSet set) {
+    public DumpSpatialSTSet(DumpSharkKB kb, SpatialSTSet set) {
         super(kb, set);
         spatialSTSet = set;
     }
@@ -23,7 +23,7 @@ public class FileDumpSpatialSTSet extends FileDumpSTSet implements SpatialSTSet 
     public SpatialSTSet contextualize(SpatialSTSet context, FragmentationParameter fp) throws SharkKBException {
         SpatialSTSet contextualize = this.spatialSTSet.contextualize(context, fp);
         this.kb.persist();
-        return new FileDumpSpatialSTSet(this.kb, contextualize);
+        return new DumpSpatialSTSet(this.kb, contextualize);
     }
 
     @Override
@@ -40,14 +40,14 @@ public class FileDumpSpatialSTSet extends FileDumpSTSet implements SpatialSTSet 
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geometry) throws SharkKBException {
         SpatialSemanticTag spatialSemanticTag = this.spatialSTSet.createSpatialSemanticTag(name, sis, geometry);
         this.kb.persist();
-        return new FileDumpSpatialSemanticTag(this.kb, spatialSemanticTag);
+        return new DumpSpatialSemanticTag(this.kb, spatialSemanticTag);
     }
 
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry[] geometries) throws SharkKBException {
         SpatialSemanticTag spatialSemanticTag = this.spatialSTSet.createSpatialSemanticTag(name, sis, geometries);
         this.kb.persist();
-        return new FileDumpSpatialSemanticTag(this.kb, spatialSemanticTag);
+        return new DumpSpatialSemanticTag(this.kb, spatialSemanticTag);
 
     }
 
@@ -55,14 +55,14 @@ public class FileDumpSpatialSTSet extends FileDumpSTSet implements SpatialSTSet 
     public SpatialSemanticTag getSpatialSemanticTag(String[] sis) throws SharkKBException {
         SpatialSemanticTag spatialSemanticTag = this.spatialSTSet.getSpatialSemanticTag(sis);
         this.kb.persist();
-        return new FileDumpSpatialSemanticTag(this.kb, spatialSemanticTag);
+        return new DumpSpatialSemanticTag(this.kb, spatialSemanticTag);
     }
 
     @Override
     public SpatialSemanticTag getSpatialSemanticTag(String si) throws SharkKBException {
         SpatialSemanticTag spatialSemanticTag = this.spatialSTSet.getSpatialSemanticTag(si);
         this.kb.persist();
-        return new FileDumpSpatialSemanticTag(this.kb, spatialSemanticTag);
+        return new DumpSpatialSemanticTag(this.kb, spatialSemanticTag);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class FileDumpSpatialSTSet extends FileDumpSTSet implements SpatialSTSet 
         Enumeration<SpatialSemanticTag> spatialSemanticTagEnumeration = this.spatialSTSet.spatialTags();
         List<SpatialSemanticTag> list = new ArrayList<>();
         while (spatialSemanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpSpatialSemanticTag(this.kb, spatialSemanticTagEnumeration.nextElement()));
+            list.add(new DumpSpatialSemanticTag(this.kb, spatialSemanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);    }
 

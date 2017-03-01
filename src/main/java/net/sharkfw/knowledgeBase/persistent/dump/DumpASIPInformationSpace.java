@@ -11,18 +11,18 @@ import java.util.Iterator;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpASIPInformationSpace extends FileDumpSystemPropertyHolder implements ASIPInformationSpace {
+public class DumpASIPInformationSpace extends DumpSystemPropertyHolder implements ASIPInformationSpace {
 
     private final ASIPInformationSpace informationSpace;
 
-    public FileDumpASIPInformationSpace(FileDumpSharkKB fileDumpSharkKB, ASIPInformationSpace informationSpace) {
-        super(fileDumpSharkKB, informationSpace);
+    public DumpASIPInformationSpace(DumpSharkKB dumpSharkKB, ASIPInformationSpace informationSpace) {
+        super(dumpSharkKB, informationSpace);
         this.informationSpace = informationSpace;
     }
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {
-        return new FileDumpASIPSpace(kb, informationSpace.getASIPSpace());
+        return new DumpASIPSpace(kb, informationSpace.getASIPSpace());
     }
 
     @Override
@@ -35,7 +35,7 @@ public class FileDumpASIPInformationSpace extends FileDumpSystemPropertyHolder i
         Iterator<ASIPInformation> informations = informationSpace.informations();
         ArrayList<ASIPInformation> list = new ArrayList<>();
         while (informations.hasNext()){
-            list.add(new FileDumpASIPInformation(kb, informations.next()));
+            list.add(new DumpASIPInformation(kb, informations.next()));
         }
         return list.iterator();
     }

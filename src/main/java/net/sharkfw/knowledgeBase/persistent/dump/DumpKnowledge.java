@@ -14,12 +14,12 @@ import java.util.Iterator;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpKnowledge implements Knowledge {
+public class DumpKnowledge implements Knowledge {
 
-    protected final FileDumpSharkKB kb;
+    protected final DumpSharkKB kb;
     private final Knowledge knowledge;
 
-    public FileDumpKnowledge(FileDumpSharkKB kb, Knowledge knowledge) {
+    public DumpKnowledge(DumpSharkKB kb, Knowledge knowledge) {
         this.kb = kb;
         this.knowledge = knowledge;
     }
@@ -28,49 +28,49 @@ public class FileDumpKnowledge implements Knowledge {
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
         ASIPInformationSpace asipInformationSpace = knowledge.mergeInformation(information, space);
         kb.persist();
-        return new FileDumpASIPInformationSpace(kb, asipInformationSpace);
+        return new DumpASIPInformationSpace(kb, asipInformationSpace);
     }
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = knowledge.addInformation(content, semanticAnnotations);
         kb.persist();
-        return new FileDumpASIPInformation(kb, asipInformation);
+        return new DumpASIPInformation(kb, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = knowledge.addInformation(contentIS, numberOfBytes, semanticAnnotations);
         kb.persist();
-        return new FileDumpASIPInformation(kb, asipInformation);
+        return new DumpASIPInformation(kb, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = knowledge.addInformation(content, semanticAnnotations);
         kb.persist();
-        return new FileDumpASIPInformation(kb, asipInformation);
+        return new DumpASIPInformation(kb, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = knowledge.addInformation(name, content, semanticAnnotations);
         kb.persist();
-        return new FileDumpASIPInformation(kb, asipInformation);
+        return new DumpASIPInformation(kb, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = knowledge.addInformation(name, content, semanticAnnotations);
         kb.persist();
-        return new FileDumpASIPInformation(kb, asipInformation);
+        return new DumpASIPInformation(kb, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = knowledge.addInformation(name, contentIS, numberOfBytes, semanticAnnotations);
         kb.persist();
-        return new FileDumpASIPInformation(kb, asipInformation);
+        return new DumpASIPInformation(kb, asipInformation);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class FileDumpKnowledge implements Knowledge {
         Iterator<ASIPInformation> informations = knowledge.getInformation(infoSpace);
         ArrayList<ASIPInformation> list = new ArrayList<>();
         while (informations.hasNext()){
-            list.add(new FileDumpASIPInformation(kb, informations.next()));
+            list.add(new DumpASIPInformation(kb, informations.next()));
         }
         return list.iterator();
     }
@@ -94,7 +94,7 @@ public class FileDumpKnowledge implements Knowledge {
         Iterator<ASIPInformation> informations = knowledge.getInformation(infoSpace, fullyInside, matchAny);
         ArrayList<ASIPInformation> list = new ArrayList<>();
         while (informations.hasNext()){
-            list.add(new FileDumpASIPInformation(kb, informations.next()));
+            list.add(new DumpASIPInformation(kb, informations.next()));
         }
         return list.iterator();
     }
@@ -104,7 +104,7 @@ public class FileDumpKnowledge implements Knowledge {
         Iterator<ASIPInformationSpace> asipInformationSpaceIterator = knowledge.informationSpaces();
         ArrayList<ASIPInformationSpace> list = new ArrayList<>();
         while (asipInformationSpaceIterator.hasNext()){
-            list.add(new FileDumpASIPInformationSpace(kb, asipInformationSpaceIterator.next()));
+            list.add(new DumpASIPInformationSpace(kb, asipInformationSpaceIterator.next()));
         }
         return list.iterator();
     }
@@ -114,7 +114,7 @@ public class FileDumpKnowledge implements Knowledge {
         Iterator<ASIPInformationSpace> asipInformationSpaceIterator = knowledge.getInformationSpaces(space);
         ArrayList<ASIPInformationSpace> list = new ArrayList<>();
         while (asipInformationSpaceIterator.hasNext()){
-            list.add(new FileDumpASIPInformationSpace(kb, asipInformationSpaceIterator.next()));
+            list.add(new DumpASIPInformationSpace(kb, asipInformationSpaceIterator.next()));
         }
         return list.iterator();
     }
@@ -127,7 +127,7 @@ public class FileDumpKnowledge implements Knowledge {
 
     @Override
     public SharkVocabulary getVocabulary() {
-        return new FileDumpSharkVocabulary(kb, knowledge.getVocabulary());
+        return new DumpSharkVocabulary(kb, knowledge.getVocabulary());
     }
 
     @Override

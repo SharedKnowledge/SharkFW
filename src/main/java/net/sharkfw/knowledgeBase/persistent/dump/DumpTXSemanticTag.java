@@ -10,12 +10,12 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpTXSemanticTag extends FileDumpSemanticTag implements TXSemanticTag{
+public class DumpTXSemanticTag extends DumpSemanticTag implements TXSemanticTag{
 
     private final TXSemanticTag txSemanticTag;
 
-    public FileDumpTXSemanticTag(FileDumpSharkKB fileDumpSharkKB, TXSemanticTag tag) {
-        super(fileDumpSharkKB, tag);
+    public DumpTXSemanticTag(DumpSharkKB dumpSharkKB, TXSemanticTag tag) {
+        super(dumpSharkKB, tag);
         txSemanticTag = tag;
     }
 
@@ -24,14 +24,14 @@ public class FileDumpTXSemanticTag extends FileDumpSemanticTag implements TXSema
         Enumeration<SemanticTag> semanticTagEnumeration = this.txSemanticTag.subTags();
         ArrayList<SemanticTag> list = new ArrayList<>();
         while (semanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpSemanticTag(this.kb, semanticTagEnumeration.nextElement()));
+            list.add(new DumpSemanticTag(this.kb, semanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);
     }
 
     @Override
     public TXSemanticTag getSuperTag() {
-        return new FileDumpTXSemanticTag(this.kb, this.txSemanticTag.getSuperTag());
+        return new DumpTXSemanticTag(this.kb, this.txSemanticTag.getSuperTag());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class FileDumpTXSemanticTag extends FileDumpSemanticTag implements TXSema
         Enumeration<TXSemanticTag> semanticTagEnumeration = this.txSemanticTag.getSubTags();
         ArrayList<TXSemanticTag> list = new ArrayList<>();
         while (semanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpTXSemanticTag(this.kb, semanticTagEnumeration.nextElement()));
+            list.add(new DumpTXSemanticTag(this.kb, semanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);
     }

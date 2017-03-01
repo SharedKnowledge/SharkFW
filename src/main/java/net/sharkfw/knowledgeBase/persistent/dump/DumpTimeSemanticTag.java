@@ -5,12 +5,12 @@ import net.sharkfw.knowledgeBase.TimeSemanticTag;
 /**
  * Created by j4rvis on 2/27/17.
  */
-public class FileDumpTimeSemanticTag extends FileDumpSemanticTag implements TimeSemanticTag {
+public class DumpTimeSemanticTag extends DumpSemanticTag implements TimeSemanticTag {
 
     private final TimeSemanticTag timeSemanticTag;
 
-    public FileDumpTimeSemanticTag(FileDumpSharkKB fileDumpSharkKB, TimeSemanticTag tag) {
-        super(fileDumpSharkKB, tag);
+    public DumpTimeSemanticTag(DumpSharkKB dumpSharkKB, TimeSemanticTag tag) {
+        super(dumpSharkKB, tag);
         timeSemanticTag = tag;
     }
 

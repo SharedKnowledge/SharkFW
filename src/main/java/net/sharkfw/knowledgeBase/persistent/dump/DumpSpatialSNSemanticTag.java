@@ -6,17 +6,17 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpSpatialSNSemanticTag extends FileDumpSNSemanticTag implements SpatialSNSemanticTag {
+public class DumpSpatialSNSemanticTag extends DumpSNSemanticTag implements SpatialSNSemanticTag {
 
     private final SpatialSNSemanticTag snSemanticTag;
 
-    public FileDumpSpatialSNSemanticTag(FileDumpSharkKB fileDumpSharkKB, SpatialSNSemanticTag tag) {
-        super(fileDumpSharkKB, tag);
+    public DumpSpatialSNSemanticTag(DumpSharkKB dumpSharkKB, SpatialSNSemanticTag tag) {
+        super(dumpSharkKB, tag);
         snSemanticTag = tag;
     }
 
     @Override
     public SharkGeometry getGeometry() {
-        return new FileDumpSharkGeometry(this.kb, this.snSemanticTag.getGeometry());
+        return new DumpSharkGeometry(this.kb, this.snSemanticTag.getGeometry());
     }
 }

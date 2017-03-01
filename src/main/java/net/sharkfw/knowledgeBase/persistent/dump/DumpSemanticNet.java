@@ -7,18 +7,18 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpSemanticNet extends FileDumpSTSet implements SemanticNet {
+public class DumpSemanticNet extends DumpSTSet implements SemanticNet {
 
     private final SemanticNet net;
 
-    public FileDumpSemanticNet(FileDumpSharkKB kb, SemanticNet net) {
+    public DumpSemanticNet(DumpSharkKB kb, SemanticNet net) {
         super(kb, net);
         this.net = net;
     }
 
     @Override
     public STSet asSTSet() {
-        return new FileDumpSTSet(this.kb, net.asSTSet());
+        return new DumpSTSet(this.kb, net.asSTSet());
     }
 
     @Override
@@ -55,56 +55,56 @@ public class FileDumpSemanticNet extends FileDumpSTSet implements SemanticNet {
     public SNSemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
         SNSemanticTag semanticTag = this.net.createSemanticTag(name, sis);
         this.kb.persist();
-        return new FileDumpSNSemanticTag(this.kb, semanticTag);
+        return new DumpSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public SNSemanticTag createSemanticTag(String name, String si) throws SharkKBException {
         SNSemanticTag semanticTag = this.net.createSemanticTag(name, si);
         this.kb.persist();
-        return new FileDumpSNSemanticTag(this.kb, semanticTag);
+        return new DumpSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public SNSemanticTag getSemanticTag(String[] si) throws SharkKBException {
         SNSemanticTag semanticTag = this.net.getSemanticTag(si);
         this.kb.persist();
-        return new FileDumpSNSemanticTag(this.kb, semanticTag);
+        return new DumpSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public SNSemanticTag getSemanticTag(String si) throws SharkKBException {
         SNSemanticTag semanticTag = this.net.getSemanticTag(si);
         this.kb.persist();
-        return new FileDumpSNSemanticTag(this.kb, semanticTag);
+        return new DumpSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public SemanticNet fragment(SemanticTag anchor) throws SharkKBException {
         SemanticNet fragment = this.net.fragment(anchor);
         this.kb.persist();
-        return new FileDumpSemanticNet(this.kb, fragment);
+        return new DumpSemanticNet(this.kb, fragment);
     }
 
     @Override
     public SemanticNet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
         SemanticNet fragment = this.net.fragment(anchor, fp);
         this.kb.persist();
-        return new FileDumpSemanticNet(this.kb, fragment);
+        return new DumpSemanticNet(this.kb, fragment);
     }
 
     @Override
     public SemanticNet contextualize(Enumeration<SemanticTag> anchorSet, FragmentationParameter fp) throws SharkKBException {
         SemanticNet fragment = this.net.contextualize(anchorSet, fp);
         this.kb.persist();
-        return new FileDumpSemanticNet(this.kb, fragment);
+        return new DumpSemanticNet(this.kb, fragment);
     }
 
     @Override
     public SemanticNet contextualize(Enumeration<SemanticTag> anchorSet) throws SharkKBException {
         SemanticNet fragment = this.net.contextualize(anchorSet);
         this.kb.persist();
-        return new FileDumpSemanticNet(this.kb, fragment);
+        return new DumpSemanticNet(this.kb, fragment);
 
     }
 
@@ -112,21 +112,21 @@ public class FileDumpSemanticNet extends FileDumpSTSet implements SemanticNet {
     public SemanticNet contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
         SemanticNet fragment = this.net.contextualize(context, fp);
         this.kb.persist();
-        return new FileDumpSemanticNet(this.kb, fragment);
+        return new DumpSemanticNet(this.kb, fragment);
     }
 
     @Override
     public SemanticNet contextualize(STSet context) throws SharkKBException {
         SemanticNet fragment = this.net.contextualize(context);
         this.kb.persist();
-        return new FileDumpSemanticNet(this.kb, fragment);
+        return new DumpSemanticNet(this.kb, fragment);
     }
 
     @Override
     public SNSemanticTag merge(SemanticTag source) throws SharkKBException{
         SNSemanticTag merge = this.net.merge(source);
         kb.persist();
-        return new FileDumpSNSemanticTag(this.kb, merge);
+        return new DumpSNSemanticTag(this.kb, merge);
     }
 
     @Override

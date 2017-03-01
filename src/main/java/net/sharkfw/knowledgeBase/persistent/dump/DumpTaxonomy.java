@@ -9,11 +9,11 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpTaxonomy extends FileDumpSTSet implements Taxonomy {
+public class DumpTaxonomy extends DumpSTSet implements Taxonomy {
 
     private final Taxonomy taxonomy;
 
-    public FileDumpTaxonomy(FileDumpSharkKB kb, Taxonomy taxonomy) {
+    public DumpTaxonomy(DumpSharkKB kb, Taxonomy taxonomy) {
         super(kb, taxonomy);
         this.taxonomy = taxonomy;
     }
@@ -34,7 +34,7 @@ public class FileDumpTaxonomy extends FileDumpSTSet implements Taxonomy {
     public TXSemanticTag createSemanticTag(TXSemanticTag superTag, String name, String[] sis) throws SharkKBException {
         TXSemanticTag semanticTag = this.taxonomy.createSemanticTag(superTag, name, sis);
         this.kb.persist();
-        return new FileDumpTXSemanticTag(this.kb, semanticTag);
+        return new DumpTXSemanticTag(this.kb, semanticTag);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class FileDumpTaxonomy extends FileDumpSTSet implements Taxonomy {
         Enumeration<TXSemanticTag> txSemanticTagEnumeration = this.taxonomy.rootTags();
         ArrayList<TXSemanticTag> list = new ArrayList<>();
         while (txSemanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpTXSemanticTag(this.kb, txSemanticTagEnumeration.nextElement()));
+            list.add(new DumpTXSemanticTag(this.kb, txSemanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);
     }
@@ -68,37 +68,37 @@ public class FileDumpTaxonomy extends FileDumpSTSet implements Taxonomy {
     public TXSemanticTag createTXSemanticTag(String name, String[] sis) throws SharkKBException {
         TXSemanticTag semanticTag = this.taxonomy.createTXSemanticTag(name, sis);
         this.kb.persist();
-        return new FileDumpTXSemanticTag(this.kb, semanticTag);
+        return new DumpTXSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public TXSemanticTag createTXSemanticTag(String name, String si) throws SharkKBException {
         TXSemanticTag semanticTag = this.taxonomy.createTXSemanticTag(name, si);
         this.kb.persist();
-        return new FileDumpTXSemanticTag(this.kb, semanticTag);
+        return new DumpTXSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public Taxonomy contextualizeTaxonomy(STSet context, FragmentationParameter fp) throws SharkKBException {
         Taxonomy taxonomy = this.taxonomy.contextualizeTaxonomy(context, fp);
         kb.persist();
-        return new FileDumpTaxonomy(this.kb, taxonomy);
+        return new DumpTaxonomy(this.kb, taxonomy);
     }
 
     @Override
     public Taxonomy fragmentTaxonomy(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
         Taxonomy taxonomy = this.taxonomy.fragmentTaxonomy(anchor, fp);
         kb.persist();
-        return new FileDumpTaxonomy(this.kb, taxonomy);
+        return new DumpTaxonomy(this.kb, taxonomy);
 
     }
 
     @Override
     public TXSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        return new FileDumpTXSemanticTag(this.kb, taxonomy.getSemanticTag(sis));
+        return new DumpTXSemanticTag(this.kb, taxonomy.getSemanticTag(sis));
     }
     @Override
     public TXSemanticTag getSemanticTag(String si) throws SharkKBException {
-        return new FileDumpTXSemanticTag(this.kb, taxonomy.getSemanticTag(si));
+        return new DumpTXSemanticTag(this.kb, taxonomy.getSemanticTag(si));
     }
 }

@@ -9,12 +9,12 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpSNSemanticTag extends FileDumpSemanticTag implements SNSemanticTag {
+public class DumpSNSemanticTag extends DumpSemanticTag implements SNSemanticTag {
 
     private final SNSemanticTag snSemanticTag;
 
-    public FileDumpSNSemanticTag(FileDumpSharkKB fileDumpSharkKB, SNSemanticTag tag) {
-        super(fileDumpSharkKB, tag);
+    public DumpSNSemanticTag(DumpSharkKB dumpSharkKB, SNSemanticTag tag) {
+        super(dumpSharkKB, tag);
         snSemanticTag = tag;
     }
 
@@ -33,7 +33,7 @@ public class FileDumpSNSemanticTag extends FileDumpSemanticTag implements SNSema
         Enumeration<SNSemanticTag> snSemanticTagEnumeration = this.snSemanticTag.targetTags(predicateName);
         ArrayList<SNSemanticTag> list = new ArrayList<>();
         while (snSemanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpSNSemanticTag(this.kb, snSemanticTagEnumeration.nextElement()));
+            list.add(new DumpSNSemanticTag(this.kb, snSemanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);
     }
@@ -43,7 +43,7 @@ public class FileDumpSNSemanticTag extends FileDumpSemanticTag implements SNSema
         Enumeration<SNSemanticTag> snSemanticTagEnumeration = this.snSemanticTag.sourceTags(predicateName);
         ArrayList<SNSemanticTag> list = new ArrayList<>();
         while (snSemanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpSNSemanticTag(this.kb, snSemanticTagEnumeration.nextElement()));
+            list.add(new DumpSNSemanticTag(this.kb, snSemanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);
 

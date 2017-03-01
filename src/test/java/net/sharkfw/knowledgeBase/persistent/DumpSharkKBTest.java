@@ -3,7 +3,7 @@ package net.sharkfw.knowledgeBase.persistent;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.knowledgeBase.persistent.dump.FileDumpSharkKB;
+import net.sharkfw.knowledgeBase.persistent.dump.DumpSharkKB;
 import net.sharkfw.system.L;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,7 +15,7 @@ import java.util.Iterator;
 /**
  * Created by j4rvis on 3/1/17.
  */
-public class FileDumpSharkKBTest {
+public class DumpSharkKBTest {
 
     @Test
     public void createFileDumpSharkKB(){
@@ -24,7 +24,7 @@ public class FileDumpSharkKBTest {
 
         InMemoSharkKB inMemoSharkKB = new InMemoSharkKB();
         File testfile = new File("testfile");
-        FileDumpSharkKB fileDumpSharkKB = new FileDumpSharkKB(inMemoSharkKB, testfile);
+        DumpSharkKB fileDumpSharkKB = new DumpSharkKB(inMemoSharkKB, testfile);
 
         String message = "This is just a test";
 
@@ -34,7 +34,7 @@ public class FileDumpSharkKBTest {
             e.printStackTrace();
         }
 
-        FileDumpSharkKB dumpSharkKB = new FileDumpSharkKB(testfile);
+        DumpSharkKB dumpSharkKB = new DumpSharkKB(testfile);
 
         try {
             Iterator<ASIPInformation> information = dumpSharkKB.getInformation(InMemoSharkKB.createInMemoASIPInterest());

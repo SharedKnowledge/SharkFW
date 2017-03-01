@@ -19,21 +19,21 @@ import java.util.Iterator;
 /**
  * Created by j4rvis on 2/27/17.
  */
-public class FileDumpSharkKB implements SharkKB {
+public class DumpSharkKB implements SharkKB {
 
     private final int CONFIG_JSON_LENGTH = 9;
 
     private SharkKB sharkKB;
     private final File file;
 
-    public FileDumpSharkKB(InMemoSharkKB sharkKB, File file) {
+    public DumpSharkKB(InMemoSharkKB sharkKB, File file) {
         this.sharkKB = sharkKB;
         this.file = file;
         createFileIfNotExists();
         this.persist();
     }
 
-    public FileDumpSharkKB(File file) {
+    public DumpSharkKB(File file) {
         this.file = file;
         createFileIfNotExists();
         read();
@@ -161,7 +161,7 @@ public class FileDumpSharkKB implements SharkKB {
 
     @Override
     public PeerSemanticTag getOwner() {
-        return new FileDumpPeerSemanticTag(this, sharkKB.getOwner());
+        return new DumpPeerSemanticTag(this, sharkKB.getOwner());
     }
 
     @Override
@@ -170,7 +170,7 @@ public class FileDumpSharkKB implements SharkKB {
         this.persist();
         ArrayList<ASIPSpace> list = new ArrayList<>();
         for (ASIPSpace asipSpace : assimilate) {
-            list.add(new FileDumpASIPSpace(this, asipSpace));
+            list.add(new DumpASIPSpace(this, asipSpace));
         }
         return list;
     }
@@ -179,35 +179,35 @@ public class FileDumpSharkKB implements SharkKB {
     public Knowledge extract(ASIPSpace context) throws SharkKBException {
         Knowledge extract = this.sharkKB.extract(context);
         persist();
-        return new FileDumpKnowledge(this, extract);
+        return new DumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] fp) throws SharkKBException {
         Knowledge extract = this.sharkKB.extract(context, fp);
         persist();
-        return new FileDumpKnowledge(this, extract);
+        return new DumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, PeerSemanticTag recipient) throws SharkKBException {
         Knowledge extract = this.sharkKB.extract(context, backgroundFP, recipient);
         persist();
-        return new FileDumpKnowledge(this, extract);
+        return new DumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups) throws SharkKBException {
         Knowledge extract = this.sharkKB.extract(context, backgroundFP, cutGroups);
         persist();
-        return new FileDumpKnowledge(this, extract);
+        return new DumpKnowledge(this, extract);
     }
 
     @Override
     public Knowledge extract(SharkKB target, ASIPSpace context, FragmentationParameter[] backgroundFP, boolean cutGroups, PeerSemanticTag recipient) throws SharkKBException {
         Knowledge extract = this.sharkKB.extract(context, backgroundFP, recipient);
         persist();
-        return new FileDumpKnowledge(this, extract);
+        return new DumpKnowledge(this, extract);
     }
 
     @Override
@@ -215,7 +215,7 @@ public class FileDumpSharkKB implements SharkKB {
         Iterator<ASIPInformationSpace> asipInformationSpaceIterator = this.sharkKB.informationSpaces(as, matchAny);
         ArrayList<ASIPInformationSpace> list = new ArrayList<>();
         while (asipInformationSpaceIterator.hasNext()){
-            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+            list.add(new DumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
         }
         return list.iterator();
     }
@@ -224,14 +224,14 @@ public class FileDumpSharkKB implements SharkKB {
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
         ASIPSpace asipSpace = this.sharkKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
         persist();
-        return new FileDumpASIPSpace(this, asipSpace);
+        return new DumpASIPSpace(this, asipSpace);
     }
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         ASIPSpace asipSpace = this.sharkKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
         persist();
-        return new FileDumpASIPSpace(this, asipSpace);
+        return new DumpASIPSpace(this, asipSpace);
     }
 
     @Override
@@ -239,137 +239,137 @@ public class FileDumpSharkKB implements SharkKB {
         Iterator<ASIPInformationSpace> asipInformationSpaceIterator = this.sharkKB.getAllInformationSpaces();
         ArrayList<ASIPInformationSpace> list = new ArrayList<>();
         while (asipInformationSpaceIterator.hasNext()){
-            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+            list.add(new DumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
         }
         return list.iterator();
     }
 
     @Override
     public ASIPSpace asASIPSpace() throws SharkKBException {
-        return new FileDumpASIPSpace(this, sharkKB.asASIPSpace());
+        return new DumpASIPSpace(this, sharkKB.asASIPSpace());
     }
 
     @Override
     public ASIPInterest asASIPInterest() throws SharkKBException {
-        return new FileDumpASIPInterest(this, sharkKB.asASIPInterest());
+        return new DumpASIPInterest(this, sharkKB.asASIPInterest());
     }
 
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
-        return new FileDumpSTSet(this, sharkKB.getTopicSTSet());
+        return new DumpSTSet(this, sharkKB.getTopicSTSet());
     }
 
     @Override
     public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
-        return new FileDumpSemanticNet(this, sharkKB.getTopicsAsSemanticNet());
+        return new DumpSemanticNet(this, sharkKB.getTopicsAsSemanticNet());
     }
 
     @Override
     public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
-        return new FileDumpTaxonomy(this, sharkKB.getTopicsAsTaxonomy());
+        return new DumpTaxonomy(this, sharkKB.getTopicsAsTaxonomy());
     }
 
     @Override
     public STSet getTypeSTSet() throws SharkKBException {
-        return new FileDumpSTSet(this, sharkKB.getTypeSTSet());
+        return new DumpSTSet(this, sharkKB.getTypeSTSet());
     }
 
     @Override
     public SemanticNet getTypesAsSemanticNet() throws SharkKBException {
-        return new FileDumpSemanticNet(this, sharkKB.getTypesAsSemanticNet());
+        return new DumpSemanticNet(this, sharkKB.getTypesAsSemanticNet());
     }
 
     @Override
     public Taxonomy getTypesAsTaxonomy() throws SharkKBException {
-        return new FileDumpTaxonomy(this, sharkKB.getTypesAsTaxonomy());
+        return new DumpTaxonomy(this, sharkKB.getTypesAsTaxonomy());
     }
 
     @Override
     public PeerSTSet getPeerSTSet() throws SharkKBException {
-        return new FileDumpPeerSTSet(this, sharkKB.getPeerSTSet());
+        return new DumpPeerSTSet(this, sharkKB.getPeerSTSet());
     }
 
     @Override
     public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
-        return new FileDumpPeerSemanticNet(this, sharkKB.getPeersAsSemanticNet());
+        return new DumpPeerSemanticNet(this, sharkKB.getPeersAsSemanticNet());
     }
 
     @Override
     public PeerTaxonomy getPeersAsTaxonomy() throws SharkKBException {
-        return new FileDumpPeerTaxonomy(this, sharkKB.getPeersAsTaxonomy());
+        return new DumpPeerTaxonomy(this, sharkKB.getPeersAsTaxonomy());
     }
 
     @Override
     public TimeSTSet getTimeSTSet() throws SharkKBException {
-        return new FileDumpTimeSTSet(this, sharkKB.getTimeSTSet());
+        return new DumpTimeSTSet(this, sharkKB.getTimeSTSet());
     }
 
     @Override
     public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-        return new FileDumpSpatialSTSet(this, sharkKB.getSpatialSTSet());
+        return new DumpSpatialSTSet(this, sharkKB.getSpatialSTSet());
     }
 
     @Override
     public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
         ASIPInterest contextualize = sharkKB.contextualize(as);
         this.persist();
-        return new FileDumpASIPInterest(this, contextualize);
+        return new DumpASIPInterest(this, contextualize);
     }
 
     @Override
     public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
         ASIPInterest contextualize = sharkKB.contextualize(as, fps);
         this.persist();
-        return new FileDumpASIPInterest(this, contextualize);
+        return new DumpASIPInterest(this, contextualize);
     }
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
         ASIPInformationSpace asipInformationSpace = sharkKB.mergeInformation(information, space);
         this.persist();
-        return new FileDumpASIPInformationSpace(this, asipInformationSpace);
+        return new DumpASIPInformationSpace(this, asipInformationSpace);
     }
 
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = sharkKB.addInformation(content, semanticAnnotations);
         this.persist();
-        return new FileDumpASIPInformation(this, asipInformation);
+        return new DumpASIPInformation(this, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = sharkKB.addInformation(contentIS, numberOfBytes, semanticAnnotations);
         this.persist();
-        return new FileDumpASIPInformation(this, asipInformation);
+        return new DumpASIPInformation(this, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = sharkKB.addInformation(content, semanticAnnotations);
         this.persist();
-        return new FileDumpASIPInformation(this, asipInformation);
+        return new DumpASIPInformation(this, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = sharkKB.addInformation(name, content, semanticAnnotations);
         this.persist();
-        return new FileDumpASIPInformation(this, asipInformation);
+        return new DumpASIPInformation(this, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = sharkKB.addInformation(name, content, semanticAnnotations);
         this.persist();
-        return new FileDumpASIPInformation(this, asipInformation);
+        return new DumpASIPInformation(this, asipInformation);
     }
 
     @Override
     public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPInformation asipInformation = sharkKB.addInformation(name, contentIS, numberOfBytes, semanticAnnotations);
         this.persist();
-        return new FileDumpASIPInformation(this, asipInformation);
+        return new DumpASIPInformation(this, asipInformation);
     }
 
     @Override
@@ -383,7 +383,7 @@ public class FileDumpSharkKB implements SharkKB {
         Iterator<ASIPInformation> informations = sharkKB.getInformation(infoSpace);
         ArrayList<ASIPInformation> list = new ArrayList<>();
         while (informations.hasNext()){
-            list.add(new FileDumpASIPInformation(this, informations.next()));
+            list.add(new DumpASIPInformation(this, informations.next()));
         }
         return list.iterator();
     }
@@ -393,7 +393,7 @@ public class FileDumpSharkKB implements SharkKB {
         Iterator<ASIPInformation> informations = sharkKB.getInformation(infoSpace, fullyInside, matchAny);
         ArrayList<ASIPInformation> list = new ArrayList<>();
         while (informations.hasNext()){
-            list.add(new FileDumpASIPInformation(this, informations.next()));
+            list.add(new DumpASIPInformation(this, informations.next()));
         }
         return list.iterator();
     }
@@ -403,7 +403,7 @@ public class FileDumpSharkKB implements SharkKB {
         Iterator<ASIPInformationSpace> asipInformationSpaceIterator = sharkKB.informationSpaces();
         ArrayList<ASIPInformationSpace> list = new ArrayList<>();
         while (asipInformationSpaceIterator.hasNext()){
-            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+            list.add(new DumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
         }
         return list.iterator();
     }
@@ -413,7 +413,7 @@ public class FileDumpSharkKB implements SharkKB {
         Iterator<ASIPInformationSpace> asipInformationSpaceIterator = sharkKB.getInformationSpaces(space);
         ArrayList<ASIPInformationSpace> list = new ArrayList<>();
         while (asipInformationSpaceIterator.hasNext()){
-            list.add(new FileDumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
+            list.add(new DumpASIPInformationSpace(this, asipInformationSpaceIterator.next()));
         }
         return list.iterator();
     }
@@ -446,7 +446,7 @@ public class FileDumpSharkKB implements SharkKB {
 
     @Override
     public SharkVocabulary getVocabulary() {
-        return new FileDumpSharkVocabulary(this, sharkKB.getVocabulary());
+        return new DumpSharkVocabulary(this, sharkKB.getVocabulary());
     }
 
     @Override

@@ -9,32 +9,32 @@ import java.util.Enumeration;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpPeerSemanticNet extends FileDumpSemanticNet implements PeerSemanticNet {
+public class DumpPeerSemanticNet extends DumpSemanticNet implements PeerSemanticNet {
 
     private final PeerSemanticNet net;
 
-    public FileDumpPeerSemanticNet(FileDumpSharkKB kb, PeerSemanticNet net) {
+    public DumpPeerSemanticNet(DumpSharkKB kb, PeerSemanticNet net) {
         super(kb, net);
         this.net = net;
     }
 
     @Override
     public PeerSTSet asPeerSTSet() {
-        return new FileDumpPeerSTSet(this.kb, net.asPeerSTSet());
+        return new DumpPeerSTSet(this.kb, net.asPeerSTSet());
     }
 
     @Override
     public PeerSNSemanticTag createSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
         PeerSNSemanticTag semanticTag = net.createSemanticTag(name, sis, addresses);
         kb.persist();
-        return new FileDumpPeerSNSemanticTag(this.kb, semanticTag);
+        return new DumpPeerSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public PeerSNSemanticTag createSemanticTag(String name, String si, String[] addresses) throws SharkKBException {
         PeerSNSemanticTag semanticTag = net.createSemanticTag(name, si, addresses);
         kb.persist();
-        return new FileDumpPeerSNSemanticTag(this.kb, semanticTag);
+        return new DumpPeerSNSemanticTag(this.kb, semanticTag);
 
     }
 
@@ -42,14 +42,14 @@ public class FileDumpPeerSemanticNet extends FileDumpSemanticNet implements Peer
     public PeerSNSemanticTag createSemanticTag(String name, String si, String address) throws SharkKBException {
         PeerSNSemanticTag semanticTag = net.createSemanticTag(name, si, address);
         kb.persist();
-        return new FileDumpPeerSNSemanticTag(this.kb, semanticTag);
+        return new DumpPeerSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public PeerSNSemanticTag createSemanticTag(String name, String[] sis, String address) throws SharkKBException {
         PeerSNSemanticTag semanticTag = net.createSemanticTag(name, sis, address);
         kb.persist();
-        return new FileDumpPeerSNSemanticTag(this.kb, semanticTag);
+        return new DumpPeerSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FileDumpPeerSemanticNet extends FileDumpSemanticNet implements Peer
         Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = net.peerTags();
         ArrayList<PeerSemanticTag> list = new ArrayList<>();
         while (peerSemanticTagEnumeration.hasMoreElements()){
-            list.add(new FileDumpPeerSemanticTag(this.kb, peerSemanticTagEnumeration.nextElement()));
+            list.add(new DumpPeerSemanticTag(this.kb, peerSemanticTagEnumeration.nextElement()));
         }
         return Collections.enumeration(list);
 
@@ -67,20 +67,20 @@ public class FileDumpPeerSemanticNet extends FileDumpSemanticNet implements Peer
     public PeerSNSemanticTag getSemanticTag(String[] si) throws SharkKBException {
         PeerSNSemanticTag semanticTag = this.net.getSemanticTag(si);
         this.kb.persist();
-        return new FileDumpPeerSNSemanticTag(this.kb, semanticTag);
+        return new DumpPeerSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public PeerSNSemanticTag getSemanticTag(String si) throws SharkKBException {
         PeerSNSemanticTag semanticTag = this.net.getSemanticTag(si);
         this.kb.persist();
-        return new FileDumpPeerSNSemanticTag(this.kb, semanticTag);
+        return new DumpPeerSNSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public PeerSemanticNet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
         PeerSemanticNet fragment = this.net.fragment(anchor, fp);
         this.kb.persist();
-        return new FileDumpPeerSemanticNet(this.kb, fragment);
+        return new DumpPeerSemanticNet(this.kb, fragment);
     }
 }

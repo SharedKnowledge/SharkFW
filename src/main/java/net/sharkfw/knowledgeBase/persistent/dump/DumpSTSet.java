@@ -10,12 +10,12 @@ import java.util.List;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpSTSet implements STSet {
+public class DumpSTSet implements STSet {
 
-    protected final FileDumpSharkKB kb;
+    protected final DumpSharkKB kb;
     private final STSet set;
 
-    public FileDumpSTSet(FileDumpSharkKB kb, STSet set) {
+    public DumpSTSet(DumpSharkKB kb, STSet set) {
         this.kb = kb;
         this.set = set;
     }
@@ -24,21 +24,21 @@ public class FileDumpSTSet implements STSet {
     public SemanticTag merge(SemanticTag tag) throws SharkKBException {
         SemanticTag merge = this.set.merge(tag);
         this.kb.persist();
-        return new FileDumpSemanticTag(this.kb, merge);
+        return new DumpSemanticTag(this.kb, merge);
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
         SemanticTag semanticTag = this.set.createSemanticTag(name, sis);
         this.kb.persist();
-        return new FileDumpSemanticTag(this.kb, semanticTag);
+        return new DumpSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
         SemanticTag semanticTag = this.set.createSemanticTag(name, si);
         this.kb.persist();
-        return new FileDumpSemanticTag(this.kb, semanticTag);
+        return new DumpSemanticTag(this.kb, semanticTag);
     }
 
     @Override
@@ -79,14 +79,14 @@ public class FileDumpSTSet implements STSet {
     public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
         SemanticTag semanticTag = this.set.getSemanticTag(si);
         this.kb.persist();
-        return new FileDumpSemanticTag(this.kb, semanticTag);
+        return new DumpSemanticTag(this.kb, semanticTag);
     }
 
     @Override
     public SemanticTag getSemanticTag(String si) throws SharkKBException {
         SemanticTag semanticTag = this.set.getSemanticTag(si);
         this.kb.persist();
-        return new FileDumpSemanticTag(this.kb, semanticTag);
+        return new DumpSemanticTag(this.kb, semanticTag);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class FileDumpSTSet implements STSet {
         Iterator<SemanticTag> semanticTagByName = this.set.getSemanticTagByName(pattern);
         List<SemanticTag> list = new ArrayList<>();
         while (semanticTagByName.hasNext()){
-            list.add(new FileDumpSemanticTag(this.kb, semanticTagByName.next()));
+            list.add(new DumpSemanticTag(this.kb, semanticTagByName.next()));
         }
         return list.iterator();
     }
@@ -103,7 +103,7 @@ public class FileDumpSTSet implements STSet {
     public STSet fragment(SemanticTag anchor) throws SharkKBException {
         STSet fragment = this.set.fragment(anchor);
         this.kb.persist();
-        return new FileDumpSTSet(this.kb, fragment);
+        return new DumpSTSet(this.kb, fragment);
     }
 
     @Override
@@ -122,21 +122,21 @@ public class FileDumpSTSet implements STSet {
     public STSet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
         STSet fragment = this.set.fragment(anchor, fp);
         this.kb.persist();
-        return new FileDumpSTSet(this.kb, fragment);
+        return new DumpSTSet(this.kb, fragment);
     }
 
     @Override
     public STSet contextualize(Enumeration<SemanticTag> anchorSet, FragmentationParameter fp) throws SharkKBException {
         STSet fragment = this.set.contextualize(anchorSet, fp);
         this.kb.persist();
-        return new FileDumpSTSet(this.kb, fragment);
+        return new DumpSTSet(this.kb, fragment);
     }
 
     @Override
     public STSet contextualize(Enumeration<SemanticTag> anchorSet) throws SharkKBException {
         STSet fragment = this.set.contextualize(anchorSet);
         this.kb.persist();
-        return new FileDumpSTSet(this.kb, fragment);
+        return new DumpSTSet(this.kb, fragment);
 
     }
 
@@ -144,14 +144,14 @@ public class FileDumpSTSet implements STSet {
     public STSet contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
         STSet fragment = this.set.contextualize(context, fp);
         this.kb.persist();
-        return new FileDumpSTSet(this.kb, fragment);
+        return new DumpSTSet(this.kb, fragment);
     }
 
     @Override
     public STSet contextualize(STSet context) throws SharkKBException {
         STSet fragment = this.set.contextualize(context);
         this.kb.persist();
-        return new FileDumpSTSet(this.kb, fragment);
+        return new DumpSTSet(this.kb, fragment);
     }
 
     @Override

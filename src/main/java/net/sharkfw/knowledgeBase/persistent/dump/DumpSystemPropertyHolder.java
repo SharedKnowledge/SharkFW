@@ -5,11 +5,11 @@ import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpSystemPropertyHolder extends FileDumpPropertyHolder implements SystemPropertyHolder{
+public class DumpSystemPropertyHolder extends DumpPropertyHolder implements SystemPropertyHolder{
     private final SystemPropertyHolder systemPropertyHolder;
 
-    public FileDumpSystemPropertyHolder(FileDumpSharkKB fileDumpSharkKB, SystemPropertyHolder systemPropertyHolder) {
-        super(fileDumpSharkKB, systemPropertyHolder);
+    public DumpSystemPropertyHolder(DumpSharkKB dumpSharkKB, SystemPropertyHolder systemPropertyHolder) {
+        super(dumpSharkKB, systemPropertyHolder);
         this.systemPropertyHolder = systemPropertyHolder;
     }
 

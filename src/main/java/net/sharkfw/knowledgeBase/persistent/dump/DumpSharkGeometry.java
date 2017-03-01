@@ -5,12 +5,12 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class FileDumpSharkGeometry implements SharkGeometry {
+public class DumpSharkGeometry implements SharkGeometry {
 
-    private final FileDumpSharkKB kb;
+    private final DumpSharkKB kb;
     private final SharkGeometry sharkGeometry;
 
-    public FileDumpSharkGeometry(FileDumpSharkKB kb, SharkGeometry sharkGeometry) {
+    public DumpSharkGeometry(DumpSharkKB kb, SharkGeometry sharkGeometry) {
         this.kb = kb;
         this.sharkGeometry = sharkGeometry;
     }
