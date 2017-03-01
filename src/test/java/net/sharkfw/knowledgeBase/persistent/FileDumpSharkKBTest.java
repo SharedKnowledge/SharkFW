@@ -3,7 +3,7 @@ package net.sharkfw.knowledgeBase.persistent;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.knowledgeBase.persistent.fileDump.FileDumpSharkKB;
+import net.sharkfw.knowledgeBase.persistent.dump.FileDumpSharkKB;
 import net.sharkfw.system.L;
 import org.junit.After;
 import org.junit.Assert;
