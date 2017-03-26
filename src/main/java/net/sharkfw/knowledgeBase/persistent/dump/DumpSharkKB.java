@@ -419,6 +419,12 @@ public class DumpSharkKB implements SharkKB {
     }
 
     @Override
+    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        sharkKB.removeInformationSpace(space);
+        this.persist();
+    }
+
+    @Override
     public void addListener(KnowledgeBaseListener kbl) {
 
     }

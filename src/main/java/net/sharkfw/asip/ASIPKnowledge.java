@@ -165,6 +165,8 @@ public interface ASIPKnowledge {
 
     public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException;
 
+    void removeInformationSpace(ASIPSpace space) throws SharkKBException;
+
     /**
      * Clean up that space by removing all information. Removing does not
      * necessarily mean that any information is lost. Information which are

@@ -100,6 +100,12 @@ public class InMemoASIPKnowledge implements Knowledge {
     }
 
     @Override
+    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        ASIPInformationSpace informationSpace = getInformationSpace(space);
+        this.infoSpacesList.remove(informationSpace);
+    }
+
+    @Override
     public Iterator<ASIPInformationSpace> informationSpaces() {
         return this.infoSpacesList.iterator();
     }

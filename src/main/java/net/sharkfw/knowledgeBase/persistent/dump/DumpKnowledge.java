@@ -120,6 +120,12 @@ public class DumpKnowledge implements Knowledge {
     }
 
     @Override
+    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        knowledge.removeInformationSpace(space);
+        kb.persist();
+    }
+
+    @Override
     public void removeInformation(ASIPSpace space) throws SharkKBException {
         knowledge.removeInformation(space);
         kb.persist();

@@ -624,6 +624,11 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     }
 
     @Override
+    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        this.knowledge.removeInformationSpace(space);
+    }
+
+    @Override
     public FragmentationParameter[] getStandardFPSet() {
         return new FragmentationParameter[0];
     }

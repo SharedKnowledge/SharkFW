@@ -469,6 +469,11 @@ public class SyncKB implements SharkKB{
     }
 
     @Override
+    public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
+        this.targetKB.removeInformationSpace(space);
+    }
+
+    @Override
     public void addListener(KnowledgeBaseListener kbl) {
         this.targetKB.addListener(kbl);
     }
