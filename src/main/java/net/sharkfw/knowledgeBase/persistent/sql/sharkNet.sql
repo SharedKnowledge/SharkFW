@@ -1,17 +1,17 @@
 /* SQL-Skript welches eine Datenbank fuer SharkNET erzeugt */
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE subject_identifier (
-    id serial PRIMARY KEY, /* Fuer Primaerschluessel wird der SQL-Datentyp serial verwendet, damit automatisch inkrementiert wird */
+CREATE TABLE IF NOT EXISTS subject_identifier (
+    id serial PRIMARY KEY,
     identifier text,
     tag_id integer
 );
 
-CREATE TABLE tag_set (
+CREATE TABLE IF NOT EXISTS tag_set (
     id serial PRIMARY KEY
 );
 
-CREATE TABLE semantic_tag(
+CREATE TABLE IF NOT EXISTS semantic_tag(
     id serial PRIMARY KEY,
     name text,
 	property text,
@@ -19,7 +19,7 @@ CREATE TABLE semantic_tag(
 	FOREIGN KEY (tag_set) references tag_set(id)	
 );
 
-CREATE TABLE peer_semantic_tag(
+CREATE TABLE IF NOT EXISTS peer_semantic_tag(
     id serial PRIMARY KEY,
     name text,
 	property text,
@@ -28,18 +28,18 @@ CREATE TABLE peer_semantic_tag(
 	FOREIGN KEY (tag_set) references tag_set(id)
 );
 
-CREATE TABLE time_semantic_tag(
+CREATE TABLE IF NOT EXISTS time_semantic_tag(
     id serial PRIMARY KEY,
     name text,
 	property text,
-    t_duration integer, /* duration and start are reserved keywords, therefore t_...  */
+    t_duration integer,
 	t_start integer,
 	tag_set integer,
 	FOREIGN KEY (id) references semantic_tag(id),
 	FOREIGN KEY (tag_set) references tag_set(id)
 );
 
-CREATE TABLE spatial_semantic_tag(
+CREATE TABLE IF NOT EXISTS spatial_semantic_tag(
     id serial PRIMARY KEY,
     name text,
 	property text,
@@ -49,7 +49,7 @@ CREATE TABLE spatial_semantic_tag(
 	FOREIGN KEY (tag_set) references tag_set(id)	
 );
 
-CREATE TABLE type_semantic_tag(
+CREATE TABLE IF NOT EXISTS type_semantic_tag(
     id serial PRIMARY KEY,
     name text,
 	property text,
@@ -58,18 +58,18 @@ CREATE TABLE type_semantic_tag(
 	FOREIGN KEY (tag_set) references tag_set(id)
 );
 
-CREATE TABLE address (
+CREATE TABLE IF NOT EXISTS address (
     id serial PRIMARY KEY,
     address_name text,
     tag_id integer,
 	FOREIGN KEY (tag_id) references peer_semantic_tag(id)
 );
 
-CREATE TABLE semantic_net (
+CREATE TABLE IF NOT EXISTS semantic_net (
     id serial PRIMARY KEY
 );
 
-CREATE TABLE relation (
+CREATE TABLE IF NOT EXISTS relation (
     id serial PRIMARY KEY,
 	source_tag_id integer,
 	target_tag_id, integer,
@@ -78,7 +78,7 @@ CREATE TABLE relation (
 	FOREIGN KEY (semantic_net_id) references semantic_net(id)	
 );
 
-CREATE TABLE asip_space (
+CREATE TABLE IF NOT EXISTS asip_space (
     id serial PRIMARY KEY,
 	topic_set integer,
 	type_set integer,
@@ -97,13 +97,13 @@ CREATE TABLE asip_space (
 	FOREIGN KEY (sender_peer_tag) references peer_semantic_tag(id)	
 );
 
-CREATE TABLE asip_information_space (
+CREATE TABLE IF NOT EXISTS asip_information_space (
     id serial PRIMARY KEY,
 	asip_space integer,
 	FOREIGN KEY (asip_space) references asip_space(id)
 );
 
-CREATE TABLE asip_information (
+CREATE TABLE IF NOT EXISTS asip_information (
     id serial PRIMARY KEY,
 	content_type text,
 	content_length integer,

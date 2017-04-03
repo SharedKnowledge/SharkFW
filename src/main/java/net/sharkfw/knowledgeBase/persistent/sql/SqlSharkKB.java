@@ -7,6 +7,9 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,57 +26,73 @@ public class SqlSharkKB implements SharkKB {
     private String dbAddress;
     private String password;
     private String dialect;
-    private final String JDBC_SQLITE = "org.sqlite.JDBC";
+    public final String JDBC_SQLITE = "org.sqlite.JDBC";
+    public final String scriptFile = ".\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\sharkNet.sql";
 
     /**
-     * Constructor for a new database with no initial data
+     * Constructor for a new database with no initial data and default SQL dialect
      * @param dbAddress
-     * @param password
      */
-    SqlSharkKB(String dbAddress, String password)
+    public SqlSharkKB(String dbAddress)
     {
-        new SqlSharkKB(dbAddress, password, "org.sqlite.JDBC");
+        new SqlSharkKB(dbAddress, JDBC_SQLITE);
     }
 
     /**
      * Constructor for a new database with no initial data
      * @param dbAddress
-     * @param password
      */
-    SqlSharkKB(String dbAddress, String password, String dialect)
+    public SqlSharkKB(String dbAddress, String dialect)
     {
         this.dialect = dialect;
         this.dbAddress = dbAddress;
         try {
             Class.forName(this.dialect);
             connection = DriverManager.getConnection(this.dbAddress);
+            System.out.println("Opened database successfully");
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println("Opened database successfully");
-        buildDatabase();
+        try {
+            buildDatabase();
+            System.out.println("Built database successfully");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
      * Constructor for a new database with initial data from a InMemoSharkKB
      * @param sharkKB
      * @param dbAddress
-     * @param password
+     * @param dialect
      */
-    public SqlSharkKB(InMemoSharkKB sharkKB, String dbAddress, String password)
+    public SqlSharkKB(String dbAddress, String dialect, InMemoSharkKB sharkKB)
     {
-        this(dbAddress, password);
-        buildDatabase();
+        this(dbAddress, dialect);
         initDatabase(sharkKB);
     }
 
-    private void buildDatabase() {
-
+    /**
+     * Create tables and constraints for the new database
+     * @throws FileNotFoundException
+     * @throws SQLException
+     */
+    private void buildDatabase() throws FileNotFoundException, SQLException
+    {
+        File initialFile = new File(scriptFile);
+        InputStream targetStream = new FileInputStream(initialFile);
+        SqlHelper.importSQL(connection, targetStream);
     }
 
-    private void initDatabase(InMemoSharkKB sharkKB) {
+    private void initDatabase(InMemoSharkKB sharkKB)
+    {
+
     }
 
     @Override
