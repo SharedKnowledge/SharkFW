@@ -22,9 +22,16 @@ import java.util.Iterator;
 public class SqlSharkKB implements SharkKB {
 
     private SharkKB sharkKB;
+
+    public Connection getConnection() {
+        return connection;
+    }
+
     private Connection connection;
     private String dbAddress;
     private String password;
+
+
     private String dialect;
     public final String JDBC_SQLITE = "org.sqlite.JDBC";
     public final String scriptFile = ".\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\sharkNet.sql";
@@ -90,9 +97,22 @@ public class SqlSharkKB implements SharkKB {
         SqlHelper.importSQL(connection, targetStream);
     }
 
+    /**
+     *
+     * @param sharkKB
+     */
     private void initDatabase(InMemoSharkKB sharkKB)
     {
 
+    }
+
+
+    public String getDbAddress() {
+        return dbAddress;
+    }
+
+    public String getDialect() {
+        return dialect;
     }
 
     @Override
