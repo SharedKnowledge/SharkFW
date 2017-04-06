@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
@@ -46,4 +47,44 @@ public class SqlHelper {
 
         }
     }
+
+    public static void executeSQLCommand(Connection conn, String sql) throws SQLException
+    {
+        Statement st = null;
+        conn.setAutoCommit(true);
+        try
+        {
+            st = conn.createStatement();
+            st.executeUpdate(sql);
+        }
+        finally
+        {
+            if (st != null) st.close();
+        }
+    }
+
+    public static int getLastCreatedEntry(Connection conn, String tableName) throws SQLException
+    {
+        int id = -1;
+        String sql = "SELECT id FROM " + tableName + " ORDER BY id DESC LIMIT 1";
+        Statement st = conn.createStatement();
+        try
+        {
+            ResultSet resultSet = st.executeQuery(sql);
+            id = resultSet.getInt("id");
+        }
+        finally
+        {
+            st.close();
+        }
+        if (id >= 0)
+        {
+            return id;
+        }
+        else
+        {
+            throw new SQLException();
+        }
+    }
+
 }
