@@ -349,7 +349,7 @@ public class SharkPkiStorage implements PkiStorage {
     }
 
     @Override
-    public ASIPKnowledge getPublicKeyAsKnowledge(boolean withSelfSignedCertificates) {
+    public SharkKB getPublicKeyAsKnowledge(boolean withSelfSignedCertificates) {
 
         InMemoSharkKB tempKb = new InMemoSharkKB();
         SharkPkiStorage tempPkiStorage = new SharkPkiStorage(tempKb);

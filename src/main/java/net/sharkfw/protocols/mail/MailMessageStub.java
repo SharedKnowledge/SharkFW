@@ -42,7 +42,7 @@ import net.sharkfw.system.Streamer;
 public final class MailMessageStub implements MessageStub, Runnable {
     private static final String SSL_PORT = "465";
     private static final String SUBJECT = "Shark message - please leave in the box for your Shark application (sharksystem.net)";
-    private static final int MINIMAL_CHECKING_DELAY = 60000; // one minute
+    private static final int MINIMAL_CHECKING_DELAY = 1000; // one second
     private static final int DEFAULT_MAX_MAIL_LENGTH = 1024; // MByte
     private static final int PARALLEL_MESSAGE_CAPACITY = 2; // 3 mails should fit into a mailbox at once
 
