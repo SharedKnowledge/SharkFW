@@ -13,6 +13,7 @@ public class SqlSTSet implements STSet {
 
     private Connection connection;
     private int stSetID;
+    private SqlSharkKB sqlSharkKB;
 
     /**
      * Write StSet to database
@@ -24,6 +25,7 @@ public class SqlSTSet implements STSet {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        this.sqlSharkKB = sharkKB;
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO tag_set VALUES (NULL);");
@@ -34,6 +36,11 @@ public class SqlSTSet implements STSet {
     public int getStSetID()
     {
         return stSetID;
+    }
+
+    @Override
+    public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
+        return new SqlSemanticTag(si[0], stSetID, sqlSharkKB);
     }
 
     @Override
@@ -78,11 +85,6 @@ public class SqlSTSet implements STSet {
 
     @Override
     public Iterator<SemanticTag> stTags() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
         return null;
     }
 
