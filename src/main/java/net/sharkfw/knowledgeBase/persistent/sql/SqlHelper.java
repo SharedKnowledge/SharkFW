@@ -63,6 +63,23 @@ public class SqlHelper {
         }
     }
 
+    public static ResultSet executeSQLCommandWithResult(Connection conn, String sql) throws SQLException
+    {
+        Statement st = null;
+        conn.setAutoCommit(true);
+        ResultSet rs = null;
+        try
+        {
+            st = conn.createStatement();
+            rs = st.executeQuery(sql);
+        }
+        finally
+        {
+            if (st != null) st.close();
+        }
+        return rs;
+    }
+
     public static int getLastCreatedEntry(Connection conn, String tableName) throws SQLException
     {
         int id = -1;

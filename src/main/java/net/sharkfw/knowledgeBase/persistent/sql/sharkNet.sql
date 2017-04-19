@@ -17,45 +17,10 @@ CREATE TABLE IF NOT EXISTS semantic_tag(
 	name text,
 	property text,
 	tag_set integer,
-	FOREIGN KEY (tag_set) references tag_set(id)
-);
-
-CREATE TABLE IF NOT EXISTS peer_semantic_tag(
-	id integer PRIMARY KEY autoincrement,
-	name text,
-	property text,
-	tag_set integer,
-	FOREIGN KEY (id) references semantic_tag(id),
-	FOREIGN KEY (tag_set) references tag_set(id)
-);
-
-CREATE TABLE IF NOT EXISTS time_semantic_tag(
-	id integer PRIMARY KEY autoincrement,
-	name text,
-	property text,
+	tag_kind text,
+	wkt text,
 	t_duration integer,
 	t_start integer,
-	tag_set integer,
-	FOREIGN KEY (id) references semantic_tag(id),
-	FOREIGN KEY (tag_set) references tag_set(id)
-);
-
-CREATE TABLE IF NOT EXISTS spatial_semantic_tag(
-	id integer PRIMARY KEY autoincrement,
-	name text,
-	property text,
-	coordinates Decimal(9,6),
-	tag_set integer,
-	FOREIGN KEY (id) references semantic_tag(id),
-	FOREIGN KEY (tag_set) references tag_set(id)
-);
-
-CREATE TABLE IF NOT EXISTS type_semantic_tag(
-	id integer PRIMARY KEY autoincrement,
-	name text,
-	property text,
-	tag_set integer,
-	FOREIGN KEY (id) references semantic_tag(id),
 	FOREIGN KEY (tag_set) references tag_set(id)
 );
 
@@ -63,7 +28,7 @@ CREATE TABLE IF NOT EXISTS address (
 	id integer PRIMARY KEY autoincrement,
 	address_name text,
 	tag_id integer,
-	FOREIGN KEY (tag_id) references peer_semantic_tag(id)
+	FOREIGN KEY (tag_id) references semantic_tag(id)
 );
 
 CREATE TABLE IF NOT EXISTS semantic_net (

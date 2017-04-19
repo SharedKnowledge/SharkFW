@@ -267,7 +267,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 //                return this.createTCPStreamStub(this.getKepStub(), DEFAULT_HTTP_PORT, true);
             case net.sharkfw.protocols.Protocols.MAIL:
                 if (this.getAsipStub() != null) {
-                    protocolStub = this.createMailStreamStub(this.getAsipStub());
+                    protocolStub = this.createMailStub(this.getAsipStub());
                 }
                 break;
 

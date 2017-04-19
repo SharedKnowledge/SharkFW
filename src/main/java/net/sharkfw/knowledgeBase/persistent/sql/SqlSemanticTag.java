@@ -5,6 +5,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
@@ -17,8 +18,16 @@ public class SqlSemanticTag implements SemanticTag
     private String[] sis;
     private String name;
     private int stSetID;
-    private Connection connection;
+    protected Connection connection;
     private String property;
+    private String tagKind;
+
+    public SqlSemanticTag(String[] sis, String name, String tagKind, int stSetID) {
+        this.sis = sis;
+        this.name = name;
+        this.tagKind = tagKind;
+        this.stSetID = stSetID;
+    }
 
     /**
      * Write SemanticTag to database
@@ -27,22 +36,56 @@ public class SqlSemanticTag implements SemanticTag
      * @param stSetID
      */
     public SqlSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB) throws SQLException {
-        this.sis = sis;
-        this.name = name;
-        this.stSetID = stSetID;
+        this(sis, name, "normal", stSetID);
         try {
             Class.forName(sharkKB.getDialect());
             connection = DriverManager.getConnection(sharkKB.getDbAddress());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO semantic_tag (name, tag_set) VALUES " + "(\'" + this.name + "\'," + this.stSetID + ");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         id = SqlHelper.getLastCreatedEntry(connection, "semantic_tag");
-        sql.setLength(0);
+        SqlHelper.executeSQLCommand(connection, getSqlForSIs());
+    }
+
+    /**
+     * Get SemanticTag from database
+     * @param si
+     * @param stSetID
+     */
+    public SqlSemanticTag(String si, int stSetID, SqlSharkKB sharkKB) throws SharkKBException {
+        try {
+            Class.forName(sharkKB.getDialect());
+            connection = DriverManager.getConnection(sharkKB.getDbAddress());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch ( SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("PRAGMA foreign_keys = ON; ");
+        sql.append("SELECT FROM semantic_tag, subject_identifier WHERE semantic_tag.id = tag_id AND tag_set = " + stSetID + " AND identifier = \"" + si + "\";");
+        try {
+            ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql.toString());
+            if (rs != null) {
+                this.name = rs.getString("name");
+                this.sis = new String[]{si};
+                this.stSetID = stSetID;
+            }
+        }
+        catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+    }
+
+    protected String getSqlForSIs()
+    {
+        StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO subject_identifier (identifier, tag_id) VALUES ");
         for (int i = 0; i < sis.length; i++)
@@ -56,8 +99,41 @@ public class SqlSemanticTag implements SemanticTag
                 sql.append("(\'" + sis[i] + "\'," + id + ")" + "; ");
             }
         }
+        return sql.toString();
+    }
 
-        SqlHelper.executeSQLCommand(connection, sql.toString());
+    public int getId() {
+        return id;
+    }
+
+    public String[] getSis() {
+        return sis;
+    }
+
+    public int getStSetID() {
+        return stSetID;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public String getProperty() {
+        return property;
+    }
+
+    public String getTagKind() {
+        return tagKind;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String[] getSI() {
+        return new String[0];
     }
 
     @Override
@@ -101,16 +177,6 @@ public class SqlSemanticTag implements SemanticTag
     }
 
     @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public String[] getSI() {
-        return new String[0];
-    }
-
-    @Override
     public void removeSI(String si) throws SharkKBException {
 
     }
@@ -148,5 +214,9 @@ public class SqlSemanticTag implements SemanticTag
     @Override
     public boolean identical(SemanticTag other) {
         return false;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
