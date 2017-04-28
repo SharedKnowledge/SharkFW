@@ -1,26 +1,19 @@
 package net.sharkfw.knowledgeBase.sync.manager.port;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
-import net.sharkfw.asip.engine.ASIPOutMessage;
-import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.PropertyHolder;
 import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.sync.SyncKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
-import net.sharkfw.system.Util;
 
 /**
  *
@@ -48,7 +41,7 @@ public class SyncAcceptKP extends KnowledgePort {
 
             if(st != null && peer != null) {
 
-                L.d(this.se.getOwner().getName() + " received an Accept from " + message.getPhysicalSender().getName(), this);
+                L.w(this.se.getOwner().getName() + " received an Accept from " + message.getPhysicalSender().getName(), this);
 
                 Iterator<SemanticTag> iterator = interest.getTopics().stTags();
                 while (iterator.hasNext()){
@@ -56,7 +49,7 @@ public class SyncAcceptKP extends KnowledgePort {
                     SyncComponent component = syncManager.getComponentByName(next);
                     if (component!=null){
                         component.addApprovedMember(interest.getApprovers());
-                        this.syncManager.sendMerge(component, peer, message);
+                        this.syncManager.doSync(component, peer, message, null);
                     }
                 }
             }

@@ -34,24 +34,45 @@ public class SyncComponent {
         this.approvedMembers.merge(this.owner);
     }
 
-    public boolean isInvited(PeerSemanticTag tag) throws SharkKBException {
-        return approvedMembers.getSemanticTag(tag.getSI()) != null;
+    public boolean hasAccepted(PeerSemanticTag tag) {
+        try {
+            return approvedMembers.getSemanticTag(tag.getSI()) != null;
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public void addApprovedMember(PeerSemanticTag peerSemanticTag) throws SharkKBException {
-        approvedMembers.merge(peerSemanticTag);
+    public void addApprovedMember(PeerSemanticTag peerSemanticTag){
+        try {
+            approvedMembers.merge(peerSemanticTag);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void addApprovedMember(PeerSTSet members) throws SharkKBException {
-        approvedMembers.merge(members);
+    public void addApprovedMember(PeerSTSet members){
+        try {
+            approvedMembers.merge(members);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void addMember(PeerSemanticTag member) throws SharkKBException {
-        members.merge(member);
+    public void addMember(PeerSemanticTag member){
+        try {
+            members.merge(member);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void removeMember(PeerSemanticTag member) throws SharkKBException {
-        members.removeSemanticTag(member);
+    public void removeMember(PeerSemanticTag member){
+        try {
+            members.removeSemanticTag(member);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
     }
 
     public SyncKB getKb() {

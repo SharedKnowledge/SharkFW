@@ -20,9 +20,9 @@ import java.io.IOException;
 public class SyncManagerTest {
 
     @Test
-    public void groupInvitationTest(){
+    public void sync_fullStack_success(){
 
-        L.setLogLevel(L.LOGLEVEL_ALL);
+        L.setLogLevel(L.LOGLEVEL_WARNING);
 
         // Basics
         J2SEAndroidSharkEngine aliceEngine = new J2SEAndroidSharkEngine();
@@ -57,21 +57,13 @@ public class SyncManagerTest {
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
-        PeerSTSet peerSTSet = sharkKB.createInMemoPeerSTSet();
-        try {
-            peerSTSet.merge(bob);
-//            peerSTSet.merge(alice);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
-
         SemanticTag kbName = sharkKB.createInMemoSemanticTag("kbName", "kbsi.de");
 
         // Now create the component
 
-        SyncComponent component = aliceManager.createSyncComponent(sharkKB, kbName, peerSTSet, alice, true);
+        SyncComponent component = aliceManager.createSyncComponent(sharkKB, kbName, bob, alice, true);
         try {
-            aliceManager.sendInvite(component);
+            aliceManager.doInvite(component);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -81,6 +73,80 @@ public class SyncManagerTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        bobEngine.stopTCP();
+    }
+    @Test
+    public void sync_with_reply_success(){
+
+        L.setLogLevel(L.LOGLEVEL_WARNING);
+
+        // Basics
+        J2SEAndroidSharkEngine aliceEngine = new J2SEAndroidSharkEngine();
+        SyncManager aliceManager = aliceEngine.getSyncManager();
+        aliceManager.allowInvitation(true);
+
+        J2SEAndroidSharkEngine bobEngine = new J2SEAndroidSharkEngine();
+        SyncManager bobManager = bobEngine.getSyncManager();
+        bobManager.allowInvitation(true);
+
+        // Create alice
+        PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("alice", "alice.de", "tcp://localhost:7070");
+        aliceEngine.setEngineOwnerPeer(alice);
+
+        // Create bob
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob.de", "tcp://localhost:7071");
+        bobEngine.setEngineOwnerPeer(bob);
+        try {
+            bobEngine.startTCP(7071);
+            aliceEngine.startTCP(7070);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Create a kb to share
+        InMemoSharkKB sharkKB = new InMemoSharkKB();
+        try {
+            sharkKB.addInformation("This is just \"an example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"another example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"anothasder example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"anothasfer easfasxample\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+            sharkKB.addInformation("This is just \"anotherasfasfa example\"!!!", InMemoSharkKB.createInMemoASIPInterest());
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        SemanticTag kbName = sharkKB.createInMemoSemanticTag("kbName", "kbsi.de");
+
+        // Now create the component
+
+        SyncComponent component = aliceManager.createSyncComponent(sharkKB, kbName, bob, alice, true);
+        try {
+            aliceManager.doInvite(component);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        SyncComponent bobManagerComponentByName = bobManager.getComponentByName(kbName);
+        try {
+            bobManagerComponentByName.getKb().addInformation("absldkjgasöodghuadshglijasdhlkjashdlkjg ldsaghlkadsh kgas dkgh kadsh gadshkg ", InMemoSharkKB.createInMemoASIPInterest());
+            bobManager.doSync(bobManagerComponentByName, alice);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        aliceEngine.stopTCP();
+        bobEngine.stopTCP();
     }
 
     @Test

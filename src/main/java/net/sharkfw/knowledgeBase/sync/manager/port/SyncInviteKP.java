@@ -45,7 +45,7 @@ public class SyncInviteKP extends KnowledgePort {
         SemanticTag inviteTag = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_INVITE_TYPE_SI);
         if(inviteTag==null) return;
 
-        L.d(this.se.getOwner().getName() + " received an Invite from " + interest.getSender().getName(), this);
+        L.w(this.se.getOwner().getName() + " received an Invite from " + interest.getSender().getName(), this);
 
         // TODO is sender in whitelist?
         // is uniqueName accepted? check if I already know it!
@@ -60,7 +60,7 @@ public class SyncInviteKP extends KnowledgePort {
             }
         }
 
-        L.d("Do we already know the component? " + !isNewInvite, this);
+        L.w("Do we already know the component? " + !isNewInvite, this);
 
         // TODO create an empty SyncComponent based on the interest?
 

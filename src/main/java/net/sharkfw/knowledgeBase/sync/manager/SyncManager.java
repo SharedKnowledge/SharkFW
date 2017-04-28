@@ -12,15 +12,16 @@ import net.sharkfw.knowledgeBase.sync.manager.port.SyncMergeKP;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by j4rvis on 14.09.16.
  */
 public class SyncManager {
+
+    private final ExecutorService executor;
 
     // Interfaces
     public interface SyncInviteListener {
@@ -53,6 +54,8 @@ public class SyncManager {
         this.syncAcceptKP = new SyncAcceptKP(this.engine, this);
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
         this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
+
+        executor = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -86,37 +89,48 @@ public class SyncManager {
      * @throws SharkKBException
      */
     public SharkKB getChanges(SyncComponent component, PeerSemanticTag peerSemanticTag) throws SharkKBException {
-
         SharkKB changes = null;
-
         SyncMergeInfo mergeInfo = this.mergeInfoSerializer.get(peerSemanticTag, component.getUniqueName());
 
-//        L.d("Is " + peerSemanticTag.getName() + " already listed? " + (mergeInfo!=null), this);
-
         if(mergeInfo!=null) {
-            // It seems that we have merged with the peer at least once.
-            // Now get the changes since the last merge
             long lastMerged = mergeInfo.getDate();
-//            L.d("lastMerged: " + lastMerged, this);
             long lastChanges = component.getKb().getTimeOfLastChanges();
-//            L.d("lastChanges: " + lastChanges, this);
 
             if (lastChanges > lastMerged) {
-                // the last changes are newer than the last time of the merge.
                 changes = component.getKb().getChanges(lastMerged);
-
-                // TODO  here we are just presuming, that we will do the merge. But what if not? Should be triggered after sendMerge
-                mergeInfo.updateDate();
             }
         } else {
-            mergeInfo = new SyncMergeInfo(peerSemanticTag, component.getUniqueName(), System.currentTimeMillis());
-            // Okay we haven't merged with our peer yet.
-            // So our changes represent the whole kb
             changes = component.getKb();
         }
-        this.mergeInfoSerializer.add(mergeInfo);
-        // TODO Just checked for information inside the kb not for its changes regarding the STSets
         return changes;
+    }
+
+    /**
+     * Create a syncComponent
+     * @param kb
+     * @param uniqueName
+     * @param members
+     * @param owner
+     * @param writable
+     * @return
+     */
+    public SyncComponent createSyncComponent(
+            SharkKB kb,
+            SemanticTag uniqueName,
+            PeerSTSet members,
+            PeerSemanticTag owner,
+            boolean writable) {
+
+        if (getComponentByName(uniqueName) != null) return null;
+
+        SyncComponent component = null;
+        try {
+            component = new SyncComponent(kb, uniqueName, members, owner, writable);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        components.add(component);
+        return component;
     }
 
     /**
@@ -131,28 +145,24 @@ public class SyncManager {
     public SyncComponent createSyncComponent(
             SharkKB kb,
             SemanticTag uniqueName,
-            PeerSTSet member,
+            PeerSemanticTag member,
             PeerSemanticTag owner,
             boolean writable) {
-
-        if (getComponentByName(uniqueName) != null) return null;
-
-        SyncComponent component = null;
+        PeerSTSet peerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
         try {
-            component = new SyncComponent(kb, uniqueName, member, owner, writable);
+            peerSTSet.merge(member);
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
-        components.add(component);
-        return component;
+        return createSyncComponent(kb, uniqueName, peerSTSet, owner, writable);
     }
 
     public void removeSyncComponent(SyncComponent component) {
         components.remove(component);
     }
 
-    public Iterator<SyncComponent> getSyncComponents() {
-        return components.iterator();
+    public List<SyncComponent> getSyncComponents() {
+        return components;
     }
 
     /**
@@ -175,10 +185,10 @@ public class SyncManager {
      * @return
      * @throws SharkKBException
      */
-    public Iterator<SyncComponent> getSyncComponentsWithPeer(PeerSemanticTag peerSemanticTag) throws SharkKBException {
+    public List<SyncComponent> getSyncComponentsWithPeer(PeerSemanticTag peerSemanticTag) throws SharkKBException {
         ArrayList<SyncComponent> componentArrayList = new ArrayList<>();
 
-        Iterator<SyncComponent> syncComponents = getSyncComponents();
+        Iterator<SyncComponent> syncComponents = getSyncComponents().iterator();
         while (syncComponents.hasNext()){
             SyncComponent next = syncComponents.next();
 
@@ -195,69 +205,65 @@ public class SyncManager {
                 componentArrayList.add(next);
             }
         }
-        return componentArrayList.iterator();
+        return componentArrayList;
     }
 
-    /**
-     * Check if we have any approved Members and trigger Invitations if necessary.
-     * @param component
-     * @return
-     */
-    private boolean checkInvitation(SyncComponent component){
-        /**
-         * Okay so we have a component and want to send out a merge!
-         * So what's first?
-         * Do we have any approved member?
-         * Is there still a member who is not approved?
-         * TODO What if he does not want to approve or participate? Delete from member?
-         */
-        PeerSTSet members = component.getMembers();
-        PeerSTSet approvedMembers = component.getApprovedMembers();
-
-        try {
-            if(members.isEmpty()){
-                // Oh okay we don't have anyone who can participate
-                // Should not be possible because the creator of the component will be added as well.
-                return false;
-            } else{
-                if(approvedMembers.isEmpty()){
-                    // for now we have no one who participates in our syncGroup
-                    // We have to send invites to everyone!
-                    this.sendInvite(component);
-                    return false;
-                } else {
-                    // There is at least someone who participates, so we can send out our merge!
-                    // Now check if we are the one
-                    if (!SharkCSAlgebra.identical(members, approvedMembers)) {
-                        // There are still some people missing so we are sending out our invites!
-                        // TODO SendInvite?
-                        Enumeration<PeerSemanticTag> enumeration = members.peerTags();
-                        while (enumeration.hasMoreElements()){
-                            PeerSemanticTag peerSemanticTag = enumeration.nextElement();
-                        }
-                        this.sendInvite(component);
-                        return false;
-                    }
-                    return true;
-                }
-            }
-        } catch (SharkKBException e) {
-            L.e(e.getMessage(), this);
-        }
-        return false;
-
-    }
+//    /**
+//     * Check if we have any approved Members and trigger Invitations if necessary.
+//     * @param component
+//     * @return
+//     */
+//    private boolean checkInvitation(SyncComponent component){
+//        /**
+//         * Okay so we have a component and want to send out a merge!
+//         * So what's first?
+//         * Do we have any approved member?
+//         * Is there still a member who is not approved?
+//         * TODO What if he does not want to approve or participate? Delete from member?
+//         */
+//        PeerSTSet members = component.getMembers();
+//        PeerSTSet approvedMembers = component.getApprovedMembers();
+//
+//        try {
+//            if(members.isEmpty()){
+//                // Oh okay we don't have anyone who can participate
+//                // Should not be possible because the creator of the component will be added as well.
+//                return false;
+//            } else{
+//                if(approvedMembers.isEmpty()){
+//                    // for now we have no one who participates in our syncGroup
+//                    // We have to send invites to everyone!
+//                    this.doInvite(component);
+//                    return false;
+//                } else {
+//                    // There is at least someone who participates, so we can send out our merge!
+//                    // Now check if we are the one
+//                    if (!SharkCSAlgebra.identical(members, approvedMembers)) {
+//                        // There are still some people missing so we are sending out our invites!
+//                        // TODO SendInvite?
+//                        Enumeration<PeerSemanticTag> enumeration = members.peerTags();
+//                        while (enumeration.hasMoreElements()){
+//                            PeerSemanticTag peerSemanticTag = enumeration.nextElement();
+//                        }
+//                        this.doInvite(component);
+//                        return false;
+//                    }
+//                    return true;
+//                }
+//            }
+//        } catch (SharkKBException e) {
+//            L.e(e.getMessage(), this);
+//        }
+//        return false;
+//
+//    }
 
     /**
      * Send a Merge to all approved Members
      * @param component
      */
-    public void sendMerge(SyncComponent component){
-
-//        L.d("Initiated sending a Merge to all approvedMembers.", this);
-
-        if(checkInvitation(component) == false) return;
-
+    public void doSync(SyncComponent component){
+//        if(checkInvitation(component) == false) return;
         PeerSTSet approvedMembers = component.getApprovedMembers();
         // Okay so now we are finished with our invites!
         // Let's send our merge!
@@ -270,7 +276,7 @@ public class SyncManager {
 //            L.d("Name of approvedMember: " + peerSemanticTag.getName(), this);
             // Now check if we are the peer
             if(!SharkCSAlgebra.identical(peerSemanticTag, this.engine.getOwner())){
-                sendMerge(component, peerSemanticTag);
+                doSync(component, peerSemanticTag);
             }
         }
     }
@@ -280,31 +286,35 @@ public class SyncManager {
      * @param component
      * @param peer
      */
-    public void sendMerge(SyncComponent component, PeerSemanticTag peer){
+    public void doSync(final SyncComponent component, final PeerSemanticTag peer){
+        if (component.hasAccepted(peer)){
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        SharkKB changes = getChanges(component, peer);
+                        if (hasChanged(changes)) {
+                            // We do have some changes we can send!
+                            ASIPOutMessage outMessage = engine.createASIPOutMessage(
+                                    peer.getAddresses(),
+                                    engine.getOwner(),
+                                    peer,
+                                    null,
+                                    null,
+                                    component.getUniqueName(),
+                                    SyncManager.SHARK_SYNC_MERGE_TAG, 1);
 
-//        L.d("Initiated sending a merge to a special peer.", this);
-
-        try {
-            if (component.isInvited(peer)){
-                SharkKB changes = getChanges(component, peer);
-                if(changes!=null){
-                    // We do have some changes we can send!
-                    ASIPOutMessage outMessage = this.engine.createASIPOutMessage(
-                            peer.getAddresses(),
-                            this.engine.getOwner(),
-                            peer,
-                            null,
-                            null,
-                            component.getUniqueName(),
-                            SyncManager.SHARK_SYNC_MERGE_TAG, 1);
-
-                    outMessage.insert(changes);
+                            outMessage.insert(changes);
+                            mergeInfoSerializer.add(component.getUniqueName(), peer);
+                        }
+                    } catch (SharkKBException e) {
+                        e.printStackTrace();
+                    }
                 }
-            } else {
-                sendInvite(component, peer);
-            }
-        } catch (SharkKBException e) {
-            L.e(e.getMessage(), this);
+            };
+            executor.submit(runnable);
+        } else {
+            doInvite(component, peer);
         }
     }
 
@@ -315,16 +325,29 @@ public class SyncManager {
      * @param message
      * @throws SharkKBException
      */
-    public void sendMerge(SyncComponent component, PeerSemanticTag peer, ASIPInMessage message) throws SharkKBException {
+    public void doSync(final SyncComponent component, final PeerSemanticTag peer, final ASIPInMessage message, final SharkKB merge) {
 
-//        L.d("Initiated sending a Merge to reply to an already established connection.", this);
-
-        SharkKB changes = getChanges(component, peer);
-//        L.d(this.engine.getOwner().getName() + " wants to send a Merge to " + peer.getName() + ". Are there any changes? " + (changes!=null), this);
-        if(changes!=null){
-            ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
-            response.insert(changes);
-        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SharkKB changes = getChanges(component, peer);
+                    if (hasChanged(changes)) {
+                        L.w(engine.getOwner().getName() + " has some changes!", this);
+                        ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
+                        response.insert(changes);
+                        mergeInfoSerializer.add(component.getUniqueName(), peer);
+                    }
+                    if(merge!=null){
+                        component.getKb().putChanges(merge);
+                        L.w(engine.getOwner().getName() + "merged the changes!", this);
+                    }
+                } catch (SharkKBException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        executor.submit(runnable);
     }
 
     /**
@@ -332,30 +355,39 @@ public class SyncManager {
      * @param component
      * @throws SharkKBException
      */
-    public void sendInvite(SyncComponent component) throws SharkKBException {
-        Enumeration<PeerSemanticTag> enumeration = component.getMembers().peerTags();
-        ArrayList<String> addresses = new ArrayList<>();
-        while (enumeration.hasMoreElements()){
-            PeerSemanticTag peerSemanticTag = enumeration.nextElement();
-
-            if (SharkCSAlgebra.identical(peerSemanticTag, this.engine.getOwner())) continue;
-
-            if(!component.isInvited(peerSemanticTag)){
-                String[] peerSemanticTagAddresses = peerSemanticTag.getAddresses();
-                if(peerSemanticTagAddresses==null || peerSemanticTagAddresses.length<=0) continue;
-                for(String address : peerSemanticTagAddresses){
-                    if(address!=null){
-                        addresses.add(address);
-                    }
-                }
-            }
+    public void doInvite(SyncComponent component) throws SharkKBException {
+        ArrayList<PeerSemanticTag> members = Collections.list(component.getMembers().peerTags());
+        ArrayList<PeerSemanticTag> approvedMembers = Collections.list(component.getApprovedMembers().peerTags());
+        members.removeAll(approvedMembers);
+        Iterator<PeerSemanticTag> iterator = members.iterator();
+        while (iterator.hasNext()){
+            doInvite(component, iterator.next());
         }
-        String[] addressesArray = new String[addresses.size()];
-        addressesArray = addresses.toArray(addressesArray);
 
-        if(addressesArray.length!=0){
-            sendInvite(component, addressesArray);
-        }
+
+//        Enumeration<PeerSemanticTag> enumeration = component.getMembers().peerTags();
+//        ArrayList<String> addresses = new ArrayList<>();
+//        while (enumeration.hasMoreElements()){
+//            PeerSemanticTag peerSemanticTag = enumeration.nextElement();
+//
+//            if (SharkCSAlgebra.identical(peerSemanticTag, this.engine.getOwner())) continue;
+//
+//            if(!component.hasAccepted(peerSemanticTag)){
+//                String[] peerSemanticTagAddresses = peerSemanticTag.getAddresses();
+//                if(peerSemanticTagAddresses==null || peerSemanticTagAddresses.length<=0) continue;
+//                for(String address : peerSemanticTagAddresses){
+//                    if(address!=null){
+//                        addresses.add(address);
+//                    }
+//                }
+//            }
+//        }
+//        String[] addressesArray = new String[addresses.size()];
+//        addressesArray = addresses.toArray(addressesArray);
+//
+//        if(addressesArray.length!=0){
+//            doInvite(component, addressesArray);
+//        }
     }
 
     /**
@@ -363,48 +395,89 @@ public class SyncManager {
      * @param component
      * @param peerSemanticTag
      */
-    public void sendInvite(SyncComponent component, PeerSemanticTag peerSemanticTag){
-        try {
-            if(!component.isInvited(peerSemanticTag)){
-                component.addMember(peerSemanticTag);
+    public void doInvite(final SyncComponent component, final PeerSemanticTag peerSemanticTag){
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                String[] addresses = peerSemanticTag.getAddresses();
+                if(addresses==null || addresses.length==0) return;
+
+                PeerSemanticTag logicalSender = null;
+
+                if(component.getOwner() == null){
+                    logicalSender = engine.getOwner();
+                } else {
+                    logicalSender = component.getOwner();
+                }
+
+                ASIPOutMessage message = engine.createASIPOutMessage(addresses, logicalSender, null,
+                        null, null, component.getUniqueName(), null, 10);
+
+                try {
+                // Create ASIPInterest
+                STSet topicSTSet = InMemoSharkKB.createInMemoSTSet();
+                STSet typeSTSet = InMemoSharkKB.createInMemoSTSet();
+                PeerSTSet approverSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+
+                    topicSTSet.merge(component.getUniqueName());
+                    typeSTSet.merge(SyncManager.SHARK_SYNC_INVITE_TAG);
+                    approverSTSet.merge(component.getOwner());
+
+                    int direction  = ASIPSpace.DIRECTION_IN;;
+                    if(component.isWritable()){
+                        direction = ASIPSpace.DIRECTION_INOUT;
+                    }
+                    ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest(topicSTSet, typeSTSet, component.getOwner(),
+                            approverSTSet, component.getMembers(), null, null, direction);
+                    message.expose(interest);
+                } catch (SharkKBException e) {
+                    e.printStackTrace();
+                }
             }
-            sendInvite(component, peerSemanticTag.getAddresses());
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            L.d(e.getMessage(), this);
-        }
+        };
+
+        executor.submit(runnable);
+
+//        try {
+//            doInvite(component, peerSemanticTag.getAddresses());
+//        } catch (SharkKBException e) {
+//            e.printStackTrace();
+//            L.d(e.getMessage(), this);
+//        }
     }
 
-    private void sendInvite(SyncComponent component, String[] addresses) throws SharkKBException {
-
-        if(addresses==null || addresses.length==0) return;
-
-        PeerSemanticTag logicalSender = null;
-
-        if(component.getOwner() == null){
-            logicalSender = this.engine.getOwner();
-        } else {
-            logicalSender = component.getOwner();
-        }
-
-        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, logicalSender, null, null, null, component.getUniqueName(), null, 10);
-
-        // Create ASIPInterest
-        STSet topicSTSet = InMemoSharkKB.createInMemoSTSet();
-        STSet typeSTSet = InMemoSharkKB.createInMemoSTSet();
-        PeerSTSet approverSTSet = InMemoSharkKB.createInMemoPeerSTSet();
-        topicSTSet.merge(component.getUniqueName());
-        typeSTSet.merge(SyncManager.SHARK_SYNC_INVITE_TAG);
-        approverSTSet.merge(component.getOwner());
-
-        int direction  = ASIPSpace.DIRECTION_IN;;
-        if(component.isWritable()){
-            direction = ASIPSpace.DIRECTION_INOUT;
-        }
-        ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest(topicSTSet, typeSTSet, component.getOwner(), approverSTSet, component.getMembers(), null, null, direction);
-
-        message.expose(interest);
-    }
+//    private void doInvite(SyncComponent component, String[] addresses) throws SharkKBException {
+//
+//        if(addresses==null || addresses.length==0) return;
+//
+//        PeerSemanticTag logicalSender = null;
+//
+//        if(component.getOwner() == null){
+//            logicalSender = this.engine.getOwner();
+//        } else {
+//            logicalSender = component.getOwner();
+//        }
+//
+//        ASIPOutMessage message = this.engine.createASIPOutMessage(addresses, logicalSender, null, null,
+//                null, component.getUniqueName(), null, 10);
+//
+//        // Create ASIPInterest
+//        STSet topicSTSet = InMemoSharkKB.createInMemoSTSet();
+//        STSet typeSTSet = InMemoSharkKB.createInMemoSTSet();
+//        PeerSTSet approverSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+//        topicSTSet.merge(component.getUniqueName());
+//        typeSTSet.merge(SyncManager.SHARK_SYNC_INVITE_TAG);
+//        approverSTSet.merge(component.getOwner());
+//
+//        int direction  = ASIPSpace.DIRECTION_IN;;
+//        if(component.isWritable()){
+//            direction = ASIPSpace.DIRECTION_INOUT;
+//        }
+//        ASIPInterest interest = InMemoSharkKB.createInMemoASIPInterest(topicSTSet, typeSTSet, component.getOwner(), approverSTSet, component.getMembers(), null, null, direction);
+//
+//        message.expose(interest);
+//    }
 
 //    public void addInviteListener(SyncInviteListener listener) {
 //        listeners.add(listener);
@@ -419,4 +492,20 @@ public class SyncManager {
 //            listener.onInvitation(component);
 //        }
 //    }
+
+    private boolean hasChanged(SharkKB sharkKB){
+        boolean changed = false;
+        try {
+            if(!sharkKB.getTopicSTSet().isEmpty()) changed = true;
+            if(!sharkKB.getTypeSTSet().isEmpty()) changed = true;
+            if(!sharkKB.getPeerSTSet().isEmpty()) changed = true;
+            if(!sharkKB.getTimeSTSet().isEmpty()) changed = true;
+            if(!sharkKB.getSpatialSTSet().isEmpty()) changed = true;
+            if(sharkKB.getNumberInformation() > 0) changed = true;
+            return changed;
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

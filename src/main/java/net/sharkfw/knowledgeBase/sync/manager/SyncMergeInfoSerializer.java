@@ -19,85 +19,38 @@ public class SyncMergeInfoSerializer {
         this.storage = storage;
     }
 
-    public void add(PeerSemanticTag peer, SemanticTag kbName, long date){
-        SyncMergeInfo syncMergeProperty = new SyncMergeInfo(peer, kbName, date);
+    public void add(SemanticTag kbName, PeerSemanticTag peer){
+        SyncMergeInfo syncMergeProperty = new SyncMergeInfo(peer, kbName, System.currentTimeMillis());
         add(syncMergeProperty);
     }
 
     public void add(SyncMergeInfo syncMergeInfo){
         ArrayList<SyncMergeInfo> list = pullList();
-        ArrayList<SyncMergeInfo> temp = getByPeer(list, syncMergeInfo.getPeer());
-
-        if(!temp.isEmpty()){
-            temp = getByKbName(temp, syncMergeInfo.getKbName());
-
-            if(!temp.isEmpty()){
-                for(SyncMergeInfo property : temp){
-                    if(property.getDate() < syncMergeInfo.getDate()){
-                        list.remove(property);
-                        list.add(syncMergeInfo);
-                    }
+        boolean added = false;
+        for (SyncMergeInfo mergeInfo : list) {
+            if (SharkCSAlgebra.identical(mergeInfo.getPeer(), syncMergeInfo.getPeer())){
+                if (SharkCSAlgebra.identical(mergeInfo.getKbName(), syncMergeInfo.getKbName())){
+                    int index = list.indexOf(mergeInfo);
+                    list.remove(index);
+                    list.add(index, syncMergeInfo);
+                    added = true;
                 }
             }
         }
-
-        list.add(syncMergeInfo);
+        if(!added) list.add(syncMergeInfo);
         pushList(list);
     }
 
     public SyncMergeInfo get(PeerSemanticTag peer, SemanticTag kbName){
-        ArrayList<SyncMergeInfo> syncMergeInfos = pullList();
-        ArrayList<SyncMergeInfo> byPeer = getByPeer(syncMergeInfos, peer);
-        ArrayList<SyncMergeInfo> byKbName = getByKbName(byPeer, kbName);
-
-        if(byKbName.isEmpty()) return null;
-
-        // Can not be more than one entity - SHOULD not be! --> Test!
-        return byKbName.iterator().next();
-    }
-
-    private ArrayList<SyncMergeInfo> getByPeer(ArrayList<SyncMergeInfo> infos, PeerSemanticTag peer){
-        ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-        for (SyncMergeInfo mergeDate : infos){
-            if(SharkCSAlgebra.identical(mergeDate.getPeer(), peer)){
-                list.add(mergeDate);
+        ArrayList<SyncMergeInfo> info = pullList();
+        for (SyncMergeInfo syncMergeInfo : info) {
+            if(SharkCSAlgebra.identical(syncMergeInfo.getKbName(), kbName)){
+                if (SharkCSAlgebra.identical(syncMergeInfo.getPeer(), peer)){
+                    return syncMergeInfo;
+                }
             }
         }
-        return list;
-    }
-
-    private ArrayList<SyncMergeInfo> getByKbName(ArrayList<SyncMergeInfo> infos, SemanticTag kbName){
-        ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-        for (SyncMergeInfo mergeDate : infos){
-            if(SharkCSAlgebra.identical(mergeDate.getKbName(), kbName)){
-                list.add(mergeDate);
-            }
-        }
-        return list;
-    }
-
-    private ArrayList<SyncMergeInfo> getBeforeDate(ArrayList<SyncMergeInfo> infos, long date){
-        ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-        for (SyncMergeInfo mergeDate : infos){
-            if(mergeDate.getDate() < date){
-                list.add(mergeDate);
-            }
-        }
-        return list;
-    }
-
-    private ArrayList<SyncMergeInfo> getAfterDate(ArrayList<SyncMergeInfo> infos, long date){
-        ArrayList<SyncMergeInfo> list = new ArrayList<>();
-
-        for (SyncMergeInfo mergeDate : infos){
-            if(mergeDate.getDate() > date){
-                list.add(mergeDate);
-            }
-        }
-        return list;
+        return null;
     }
 
     private ArrayList<SyncMergeInfo> pullList(){
@@ -110,7 +63,15 @@ public class SyncMergeInfoSerializer {
             e.printStackTrace();
         }
         if(property != null){
-            temp = asList(property);
+            JSONObject object = new JSONObject(property);
+            if(object.has(SYNC_MERGE_PROPERTY_LIST)){
+                JSONArray jsonArray = object.getJSONArray(SYNC_MERGE_PROPERTY_LIST);
+                for(int i = 0;i<jsonArray.length();i++){
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    SyncMergeInfo date = new SyncMergeInfo(jsonObject);
+                    temp.add(date);
+                }
+            }
         }
         return temp;
     }
@@ -118,16 +79,6 @@ public class SyncMergeInfoSerializer {
     private void pushList(ArrayList<SyncMergeInfo> list ){
         if(list.isEmpty()) return;
 
-        String s = asString(list);
-
-        try {
-            this.storage.setProperty(SYNC_MERGE_PROPERTY_LIST, s);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String asString(ArrayList<SyncMergeInfo> list){
         JSONObject object = new JSONObject();
         JSONArray array = new JSONArray();
 
@@ -136,30 +87,13 @@ public class SyncMergeInfoSerializer {
         }
 
         object.put(SYNC_MERGE_PROPERTY_LIST, array);
+        String s = object.toString();
 
-        return object.toString();
-    }
 
-    private ArrayList<SyncMergeInfo> asList(String serialized){
-        if(serialized.isEmpty()) return null;
-
-        ArrayList<SyncMergeInfo> tempList = new ArrayList<>();
-
-        JSONObject object = new JSONObject(serialized);
-
-        if(object.has(SYNC_MERGE_PROPERTY_LIST)){
-            JSONArray jsonArray = object.getJSONArray(SYNC_MERGE_PROPERTY_LIST);
-            for(int i = 0;i<jsonArray.length();i++){
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                SyncMergeInfo date = new SyncMergeInfo(jsonObject);
-                tempList.add(date);
-            }
+        try {
+            this.storage.setProperty(SYNC_MERGE_PROPERTY_LIST, s);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
         }
-        return tempList;
-    }
-
-    @Override
-    public String toString() {
-        return asString(pullList());
     }
 }
