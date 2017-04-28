@@ -4,20 +4,15 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
-import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
-import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
-import net.sharkfw.system.SharkTask;
-import net.sharkfw.system.SharkTaskExecutor;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by j4rvis on 14.09.16.
@@ -31,14 +26,14 @@ public class SyncManager {
 
     // Public CONSTANTS
     public static final String SHARK_SYNC_INVITE_TYPE_SI = "http://www.sharksystem.net/sync/invite";
-    public static final String SHARK_SYNC_OFFER_TYPE_SI = "http://www.sharksystem.net/sync/offer";
+    public static final String SHARK_SYNC_ACCEPT_TYPE_SI = "http://www.sharksystem.net/sync/accept";
     public static final String SHARK_SYNC_MERGE_TYPE_SI = "http://www.sharksystem.net/sync/merge";
     public static final SemanticTag SHARK_SYNC_INVITE_TAG = InMemoSharkKB.createInMemoSemanticTag("SYNC_INVITE", SHARK_SYNC_INVITE_TYPE_SI);
-    public static final SemanticTag SHARK_SYNC_OFFER_TAG = InMemoSharkKB.createInMemoSemanticTag("SYNC_OFFER", SHARK_SYNC_OFFER_TYPE_SI);
+    public static final SemanticTag SHARK_SYNC_ACCEPT_TAG = InMemoSharkKB.createInMemoSemanticTag("SYNC_ACCEPT", SHARK_SYNC_ACCEPT_TYPE_SI);
     public static final SemanticTag SHARK_SYNC_MERGE_TAG = InMemoSharkKB.createInMemoSemanticTag("SYNC_MERGE", SHARK_SYNC_MERGE_TYPE_SI);
 
     // Ports
-    private final SyncOfferKP offerKP;
+    private final SyncAcceptKP offerKP;
     private final SyncMergeKP syncMergeKP;
     private SyncInviteKP syncInviteKP;
 
@@ -52,7 +47,7 @@ public class SyncManager {
 
     public SyncManager(SharkEngine engine) {
         this.engine = engine;
-        this.offerKP = new SyncOfferKP(this.engine, this);
+        this.offerKP = new SyncAcceptKP(this.engine, this);
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
         this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
     }

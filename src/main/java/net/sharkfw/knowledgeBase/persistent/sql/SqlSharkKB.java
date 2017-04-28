@@ -34,7 +34,8 @@ public class SqlSharkKB implements SharkKB {
 
     private String dialect;
     public final String JDBC_SQLITE = "org.sqlite.JDBC";
-    public final String scriptFile = ".\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\sharkNet.sql";
+//    public final String scriptFile = ".\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\sharkNet.sql";
+    public final String scriptFile = "./src/main/java/net/sharkfw/knowledgeBase/persistent/sql/sharkNet.sql";
 
     /**
      * Constructor for a new database with no initial data and default SQL dialect

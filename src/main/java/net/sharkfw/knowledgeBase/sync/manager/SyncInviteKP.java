@@ -87,7 +87,7 @@ public class SyncInviteKP extends KnowledgePort {
 
         // Set new type as OfferType
         STSet typeSet = InMemoSharkKB.createInMemoSTSet();
-        typeSet.merge(SyncManager.SHARK_SYNC_OFFER_TAG);
+        typeSet.merge(SyncManager.SHARK_SYNC_ACCEPT_TAG);
         interest.setTypes(typeSet);
 
         // Set myself as sender
