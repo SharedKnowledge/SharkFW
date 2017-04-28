@@ -6,6 +6,9 @@ import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.sync.manager.port.SyncAcceptKP;
+import net.sharkfw.knowledgeBase.sync.manager.port.SyncInviteKP;
+import net.sharkfw.knowledgeBase.sync.manager.port.SyncMergeKP;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 
@@ -33,21 +36,21 @@ public class SyncManager {
     public static final SemanticTag SHARK_SYNC_MERGE_TAG = InMemoSharkKB.createInMemoSemanticTag("SYNC_MERGE", SHARK_SYNC_MERGE_TYPE_SI);
 
     // Ports
-    private final SyncAcceptKP offerKP;
+    private final SyncAcceptKP syncAcceptKP;
     private final SyncMergeKP syncMergeKP;
     private SyncInviteKP syncInviteKP;
 
     // Lists
     private final SyncMergeInfoSerializer mergeInfoSerializer;
     // TODO you will just be notified but can't decide if you ant to accept
-    private List<SyncInviteListener> listeners = new ArrayList<>();
+//    private List<SyncInviteListener> listeners = new ArrayList<>();
     private List<SyncComponent> components = new ArrayList<>();
     // Engine
     private SharkEngine engine;
 
     public SyncManager(SharkEngine engine) {
         this.engine = engine;
-        this.offerKP = new SyncAcceptKP(this.engine, this);
+        this.syncAcceptKP = new SyncAcceptKP(this.engine, this);
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
         this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
     }
@@ -403,17 +406,17 @@ public class SyncManager {
         message.expose(interest);
     }
 
-    public void addInviteListener(SyncInviteListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeInviteListener(SyncInviteListener listener) {
-        listeners.remove(listener);
-    }
-
-    public void triggerInviteListener(SyncComponent component) {
-        for (SyncInviteListener listener : this.listeners) {
-            listener.onInvitation(component);
-        }
-    }
+//    public void addInviteListener(SyncInviteListener listener) {
+//        listeners.add(listener);
+//    }
+//
+//    public void removeInviteListener(SyncInviteListener listener) {
+//        listeners.remove(listener);
+//    }
+//
+//    public void triggerInviteListener(SyncComponent component) {
+//        for (SyncInviteListener listener : this.listeners) {
+//            listener.onInvitation(component);
+//        }
+//    }
 }

@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.sync.manager;
+package net.sharkfw.knowledgeBase.sync.manager.port;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +15,8 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.sync.SyncKB;
+import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
+import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;

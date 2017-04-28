@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.sync.manager;
+package net.sharkfw.knowledgeBase.sync.manager.port;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
@@ -6,6 +6,8 @@ import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
+import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
@@ -80,7 +82,7 @@ public class SyncInviteKP extends KnowledgePort {
 
             SyncComponent component = syncManager.createSyncComponent(inMemoSharkKB, next, interest.getApprovers(), interest.getSender(), true);
             // Trigger the listeners
-            syncManager.triggerInviteListener(component);
+//            syncManager.triggerInviteListener(component);
         }
 
         // set myself in approver aswell and reply with an OfferTypeTag
