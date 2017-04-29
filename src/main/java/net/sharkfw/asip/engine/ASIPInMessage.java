@@ -10,6 +10,7 @@ import net.sharkfw.asip.serialization.ASIPSerializerException;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.Stub;
@@ -40,6 +41,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     private ASIPOutMessage response;
     private boolean parsed = false;
     private ASIPSerializationHolder holder = null;
+    private byte[] jsonMessageBuffer;
+    private int messageRead;
     //    private boolean isEmpty = true;
 
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
@@ -73,46 +76,64 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     public boolean parse() throws IOException, SharkSecurityException {
 
-        if(this.is.available()>0){
-            byte[] configBuffer = new byte[ASIPSerializationHolder.CONFIG_LENGTH];
-            int configRead = this.is.read(configBuffer);
-            ASIPSerializationHolder holder = null;
-            try {
-                holder = new ASIPSerializationHolder(new String(configBuffer, StandardCharsets.UTF_8));
-            } catch (ASIPSerializerException e) {
-                e.printStackTrace();
-                L.d(e.getMessage(), this);
-                return false;
+        if(this.is.available() > 0){
+            if(holder == null){
+                byte[] configBuffer = new byte[ASIPSerializationHolder.CONFIG_LENGTH];
+                this.is.read(configBuffer);
+                try {
+                    holder = new ASIPSerializationHolder(new String(configBuffer, StandardCharsets.UTF_8));
+                } catch (ASIPSerializerException e) {
+                    e.printStackTrace();
+                    L.d(e.getMessage(), this);
+                    return false;
+                }
+
+                if(!holder.isASIP()){
+                    return false;
+                }
+                jsonMessageBuffer = new byte[holder.getMessageLength()];
+                messageRead = 0;
+//                L.d("Config read", this);
             }
 
-            if(!holder.isASIP()){
-                return false;
+            if(messageRead < jsonMessageBuffer.length){
+                byte[] tempBuffer = new byte[jsonMessageBuffer.length - messageRead];
+                int tempRead = this.is.read(tempBuffer);
+
+                if( tempBuffer.length <= jsonMessageBuffer.length){
+                    System.arraycopy(tempBuffer, 0, jsonMessageBuffer, messageRead, tempRead);
+                    messageRead += tempRead;
+//                    L.d("Still reading json message", this);
+                }
             }
-
-            byte[] messageBuffer = new byte[holder.getMessageLength()];
-            int messageRead = this.is.read(messageBuffer);
-
-            if(messageRead>0){
-                holder.setMessage(new String(messageBuffer, StandardCharsets.UTF_8));
-                if(this.is.available()>0){
+            if(messageRead > 0 && messageRead == jsonMessageBuffer.length){
+                holder.setMessage(new String(jsonMessageBuffer, StandardCharsets.UTF_8));
+//                L.d("Finished reading message", this);
+                if(this.is.available() > 0){
+                    L.d("There is more available", this);
                     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                     int nRead;
                     byte[] data = new byte[1024];
 
-                    while ((nRead = this.is.read(data, 0, data.length)) != -1) {
-                        buffer.write(data, 0, nRead);
-                    }
+                    L.d("Start reading from stream", this);
 
-                    buffer.flush();
-                    // TODO pass the content as inputStream?
-                    holder.setContent(buffer.toByteArray());
+                    try{
+                        while ((nRead = this.is.read(data, 0, data.length)) != -1) {
+                            L.d("Read: " + nRead, this);
+                            buffer.write(data, 0, nRead);
+                        }
+                    } catch (IOException e){
+                    } finally {
+                        L.d("finished reading from stream", this);
+                        buffer.flush();
+                        holder.setContent(buffer.toByteArray());
+                    }
                 }
                 this.parsed = ASIPMessageSerializer.deserializeInMessage(this, holder);
                 return this.parsed;
             } else {
                 return false;
             }
-
         } else {
             return false;
         }

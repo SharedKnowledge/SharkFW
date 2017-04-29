@@ -38,10 +38,10 @@ public class SyncManagerTest {
         aliceEngine.setEngineOwnerPeer(alice);
 
         // Create bob
-        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob.de", "tcp://localhost:7071");
+        PeerSemanticTag bob = InMemoSharkKB.createInMemoPeerSemanticTag("bob", "bob.de", "tcp://localhost:7072");
         bobEngine.setEngineOwnerPeer(bob);
         try {
-            bobEngine.startTCP(7071);
+            bobEngine.startTCP(7072);
         } catch (IOException e) {
             e.printStackTrace();
         }

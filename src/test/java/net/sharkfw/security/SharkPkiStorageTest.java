@@ -5,6 +5,7 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.peer.J2SEAndroidSharkEngine;
 import net.sharkfw.system.L;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -116,31 +117,22 @@ public class SharkPkiStorageTest {
             pkiStorage.sign(kKey, olaf, oKeyPair.getPrivate());
             pkiStorage.sign(nKey, olaf, oKeyPair.getPrivate());
 
+            Assert.assertEquals(18, pkiStorage.getAllSharkCertificates().size());
+            Assert.assertEquals(3, pkiStorage.getSharkCertificatesBySigner(alice).size());
+            Assert.assertEquals(3, pkiStorage.getSharkCertificatesBySigner(karl).size());
+            Assert.assertEquals(3, pkiStorage.getSharkCertificatesBySigner(louis).size());
+            Assert.assertEquals(4, pkiStorage.getSharkCertificatesBySigner(marc).size());
+            Assert.assertEquals(3, pkiStorage.getSharkCertificatesBySigner(ned).size());
+            Assert.assertEquals(2, pkiStorage.getSharkCertificatesBySigner(olaf).size());
+
+            Assert.assertEquals(0, pkiStorage.getSharkCertificatesByOwner(alice).size());
+            Assert.assertEquals(4, pkiStorage.getSharkCertificatesByOwner(karl).size());
+            Assert.assertEquals(4, pkiStorage.getSharkCertificatesByOwner(louis).size());
+            Assert.assertEquals(2, pkiStorage.getSharkCertificatesByOwner(marc).size());
+            Assert.assertEquals(4, pkiStorage.getSharkCertificatesByOwner(ned).size());
+            Assert.assertEquals(4, pkiStorage.getSharkCertificatesByOwner(olaf).size());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
-
-        L.d("Keys signed", this);
-
-        try {
-            L.d("Number of certificates (Should be 18): " + pkiStorage.getAllSharkCertificates().size(), this);
-
-            L.d("Signed by Alice (3): " + pkiStorage.getSharkCertificatesBySigner(alice).size(), this);
-            L.d("Signed by Karl (3): " + pkiStorage.getSharkCertificatesBySigner(karl).size(), this);
-            L.d("Signed by Louis (3): " + pkiStorage.getSharkCertificatesBySigner(louis).size(), this);
-            L.d("Signed by Marc (4): " + pkiStorage.getSharkCertificatesBySigner(marc).size(), this);
-            L.d("Signed by Ned (3): " + pkiStorage.getSharkCertificatesBySigner(ned).size(), this);
-            L.d("Signed by Olaf (2): " + pkiStorage.getSharkCertificatesBySigner(olaf).size(), this);
-
-            L.d("Owned by Alice (0): " + pkiStorage.getSharkCertificatesByOwner(alice).size(), this);
-            L.d("Owned by Karl (4): " + pkiStorage.getSharkCertificatesByOwner(karl).size(), this);
-            L.d("Owned by Louis (4): " + pkiStorage.getSharkCertificatesByOwner(louis).size(), this);
-            L.d("Owned by Marc (2): " + pkiStorage.getSharkCertificatesByOwner(marc).size(), this);
-            L.d("Owned by Ned (4): " + pkiStorage.getSharkCertificatesByOwner(ned).size(), this);
-            L.d("Owned by Olaf (4): " + pkiStorage.getSharkCertificatesByOwner(olaf).size(), this);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
-
     }
 }

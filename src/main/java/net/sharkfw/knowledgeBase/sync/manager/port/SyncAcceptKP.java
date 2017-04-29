@@ -49,7 +49,7 @@ public class SyncAcceptKP extends KnowledgePort {
                     SyncComponent component = syncManager.getComponentByName(next);
                     if (component!=null){
                         component.addApprovedMember(interest.getApprovers());
-                        this.syncManager.doSync(component, peer, message, null);
+                        this.syncManager.doSync(component, peer, message);
                     }
                 }
             }

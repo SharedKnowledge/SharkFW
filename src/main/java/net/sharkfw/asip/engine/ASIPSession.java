@@ -57,45 +57,27 @@ public class ASIPSession extends Thread {
         int looper = 3;
         int currentLoop = 0;
 
-//        ASIPInMessage inMessage = null;
-//        try {
-//            inMessage = new ASIPInMessage(this.engine, this.connection);
-//        } catch (SharkKBException e) {
-//            e.printStackTrace();
-//        }
-//        L.d("Session started for " + this.engine.getOwner().getName(), this);
-
+        ASIPInMessage inMessage = null;
+        try {
+            inMessage = new ASIPInMessage(this.engine, this.connection);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
         do {
             try {
-                ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
+//                ASIPInMessage inMessage = new ASIPInMessage(this.engine, this.connection);
                 boolean parse = inMessage.parse();
 
                 if(parse){
                     handled = this.stub.callListener(inMessage);
                     handled = handled && inMessage.keepOpen();
+                    inMessage = new ASIPInMessage(this.engine, this.connection);
                 }
 
             } catch (IOException | SharkException e) {
                 handled = false;
                 e.printStackTrace();
             }
-
-//            try {
-//                L.d("IS available for " + this.engine.getOwner().getName() + ": " + (this.connection.getInputStream().available()>0), this);
-//                if(this.connection.getInputStream().available()>0){
-//                    inMessage.parse();
-//                }
-//
-//                if(inMessage.isParsed()){
-//                    handled = this.stub.callListener(inMessage);
-//                    handled = handled && inMessage.keepOpen();
-//                }
-//
-//            } catch (IOException | SharkSecurityException | ASIPSerializerException e) {
-//                handled = false;
-//                L.d(e.getMessage(), this);
-//                e.printStackTrace();
-//            }
 
             if(!handled) {
                 // maybe there is another KEP methode in the stream

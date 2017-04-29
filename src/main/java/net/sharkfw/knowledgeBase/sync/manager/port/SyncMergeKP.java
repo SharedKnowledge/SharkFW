@@ -37,7 +37,17 @@ public class SyncMergeKP extends KnowledgePort {
         SyncComponent component = syncManager.getComponentByName(message.getTopic());
         if(component == null) return;
 
-        syncManager.doSync(component, message.getPhysicalSender(), message, (SharkKB) asipKnowledge);
+        try {
+            SharkKB changes = syncManager.getChanges(component, message.getPhysicalSender());
+            if(changes != null && syncManager.hasChanged(changes)){
+                syncManager.doSync(component, message.getPhysicalSender(), message);
+            }
+            component.getKb().putChanges((SharkKB) asipKnowledge);
+            L.w(se.getOwner().getName() + " merged the changes!", this);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+
 //        SyncKB syncKB = component.getKb();
 //
 //        try {

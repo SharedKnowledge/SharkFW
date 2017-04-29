@@ -61,9 +61,6 @@ public class SyncInviteKP extends KnowledgePort {
         }
 
         L.w("Do we already know the component? " + !isNewInvite, this);
-
-        // TODO create an empty SyncComponent based on the interest?
-
         if(isNewInvite){
             Iterator<SemanticTag> topics = interest.getTopics().stTags();
             // Create an empty kb based on the first topic
@@ -80,12 +77,14 @@ public class SyncInviteKP extends KnowledgePort {
 
             interest.getApprovers().merge(this.se.getOwner());
 
-            SyncComponent component = syncManager.createSyncComponent(inMemoSharkKB, next, interest.getApprovers(), interest.getSender(), true);
+            SyncComponent component = syncManager.createInvitedSyncComponent(inMemoSharkKB, next, interest.getReceivers(), interest.getApprovers(), interest.getSender(), true);
             // Trigger the listeners
 //            syncManager.triggerInviteListener(component);
         }
 
         // set myself in approver aswell and reply with an OfferTypeTag
+
+        L.w(this.se.getOwner().getName() + " sent an Accept to " + interest.getSender().getName(), this);
 
         // Set new type as OfferType
         STSet typeSet = InMemoSharkKB.createInMemoSTSet();
