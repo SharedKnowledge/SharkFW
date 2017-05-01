@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS subject_identifier (
 );
 
 CREATE TABLE IF NOT EXISTS tag_set (
-	id integer PRIMARY KEY autoincrement
+	id integer PRIMARY KEY autoincrement,
+	set_kind text
 );
 
 CREATE TABLE IF NOT EXISTS semantic_tag(
@@ -44,6 +45,16 @@ CREATE TABLE IF NOT EXISTS relation (
 	FOREIGN KEY (semantic_net_id) references semantic_net(id)
 );
 
+CREATE TABLE IF NOT EXISTS vocabulary (
+	id integer PRIMARY KEY autoincrement,
+	topic_net integer,
+	type_net, integer,
+	peer_net, integer,
+	location_net, integer,
+	time_net, integer,
+	FOREIGN KEY (semantic_net_id) references semantic_net(id)
+);
+
 CREATE TABLE IF NOT EXISTS asip_space (
 	id integer PRIMARY KEY autoincrement,
 	topic_set integer,
@@ -63,9 +74,15 @@ CREATE TABLE IF NOT EXISTS asip_space (
 	FOREIGN KEY (sender_peer_tag) references peer_semantic_tag(id)
 );
 
+CREATE TABLE IF NOT EXISTS knowledge (
+  id integer PRIMARY KEY autoincrement,
+  vocabulary integer
+);
+
 CREATE TABLE IF NOT EXISTS asip_information_space (
 	id integer PRIMARY KEY autoincrement,
 	asip_space integer,
+	knowledge integer,
 	FOREIGN KEY (asip_space) references asip_space(id)
 );
 
