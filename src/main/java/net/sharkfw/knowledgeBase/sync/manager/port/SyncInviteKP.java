@@ -83,8 +83,7 @@ public class SyncInviteKP extends KnowledgePort {
         }
 
         // set myself in approver aswell and reply with an OfferTypeTag
-
-        L.w(this.se.getOwner().getName() + " sent an Accept to " + interest.getSender().getName(), this);
+        PeerSemanticTag sender = interest.getSender();
 
         // Set new type as OfferType
         STSet typeSet = InMemoSharkKB.createInMemoSTSet();
@@ -96,8 +95,10 @@ public class SyncInviteKP extends KnowledgePort {
 
         // and reply to originator
         try {
-            asipConnection.expose(interest);
+            asipConnection.expose(interest, sender.getAddresses());
+            L.w(this.se.getOwner().getName() + " sent an Accept to " + sender.getName(), this);
         } catch (SharkException e) {
+            L.e(e.getMessage(), this);
             e.printStackTrace();
         }
 

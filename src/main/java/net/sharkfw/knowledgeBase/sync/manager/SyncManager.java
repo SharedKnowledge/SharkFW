@@ -54,8 +54,11 @@ public class SyncManager {
         this.syncAcceptKP = new SyncAcceptKP(this.engine, this);
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
         this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
-
         executor = Executors.newSingleThreadExecutor();
+    }
+
+    public void addSyncMergeListener(SyncMergeKP.SyncMergeListener listener){
+        this.syncMergeKP.addSyncMergeListener(listener);
     }
 
     /**

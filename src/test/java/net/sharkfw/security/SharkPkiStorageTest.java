@@ -3,7 +3,7 @@ package net.sharkfw.security;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
+import net.sharkfw.peer.J2SESharkEngine;
 import net.sharkfw.system.L;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +23,7 @@ public class SharkPkiStorageTest {
 
         L.setLogLevel(L.LOGLEVEL_ALL);
 
-        J2SEAndroidSharkEngine engine = new J2SEAndroidSharkEngine();
+        J2SESharkEngine engine = new J2SESharkEngine();
         SharkPkiStorage pkiStorage = (SharkPkiStorage) engine.getPKIStorage();
 
         PeerSemanticTag alice = InMemoSharkKB.createInMemoPeerSemanticTag("Alice", "si:alice", "tcp://alice.de");

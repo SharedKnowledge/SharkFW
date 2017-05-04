@@ -13,6 +13,9 @@ import net.sharkfw.ports.KnowledgePort;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by j4rvis on 19.07.16.
  * 
@@ -20,7 +23,21 @@ import net.sharkfw.system.L;
  */
 public class SyncMergeKP extends KnowledgePort {
 
+    public void addSyncMergeListener(SyncMergeListener listener) {
+        this.mergeListeners.add(listener);
+    }
+
+    public interface SyncMergeListener {
+        /**
+         *
+         * @param component
+         * @param changes - Should just be used to display e.g. the number of new messages
+         */
+        void onNewMerge(SyncComponent component, SharkKB changes);
+    }
+
     private SyncManager syncManager;
+    private List<SyncMergeListener> mergeListeners = new ArrayList<>();
 
     public SyncMergeKP(SharkEngine se, SyncManager syncManager) {
         super(se);
@@ -29,7 +46,6 @@ public class SyncMergeKP extends KnowledgePort {
 
     @Override
     protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
-
         if(message.getType()==null || message.getType().isAny()) return;
         if(!SyncManager.SHARK_SYNC_MERGE_TAG.getName().equals(message.getType().getName())) return;
 
@@ -38,34 +54,18 @@ public class SyncMergeKP extends KnowledgePort {
         if(component == null) return;
 
         try {
-            SharkKB changes = syncManager.getChanges(component, message.getPhysicalSender());
-            if(changes != null && syncManager.hasChanged(changes)){
+            SharkKB previousChanges = syncManager.getChanges(component, message.getPhysicalSender());
+            if(previousChanges != null && syncManager.hasChanged(previousChanges)){
                 syncManager.doSync(component, message.getPhysicalSender(), message);
             }
             component.getKb().putChanges((SharkKB) asipKnowledge);
             L.w(se.getOwner().getName() + " merged the changes!", this);
+            for (SyncMergeListener listener : this.mergeListeners) {
+                listener.onNewMerge(component, (SharkKB) asipKnowledge);
+            }
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
-
-//        SyncKB syncKB = component.getKb();
-//
-//        try {
-//            SharkKB kb1 = syncManager.getChanges(component, message.getPhysicalSender());
-//            boolean anyChanges = kb1 != null;
-//            L.d("Before syncing, does " + this.se.getOwner().getName() + " has any changes to reply? " + anyChanges, this);
-//
-//            syncKB.putChanges((SharkKB) asipKnowledge);
-////            L.d("Merged SyncKB: " + L.kb2String((SharkKB) syncKB), this);
-//
-//            if(anyChanges){
-//                L.d("Now send " + this.se.getOwner().getName() + "'s changes to " + message.getPhysicalSender().getName(), this);
-//            }
-//
-//        } catch (SharkKBException e) {
-//            e.printStackTrace();
-//            L.d(e.getMessage(), this);
-//        }
     }
 
     @Override

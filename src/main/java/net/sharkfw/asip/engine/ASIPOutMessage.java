@@ -2,6 +2,7 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
 import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
@@ -9,6 +10,7 @@ import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
+import net.sharkfw.protocols.Protocols;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.system.L;
 
@@ -71,6 +73,21 @@ public class ASIPOutMessage extends ASIPMessage {
         super(engine, stub, ttl, physicalSender, logicalSender, receiverPeer, receiverLocation, receiverTime, topic, type);
         this.outStub = stub;
         this.recipientAddress = address;
+        this.os = new ByteArrayOutputStream();
+    }
+
+    public ASIPOutMessage(SharkEngine engine, MessageStub stub, ASIPInMessage in, SemanticTag topic, SemanticTag type) throws SharkKBException {
+        super(engine, stub, (in.getTtl() - 1), engine.getOwner(), in.getLogicalSender(), in.getPhysicalSender(), in.getReceiverSpatial(), in.getReceiverTime(), topic, type);
+        this.outStub = stub;
+        for (String s : in.getPhysicalSender().getAddresses()) {
+            try {
+                if(!Protocols.isStreamProtocol(Protocols.getValueByAddress(s))){
+                    this.recipientAddress = s;
+                }
+            } catch (SharkProtocolNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
         this.os = new ByteArrayOutputStream();
     }
 

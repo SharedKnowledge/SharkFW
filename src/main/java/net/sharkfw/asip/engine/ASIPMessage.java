@@ -111,8 +111,8 @@ public abstract class ASIPMessage {
                        PeerSemanticTag receiverPeer,
                        SpatialSemanticTag receiverSpatial,
                        TimeSemanticTag receiverTime,
-                       SemanticTag type,
-                       SemanticTag topic) throws SharkKBException {
+                       SemanticTag topic,
+                       SemanticTag type) throws SharkKBException {
 
         this.engine = engine;
         this.stub = stub;

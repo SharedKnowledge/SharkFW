@@ -7,7 +7,7 @@ import net.sharkfw.asip.TestKP;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
+import net.sharkfw.peer.J2SESharkEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,8 +25,8 @@ public class ASIPSessionTest extends ASIPBaseTest{
     String rawInput = "Hello ASIP.";
     TestKP testKPA;
     TestKP testKPB;
-    J2SEAndroidSharkEngine engineA;
-    J2SEAndroidSharkEngine engineB;
+    J2SESharkEngine engineA;
+    J2SESharkEngine engineB;
     PeerSemanticTag peerA;
     PeerSemanticTag peerB;
 
@@ -41,11 +41,11 @@ public class ASIPSessionTest extends ASIPBaseTest{
         sender = peers.createPeerSemanticTag("SENDER", "www.si1.de", "tcp://addr1.de");
         receiverPeer = peers.createPeerSemanticTag("RECEIEVER", "www.si2.de", "tcp://addr2.de");
 
-        engineA = new J2SEAndroidSharkEngine();
+        engineA = new J2SESharkEngine();
         testKPA = new TestKP(engineA, "Port A");
         testKPA.setText("Pong");
 
-        engineB = new J2SEAndroidSharkEngine();
+        engineB = new J2SESharkEngine();
         testKPB = new TestKP(engineB, "Port B");
         testKPB.setText("Ping");
 

@@ -12,6 +12,7 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SystemPropertyHolder;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.protocols.MessageStub;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.protocols.Stub;
 import net.sharkfw.system.L;
@@ -43,6 +44,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     private ASIPSerializationHolder holder = null;
     private byte[] jsonMessageBuffer;
     private int messageRead;
+    private MessageStub messageStub;
     //    private boolean isEmpty = true;
 
     public ASIPInMessage(SharkEngine se, StreamConnection con) throws SharkKBException {
@@ -58,6 +60,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
         super(se, null);
 
         this.se = se;
+        this.messageStub = (MessageStub) stub;
         this.is = new ByteArrayInputStream(msg);
     }
 
@@ -110,21 +113,21 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
                 holder.setMessage(new String(jsonMessageBuffer, StandardCharsets.UTF_8));
 //                L.d("Finished reading message", this);
                 if(this.is.available() > 0){
-                    L.d("There is more available", this);
+//                    L.d("There is more available", this);
                     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                     int nRead;
                     byte[] data = new byte[1024];
 
-                    L.d("Start reading from stream", this);
+//                    L.d("Start reading from stream", this);
 
                     try{
                         while ((nRead = this.is.read(data, 0, data.length)) != -1) {
-                            L.d("Read: " + nRead, this);
+//                            L.d("Read: " + nRead, this);
                             buffer.write(data, 0, nRead);
                         }
                     } catch (IOException e){
                     } finally {
-                        L.d("finished reading from stream", this);
+//                        L.d("finished reading from stream", this);
                         buffer.flush();
                         holder.setContent(buffer.toByteArray());
                     }
@@ -182,7 +185,12 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
     }
 
     public ASIPOutMessage createResponse(SemanticTag topic, SemanticTag type) throws SharkKBException {
-        return this.se.createASIPOutResponse(this.con, this, topic, type);
+        if(this.con!=null){
+            return this.se.createASIPOutResponse(this.con, this, topic, type);
+        } else if(this.messageStub != null){
+            return this.se.createASIPOutResponse(this.messageStub, this, topic, type);
+        }
+        return null;
     }
 
     @Override
@@ -212,7 +220,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void expose(ASIPInterest interest) throws SharkException {
-        this.expose(interest, this.con.getReplyAddressString());
+        this.expose(interest, new String[]{});
     }
 
     @Override
@@ -222,11 +230,10 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void expose(ASIPInterest interest, String[] receiveraddresses) throws SharkException {
-        //TODO address not used
         if (interest == null)
             L.d("no interest", this);
-        if (receiveraddresses.length < 0)
-            L.d("no address", this);
+//        if (receiveraddresses.length < 0)
+//            L.d("no address", this);
 
         this.response = this.createResponse(null, null);
         if (this.response != null) {
@@ -241,10 +248,8 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
 
     @Override
     public void insert(ASIPKnowledge k, String[] receiveraddresses) throws SharkException {
-        //TODO address not used
         this.response = this.createResponse(null, null);
         if (this.response != null) {
-            L.d("Now go insert!!!", this);
             this.response.insert(k);
         }
     }
