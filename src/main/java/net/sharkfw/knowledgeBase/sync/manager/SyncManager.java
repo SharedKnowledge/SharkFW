@@ -194,7 +194,7 @@ public class SyncManager {
         components.remove(component);
     }
 
-    public List<SyncComponent> getSyncComponents() {
+    public synchronized List<SyncComponent> getSyncComponents() {
         return components;
     }
 
