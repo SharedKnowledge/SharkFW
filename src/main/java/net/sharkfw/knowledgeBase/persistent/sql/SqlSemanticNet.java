@@ -2,10 +2,55 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Iterator;
 
 public class SqlSemanticNet implements SemanticNet {
+
+    private Connection connection;
+    private int stSetID;
+    private SqlSharkKB sqlSharkKB;
+
+    /**
+     * Write SemanticNet to database
+     */
+    public SqlSemanticNet(SqlSharkKB sharkKB) throws SQLException {
+        try {
+            Class.forName(sharkKB.getDialect());
+            connection = DriverManager.getConnection(sharkKB.getDbAddress());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        this.sqlSharkKB = sharkKB;
+        StringBuilder sql = new StringBuilder();
+        sql.append("PRAGMA foreign_keys = ON; ");
+        sql.append("INSERT INTO semantic_net VALUES (NULL);");
+        SqlHelper.executeSQLCommand(connection, sql.toString());
+        stSetID = SqlHelper.getLastCreatedEntry(connection, "semantic_net");
+    }
+
+
+    @Override
+    public void setPredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
+        StringBuilder sql = new StringBuilder();
+        sql.append("PRAGMA foreign_keys = ON; ");
+        sql.append("INSERT INTO relation VALUES (source_tag_id, target_tag_id, semantic_net_id, name) (NULL);");
+        try {
+            SqlHelper.executeSQLCommand(connection, sql.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException(e.toString());
+        }
+    }
+
+    @Override
+    public void removePredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
+
+    }
+
     @Override
     public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
 
@@ -69,16 +114,6 @@ public class SqlSemanticNet implements SemanticNet {
     @Override
     public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException {
         return null;
-    }
-
-    @Override
-    public void setPredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-
-    }
-
-    @Override
-    public void removePredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-
     }
 
     @Override
