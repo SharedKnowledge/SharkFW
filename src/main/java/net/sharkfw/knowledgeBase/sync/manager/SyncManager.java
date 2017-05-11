@@ -368,6 +368,17 @@ public class SyncManager {
         }
     }
 
+    public void doInviteOrSync(SyncComponent component){
+        Enumeration<PeerSemanticTag> members = component.getMembers().peerTags();
+        while (members.hasMoreElements()){
+            doInvite(component, members.nextElement());
+        }
+        Enumeration<PeerSemanticTag> approvedMembers = component.getApprovedMembers().peerTags();
+        while (approvedMembers.hasMoreElements()){
+            doSync(component, approvedMembers.nextElement());
+        }
+    }
+
     /**
      * Send an Invite to all members of the component who are not approved Members yet
      * @param component
