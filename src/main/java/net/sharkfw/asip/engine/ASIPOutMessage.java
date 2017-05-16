@@ -99,7 +99,6 @@ public class ASIPOutMessage extends ASIPMessage {
     private void sent() {
 
         try {
-//            this.osw.flush();
             this.os.flush();
             if (outStub != null) {
                 final byte[] msg = ((ByteArrayOutputStream) this.os).toByteArray();
@@ -114,15 +113,10 @@ public class ASIPOutMessage extends ASIPMessage {
 
     public void expose(ASIPInterest interest) {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
-
-//        this.initSecurity();
-
         try {
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeExpose(this, interest);
             this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
         this.sent();
@@ -138,9 +132,7 @@ public class ASIPOutMessage extends ASIPMessage {
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeInsert(this, knowledge);
             this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
             this.os.write(holder.getContent());
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
         this.sent();
@@ -158,11 +150,7 @@ public class ASIPOutMessage extends ASIPMessage {
             this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
             this.os.write(holder.getContent());
 
-        } catch (SharkKBException e) {
-            L.d("Serialize failed");
-            e.printStackTrace();
-        } catch (IOException e) {
-            L.d("Write failed");
+        } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
         this.sent();
