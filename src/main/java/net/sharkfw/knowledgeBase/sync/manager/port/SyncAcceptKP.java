@@ -35,14 +35,11 @@ public class SyncAcceptKP extends KnowledgePort {
     @Override
     protected void handleExpose(ASIPInMessage message, ASIPConnection asipConnection, ASIPInterest interest) throws SharkKBException {
         if(interest.getTypes() != null && interest.getSender() != null) {
-
             PeerSemanticTag peer = interest.getSender();
             SemanticTag st = interest.getTypes().getSemanticTag(SyncManager.SHARK_SYNC_ACCEPT_TYPE_SI);
 
             if(st != null && peer != null) {
-
                 L.w(this.se.getOwner().getName() + " received an Accept from " + message.getPhysicalSender().getName(), this);
-
                 Iterator<SemanticTag> iterator = interest.getTopics().stTags();
                 while (iterator.hasNext()){
                     SemanticTag next = iterator.next();

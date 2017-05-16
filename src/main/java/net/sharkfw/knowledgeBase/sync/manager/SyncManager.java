@@ -328,7 +328,6 @@ public class SyncManager {
      * @throws SharkKBException
      */
     public void doSync(final SyncComponent component, final PeerSemanticTag peer, final ASIPInMessage message) {
-
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -354,17 +353,32 @@ public class SyncManager {
                 if(SharkCSAlgebra.isIn(component.getApprovedMembers(), peer) || SharkCSAlgebra.identical(component.getOwner(), peer)){
                     doSync(component, peer);
                     L.d(peer.getName() + " already is an approved Member or the Owner so try to SYNC!", this);
-//                    L.d(peer.getName() + " already is the Owner so try to SYNC!", this);
                 } else if(SharkCSAlgebra.isIn(component.getMembers(), peer)){
                     doInvite(component, peer);
                     L.d(peer.getName() + " is a Member so INVITE!", this);
                 }
-//                else {
-//                    L.d(peer.getName() + " is not part of component " + component.getUniqueName().getName(), this);
-//                }
             } catch (SharkKBException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void doInviteOrSync(SyncComponent component){
+        Enumeration<PeerSemanticTag> members = component.getMembers().peerTags();
+        PeerSTSet approvedMembers = component.getApprovedMembers();
+        while (members.hasMoreElements()){
+            PeerSemanticTag member = members.nextElement();
+            try {
+                if(!SharkCSAlgebra.isIn(approvedMembers, member)) {
+                    doInvite(component, member);
+                }
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+            }
+        }
+        Enumeration<PeerSemanticTag> approvedMembersEnum = approvedMembers.peerTags();
+        while (approvedMembersEnum.hasMoreElements()){
+            doSync(component, approvedMembersEnum.nextElement());
         }
     }
 
@@ -389,7 +403,6 @@ public class SyncManager {
      * @param peerSemanticTag
      */
     public void doInvite(final SyncComponent component, final PeerSemanticTag peerSemanticTag){
-
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -434,7 +447,6 @@ public class SyncManager {
         };
 
         executor.submit(runnable);
-
     }
 
     public boolean hasChanged(SharkKB sharkKB){

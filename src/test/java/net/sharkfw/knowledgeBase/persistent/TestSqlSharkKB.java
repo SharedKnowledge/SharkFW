@@ -6,6 +6,7 @@ import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.persistent.sql.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -19,12 +20,14 @@ public class TestSqlSharkKB {
 
     public static final String connection = "jdbc:sqlite:.\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\testShark.db";
 
+    @Ignore
     @Before
     public void testConnectionAndBuild() {
         SqlSharkKB sqlSharkKB = new SqlSharkKB(connection);
         assertNotNull(sqlSharkKB);
     }
 
+    @Ignore
     @Test
     public void testSemanticTagCreation() throws SQLException, SharkKBException {
 
