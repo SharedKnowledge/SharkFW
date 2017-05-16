@@ -39,20 +39,20 @@ CREATE TABLE IF NOT EXISTS semantic_net (
 CREATE TABLE IF NOT EXISTS relation (
 	id integer PRIMARY KEY autoincrement,
 	source_tag_id integer,
-	target_tag_id, integer,
+	target_tag_id integer,
 	name text,
-	semantic_net_id integer,
-	FOREIGN KEY (semantic_net_id) references semantic_net(id)
+	semantic_net_id integer
+	/*FOREIGN KEY (semantic_net_id) references semantic_net(id)*/
 );
 
 CREATE TABLE IF NOT EXISTS vocabulary (
 	id integer PRIMARY KEY autoincrement,
 	topic_net integer,
-	type_net, integer,
-	peer_net, integer,
-	location_net, integer,
-	time_net, integer,
-	FOREIGN KEY (semantic_net_id) references semantic_net(id)
+	type_net integer,
+	peer_net integer,
+	location_net integer,
+	time_net integer
+	/*FOREIGN KEY (semantic_net_id) references semantic_net(id)*/
 );
 
 CREATE TABLE IF NOT EXISTS asip_space (

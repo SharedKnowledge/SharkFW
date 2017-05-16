@@ -5,6 +5,9 @@ import net.sharkfw.knowledgeBase.SNSemanticTag;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import org.jooq.*;
+import org.jooq.impl.*;
+import static org.jooq.impl.DSL.*;
 
 /**
  * Created by Dustin Feurich
@@ -13,7 +16,7 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
 
     private int semanticNetId;
 
-    public SqlSNSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB, long tagDuration, long tagStart) throws SQLException {
+    public SqlSNSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB) throws SQLException {
         super(sis, name, "s_net", stSetID);
         semanticNetId = stSetID;
         try {
@@ -22,11 +25,17 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        StringBuilder sql = new StringBuilder();
+        /*StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO semantic_tag (name, tag_set, tag_kind) VALUES "
-                + "(\'" + this.getName() + "\'," + this.getStSetID() + ",\"" + this.getTagKind() + "\")");
-        SqlHelper.executeSQLCommand(connection, sql.toString());
+                + "(\'" + this.getName() + "\'," + this.getStSetID() + ",\"" + this.getTagKind() + "\")");*/
+        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = create.insertInto(table("semantic_tag"),
+                field("name"), field("tag_set"), field("tag_kind"))
+                .values(inline(this.getName()), inline(this.getStSetID()), inline(this.getTagKind()))
+                .getSQL();
+        String blubb = this.getName();
+        SqlHelper.executeSQLCommand(connection, sql);
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
         SqlHelper.executeSQLCommand(connection, this.getSqlForSIs());
     }
