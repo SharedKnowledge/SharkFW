@@ -27,6 +27,7 @@ public class TestSqlSharkKB {
         assertNotNull(sqlSharkKB);
     }
 
+
     @Ignore
     @Test
     public void testSemanticTagCreation() throws SQLException, SharkKBException {
@@ -45,10 +46,14 @@ public class TestSqlSharkKB {
         SqlTimeSemanticTag timeTag = null;
         SqlSpatialSemanticTag spatialTag = null;
         SqlPeerSemanticTag peerTag = null;
-/*        SqlSTSet stSet = null;
-        stSet = new SqlSTSet(sqlSharkKB);*/
-        SqlSNSemanticTag tagSN = new SqlSNSemanticTag(sis1, "testSNST", 5, sqlSharkKB);
-
+        SqlSTSet stSet = null;
+        stSet = new SqlSTSet(sqlSharkKB);
+        SqlSNSemanticTag tagSN = new SqlSNSemanticTag(sis1, "testSNST", stSet.getStSetID(), sqlSharkKB);
+        assertNotNull(tagSN);
+        SqlSNSemanticTag tagSN2 = new SqlSNSemanticTag(sis2, "testSNST2", stSet.getStSetID(), sqlSharkKB);
+        tagSN.setPredicate("TestPre", tagSN2);
+        tagSN.setPredicate("TestPre2", tagSN2);
+        tagSN.removePredicate("TestPre", tagSN2);
         /*tag = new SqlSemanticTag(sis1, "testTag", stSet.getStSetID(), sqlSharkKB);
         timeTag = new SqlTimeSemanticTag(sis2, "testTimeTag", stSet.getStSetID(), sqlSharkKB, timeDusration, timeFrom);
         spatialTag = new SqlSpatialSemanticTag(sis3, "testSpatialTag", stSet.getStSetID(), sqlSharkKB, wkt);

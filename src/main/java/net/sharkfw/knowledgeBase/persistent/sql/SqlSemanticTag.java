@@ -15,6 +15,7 @@ import java.util.Enumeration;
 public class SqlSemanticTag implements SemanticTag
 {
     private int id;
+    public String ID;
     private String[] sis;
     private String name;
     private int stSetID;
@@ -48,6 +49,7 @@ public class SqlSemanticTag implements SemanticTag
         sql.append("INSERT INTO semantic_tag (name, tag_set) VALUES " + "(\'" + this.name + "\'," + this.stSetID + ");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         id = SqlHelper.getLastCreatedEntry(connection, "semantic_tag");
+        ID = Integer.toString(id);
         SqlHelper.executeSQLCommand(connection, getSqlForSIs());
     }
 

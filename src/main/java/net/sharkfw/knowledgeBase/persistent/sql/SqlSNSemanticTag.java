@@ -34,7 +34,6 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
                 field("name"), field("tag_set"), field("tag_kind"))
                 .values(inline(this.getName()), inline(this.getStSetID()), inline(this.getTagKind()))
                 .getSQL();
-        String blubb = this.getName();
         SqlHelper.executeSQLCommand(connection, sql);
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
         SqlHelper.executeSQLCommand(connection, this.getSqlForSIs());
@@ -43,20 +42,34 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
 
     @Override
     public void setPredicate(String type, SNSemanticTag target) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO relation (source_tag_id, target_tag_id, name, semantic_net_id) VALUES "
-                + "(" + this.getId() + "," + target.ID + ",\"" + type + "\"," + semanticNetId + " )");
+
+        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = create.insertInto(table("relation"),
+                field("source_tag_id"), field("target_tag_id"), field("name"), field("semantic_net_id"))
+                .values(inline(this.getId()), inline(target.ID), inline(type), inline(semanticNetId))
+                .getSQL();
         try {
             SqlHelper.executeSQLCommand(connection, sql.toString());
+            this.setId(SqlHelper.getLastCreatedEntry(connection, "relation"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
     public void removePredicate(String type, SNSemanticTag target) {
-
+        String test = target.ID;
+        int i = Integer.valueOf(target.ID);
+        DSLContext delete = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = delete.deleteFrom(table("relation")).where(field("id").eq(this.getId())).
+                and(field("name").eq(type)).and(field("target_tag_id").eq(target.ID)).getSQL(); //TODO: ID useless!!!
+        try {
+            SqlHelper.executeSQLCommand(connection, sql.toString());
+            this.setId(SqlHelper.getLastCreatedEntry(connection, "relation"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

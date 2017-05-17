@@ -28,7 +28,7 @@ public class SqlSTSet implements STSet {
         this.sqlSharkKB = sharkKB;
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO tag_set VALUES (NULL);");
+        sql.append("INSERT INTO tag_set (set_kind) VALUES (\"set\");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         stSetID = SqlHelper.getLastCreatedEntry(connection, "tag_set");
     }

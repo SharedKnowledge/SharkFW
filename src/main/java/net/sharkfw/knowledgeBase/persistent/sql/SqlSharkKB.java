@@ -6,6 +6,7 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import org.jooq.SQLDialect;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,8 +32,9 @@ public class SqlSharkKB implements SharkKB {
     private String dbAddress;
     private String password;
 
-
     private String dialect;
+
+    private SQLDialect jooqDialect = SQLDialect.SQLITE;
     public final String JDBC_SQLITE = "org.sqlite.JDBC";
 //    public final String scriptFile = ".\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\sharkNet.sql";
     public final String scriptFile = "./src/main/java/net/sharkfw/knowledgeBase/persistent/sql/sharkNet.sql";
@@ -107,6 +109,9 @@ public class SqlSharkKB implements SharkKB {
 
     }
 
+    public SQLDialect getJooqDialect() {
+        return jooqDialect;
+    }
 
     public String getDbAddress() {
         return dbAddress;
