@@ -75,7 +75,7 @@ public class SqlHelper {
         }
         finally
         {
-            if (st != null) st.close();
+            //if (st != null) st.close();
         }
         return rs;
     }

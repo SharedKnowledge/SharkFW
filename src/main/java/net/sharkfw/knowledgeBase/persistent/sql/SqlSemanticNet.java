@@ -35,25 +35,26 @@ public class SqlSemanticNet implements SemanticNet {
 
     @Override
     public void setPredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-        StringBuilder sql = new StringBuilder();
-        sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO relation VALUES (source_tag_id, target_tag_id, semantic_net_id, name) (NULL);");
+        source.setPredicate(type, target);
+    }
+
+    @Override
+    public void removePredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
+        source.removePredicate(type, target);
+    }
+
+    @Override
+    public SNSemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
         try {
-            SqlHelper.executeSQLCommand(connection, sql.toString());
+            return new SqlSNSemanticTag(sis, name, stSetID, sqlSharkKB);
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new SharkKBException(e.toString());
         }
     }
 
     @Override
-    public void removePredicate(SNSemanticTag source, SNSemanticTag target, String type) throws SharkKBException {
-
-    }
-
-    @Override
-    public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
-
+    public SNSemanticTag createSemanticTag(String name, String si) throws SharkKBException {
+        return createSemanticTag(name, new String[]{si});
     }
 
     @Override
@@ -63,6 +64,11 @@ public class SqlSemanticNet implements SemanticNet {
 
     @Override
     public void removeSemanticTag(String[] sis) throws SharkKBException {
+
+    }
+
+    @Override
+    public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
 
     }
 
@@ -86,15 +92,7 @@ public class SqlSemanticNet implements SemanticNet {
         return null;
     }
 
-    @Override
-    public SNSemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        return null;
-    }
 
-    @Override
-    public SNSemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        return null;
-    }
 
     @Override
     public void removeSemanticTag(SNSemanticTag tag) throws SharkKBException {

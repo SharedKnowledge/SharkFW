@@ -3,8 +3,13 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 import net.sharkfw.knowledgeBase.SNSemanticTag;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
+
 import org.jooq.*;
 import org.jooq.impl.*;
 import static org.jooq.impl.DSL.*;
@@ -46,11 +51,10 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
         String sql = create.insertInto(table("relation"),
                 field("source_tag_id"), field("target_tag_id"), field("name"), field("semantic_net_id"))
-                .values(inline(this.getId()), inline(target.ID), inline(type), inline(semanticNetId))
+                .values(inline(this.getId()), inline(target.ID), inline(type), inline(semanticNetId)) //TODO: ID useless!!!
                 .getSQL();
         try {
             SqlHelper.executeSQLCommand(connection, sql.toString());
-            this.setId(SqlHelper.getLastCreatedEntry(connection, "relation"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -66,7 +70,6 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
                 and(field("name").eq(type)).and(field("target_tag_id").eq(target.ID)).getSQL(); //TODO: ID useless!!!
         try {
             SqlHelper.executeSQLCommand(connection, sql.toString());
-            this.setId(SqlHelper.getLastCreatedEntry(connection, "relation"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -74,7 +77,12 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
 
     @Override
     public Enumeration<String> predicateNames() {
-        return null;
+
+        DSLContext se = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = se.select(field("name")).from("relation").where(field("source_tag_id").eq(inline(this.getId()))).getSQL();
+        Result<Record> result =  se.fetch(sql);
+        List<String> list = (List<String>) result.getValues("name");
+        return Collections.enumeration(list);
     }
 
     @Override

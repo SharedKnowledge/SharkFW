@@ -15,7 +15,7 @@ import java.util.Enumeration;
 public class SqlSemanticTag implements SemanticTag
 {
     private int id;
-    public String ID;
+    public  String ID;
     private String[] sis;
     private String name;
     private int stSetID;
