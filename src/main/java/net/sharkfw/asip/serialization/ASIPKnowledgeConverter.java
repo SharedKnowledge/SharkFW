@@ -158,7 +158,7 @@ public class ASIPKnowledgeConverter {
                         if(!name.isEmpty()){
                             asipInformation.setName(name);
                         }
-                    } catch (StringIndexOutOfBoundsException e){
+                    } catch (StringIndexOutOfBoundsException | ArrayIndexOutOfBoundsException e){
                         throw new ASIPSerializerException("Message not complete yet");
                     }
 
