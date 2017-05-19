@@ -352,7 +352,7 @@ public class SyncManager {
             try {
                 if(SharkCSAlgebra.isIn(component.getApprovedMembers(), peer) || SharkCSAlgebra.identical(component.getOwner(), peer)){
                     doSync(component, peer);
-                    L.d(peer.getName() + " already is an approved Member or the Owner so try to SYNC!", this);
+//                    L.d(peer.getName() + " already is an approved Member or the Owner so try to SYNC!", this);
                 } else if(SharkCSAlgebra.isIn(component.getMembers(), peer)){
                     doInvite(component, peer);
                     L.d(peer.getName() + " is a Member so INVITE!", this);
@@ -407,7 +407,7 @@ public class SyncManager {
             @Override
             public void run() {
 
-                L.d("Start sending an Expose to " + peerSemanticTag.getName(), this);
+//                L.d("Start sending an Expose to " + peerSemanticTag.getName(), this);
 
                 String[] addresses = peerSemanticTag.getAddresses();
                 if(addresses==null || addresses.length==0) return;
