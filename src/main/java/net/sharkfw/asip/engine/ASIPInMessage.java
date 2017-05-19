@@ -94,7 +94,7 @@ public class ASIPInMessage extends ASIPMessage implements ASIPConnection {
                 if(!holder.isASIP()){
                     return false;
                 }
-                jsonMessageBuffer = new byte[holder.getMessageLength()];
+                jsonMessageBuffer = new byte[(int) holder.getMessageLength()];
                 messageRead = 0;
 //                L.d("Config read", this);
             }

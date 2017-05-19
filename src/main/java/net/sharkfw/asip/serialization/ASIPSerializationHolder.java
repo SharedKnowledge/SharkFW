@@ -1,7 +1,8 @@
 package net.sharkfw.asip.serialization;
 
 import net.sharkfw.asip.engine.ASIPMessage;
-import net.sharkfw.system.L;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by j4rvis on 12/7/16.
@@ -29,8 +30,7 @@ public class ASIPSerializationHolder {
     private String version;
 
     public ASIPSerializationHolder(String message) throws ASIPSerializerException {
-
-        if(!message.isEmpty()) {
+        if (!message.isEmpty()) {
             this.protocolConfig = message.substring(0, CONFIG_LENGTH);
             this.format = this.protocolConfig.substring(0, FIELD_LENGTH_FORMAT);
             this.version = this.protocolConfig.substring(FIELD_LENGTH_FORMAT, FIELD_LENGTH_FORMAT + FIELD_LENGTH_VERSION);
@@ -43,48 +43,15 @@ public class ASIPSerializationHolder {
                 throw new ASIPSerializerException("String can't be converted to an Integer: " + e.getMessage());
             }
         }
-
-//        if(!message.isEmpty()){
-//            protocolConfig = message.substring(0, jsonMessageBeginIndex);
-////            L.d("ProtocolConfig: " + protocolConfig, this);
-//            String format = protocolConfig.substring(0, FIELD_LENGTH_FORMAT);
-//            String version = protocolConfig.substring(FIELD_LENGTH_FORMAT, FIELD_LENGTH_FORMAT + FIELD_LENGTH_VERSION);
-//            String messageLengthTemp = protocolConfig.substring(FIELD_LENGTH_FORMAT + FIELD_LENGTH_VERSION, jsonMessageBeginIndex);
-//            messageLengthTemp = messageLengthTemp.replaceFirst("^0+(?!$)", "");
-//
-//            try {
-//                messageLength = Integer.parseInt(messageLengthTemp);
-////                L.d("MessageLength=" + messageLength, this);
-////                L.d("message.length=" + message.length(), this);
-////                L.d("jsonMessageBeginIndex + messageLength=" + (jsonMessageBeginIndex + messageLength), this);
-//            } catch (NumberFormatException e){
-//                throw new ASIPSerializerException("String can't be converted to an Integer: " + e.getMessage());
-//            }
-//
-//            if(message.length() >= jsonMessageBeginIndex + messageLength){
-//                message = message.substring(jsonMessageBeginIndex, jsonMessageBeginIndex + messageLength);
-//                if(message.length() > jsonMessageBeginIndex + messageLength){
-//                    try {
-//                        content = Base64.decode(message.substring(jsonMessageBeginIndex + messageLength));
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            } else {
-//                throw new ASIPSerializerException("The message is too short.");
-//            }
-//        } else {
-//            throw new ASIPSerializerException("Message is empty.");
-//        }
     }
 
-    public ASIPSerializationHolder(ASIPMessage message, String jsonString, byte[] content){
+    public ASIPSerializationHolder(ASIPMessage message, String jsonString, byte[] content) {
         this.prepareProtocolConfig(message, jsonString);
         this.message = jsonString;
         this.content = content;
     }
 
-    private void prepareProtocolConfig(ASIPMessage message, String serializedMessage){
+    private void prepareProtocolConfig(ASIPMessage message, String serializedMessage) {
         this.protocolConfig += message.getFormat();
         this.protocolConfig += message.getVersion();
         this.protocolConfig += String.format("%09d", serializedMessage.length());
@@ -94,27 +61,35 @@ public class ASIPSerializationHolder {
         return this.message;
     }
 
-    public byte[] getContent() {
-        return this.content;
-    }
-
-    public boolean isASIP(){
-        return this.version.equals("ASIP1.0");
-    }
-
-    public int getMessageLength(){
-        return this.messageLength;
-    }
-
-    public String asString(){
-        return this.protocolConfig + this.message;
-    }
-
     public void setMessage(String message) {
         this.message = message;
     }
 
+    public byte[] getContent() {
+        return this.content;
+    }
+
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    public long getContentLength() {
+        return this.content!=null ? this.content.length : 0;
+    }
+
+    public boolean isASIP() {
+        return this.version.equals("ASIP1.0");
+    }
+
+    public long getMessageLength() {
+        return this.messageLength;
+    }
+
+    public byte[] messageAsUtf8Bytes(){
+        return (this.protocolConfig + this.message).getBytes(StandardCharsets.UTF_8);
+    }
+
+    public long length() {
+        return this.protocolConfig.length() + this.getMessageLength() + this.getContentLength();
     }
 }

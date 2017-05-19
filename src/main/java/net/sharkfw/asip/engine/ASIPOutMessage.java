@@ -3,9 +3,7 @@ package net.sharkfw.asip.engine;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
-import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
 import net.sharkfw.asip.serialization.ASIPMessageSerializer;
-import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
@@ -49,12 +47,7 @@ public class ASIPOutMessage extends ASIPMessage {
 
     public ASIPOutMessage(SharkEngine engine, StreamConnection connection, ASIPInMessage in, SemanticTag topic, SemanticTag type) throws SharkKBException {
         super(engine, connection, (in.getTtl() - 1), engine.getOwner(), in.getLogicalSender(), in.getPhysicalSender(), in.getReceiverSpatial(), in.getReceiverTime(), topic, type);
-
         this.recipientAddress = connection.getReceiverAddressString();
-        // TODO throws error!
-//        PeerSemanticTag receiver = in.getSender();
-//        receiver.addAddress(this.recipientAddress);
-//        this.setReceiverPeer(receiver);
         this.os = connection.getOutputStream();
     }
 
@@ -115,7 +108,8 @@ public class ASIPOutMessage extends ASIPMessage {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
         try {
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeExpose(this, interest);
-            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
+            L.d("Sending an Expose with the complete Size of " + holder.length() + " Bytes", this);
+            this.os.write(holder.messageAsUtf8Bytes());
         } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
@@ -123,14 +117,11 @@ public class ASIPOutMessage extends ASIPMessage {
     }
 
     public void insert(ASIPKnowledge knowledge) {
-
         this.setCommand(ASIPMessage.ASIP_INSERT);
-
-//        this.initSecurity();
-
         try {
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeInsert(this, knowledge);
-            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
+            L.d("Sending an Insert with the complete Size of " + holder.length() + " Bytes", this);
+            this.os.write(holder.messageAsUtf8Bytes());
             this.os.write(holder.getContent());
         } catch (SharkKBException | IOException e) {
             e.printStackTrace();
@@ -139,17 +130,12 @@ public class ASIPOutMessage extends ASIPMessage {
     }
 
     public void raw(byte[] raw) {
-
         this.setCommand(ASIPMessage.ASIP_RAW);
-
-//        this.initSecurity();
-
         try {
-
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeRaw(this, raw);
-            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
+            L.d("Sending a Raw with the complete Size of " + holder.length() + " Bytes", this);
+            this.os.write(holder.messageAsUtf8Bytes());
             this.os.write(holder.getContent());
-
         } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
@@ -158,20 +144,12 @@ public class ASIPOutMessage extends ASIPMessage {
 
     public void raw(InputStream inputStream) {
         this.setCommand(ASIPMessage.ASIP_RAW);
-
-//        this.initSecurity();
-
         try {
-
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeRaw(this, inputStream);
-            this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
+            L.d("Sending a Raw with the complete Size of " + holder.length() + " Bytes", this);
+            this.os.write(holder.messageAsUtf8Bytes());
             this.os.write(holder.getContent());
-
-        } catch (SharkKBException e) {
-            L.d("Serialize failed");
-            e.printStackTrace();
-        } catch (IOException e) {
-            L.d("Write failed");
+        } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
         this.sent();
