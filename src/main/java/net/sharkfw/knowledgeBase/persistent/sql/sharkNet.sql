@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS tag_set (
 CREATE TABLE IF NOT EXISTS semantic_tag(
 	id integer PRIMARY KEY autoincrement,
 	name text,
+	system_property text,
 	property text,
 	tag_set integer,
 	tag_kind text,
