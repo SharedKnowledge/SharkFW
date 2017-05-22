@@ -46,8 +46,13 @@ public class SqlSTSet implements STSet {
     }
 
     @Override
+    public SemanticTag getSemanticTag(String si) throws SharkKBException {
+        return new SqlSemanticTag(si, stSetID, sqlSharkKB);
+    }
+
+    @Override
     public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
-        return new SqlSemanticTag(si[0], stSetID, sqlSharkKB);
+        return new SqlSemanticTag(si[0], stSetID, sqlSharkKB); //TODO: multiple SIs ?
     }
 
     @Override
@@ -85,12 +90,28 @@ public class SqlSTSet implements STSet {
 
     @Override
     public void removeSemanticTag(String si) throws SharkKBException {
-
+        DSLContext delete = DSL.using(connection, SQLDialect.SQLITE);
+        String sqlTag = delete.deleteFrom(table("semantic_tag").join("subject_identifier")
+                .on(field("identifier").eq(inline(si)))).where((field("tag_set")
+                .eq(inline(stSetID)))).and(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(connection, sqlTag.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void removeSemanticTag(String[] sis) throws SharkKBException {
-
+        DSLContext delete = DSL.using(connection, SQLDialect.SQLITE);
+        String sqlTag = delete.deleteFrom(table("semantic_tag").join("subject_identifier")
+                .on(field("identifier").eq(inline(sis[0])))).where((field("tag_set")
+                .eq(inline(stSetID)))).and(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(connection, sqlTag.toString()); //TODO: multiple SIs?
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -115,10 +136,7 @@ public class SqlSTSet implements STSet {
         return null;
     }
 
-    @Override
-    public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        return null;
-    }
+
 
     @Override
     public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException {

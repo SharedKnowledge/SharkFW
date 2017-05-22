@@ -91,12 +91,13 @@ public class SqlSemanticTag implements SemanticTag
             throw new SharkKBException(e.toString());
         }
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("SELECT FROM semantic_tag, subject_identifier WHERE semantic_tag.id = tag_id AND tag_set = " + stSetID + " AND identifier = \"" + si + "\";");
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getEntry.selectFrom(table("semantic_tag").join("subject_identifier")
+                .on(field("identifier").eq(inline(si)))).where((field("tag_set")
+                .eq(inline(stSetID)))).and(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
         String propertyString = null;
         try {
-            ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql.toString());
+            ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
             if (rs != null) {
                 this.name = rs.getString("name");
                 this.sis = new String[]{si};
@@ -116,7 +117,7 @@ public class SqlSemanticTag implements SemanticTag
         Map<String, String> map = new HashMap<>();
         String[] keyValues = propertyString.split(";");
         String[] keyValue;
-        for (int i = 0; i < keyValues.length - 1; i++) {
+        for (int i = 0; i < keyValues.length; i++) {
             keyValue = keyValues[i].split(":");
             map.put(keyValue[0], keyValue[1]);
         }

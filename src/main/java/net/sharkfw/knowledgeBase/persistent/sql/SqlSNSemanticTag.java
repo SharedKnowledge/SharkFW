@@ -59,7 +59,7 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
                 .values(inline(this.getId()), inline(target.getSystemProperty("ID")), inline(type), inline(semanticNetId))
                 .getSQL();
         try {
-            SqlHelper.executeSQLCommand(connection, sql.toString());
+            SqlHelper.executeSQLCommand(connection, sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }

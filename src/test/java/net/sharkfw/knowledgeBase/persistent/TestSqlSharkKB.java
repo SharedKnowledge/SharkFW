@@ -74,7 +74,19 @@ public class TestSqlSharkKB {
         tagSN.setPredicate("TestPre", tagSN2);
         tagSN.setPredicate("TestPre2", tagSN2);
         Enumeration<String> result = tagSN.predicateNames();
+        tagSN.sourceTags("TestPre");
         int i = 0;
+
+        tag = new SqlSemanticTag(sis3, "testTag", stSet.getStSetID(), sqlSharkKB);
+        tag.setProperty("P1", "AA");
+        tag.setProperty("P2", "BB");
+        tag.setProperty("P3", "CC");
+
+        SemanticTag tagReturned = stSet.getSemanticTag(sis3[0]);
+        assertEquals("BB", tagReturned.getProperty("P2"));
+
+
+
         i++;
         //tagSN.removePredicate("TestPre", tagSN2);
         /*tag = new SqlSemanticTag(sis1, "testTag", stSet.getStSetID(), sqlSharkKB);
