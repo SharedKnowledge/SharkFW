@@ -1,10 +1,17 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.*;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 import java.sql.*;
 import java.util.Enumeration;
 import java.util.Iterator;
+
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.inline;
+import static org.jooq.impl.DSL.table;
 
 /**
  * Created by Dustin Feurich
@@ -44,23 +51,36 @@ public class SqlSTSet implements STSet {
     }
 
     @Override
-    public SemanticTag merge(SemanticTag tag) throws SharkKBException {
-        return null;
-    }
-
-    @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        return null;
+        try {
+            return new SqlSemanticTag(sis, name, stSetID, sqlSharkKB);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        }
     }
 
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
-        return null;
+        try {
+            return new SqlSemanticTag(new String[]{si}, name, stSetID, sqlSharkKB);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        }
     }
 
     @Override
     public void removeSemanticTag(SemanticTag tag) throws SharkKBException {
-
+        DSLContext delete = DSL.using(connection, SQLDialect.SQLITE);
+        String sqlTag = delete.deleteFrom(table("semantic_tag")).where(field("system_property").eq(tag.getSystemProperty("ID"))).getSQL();
+        String sqlSI = delete.deleteFrom(table("subject_identifier")).where(field("tag_id").eq(Integer.valueOf(tag.getSystemProperty("ID")))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(connection, sqlTag.toString());
+            SqlHelper.executeSQLCommand(connection, sqlSI.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -72,6 +92,13 @@ public class SqlSTSet implements STSet {
     public void removeSemanticTag(String[] sis) throws SharkKBException {
 
     }
+
+    @Override
+    public SemanticTag merge(SemanticTag tag) throws SharkKBException {
+        return null;
+    }
+
+
 
     @Override
     public void setEnumerateHiddenTags(boolean hide) {

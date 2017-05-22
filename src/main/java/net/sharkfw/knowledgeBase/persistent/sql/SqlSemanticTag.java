@@ -48,6 +48,7 @@ public class SqlSemanticTag implements SemanticTag
      */
     public SqlSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB) throws SQLException {
         this(sis, name, "normal", stSetID);
+        properties = new HashMap<>();
         try {
             Class.forName(sharkKB.getDialect());
             connection = DriverManager.getConnection(sharkKB.getDbAddress());
@@ -197,7 +198,6 @@ public class SqlSemanticTag implements SemanticTag
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             sb.append(pair.getKey() + ":" + pair.getValue() + ";");
-            it.remove();
         }
 
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
