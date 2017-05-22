@@ -872,6 +872,17 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return null;
     }
 
+    public ASIPOutMessage createASIPOutResponse(MessageStub stub, ASIPInMessage inMessage, SemanticTag topic, SemanticTag type) throws SharkKBException {
+
+        if (topic == null) {
+            topic = inMessage.getTopic();
+        }
+        if (type == null) {
+            type = inMessage.getType();
+        }
+        return new ASIPOutMessage(this, stub, inMessage, topic, type);
+    }
+
     public ASIPOutMessage createASIPOutMessage(String[] addresses, PeerSemanticTag receiver) {
         return this.createASIPOutMessage(addresses, this.engineOwnerPeer, receiver, null, null, null, null, 10);
     }

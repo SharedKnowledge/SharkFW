@@ -6,7 +6,6 @@
 package net.sharkfw.asip;
 
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
-import net.sharkfw.knowledgeBase.Interest;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
@@ -17,8 +16,7 @@ import net.sharkfw.knowledgeBase.SpatialSTSet;
 import net.sharkfw.knowledgeBase.TimeSTSet;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
-import net.sharkfw.asip.serialization.ASIPMessageSerializer;
+import net.sharkfw.peer.J2SESharkEngine;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.system.SharkNotSupportedException;
 import org.junit.*;
@@ -288,7 +286,7 @@ public class ASIPMessageSerializerTest {
 //    @Test
     public void coordinateSerializationTest() throws SharkKBException, SharkNotSupportedException {
 
-        J2SEAndroidSharkEngine se = new J2SEAndroidSharkEngine();
+        J2SESharkEngine se = new J2SESharkEngine();
         SharkKB kb = new InMemoSharkKB();
         
         ASIPInterest co1 = InMemoSharkKB.createInMemoASIPInterest(topics, types, p4, approvers, receivers, times, locations, 0);

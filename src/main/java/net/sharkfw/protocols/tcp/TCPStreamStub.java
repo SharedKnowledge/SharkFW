@@ -8,9 +8,8 @@ import java.util.StringTokenizer;
 
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.Knowledge;
 
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
+import net.sharkfw.peer.J2SESharkEngine;
 import net.sharkfw.protocols.ConnectionStatusListener;
 import net.sharkfw.protocols.RequestHandler;
 import net.sharkfw.protocols.StreamConnection;
@@ -154,7 +153,7 @@ public class TCPStreamStub implements StreamStub {
         if (this.server != null) {
             addr += Integer.toString(this.server.getPortNumber());
         } else {
-			addr += J2SEAndroidSharkEngine.defaultTCPPort;
+			addr += J2SESharkEngine.defaultTCPPort;
         }
         L.d("Local address is: "+addr, this);
         return addr;

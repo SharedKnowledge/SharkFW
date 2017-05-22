@@ -2,6 +2,7 @@ package net.sharkfw.asip.engine;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
 import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
@@ -9,6 +10,7 @@ import net.sharkfw.asip.serialization.ASIPSerializationHolder;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.protocols.MessageStub;
+import net.sharkfw.protocols.Protocols;
 import net.sharkfw.protocols.StreamConnection;
 import net.sharkfw.system.L;
 
@@ -74,6 +76,21 @@ public class ASIPOutMessage extends ASIPMessage {
         this.os = new ByteArrayOutputStream();
     }
 
+    public ASIPOutMessage(SharkEngine engine, MessageStub stub, ASIPInMessage in, SemanticTag topic, SemanticTag type) throws SharkKBException {
+        super(engine, stub, (in.getTtl() - 1), engine.getOwner(), in.getLogicalSender(), in.getPhysicalSender(), in.getReceiverSpatial(), in.getReceiverTime(), topic, type);
+        this.outStub = stub;
+        for (String s : in.getPhysicalSender().getAddresses()) {
+            try {
+                if(!Protocols.isStreamProtocol(Protocols.getValueByAddress(s))){
+                    this.recipientAddress = s;
+                }
+            } catch (SharkProtocolNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.os = new ByteArrayOutputStream();
+    }
+
 
     public boolean responseSent() {
         return this.responseSent;
@@ -82,7 +99,6 @@ public class ASIPOutMessage extends ASIPMessage {
     private void sent() {
 
         try {
-//            this.osw.flush();
             this.os.flush();
             if (outStub != null) {
                 final byte[] msg = ((ByteArrayOutputStream) this.os).toByteArray();
@@ -97,15 +113,10 @@ public class ASIPOutMessage extends ASIPMessage {
 
     public void expose(ASIPInterest interest) {
         this.setCommand(ASIPMessage.ASIP_EXPOSE);
-
-//        this.initSecurity();
-
         try {
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeExpose(this, interest);
             this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
         this.sent();
@@ -121,9 +132,7 @@ public class ASIPOutMessage extends ASIPMessage {
             ASIPSerializationHolder holder = ASIPMessageSerializer.serializeInsert(this, knowledge);
             this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
             this.os.write(holder.getContent());
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
         this.sent();
@@ -141,11 +150,7 @@ public class ASIPOutMessage extends ASIPMessage {
             this.os.write(holder.asString().getBytes(StandardCharsets.UTF_8));
             this.os.write(holder.getContent());
 
-        } catch (SharkKBException e) {
-            L.d("Serialize failed");
-            e.printStackTrace();
-        } catch (IOException e) {
-            L.d("Write failed");
+        } catch (SharkKBException | IOException e) {
             e.printStackTrace();
         }
         this.sent();

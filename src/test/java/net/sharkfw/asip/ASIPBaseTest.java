@@ -2,7 +2,7 @@ package net.sharkfw.asip;
 
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
+import net.sharkfw.peer.J2SESharkEngine;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import org.junit.After;
@@ -38,7 +38,7 @@ public class ASIPBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        engine = new J2SEAndroidSharkEngine();
+        engine = new J2SESharkEngine();
         connection = new TestConnection();
 
         L.setLogLevel(L.LOGLEVEL_ALL);

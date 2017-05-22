@@ -3,7 +3,7 @@ package net.sharkfw.asip;
 import java.util.Iterator;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
+import net.sharkfw.peer.J2SESharkEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class ASIPPortPersistence {
     @Test
     public void overwriteNotUniqueObjects() throws SharkException {
         SharkKB kb = new InMemoSharkKB();
-        SharkEngine se = new J2SEAndroidSharkEngine(kb);
+        SharkEngine se = new J2SESharkEngine(kb);
         ASIPPort port1 = new AnPersistentASIPPort(se, "Nummer eins", false);
         ASIPPort port2 = new AnPersistentASIPPort(se, "Nummer zwei", false);
         
@@ -47,7 +47,7 @@ public class ASIPPortPersistence {
         L.d(L.properties2String(kb), this);
 
         // re-fresh..
-        SharkEngine se2 = new J2SEAndroidSharkEngine(kb);
+        SharkEngine se2 = new J2SESharkEngine(kb);
         
         Iterator<ASIPPort> allPorts = se2.getAllPorts();
         int i = 0;
@@ -63,7 +63,7 @@ public class ASIPPortPersistence {
     @Test
     public void persistTwoUniqueObject() throws SharkException {
         SharkKB kb = new InMemoSharkKB();
-        SharkEngine se = new J2SEAndroidSharkEngine(kb);
+        SharkEngine se = new J2SESharkEngine(kb);
         ASIPPort port1 = new AnPersistentASIPPort(se, "Nummer eins", true);
         ASIPPort port2 = new AnPersistentASIPPort(se, "Nummer zwei", true);
         
@@ -75,7 +75,7 @@ public class ASIPPortPersistence {
         L.d(L.properties2String(kb), this);
 
         // refresh..
-        SharkEngine se2 = new J2SEAndroidSharkEngine(kb);
+        SharkEngine se2 = new J2SESharkEngine(kb);
         
         Iterator<ASIPPort> allPorts = se2.getAllPorts();
         int i = 0;
@@ -90,7 +90,7 @@ public class ASIPPortPersistence {
     @Test
     public void removePort() throws SharkException {
         SharkKB kb = new InMemoSharkKB();
-        SharkEngine se = new J2SEAndroidSharkEngine(kb);
+        SharkEngine se = new J2SESharkEngine(kb);
         ASIPPort port1 = new AnPersistentASIPPort(se, "Nummer eins", true);
         ASIPPort port2 = new AnPersistentASIPPort(se, "Nummer zwei", true);
         
@@ -104,7 +104,7 @@ public class ASIPPortPersistence {
         L.d(L.properties2String(kb), this);
 
         // refresh
-        SharkEngine se2 = new J2SEAndroidSharkEngine(kb);
+        SharkEngine se2 = new J2SESharkEngine(kb);
         
         Iterator<ASIPPort> allPorts = se2.getAllPorts();
         int i = 0;

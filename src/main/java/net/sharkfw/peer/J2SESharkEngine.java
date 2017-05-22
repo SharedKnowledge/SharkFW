@@ -31,7 +31,7 @@ import java.util.Map;
  * @author thsc
  * @author mfi
  */
-public class J2SEAndroidSharkEngine extends SharkEngine {
+public class J2SESharkEngine extends SharkEngine {
 
     // Mail parameter
     private String smtpHost;
@@ -59,12 +59,12 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
     /**
      * Create a new J2SESharkEngine.
      */
-    public J2SEAndroidSharkEngine() {
+    public J2SESharkEngine() {
         super();
         this.init();
     }
 
-    public J2SEAndroidSharkEngine(SharkKB storage) {
+    public J2SESharkEngine(SharkKB storage) {
         super(storage);
         this.init();
     }
@@ -496,7 +496,7 @@ public class J2SEAndroidSharkEngine extends SharkEngine {
 //
 //            this.ph.setSystemProperty(USE_WHITE_LIST, Boolean.toString(this.useWhiteList));
 
-        // others - move to J2SEAndroidSharkEngine
+        // others - move to J2SESharkEngine
 
 
 //        }

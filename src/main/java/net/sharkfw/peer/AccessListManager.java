@@ -159,7 +159,7 @@ public class AccessListManager implements WhiteAndBlackListManager {
 
             this.ph.setSystemProperty(USE_WHITE_LIST, Boolean.toString(this.useWhiteList));
             
-            // others - move to J2SEAndroidSharkEngine
+            // others - move to J2SESharkEngine
             
             
         }

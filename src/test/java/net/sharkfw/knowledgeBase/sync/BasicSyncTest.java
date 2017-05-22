@@ -48,12 +48,12 @@ public class BasicSyncTest {
 
         syncKB1.addInformation("Test data", asipSpace);
         
-        L.setLogLevel(L.LOGLEVEL_ALL);
-        L.d(L.kb2String(target1, true));
+//        L.setLogLevel(L.LOGLEVEL_ALL);
+//        L.d(L.kb2String(target1, true));
         
         Long t1 = System.currentTimeMillis();
 
-        L.setLogLevel(L.LOGLEVEL_SILENT);
+//        L.setLogLevel(L.LOGLEVEL_SILENT);
         Thread.sleep(10);
 
         // get changes - should be empty
@@ -74,20 +74,20 @@ public class BasicSyncTest {
         
         syncKB1.addInformation("like ice cream too", asipSpace2);
         
-        L.setLogLevel(L.LOGLEVEL_ALL);
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-        L.d("KB: After adding something to kb\n");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-        L.d(L.kb2String(target1, true));
-
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-        L.d("CHANGES KB: After adding something to kb\n");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//        L.setLogLevel(L.LOGLEVEL_ALL);
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//        L.d("KB: After adding something to kb\n");
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//        L.d(L.kb2String(target1, true));
+//
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//        L.d("CHANGES KB: After adding something to kb\n");
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         
         Thread.sleep(10);
         changes = syncKB1.getChanges(t1);
-        L.d(L.kb2String(changes, true));
-        L.setLogLevel(L.LOGLEVEL_SILENT);
+//        L.d(L.kb2String(changes, true));
+//        L.setLogLevel(L.LOGLEVEL_SILENT);
         
         Assert.assertNotNull(changes.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/bob.html"));
         Assert.assertNull(changes.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/alice.html"));
@@ -101,13 +101,13 @@ public class BasicSyncTest {
         SyncKB syncKB2 = new SyncKB(target2);
 
         syncKB2.putChanges(changes);
-        L.setLogLevel(L.LOGLEVEL_ALL);
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-        L.d("TARGET KB: After putChanges()\n");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-
-        L.d(L.kb2String(target2, true));
-        L.setLogLevel(L.LOGLEVEL_SILENT);
+//        L.setLogLevel(L.LOGLEVEL_ALL);
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//        L.d("TARGET KB: After putChanges()\n");
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//
+//        L.d(L.kb2String(target2, true));
+//        L.setLogLevel(L.LOGLEVEL_SILENT);
 
         Assert.assertNotNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/bob.html"));
         Assert.assertNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/alice.html"));

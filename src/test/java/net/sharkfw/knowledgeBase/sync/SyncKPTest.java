@@ -6,11 +6,9 @@ import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
-import net.sharkfw.peer.J2SEAndroidSharkEngine;
+import net.sharkfw.peer.J2SESharkEngine;
 import net.sharkfw.peer.SharkEngine;
-import net.sharkfw.system.L;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,20 +50,20 @@ public class SyncKPTest {
 
         syncKB1.addInformation("Test data", asipSpace);
         
-        L.setLogLevel(L.LOGLEVEL_ALL);
+//        L.setLogLevel(L.LOGLEVEL_ALL);
 //        L.d(L.kb2String(target1, true));
         
-        L.setLogLevel(L.LOGLEVEL_SILENT);
+//        L.setLogLevel(L.LOGLEVEL_SILENT);
         
         // setup engine 1
-        SharkEngine se1 = new J2SEAndroidSharkEngine();
+        SharkEngine se1 = new J2SESharkEngine();
         SemanticTag kbTitel1 = InMemoSharkKB.createInMemoSemanticTag("kb1", "http://kb1.somewhere");
 //        SyncMergeKP kp1 = new SyncMergeKP(se1, syncKB1, kbTitel1);
 
-        L.setLogLevel(L.LOGLEVEL_ALL);
+//        L.setLogLevel(L.LOGLEVEL_ALL);
         
         // setup engine 1
-        SharkEngine se2 = new J2SEAndroidSharkEngine();
+        SharkEngine se2 = new J2SESharkEngine();
         SemanticTag kbTitel2 = InMemoSharkKB.createInMemoSemanticTag("kb2", "http://kb2.somewhere");
         SharkKB target2 = new InMemoSharkKB();
         SyncKB syncKB2 = new SyncKB(target2);
@@ -74,13 +72,13 @@ public class SyncKPTest {
         // do the exchange
         // no import changes into another KB
 
-        L.setLogLevel(L.LOGLEVEL_ALL);
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-        L.d("TARGET KB: After putChanges()\n");
-        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//        L.setLogLevel(L.LOGLEVEL_ALL);
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+//        L.d("TARGET KB: After putChanges()\n");
+//        L.d("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
-        L.d(L.kb2String(target2, true));
-        L.setLogLevel(L.LOGLEVEL_SILENT);
+//        L.d(L.kb2String(target2, true));
+//        L.setLogLevel(L.LOGLEVEL_SILENT);
 
 //        Assert.assertNotNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/bob.html"));
 //        Assert.assertNull(target2.getPeerSTSet().getSemanticTag("http://www.sharksystem.net/alice.html"));

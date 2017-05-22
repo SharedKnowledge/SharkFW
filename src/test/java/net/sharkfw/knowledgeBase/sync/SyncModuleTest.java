@@ -2,7 +2,7 @@
 //
 //import net.sharkfw.knowledgeBase.*;
 //import net.sharkfw.peer.ASIPPort;
-//import net.sharkfw.peer.J2SEAndroidSharkEngine;
+//import net.sharkfw.peer.J2SESharkEngine;
 //import net.sharkfw.peer.SharkEngine;
 //import org.junit.Ignore;
 //import org.junit.Test;
@@ -18,7 +18,7 @@
 //    @Ignore
 //    public void UsageTest(){
 //
-//        SharkEngine se = new J2SEAndroidSharkEngine(SharkKB storage);
+//        SharkEngine se = new J2SESharkEngine(SharkKB storage);
 //
 //        SharkKB storage = se.getStorage();
 //
