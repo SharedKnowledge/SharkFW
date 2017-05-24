@@ -16,7 +16,7 @@ import static org.jooq.impl.DSL.table;
 /**
  * Created by Dustin Feurich
  */
-public class SqlSTSet implements STSet {
+public class SqlSTSet extends AbstractSTSet implements STSet {
 
     private Connection connection;
     private int stSetID;
@@ -25,7 +25,7 @@ public class SqlSTSet implements STSet {
     /**
      * Write StSet to database
      */
-    public SqlSTSet(SqlSharkKB sharkKB) throws SQLException {
+    public SqlSTSet(SqlSharkKB sharkKB, String type) throws SQLException {
         try {
             Class.forName(sharkKB.getDialect());
             connection = DriverManager.getConnection(sharkKB.getDbAddress());
@@ -35,7 +35,7 @@ public class SqlSTSet implements STSet {
         this.sqlSharkKB = sharkKB;
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO tag_set (set_kind) VALUES (\"set\");");
+        sql.append("INSERT INTO tag_set (set_kind) VALUES (\"" + type + "\");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         stSetID = SqlHelper.getLastCreatedEntry(connection, "tag_set");
     }
@@ -47,12 +47,12 @@ public class SqlSTSet implements STSet {
 
     @Override
     public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        return new SqlSemanticTag(si, stSetID, sqlSharkKB);
+        return new SqlSemanticTag(-1, si, stSetID, sqlSharkKB);
     }
 
     @Override
     public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
-        return new SqlSemanticTag(si[0], stSetID, sqlSharkKB); //TODO: multiple SIs ?
+        return new SqlSemanticTag(-1, si[0], stSetID, sqlSharkKB); //TODO: multiple SIs ?
     }
 
     @Override
@@ -158,44 +158,12 @@ public class SqlSTSet implements STSet {
 
     }
 
-    @Override
-    public STSet fragment(SemanticTag anchor, FragmentationParameter fp) throws SharkKBException {
-        return null;
+    public SqlSharkKB getSqlSharkKB() {
+        return sqlSharkKB;
     }
 
-    @Override
-    public STSet contextualize(Enumeration<SemanticTag> anchorSet, FragmentationParameter fp) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public STSet contextualize(Enumeration<SemanticTag> anchorSet) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public STSet contextualize(STSet context, FragmentationParameter fp) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public STSet contextualize(STSet context) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void merge(STSet stSet) throws SharkKBException {
-
-    }
-
-    @Override
-    public void addListener(STSetListener listen) {
-
-    }
-
-    @Override
-    public void removeListener(STSetListener listener) throws SharkKBException {
-
+    public Connection getConnection() {
+        return connection;
     }
 
     @Override
