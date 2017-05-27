@@ -95,6 +95,14 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
         addresses = getAddresses();
     }
 
+    /**
+     * Read from DB
+     */
+    public SqlPeerSemanticTag(int stSet, SqlSharkKB sharkKb) throws SharkKBException {
+        super(-1, null, stSet, sharkKb);
+        addresses = getAddresses();
+    }
+
     @Override
     public String[] getAddresses() {
         DSLContext getAddresses = DSL.using(this.getConnection(), SQLDialect.SQLITE);

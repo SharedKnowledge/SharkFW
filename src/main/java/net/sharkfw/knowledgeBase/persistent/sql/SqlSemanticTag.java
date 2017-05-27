@@ -94,13 +94,16 @@ public class SqlSemanticTag implements SemanticTag
 
         DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
         String sql = null;
-        if (id == -1) {
+        if (id == -1 && si != null) {
             sql = getEntry.selectFrom(table("semantic_tag").join("subject_identifier")
                     .on(field("identifier").eq(inline(si)))).where((field("tag_set")
                     .eq(inline(stSetID)))).and(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
         }
-        else {
+        else if (id >= 0 && si == null) {
             sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(id))).getSQL();
+        }
+        else if (id == -1 && si == null) {
+            sql = getEntry.selectFrom(table("semantic_tag")).where(field("tag_set").eq(inline(stSetID))).getSQL();
         }
         String propertyString = null;
         try {

@@ -23,6 +23,10 @@ public class SqlPeerSTSet extends SqlSTSet implements PeerSTSet {
         super(sharkKB, "peer");
     }
 
+    public SqlPeerSTSet(SqlSharkKB sharkKB, int id) {
+        super(sharkKB, id);
+    }
+
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
         try {

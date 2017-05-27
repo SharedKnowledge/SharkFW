@@ -1,13 +1,14 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticTag;
+import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSemanticTag;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import java.sql.*;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.*;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
@@ -38,6 +39,11 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
         sql.append("INSERT INTO tag_set (set_kind) VALUES (\"" + type + "\");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         stSetID = SqlHelper.getLastCreatedEntry(connection, "tag_set");
+    }
+
+    public SqlSTSet(SqlSharkKB kb, int id) {
+        sqlSharkKB = kb;
+        stSetID = id;
     }
 
     public int getStSetID()
@@ -115,6 +121,42 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
     }
 
     @Override
+    public Enumeration<SemanticTag> tags() throws SharkKBException {
+        return Collections.enumeration(stTagsList());
+    }
+
+    @Override
+    public Iterator<SemanticTag> stTags() throws SharkKBException {
+        return stTagsList().iterator();
+    }
+
+    private List<SemanticTag> stTagsList() throws SharkKBException {
+        DSLContext getTags = DSL.using(this.getConnection(), SQLDialect.SQLITE);
+        String tags = getTags.selectFrom(table("semantic_tag")).where(field("tag_kind")
+                .eq(inline("normal"))).and(field("tag_set").eq(inline(this.getStSetID()))).getSQL();
+        ResultSet rs = null;
+        List<SemanticTag> list = new ArrayList<>();
+        SemanticTag tag;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
+            while (rs.next()) {
+                list.add(new SqlSemanticTag(rs.getInt("id"), null, stSetID, sqlSharkKB));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        }
+        return list;
+    }
+
+    @Override
+    public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException {
+        return null;
+    }
+
+
+    @Override
     public SemanticTag merge(SemanticTag tag) throws SharkKBException {
         return null;
     }
@@ -124,23 +166,6 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
     @Override
     public void setEnumerateHiddenTags(boolean hide) {
 
-    }
-
-    @Override
-    public Enumeration<SemanticTag> tags() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Iterator<SemanticTag> stTags() throws SharkKBException {
-        return null;
-    }
-
-
-
-    @Override
-    public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException {
-        return null;
     }
 
     @Override

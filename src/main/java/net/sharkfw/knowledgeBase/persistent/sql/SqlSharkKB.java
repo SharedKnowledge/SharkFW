@@ -100,6 +100,20 @@ public class SqlSharkKB implements SharkKB {
         SqlHelper.importSQL(connection, targetStream);
     }
 
+    @Override
+    public void setOwner(PeerSemanticTag owner) {
+        try {
+            new SqlPeerSemanticTag(owner.getSI(), owner.getName(), -1, this, owner.getAddresses());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public PeerSemanticTag getOwner() {
+        return null;
+    }
+
     /**
      *
      * @param sharkKB
@@ -326,15 +340,7 @@ public class SqlSharkKB implements SharkKB {
         return 0;
     }
 
-    @Override
-    public void setOwner(PeerSemanticTag owner) {
 
-    }
-
-    @Override
-    public PeerSemanticTag getOwner() {
-        return null;
-    }
 
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {

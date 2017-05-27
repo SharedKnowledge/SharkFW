@@ -26,6 +26,10 @@ public class SqlTimeSTSet extends SqlSTSet implements TimeSTSet {
         super(sharkKB, "time");
     }
 
+    public SqlTimeSTSet(SqlSharkKB sharkKB, int id) {
+        super(sharkKB, id);
+    }
+
     @Override
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
         try {

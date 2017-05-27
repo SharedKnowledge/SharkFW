@@ -29,6 +29,10 @@ public class SqlSpatialSTSet extends SqlSTSet implements SpatialSTSet {
         super(sharkKB, "spatial");
     }
 
+    public SqlSpatialSTSet(SqlSharkKB sharkKB, int id) {
+        super(sharkKB, id);
+    }
+
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry geom) throws SharkKBException {
         try {

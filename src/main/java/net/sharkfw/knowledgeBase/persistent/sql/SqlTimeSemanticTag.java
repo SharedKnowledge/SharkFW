@@ -50,6 +50,7 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
         }
     }
 
+
     @Override
     public long getFrom() {
         return tagStart;
