@@ -14,9 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.table;
+import static org.jooq.impl.DSL.*;
 
 /**
  * Created by Dustin Feurich
@@ -176,7 +174,11 @@ public class SqlSemanticTag implements SemanticTag
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return (String[]) list.toArray();
+        String[] array = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
     }
 
     public int getStSetID() {
