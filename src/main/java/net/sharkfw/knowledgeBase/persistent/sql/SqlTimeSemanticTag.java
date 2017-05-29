@@ -37,7 +37,8 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
                 + "(\'" + this.getName() + "\'," + this.getStSetID() + ",\"" + this.getTagKind() + "\"," + tagDuration + "," + tagStart + ");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
-        SqlHelper.executeSQLCommand(connection, this.getSqlForSIs());
+        String sqlSIs = getSqlForSIs();
+        if (sqlSIs != null) SqlHelper.executeSQLCommand(connection, getSqlForSIs());
 
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
         String update = create.update(table("semantic_tag")).set(field("system_property"), inline(Integer.toString(this.getId()))).where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
@@ -48,6 +49,7 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
             e.printStackTrace();
         }
     }
+
 
     @Override
     public long getFrom() {

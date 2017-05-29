@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.persistent;
 import junit.framework.TestCase;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
 import net.sharkfw.knowledgeBase.persistent.sql.*;
@@ -17,6 +18,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -28,6 +30,7 @@ import static org.junit.Assert.*;
 public class TestSqlSharkKB {
 
     public static final String connection = "jdbc:sqlite:.\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\testShark.db";
+
 
     @Ignore
     @Before
@@ -45,6 +48,20 @@ public class TestSqlSharkKB {
         SqlHelper.executeSQLCommand(con, drops); //Drop database
         rs.close();
         assertNotNull(sqlSharkKB);
+    }
+
+    @Ignore
+    @Test
+    public void testStSets() throws  SQLException, SharkKBException {
+
+        SqlSharkKB sqlSharkKB = new SqlSharkKB(connection, "org.sqlite.JDBC");
+        SqlTimeSTSet timeSet = new SqlTimeSTSet(sqlSharkKB);
+        timeSet.createTimeSemanticTag(11111, 22222);
+        timeSet.createTimeSemanticTag(33333, 44444);
+        timeSet.createTimeSemanticTag(55555, 66666);
+
+        Iterator<TimeSemanticTag> result = timeSet.tstTags();
+        int i = 0;
     }
 
 
@@ -67,7 +84,7 @@ public class TestSqlSharkKB {
         SqlSpatialSemanticTag spatialTag = null;
         SqlPeerSemanticTag peerTag = null;
         SqlSTSet stSet = null;
-        stSet = new SqlSTSet(sqlSharkKB);
+        stSet = new SqlSTSet(sqlSharkKB, "set");
         SqlSNSemanticTag tagSN = new SqlSNSemanticTag(sis1, "testSNST", stSet.getStSetID(), sqlSharkKB);
         assertNotNull(tagSN);
         SqlSNSemanticTag tagSN2 = new SqlSNSemanticTag(sis2, "testSNST2", stSet.getStSetID(), sqlSharkKB);
@@ -84,6 +101,8 @@ public class TestSqlSharkKB {
 
         SemanticTag tagReturned = stSet.getSemanticTag(sis3[0]);
         assertEquals("BB", tagReturned.getProperty("P2"));
+
+
 
 
 

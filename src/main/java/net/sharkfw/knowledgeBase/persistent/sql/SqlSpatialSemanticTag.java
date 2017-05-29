@@ -9,6 +9,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.jooq.impl.DSL.field;
@@ -49,6 +50,19 @@ public class SqlSpatialSemanticTag extends SqlSemanticTag implements SpatialSema
             e.printStackTrace();
         }
     }
+
+    public SqlSpatialSemanticTag(SqlSemanticTag tag) throws SQLException {
+        super(tag.getSis(), tag.getName(), "spatial", tag.getStSetID());
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(getId()))).getSQL();
+        String propertyString = null;
+            ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+            if (rs != null) {
+                wkt = rs.getString("wkt");
+            }
+
+    }
+
 
     @Override
     public SharkGeometry getGeometry() {

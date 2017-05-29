@@ -1,12 +1,16 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
@@ -19,6 +23,15 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     private String[] addresses;
 
+    /**
+     * Write to DB
+     * @param sis
+     * @param name
+     * @param stSetID
+     * @param sharkKB
+     * @param addresses
+     * @throws SQLException
+     */
     public SqlPeerSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB, String[] addresses) throws SQLException {
         super(sis, name, "peer", stSetID);
         this.addresses = addresses;
@@ -64,9 +77,52 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     }
 
+    /**
+     * Read from DB
+     * @param si
+     */
+    public SqlPeerSemanticTag(String si, int stSet, SqlSharkKB sharkKb) throws SharkKBException {
+        super(-1, si ,stSet, sharkKb);
+        addresses = getAddresses();
+    }
+
+    /**
+     * Read from DB
+     * @param id
+     */
+    public SqlPeerSemanticTag(int id, int stSet, SqlSharkKB sharkKb) throws SharkKBException {
+        super(id, null, stSet, sharkKb);
+        addresses = getAddresses();
+    }
+
+    /**
+     * Read from DB
+     */
+    public SqlPeerSemanticTag(int stSet, SqlSharkKB sharkKb) throws SharkKBException {
+        super(-1, null, stSet, sharkKb);
+        addresses = getAddresses();
+    }
+
     @Override
     public String[] getAddresses() {
-        return new String[0];
+        DSLContext getAddresses = DSL.using(this.getConnection(), SQLDialect.SQLITE);
+        String tags = getAddresses.selectFrom(table("address")).where(field("tag_id")
+                .eq(inline(this.getSystemProperty("id")))).getSQL();
+        ResultSet rs = null;
+        List<String> list = new ArrayList<>();
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
+            while (rs.next()) {
+                list.add(rs.getString("address_name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        String[] array = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
     }
 
     @Override

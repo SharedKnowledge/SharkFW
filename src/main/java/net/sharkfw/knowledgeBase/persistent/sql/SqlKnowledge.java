@@ -7,11 +7,72 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.Knowledge;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkVocabulary;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Iterator;
 
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.inline;
+import static org.jooq.impl.DSL.table;
+
 public class SqlKnowledge implements Knowledge {
+
+    private int id;
+    private SqlSharkKB sharkKB;
+    private Connection connection;
+
+    SqlKnowledge(SqlVocabulary vocabulary) throws SharkKBException, SQLException {
+
+        connection = getConnection(sharkKB);
+        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = create.insertInto(table("knowledge"),
+                field("vocabulary")).values(inline(vocabulary.getId())).getSQL();
+        SqlHelper.executeSQLCommand(connection, sql);
+        id = SqlHelper.getLastCreatedEntry(connection, "knowledge");
+
+    }
+
+    SqlKnowledge(int id, SqlSharkKB sharkKB) {
+        this.id = id;
+        this.sharkKB = sharkKB;
+    }
+
+    @Override
+    public SharkVocabulary getVocabulary() {
+
+        try {
+            connection = getConnection(sharkKB);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getSetId.selectFrom(table("knowledge")).where(field("id")
+                .eq(inline(id))).getSQL();
+        ResultSet rs;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+            int vocId = rs.getInt("vocabulary");
+            return new SqlVocabulary(vocId, sharkKB);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
         return null;
@@ -82,13 +143,23 @@ public class SqlKnowledge implements Knowledge {
 
     }
 
-    @Override
-    public SharkVocabulary getVocabulary() {
-        return null;
-    }
 
     @Override
     public int getNumberInformation() throws SharkKBException {
         return 0;
+    }
+
+    private Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
+        try {
+            Class.forName(sharkKB.getDialect());
+            return DriverManager.getConnection(sharkKB.getDbAddress());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        }
+
     }
 }

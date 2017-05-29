@@ -6,7 +6,9 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +18,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
+
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.inline;
+import static org.jooq.impl.DSL.table;
 
 /**
  * Created by Dustin Feurich on 31.03.2017.
@@ -98,6 +105,64 @@ public class SqlSharkKB implements SharkKB {
         File initialFile = new File(scriptFile);
         InputStream targetStream = new FileInputStream(initialFile);
         SqlHelper.importSQL(connection, targetStream);
+    }
+
+    @Override
+    public void setOwner(PeerSemanticTag owner) {
+        try {
+            new SqlPeerSemanticTag(owner.getSI(), owner.getName(), -1, this, owner.getAddresses());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public PeerSemanticTag getOwner() {
+
+        try {
+            return new SqlPeerSemanticTag(-1, this);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
+        DSLContext getAddresses = DSL.using(this.getConnection(), SQLDialect.SQLITE);
+        String tags = getAddresses.selectFrom(table("asip_information")).getSQL();
+        ResultSet rs = null;
+        List<ASIPInformationSpace> list = new ArrayList<>();
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
+            while (rs.next()) {
+                list.add(new SqlAsipInfoSpace(rs.getInt("id"), this));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list.iterator();
+    }
+
+    @Override
+    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
+        return null; //TODO: ID Problem
+    }
+
+    @Override
+    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
+/*        try {
+            return new SqlAsipSpace(topics, types, direction, sender, receiver, approvers, times, locations, this);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; //TODO: ID Problem
+        }*/
+        return null;
+    }
+
+    @Override
+    public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
+        return null;
     }
 
     /**
@@ -326,15 +391,7 @@ public class SqlSharkKB implements SharkKB {
         return 0;
     }
 
-    @Override
-    public void setOwner(PeerSemanticTag owner) {
 
-    }
-
-    @Override
-    public PeerSemanticTag getOwner() {
-        return null;
-    }
 
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
@@ -368,26 +425,6 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
         return null;
     }
 
