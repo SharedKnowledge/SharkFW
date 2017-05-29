@@ -9,6 +9,7 @@ import org.jooq.impl.DSL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.jooq.impl.DSL.field;
@@ -41,9 +42,90 @@ public class SqlVocabulary implements SharkVocabulary {
 
     }
 
+    SqlVocabulary(int id, SqlSharkKB sharkKB) {
+
+        this.id = id;
+        this.sharkKB = sharkKB;
+    }
+
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public PeerSTSet getPeerSTSet() throws SharkKBException {
+        return getPeerSet("peer_net");
+    }
+
+    @Override
+    public SpatialSTSet getSpatialSTSet() throws SharkKBException {
+        try {
+            connection = getConnection(sharkKB);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getSetId.selectFrom(table("vocabulary")).where(field("id")
+                .eq(inline(id))).getSQL();
+        ResultSet rs;
+        int setId = -1;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+            setId = rs.getInt("location_net");
+            if (setId !=  - 1) {
+                return new SqlSpatialSTSet(sharkKB, setId);
+            }
+            else {
+                return null;
+            }
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public TimeSTSet getTimeSTSet() throws SharkKBException {
+        try {
+            connection = getConnection(sharkKB);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getSetId.selectFrom(table("vocabulary")).where(field("id")
+                .eq(inline(id))).getSQL();
+        ResultSet rs;
+        int setId = -1;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+            setId = rs.getInt("time_net");
+            if (setId !=  - 1) {
+                return new SqlTimeSTSet(sharkKB, setId);
+            }
+            else {
+                return null;
+            }
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public STSet getTopicSTSet() throws SharkKBException {
+        return getSet("topic_net");
+    }
+
+    @Override
+    public STSet getTypeSTSet() throws SharkKBException {
+        return getSet("type_net");
     }
 
     @Override
@@ -62,22 +144,12 @@ public class SqlVocabulary implements SharkVocabulary {
     }
 
     @Override
-    public STSet getTopicSTSet() throws SharkKBException {
-        return null;
-    }
-
-    @Override
     public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
         return null;
     }
 
     @Override
     public Taxonomy getTopicsAsTaxonomy() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public STSet getTypeSTSet() throws SharkKBException {
         return null;
     }
 
@@ -91,10 +163,7 @@ public class SqlVocabulary implements SharkVocabulary {
         return null;
     }
 
-    @Override
-    public PeerSTSet getPeerSTSet() throws SharkKBException {
-        return null;
-    }
+
 
     @Override
     public PeerSemanticNet getPeersAsSemanticNet() throws SharkKBException {
@@ -106,15 +175,7 @@ public class SqlVocabulary implements SharkVocabulary {
         return null;
     }
 
-    @Override
-    public TimeSTSet getTimeSTSet() throws SharkKBException {
-        return null;
-    }
 
-    @Override
-    public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-        return null;
-    }
 
     @Override
     public ASIPInterest contextualize(ASIPSpace as) throws SharkKBException {
@@ -126,6 +187,64 @@ public class SqlVocabulary implements SharkVocabulary {
         return null;
     }
 
+    private STSet getSet (String column) {
+        try {
+            connection = getConnection(sharkKB);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getSetId.selectFrom(table("vocabulary")).where(field("id")
+                .eq(inline(id))).getSQL();
+        ResultSet rs;
+        int setId = -1;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+            setId = rs.getInt(column);
+            if (setId !=  - 1) {
+                return new SqlSTSet(sharkKB, setId);
+            }
+            else {
+                return null;
+            }
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private PeerSTSet getPeerSet (String column) {
+        try {
+            connection = getConnection(sharkKB);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getSetId.selectFrom(table("vocabulary")).where(field("id")
+                .eq(inline(id))).getSQL();
+        ResultSet rs;
+        int setId = -1;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+            setId = rs.getInt(column);
+            if (setId !=  - 1) {
+                return new SqlPeerSTSet(sharkKB, setId);
+            }
+            else {
+                return null;
+            }
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
         try {

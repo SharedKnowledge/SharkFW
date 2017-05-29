@@ -20,6 +20,7 @@ import static org.jooq.impl.DSL.table;
 
 public class SqlAsipSpace implements ASIPSpace {
 
+
     private int id;
     private SqlSharkKB sharkKB;
     private Connection connection;
@@ -45,7 +46,14 @@ public class SqlAsipSpace implements ASIPSpace {
 
         }
 
+    SqlAsipSpace(int id, SqlSharkKB sharkKB) {
+        this.id = id;
+        this.sharkKB = sharkKB;
+    }
 
+    public int getId() {
+        return id;
+    }
 
     @Override
     public STSet getTopics() {

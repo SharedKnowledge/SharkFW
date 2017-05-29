@@ -1,10 +1,9 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
+import net.sharkfw.knowledgeBase.SharkKBException;
+
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Scanner;
 
 /**
@@ -102,6 +101,20 @@ public class SqlHelper {
         {
             throw new SQLException();
         }
+    }
+
+    private static Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
+        try {
+            Class.forName(sharkKB.getDialect());
+            return DriverManager.getConnection(sharkKB.getDbAddress());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        }
+
     }
 
 }

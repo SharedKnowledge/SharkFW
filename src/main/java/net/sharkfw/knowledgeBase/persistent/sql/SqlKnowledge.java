@@ -14,6 +14,7 @@ import org.jooq.impl.DSL;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
@@ -25,7 +26,6 @@ public class SqlKnowledge implements Knowledge {
 
     private int id;
     private SqlSharkKB sharkKB;
-    private int location;
     private Connection connection;
 
     SqlKnowledge(SqlVocabulary vocabulary) throws SharkKBException, SQLException {
@@ -37,6 +37,40 @@ public class SqlKnowledge implements Knowledge {
         SqlHelper.executeSQLCommand(connection, sql);
         id = SqlHelper.getLastCreatedEntry(connection, "knowledge");
 
+    }
+
+    SqlKnowledge(int id, SqlSharkKB sharkKB) {
+        this.id = id;
+        this.sharkKB = sharkKB;
+    }
+
+    @Override
+    public SharkVocabulary getVocabulary() {
+
+        try {
+            connection = getConnection(sharkKB);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return null;
+        }
+        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getSetId.selectFrom(table("knowledge")).where(field("id")
+                .eq(inline(id))).getSQL();
+        ResultSet rs;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+            int vocId = rs.getInt("vocabulary");
+            return new SqlVocabulary(vocId, sharkKB);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public int getId() {
+        return id;
     }
 
     @Override
@@ -109,10 +143,6 @@ public class SqlKnowledge implements Knowledge {
 
     }
 
-    @Override
-    public SharkVocabulary getVocabulary() {
-        return null;
-    }
 
     @Override
     public int getNumberInformation() throws SharkKBException {
