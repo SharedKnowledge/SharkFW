@@ -28,15 +28,16 @@ public class SqlKnowledge implements Knowledge {
     private SqlSharkKB sharkKB;
     private Connection connection;
 
-    SqlKnowledge(SqlVocabulary vocabulary) throws SharkKBException, SQLException {
+    public SqlKnowledge(SqlVocabulary vocabulary, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
 
-        connection = getConnection(sharkKB);
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = create.insertInto(table("knowledge"),
-                field("vocabulary")).values(inline(vocabulary.getId())).getSQL();
-        SqlHelper.executeSQLCommand(connection, sql);
-        id = SqlHelper.getLastCreatedEntry(connection, "knowledge");
-
+        this.sharkKB = sharkKB;
+        try (Connection connection = getConnection(this.sharkKB)) {
+            DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+            String sql = create.insertInto(table("knowledge"),
+                    field("vocabulary")).values(inline(vocabulary.getId())).getSQL();
+            SqlHelper.executeSQLCommand(connection, sql);
+            id = SqlHelper.getLastCreatedEntry(connection, "knowledge");
+        }
     }
 
     SqlKnowledge(int id, SqlSharkKB sharkKB) {

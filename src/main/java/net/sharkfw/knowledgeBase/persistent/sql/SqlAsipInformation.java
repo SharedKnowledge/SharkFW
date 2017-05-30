@@ -25,14 +25,15 @@ public class SqlAsipInformation implements ASIPInformation {
     private SqlSharkKB sharkKB;
     private Connection connection;
 
-    SqlAsipInformation(String contentType, int contentLength, byte[] content, String name, SqlAsipInfoSpace infoSpace) throws SharkKBException, SQLException {
+    public SqlAsipInformation(String contentType, int contentLength, byte[] content, String name, SqlAsipInfoSpace infoSpace, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
 
-        connection = getConnection(sharkKB);
+        this.sharkKB = sharkKB;
+        connection = getConnection(this.sharkKB);
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
         String sql = create.insertInto(table("asip_information"),
                 field("content_type"),field("content_length"), field("content_stream"), field("name"), field("asip_information_space_id"))
                 .values(inline(contentType),inline(contentLength),
-                        inline(content), inline(name),inline(infoSpace)).getSQL();
+                        inline(content), inline(name),inline(infoSpace.getId())).getSQL();
 
         SqlHelper.executeSQLCommand(connection, sql);
         id = SqlHelper.getLastCreatedEntry(connection, "asip_information");

@@ -104,10 +104,11 @@ public class SqlSemanticTag implements SemanticTag
             sql = getEntry.selectFrom(table("semantic_tag")).where(field("tag_set").eq(inline(stSetID))).getSQL();
         }
         String propertyString = null;
-        try {
-            ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
             if (rs != null) {
                 this.name = rs.getString("name");
+                this.id = Integer.parseInt(rs.getString("system_property"));
                 this.sis = getSisFromDB();
                 this.stSetID = stSetID;
                 propertyString = rs.getString("property");
@@ -204,7 +205,7 @@ public class SqlSemanticTag implements SemanticTag
 
     @Override
     public String[] getSI() {
-        return new String[0];
+        return sis;
     }
 
     @Override

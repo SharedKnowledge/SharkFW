@@ -27,17 +27,18 @@ public class SqlAsipSpace implements ASIPSpace {
 
 
 
-    SqlAsipSpace(SqlSTSet topics, SqlSTSet types, int direction, SqlPeerSemanticTag sender,
-                 SqlPeerSTSet receivers, SqlPeerSTSet approvers, SqlTimeSTSet times, SqlSpatialSTSet locations, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
+    public SqlAsipSpace(SqlSTSet topics, SqlSTSet types, int direction, PeerSemanticTag sender,
+                        SqlPeerSTSet receivers, SqlPeerSTSet approvers, SqlTimeSTSet times, SqlSpatialSTSet locations, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
 
         connection = getConnection(sharkKB);
+        this.sharkKB = sharkKB;
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
         String sql = create.insertInto(table("asip_space"),
                 field("topic_set"),field("type_set"), field("receiver_set"), field("approver_set"), field("time_set"),
                 field("location_set"), field("sender_peer_tag"), field("direction"))
                 .values(inline(topics != null ? topics.getStSetID() : -1),inline(types != null ? types.getStSetID() : -1),
                         inline(receivers != null ? receivers.getStSetID() : -1), inline(approvers != null ? approvers.getStSetID() : -1),inline(times != null ? times.getStSetID() : -1),
-                        inline(locations != null ? locations.getStSetID() : -1), inline(sender.getId()), inline(direction)).getSQL();
+                        inline(locations != null ? locations.getStSetID() : -1), inline(sender.getSystemProperty("ID")), inline(direction)).getSQL();
 
 
 
@@ -212,10 +213,9 @@ public class SqlAsipSpace implements ASIPSpace {
         DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
         String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
                 .eq(inline(id))).getSQL();
-        ResultSet rs;
+
         int setId = -1;
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
             setId = rs.getInt(column);
             if (setId !=  - 1) {
                 return new SqlSTSet(sharkKB, setId);
@@ -242,10 +242,9 @@ public class SqlAsipSpace implements ASIPSpace {
         DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
         String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
                 .eq(inline(id))).getSQL();
-        ResultSet rs;
+
         int setId = -1;
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
             setId = rs.getInt(column);
             if (setId !=  - 1) {
                 return new SqlPeerSTSet(sharkKB, setId);
