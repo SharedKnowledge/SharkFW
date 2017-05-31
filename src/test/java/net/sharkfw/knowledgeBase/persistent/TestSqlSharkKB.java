@@ -35,7 +35,7 @@ public class TestSqlSharkKB {
     public static final String[] sis3 = new String[]{"si5", "si6"};
     public static final String[] sis4 = new String[]{"si7", "si8"};
 
-    @Ignore
+    //@Ignore
     @Before
     public void testConnectionAndBuild() throws SQLException, ClassNotFoundException {
         SqlSharkKB sqlSharkKB = new SqlSharkKB(connection, "org.sqlite.JDBC");
@@ -53,7 +53,7 @@ public class TestSqlSharkKB {
         assertNotNull(sqlSharkKB);
     }
 
-    @Ignore
+    //@Ignore
     @Test
     public void testStSets() throws  SQLException, SharkKBException {
 
@@ -89,7 +89,7 @@ public class TestSqlSharkKB {
     }
 
 
-    @Ignore
+    //@Ignore
     @Test
     public void testSemanticTagCreation() throws SQLException, SharkKBException {
 
@@ -137,7 +137,7 @@ public class TestSqlSharkKB {
 
     }
 
-    @Ignore
+    //@Ignore
     @Test
     public void testAsipSpace() throws SQLException, SharkKBException {
 
@@ -162,13 +162,15 @@ public class TestSqlSharkKB {
                  peers, times, locations, sqlSharkKB);
         SqlKnowledge knowledge = new SqlKnowledge(vocabulary, sqlSharkKB);
         SqlAsipInfoSpace infoSpace = new SqlAsipInfoSpace(space, knowledge, sqlSharkKB);
+        byte[] contentArray = "TestData".getBytes();
+        SqlAsipInformation information = new SqlAsipInformation( "text", 5, contentArray, "info", infoSpace, sqlSharkKB);
 
-        SqlAsipInformation information = new SqlAsipInformation( "text", 5, "TestData".getBytes(), "info", infoSpace, sqlSharkKB);
-
+        SqlAsipInformation testRead = new SqlAsipInformation(information.getId(), sqlSharkKB);
+        assertArrayEquals(contentArray, testRead.getContentAsByte());
 
     }
 
-    @Ignore
+    //@Ignore
     @Test
     public void testSemanticNet() throws SQLException, SharkKBException {
 

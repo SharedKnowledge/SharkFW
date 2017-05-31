@@ -21,9 +21,15 @@ import static org.jooq.impl.DSL.table;
 
 public class SqlAsipInformation implements ASIPInformation {
 
+    public int getId() {
+        return id;
+    }
+
     private int id;
     private SqlSharkKB sharkKB;
     private Connection connection;
+    private byte[] content;
+    private String contentType;
 
     public SqlAsipInformation(String contentType, int contentLength, byte[] content, String name, SqlAsipInfoSpace infoSpace, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
 
@@ -39,7 +45,7 @@ public class SqlAsipInformation implements ASIPInformation {
         id = SqlHelper.getLastCreatedEntry(connection, "asip_information");
     }
 
-    SqlAsipInformation(int id, SqlSharkKB sharkKB) {
+    public SqlAsipInformation(int id, SqlSharkKB sharkKB) {
 
         this.id = id;
         this.sharkKB = sharkKB;
@@ -47,6 +53,10 @@ public class SqlAsipInformation implements ASIPInformation {
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {
+        return getDataFromDB();
+    }
+
+    private ASIPSpace getDataFromDB() throws SharkKBException {
 
         try {
             connection = getConnection(sharkKB);
@@ -61,12 +71,31 @@ public class SqlAsipInformation implements ASIPInformation {
         try {
             rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
             int id = rs.getInt("asip_information_space_id");
+            content = rs.getBytes("content_stream");
+
             return new SqlAsipSpace(id, sharkKB);
         }
         catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public byte[] getContentAsByte() {
+        if (content != null) {
+            return content;
+        }
+        else {
+            try {
+                getDataFromDB();
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return content;
+        }
+
     }
 
     @Override
@@ -109,10 +138,6 @@ public class SqlAsipInformation implements ASIPInformation {
         return null;
     }
 
-    @Override
-    public byte[] getContentAsByte() {
-        return new byte[0];
-    }
 
     @Override
     public void streamContent(OutputStream os) {
