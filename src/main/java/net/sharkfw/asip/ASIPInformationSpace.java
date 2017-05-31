@@ -20,7 +20,7 @@ import net.sharkfw.knowledgeBase.SystemPropertyHolder;
  * </ul>
  * @author thsc
  */
-public interface ASIPInformationSpace extends SystemPropertyHolder {
+public interface ASIPInformationSpace {
     
     public final static String ASIPSPACE = "ASIPSPACE";
     public final static String INFORMATION = "INFORMATION";

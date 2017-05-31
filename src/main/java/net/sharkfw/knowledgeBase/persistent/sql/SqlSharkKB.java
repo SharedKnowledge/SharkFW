@@ -20,9 +20,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.table;
+import static org.jooq.impl.DSL.*;
 
 /**
  * Created by Dustin Feurich on 31.03.2017.
@@ -184,11 +182,12 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void setSystemProperty(String name, String value) {
-
+        // TODO Use Property table
     }
 
     @Override
     public String getSystemProperty(String name) {
+        // TODO Use Property table
         return null;
     }
 
@@ -219,12 +218,14 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
-
+        // TODO get all Tags with kind topic
         return null;
     }
 
     @Override
     public SemanticNet getTopicsAsSemanticNet() throws SharkKBException {
+        // TODO get all Tags with kind topic
+        // TODO Add relations
         return null;
     }
 
@@ -285,22 +286,23 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void setProperty(String name, String value) throws SharkKBException {
-
+        // todo Get from Property table
     }
 
     @Override
     public String getProperty(String name) throws SharkKBException {
+        // todo Get from Property table
         return null;
     }
 
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-
+        // todo Get from Property table
     }
 
     @Override
     public void removeProperty(String name) throws SharkKBException {
-
+        // todo Get from Property table
     }
 
     @Override
@@ -315,7 +317,34 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
+        /** TODO add/merge
+         * iterator.next;
+         *
+         * add info to INFO -> info_id
+         *
+         *
+         * each dimension as dimension_type
+         *      getTag or createTag -> tag_id
+         *      add to SET info_id, dimension_type, tag_id, space.direction
+         */
+
+
+
+        STSet topics = space.getTopics();
+        Iterator<SemanticTag> semanticTagIterator = topics.stTags();
+        while (semanticTagIterator.hasNext()){
+            SemanticTag next = semanticTagIterator.next();
+
+
+
+            SqlSemanticTag semanticTag = SqlSharkHelper.createSemanticTag(this, next);
+
+
+        }
+
+
         return null;
+
     }
 
     @Override
@@ -350,11 +379,20 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
-
+        /**
+         * option 1:
+         * get INFO where info -> info_id
+         * remove
+         *
+         * option 2:
+         */
     }
 
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
+        /** TODO get
+         *
+         */
         return null;
     }
 
@@ -387,8 +425,6 @@ public class SqlSharkKB implements SharkKB {
     public int getNumberInformation() throws SharkKBException {
         return 0;
     }
-
-
 
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {

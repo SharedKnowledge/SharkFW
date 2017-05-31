@@ -21,6 +21,8 @@ import static org.jooq.impl.DSL.table;
 
 public class SqlAsipInformation implements ASIPInformation {
 
+    private ASIPSpace asipSpace;
+
     public int getId() {
         return id;
     }
@@ -30,39 +32,45 @@ public class SqlAsipInformation implements ASIPInformation {
     private Connection connection;
     private byte[] content;
     private String contentType;
+    private String name;
+    private long contentLength;
 
-    public SqlAsipInformation(String contentType, int contentLength, byte[] content, String name, SqlAsipInfoSpace infoSpace, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
-
+    public SqlAsipInformation(ASIPInformation information, ASIPSpace space, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
         this.sharkKB = sharkKB;
+        this.asipSpace = space;
+        this.content = information.getContentAsByte();
+        this.name = information.getName();
+        this.contentLength = information.getContentLength();
+        this.contentType = information.getContentType();
         connection = getConnection(this.sharkKB);
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
         String sql = create.insertInto(table("asip_information"),
-                field("content_type"),field("content_length"), field("content_stream"), field("name"), field("asip_information_space_id"))
+                field("content_type"),field("content_length"), field("content_stream"), field("name"))
                 .values(inline(contentType),inline(contentLength),
-                        inline(content), inline(name),inline(infoSpace.getId())).getSQL();
+                        inline(content), inline(name)).getSQL();
 
         SqlHelper.executeSQLCommand(connection, sql);
-        id = SqlHelper.getLastCreatedEntry(connection, "asip_information");
+        this.id = SqlHelper.getLastCreatedEntry(connection, "asip_information");
     }
 
-    public SqlAsipInformation(int id, SqlSharkKB sharkKB) {
-
+    public SqlAsipInformation(int id, ASIPSpace space, SqlSharkKB sharkKB) throws SharkKBException {
+        this.asipSpace = space;
         this.id = id;
         this.sharkKB = sharkKB;
+        getDataFromDB();
     }
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {
-        return getDataFromDB();
+        return this.asipSpace;
     }
 
-    private ASIPSpace getDataFromDB() throws SharkKBException {
+    private void getDataFromDB() throws SharkKBException {
 
         try {
             connection = getConnection(sharkKB);
         } catch (SharkKBException e) {
             e.printStackTrace();
-            return null;
         }
         DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
         String sql = getSetId.selectFrom(table("asip_information")).where(field("id")
@@ -70,14 +78,13 @@ public class SqlAsipInformation implements ASIPInformation {
         ResultSet rs;
         try {
             rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
-            int id = rs.getInt("asip_information_space_id");
             content = rs.getBytes("content_stream");
-
-            return new SqlAsipSpace(id, sharkKB);
+            contentType = rs.getString("content_type");
+            content = rs.getBytes("content_stream");
+            content = rs.getBytes("content_stream");
         }
         catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
     }
 

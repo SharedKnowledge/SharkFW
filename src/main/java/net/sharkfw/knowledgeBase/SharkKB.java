@@ -61,7 +61,6 @@ public interface SharkKB extends SharkVocabulary, SystemPropertyHolder, STSetLis
                                            FragmentationParameter[] backgroundFP, Knowledge knowledge,
                                            boolean learnTags, boolean deleteAssimilated) throws SharkKBException;
 
-
     /////////////////////////////////////////////////////////////////////////
     //                ASIP extraction support                              //
     /////////////////////////////////////////////////////////////////////////
