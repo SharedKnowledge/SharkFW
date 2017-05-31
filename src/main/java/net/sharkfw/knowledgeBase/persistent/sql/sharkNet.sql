@@ -23,12 +23,10 @@ CREATE TABLE IF NOT EXISTS semantic_tag(
 	name text,
 	system_property text,
 	property text,
-	tag_set integer,
-	tag_kind text,
+	tag_kind integer,
 	wkt text,
 	t_duration integer,
-	t_start integer,
-	FOREIGN KEY (tag_set) references tag_set(id)
+	t_start integer
 );
 
 CREATE TABLE IF NOT EXISTS address (
