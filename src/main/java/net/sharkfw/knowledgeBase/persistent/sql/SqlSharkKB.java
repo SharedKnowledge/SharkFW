@@ -30,6 +30,7 @@ import static org.jooq.impl.DSL.table;
 public class SqlSharkKB implements SharkKB {
 
     private SharkKB sharkKB;
+    private InMemoSharkKB inMemoSharkKB = new InMemoSharkKB();
 
     public Connection getConnection() {
         return connection;
@@ -109,6 +110,7 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void setOwner(PeerSemanticTag owner) {
+        //TODO: via properties
         try {
             new SqlPeerSemanticTag(owner.getSI(), owner.getName(), -1, this, owner.getAddresses());
         } catch (SQLException e) {
@@ -118,7 +120,7 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public PeerSemanticTag getOwner() {
-
+//TODO: via properties
         try {
             return new SqlPeerSemanticTag(-1, this);
         } catch (SharkKBException e) {
@@ -151,20 +153,12 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-
-        //TODO: ID Problem
-        /*        try {
-            return new SqlAsipSpace(topics, types, direction, sender, receiver, approvers, times, locations, this);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }*/
-        return null;
+        return inMemoSharkKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
 
     @Override
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
-        return null;
+        return inMemoSharkKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
     }
 
     /**
@@ -225,6 +219,7 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
+
         return null;
     }
 
