@@ -152,6 +152,7 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public Iterator<SemanticTag> getSemanticTagByName(String pattern) throws SharkKBException {
+        //TODO: ???
         return null;
     }
 
@@ -165,7 +166,7 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public void setEnumerateHiddenTags(boolean hide) {
-
+        //TODO: ???
     }
 
     @Override

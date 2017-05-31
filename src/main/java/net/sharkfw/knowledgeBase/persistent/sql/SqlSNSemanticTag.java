@@ -69,10 +69,9 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
     @Override
     public void removePredicate(String type, SNSemanticTag target) {
 
-        int i = Integer.valueOf(target.ID);
         DSLContext delete = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = delete.deleteFrom(table("relation")).where(field("id").eq(this.getId())).
-                and(field("name").eq(type)).and(field("target_tag_id").eq(target.getSystemProperty("ID"))).getSQL();
+        String sql = delete.deleteFrom(table("relation")).where(field("id").eq(inline(this.getId()))).
+                and(field("name").eq(inline(type))).and(field("target_tag_id").eq(inline(Integer.parseInt(target.getSystemProperty("ID"))))).getSQL();
         try {
             SqlHelper.executeSQLCommand(connection, sql.toString());
         } catch (SQLException e) {

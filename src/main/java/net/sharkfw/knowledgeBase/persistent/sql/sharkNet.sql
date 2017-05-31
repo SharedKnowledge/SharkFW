@@ -48,11 +48,11 @@ CREATE TABLE IF NOT EXISTS relation (
 
 CREATE TABLE IF NOT EXISTS vocabulary (
 	id integer PRIMARY KEY autoincrement,
-	topic_net integer,
-	type_net integer,
-	peer_net integer,
-	location_net integer,
-	time_net integer
+	topic_set integer,
+	type_set integer,
+	peer_set integer,
+	location_set integer,
+	time_set integer
 	/*FOREIGN KEY (semantic_net_id) references semantic_net(id)*/
 );
 

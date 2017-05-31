@@ -26,23 +26,25 @@ public class SqlVocabulary implements SharkVocabulary {
 
 
 
-    SqlVocabulary(SqlSTSet topics, SqlSTSet types,
-                 SqlPeerSTSet peers, SqlTimeSTSet times, SqlSpatialSTSet locations, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
+    public SqlVocabulary(SqlSTSet topics, SqlSTSet types,
+                         SqlPeerSTSet peers, SqlTimeSTSet times, SqlSpatialSTSet locations, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
 
-        connection = getConnection(sharkKB);
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = create.insertInto(table("vocabulary"),
-                field("topic_set"),field("type_set"), field("peer_set"), field("time_set"),
-                field("location_set"))
-                .values(inline(topics != null ? topics.getStSetID() : -1),inline(types != null ? types.getStSetID() : -1),
-                        inline(peers != null ? peers.getStSetID() : -1),inline(times != null ? times.getStSetID() : -1),
-                        inline(locations != null ? locations.getStSetID() : -1)).getSQL();
-        SqlHelper.executeSQLCommand(connection, sql);
-        id = SqlHelper.getLastCreatedEntry(connection, "vocabulary");
+        try (Connection connection = getConnection(sharkKB)) {
+
+            DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+            String sql = create.insertInto(table("vocabulary"),
+                    field("topic_set"), field("type_set"), field("peer_set"), field("time_set"),
+                    field("location_set"))
+                    .values(inline(topics != null ? topics.getStSetID() : -1), inline(types != null ? types.getStSetID() : -1),
+                            inline(peers != null ? peers.getStSetID() : -1), inline(times != null ? times.getStSetID() : -1),
+                            inline(locations != null ? locations.getStSetID() : -1)).getSQL();
+            SqlHelper.executeSQLCommand(connection, sql);
+            id = SqlHelper.getLastCreatedEntry(connection, "vocabulary");
+        }
 
     }
 
-    SqlVocabulary(int id, SqlSharkKB sharkKB) {
+    public SqlVocabulary(int id, SqlSharkKB sharkKB) {
 
         this.id = id;
         this.sharkKB = sharkKB;

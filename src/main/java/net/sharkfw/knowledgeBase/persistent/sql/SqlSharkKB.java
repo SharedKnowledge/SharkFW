@@ -151,11 +151,13 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
-/*        try {
+
+        //TODO: ID Problem
+        /*        try {
             return new SqlAsipSpace(topics, types, direction, sender, receiver, approvers, times, locations, this);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null; //TODO: ID Problem
+            return null;
         }*/
         return null;
     }
@@ -198,17 +200,17 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void semanticTagCreated(SemanticTag tag, STSet stset) {
-
+        //TODO:???
     }
 
     @Override
     public void semanticTagRemoved(SemanticTag tag, STSet stset) {
-
+        //TODO:???
     }
 
     @Override
     public void semanticTagChanged(SemanticTag tag, STSet stset) {
-
+        //TODO:???
     }
 
     @Override

@@ -1,10 +1,10 @@
 package net.sharkfw.knowledgeBase.persistent;
 import junit.framework.TestCase;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.asip.ASIPSpace;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.geom.inmemory.InMemoSharkGeometry;
+import net.sharkfw.knowledgeBase.persistent.dump.DumpSharkGeometry;
 import net.sharkfw.knowledgeBase.persistent.sql.*;
 import org.jooq.*;
 import org.jooq.impl.*;
@@ -30,7 +30,10 @@ import static org.junit.Assert.*;
 public class TestSqlSharkKB {
 
     public static final String connection = "jdbc:sqlite:.\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\testShark.db";
-
+    public static final String[] sis1 = new String[]{"si1", "si2"};
+    public static final String[] sis2 = new String[]{"si3", "si4"};
+    public static final String[] sis3 = new String[]{"si5", "si6"};
+    public static final String[] sis4 = new String[]{"si7", "si8"};
 
     @Ignore
     @Before
@@ -62,6 +65,27 @@ public class TestSqlSharkKB {
 
         Iterator<TimeSemanticTag> result = timeSet.tstTags();
         int i = 0;
+
+        SqlSpatialSTSet spatialSet = new SqlSpatialSTSet(sqlSharkKB);
+        SharkGeometry sg = InMemoSharkGeometry.createGeomByWKT("544");
+        spatialSet.createSpatialSemanticTag("Test1", new String[]{"Si1"}, sg);
+        spatialSet.createSpatialSemanticTag("Test2", new String[]{"Si2"}, sg);
+        Enumeration<SpatialSemanticTag> tagsSpatialSet = spatialSet.spatialTags();
+        assertEquals("544", tagsSpatialSet.nextElement().getGeometry().getWKT());
+        assertEquals("544", tagsSpatialSet.nextElement().getGeometry().getWKT());
+
+        String[] addresses = new String[]{"Treskowallee 8", "Wilhelminenhofstraße 6", "Rathenaustraße 10"};
+
+        SqlPeerSTSet sqlPeerSet = new SqlPeerSTSet(sqlSharkKB);
+        sqlPeerSet.createPeerSemanticTag( "TestTag1", sis1, addresses);
+        sqlPeerSet.createPeerSemanticTag( "TestTag2", sis2, addresses[0]);
+        sqlPeerSet.createPeerSemanticTag( "TestTag3", sis3, addresses);
+
+        Enumeration<PeerSemanticTag> peerTags = sqlPeerSet.peerTags();
+        assertArrayEquals(sis1, peerTags.nextElement().getSI());
+        assertArrayEquals(sis2, peerTags.nextElement().getSI());
+        assertArrayEquals(addresses, peerTags.nextElement().getAddresses());
+
     }
 
 
@@ -70,10 +94,6 @@ public class TestSqlSharkKB {
     public void testSemanticTagCreation() throws SQLException, SharkKBException {
 
         SqlSharkKB sqlSharkKB = new SqlSharkKB(connection, "org.sqlite.JDBC");
-        String[] sis1 = new String[]{"si1", "si2"};
-        String[] sis2 = new String[]{"si3", "si4"};
-        String[] sis3 = new String[]{"si5", "si6"};
-        String[] sis4 = new String[]{"si7", "si8"};
         String[] addresses = new String[]{"Treskowallee 8", "Wilhelminenhofstraße 6", "Rathenaustraße 10"};
         long timeFrom = System.currentTimeMillis();
         long timeDusration = 100000;
@@ -102,24 +122,72 @@ public class TestSqlSharkKB {
         SemanticTag tagReturned = stSet.getSemanticTag(sis3[0]);
         assertEquals("BB", tagReturned.getProperty("P2"));
 
-
-
-
-
         i++;
-        //tagSN.removePredicate("TestPre", tagSN2);
-        /*tag = new SqlSemanticTag(sis1, "testTag", stSet.getStSetID(), sqlSharkKB);
+        tagSN.removePredicate("TestPre", tagSN2);
+        tag = new SqlSemanticTag(sis1, "testTag", stSet.getStSetID(), sqlSharkKB);
         timeTag = new SqlTimeSemanticTag(sis2, "testTimeTag", stSet.getStSetID(), sqlSharkKB, timeDusration, timeFrom);
         spatialTag = new SqlSpatialSemanticTag(sis3, "testSpatialTag", stSet.getStSetID(), sqlSharkKB, wkt);
         peerTag = new SqlPeerSemanticTag(sis4, "testPeerTag", stSet.getStSetID(), sqlSharkKB, addresses);
         assertNotNull(tag);
         assertNotNull(timeTag);
         assertNotNull(spatialTag);
-        assertNotNull(peerTag);*/
-        //SemanticTag tagFromDB = stSet.getSemanticTag(new String[]{"si1"});
+        assertNotNull(peerTag);
+        SemanticTag tagFromDB = stSet.getSemanticTag(new String[]{"si1"});
 
 
     }
+
+    @Ignore
+    @Test
+    public void testAsipSpace() throws SQLException, SharkKBException {
+
+        String[] addresses = new String[]{"Treskowallee 8", "Wilhelminenhofstraße 6", "Rathenaustraße 10"};
+        SqlSharkKB sqlSharkKB = new SqlSharkKB(connection, "org.sqlite.JDBC");
+        SqlSTSet topics = new SqlSTSet(sqlSharkKB, "topic");
+        SqlSTSet types = new SqlSTSet(sqlSharkKB, "type");
+        SqlPeerSTSet approvers = new SqlPeerSTSet(sqlSharkKB);
+        SqlPeerSTSet receivers = new SqlPeerSTSet(sqlSharkKB);
+        SqlPeerSTSet peers = new SqlPeerSTSet(sqlSharkKB);
+        PeerSemanticTag sender = approvers.createPeerSemanticTag("senderTag", sis1, addresses);
+        SqlSpatialSTSet locations = new SqlSpatialSTSet(sqlSharkKB);
+        SqlTimeSTSet times = new SqlTimeSTSet(sqlSharkKB);
+        int direction = 1;
+
+        SqlAsipSpace space = new SqlAsipSpace(topics, types, direction, sender,
+                receivers, approvers, times, locations, sqlSharkKB);
+        SemanticTag tag = space.getApprovers().getSemanticTag(sis1);
+        assertEquals("senderTag", tag.getName());
+
+        SqlVocabulary vocabulary = new SqlVocabulary(topics, types,
+                 peers, times, locations, sqlSharkKB);
+        SqlKnowledge knowledge = new SqlKnowledge(vocabulary, sqlSharkKB);
+        SqlAsipInfoSpace infoSpace = new SqlAsipInfoSpace(space, knowledge, sqlSharkKB);
+
+        SqlAsipInformation information = new SqlAsipInformation( "text", 5, "TestData".getBytes(), "info", infoSpace, sqlSharkKB);
+
+
+    }
+
+    @Ignore
+    @Test
+    public void testSemanticNet() throws SQLException, SharkKBException {
+
+        SqlSharkKB sqlSharkKB = new SqlSharkKB(connection, "org.sqlite.JDBC");
+        SqlSemanticNet semanticNet = new SqlSemanticNet(sqlSharkKB);
+
+        SNSemanticTag snTag1 = semanticNet.createSemanticTag("SNTag1", sis1);
+        SNSemanticTag snTag2 = semanticNet.createSemanticTag("SNTag2", sis1);
+        SNSemanticTag snTag3 = semanticNet.createSemanticTag("SNTag3", sis1);
+
+        semanticNet.setPredicate(snTag1, snTag2, "P1");
+        semanticNet.setPredicate(snTag1, snTag3, "P2");
+        semanticNet.setPredicate(snTag3, snTag2, "P3");
+
+        semanticNet.removePredicate(snTag1, snTag2, "P1");
+
+    }
+
+
 
 }
 

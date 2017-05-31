@@ -21,11 +21,15 @@ import static org.jooq.impl.DSL.table;
 
 public class SqlAsipInfoSpace implements ASIPInformationSpace {
 
+    public int getId() {
+        return id;
+    }
+
     private int id;
     private SqlSharkKB sharkKB;
     protected Connection connection;
 
-    SqlAsipInfoSpace(SqlAsipSpace space, SqlKnowledge knowledge, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
+    public SqlAsipInfoSpace(SqlAsipSpace space, SqlKnowledge knowledge, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
 
         connection = getConnection(sharkKB);
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
@@ -35,6 +39,8 @@ public class SqlAsipInfoSpace implements ASIPInformationSpace {
         SqlHelper.executeSQLCommand(connection, sql);
         id = SqlHelper.getLastCreatedEntry(connection, "asip_information_space");
 
+        String update = create.update(table("semantic_tag")).set(field("system_property"), inline(Integer.toString(id))).where(field("id").eq(inline(Integer.toString(id)))).getSQL();
+        SqlHelper.executeSQLCommand(connection, update);
     }
 
     SqlAsipInfoSpace(int id, SqlSharkKB sharkKB){
