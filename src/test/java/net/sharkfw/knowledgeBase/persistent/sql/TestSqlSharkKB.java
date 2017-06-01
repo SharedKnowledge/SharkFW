@@ -53,7 +53,7 @@ public class TestSqlSharkKB {
         assertNotNull(sqlSharkKB);
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void testStSets() throws  SQLException, SharkKBException {
 
@@ -135,7 +135,7 @@ public class TestSqlSharkKB {
 
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void testAsipSpace() throws SQLException, SharkKBException {
 
@@ -168,7 +168,7 @@ public class TestSqlSharkKB {
 
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void testSemanticNet() throws SQLException, SharkKBException {
 
