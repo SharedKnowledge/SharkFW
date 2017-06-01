@@ -81,7 +81,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
      * @param si
      */
     public SqlPeerSemanticTag(String si, int stSet, SqlSharkKB sharkKb) throws SharkKBException {
-        super(-1, si ,stSet, sharkKb);
+        super(si, sharkKb);
         addresses = getAddresses();
     }
 
@@ -90,15 +90,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
      * @param id
      */
     public SqlPeerSemanticTag(int id, int stSet, SqlSharkKB sharkKb) throws SharkKBException {
-        super(id, null, stSet, sharkKb);
-        addresses = getAddresses();
-    }
-
-    /**
-     * Read from DB
-     */
-    public SqlPeerSemanticTag(int stSet, SqlSharkKB sharkKb) throws SharkKBException {
-        super(-1, null, stSet, sharkKb);
+        super(id, sharkKb);
         addresses = getAddresses();
     }
 

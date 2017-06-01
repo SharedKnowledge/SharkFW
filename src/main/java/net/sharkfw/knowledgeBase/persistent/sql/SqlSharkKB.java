@@ -117,12 +117,7 @@ public class SqlSharkKB implements SharkKB {
     @Override
     public PeerSemanticTag getOwner() {
 //TODO: via properties
-        try {
-            return new SqlPeerSemanticTag(-1, this);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -284,28 +279,110 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void setProperty(String name, String value) throws SharkKBException {
-        // todo Get from Property table
+
+        String propertyString = null;
+        Map<String, String> properties;
+
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
+            if (rs != null) {
+                propertyString = rs.getString("property");
+            }
+        }
+        catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+        if (propertyString != null && propertyString != "") {
+            properties = SqlHelper.extractProperties(propertyString);
+        }
+        else {
+            properties = new HashMap<String, String>();
+        }
+        properties.put(name, value);
+        SqlHelper.persistProperties(properties, this);
     }
 
     @Override
     public String getProperty(String name) throws SharkKBException {
-        // todo Get from Property table
-        return null;
+        String propertyString = null;
+        Map<String, String> properties;
+
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
+            if (rs != null) {
+                propertyString = rs.getString("property");
+            }
+        }
+        catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+        if (propertyString != null && propertyString != "") {
+            properties = SqlHelper.extractProperties(propertyString);
+        }
+        else {
+            properties = new HashMap<String, String>();
+        }
+        return properties.get(name);
     }
 
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        // todo Get from Property table
+        setProperty(name, value);
     }
 
     @Override
     public void removeProperty(String name) throws SharkKBException {
-        // todo Get from Property table
+        String propertyString = null;
+        Map<String, String> properties;
+
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
+            if (rs != null) {
+                propertyString = rs.getString("property");
+            }
+        }
+        catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+        if (propertyString != null && propertyString != "") {
+            properties = SqlHelper.extractProperties(propertyString);
+        }
+        else {
+            properties = new HashMap<String, String>();
+        }
+        properties.remove(name);
+        SqlHelper.persistProperties(properties, this);
     }
 
     @Override
     public Enumeration<String> propertyNames() throws SharkKBException {
-        return null;
+        String propertyString = null;
+        Map<String, String> properties;
+
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
+            if (rs != null) {
+                propertyString = rs.getString("property");
+            }
+        }
+        catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+        if (propertyString != null && propertyString != "") {
+            properties = SqlHelper.extractProperties(propertyString);
+        }
+        else {
+            properties = new HashMap<String, String>();
+        }
+        return Collections.enumeration(properties.keySet());
     }
 
     @Override

@@ -1,10 +1,20 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 import java.io.InputStream;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
+
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.inline;
+import static org.jooq.impl.DSL.table;
 
 /**
  * Created by Dustin Feurich on 03.04.2017.
@@ -116,5 +126,40 @@ public class SqlHelper {
         }
 
     }
+
+    public static Map<String, String> extractProperties(String propertyString) {
+        Map<String, String> map = new HashMap<>();
+        String[] keyValues = propertyString.split(">");
+        String[] keyValue;
+        for (int i = 0; i < keyValues.length; i++) {
+            keyValue = keyValues[i].split("<");
+            map.put(keyValue[0], keyValue[1]);
+        }
+        return map;
+    }
+
+    public static void persistProperties(Map<String, String> properties, int id, String table, SqlSharkKB sharkKB) throws SharkKBException {
+        Connection connection = getConnection(sharkKB);
+        StringBuilder sb = new StringBuilder();
+        Iterator it = properties.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            sb.append(pair.getKey() + "<" + pair.getValue() + ">");
+        }
+        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+        String update = create.update(table(table)).set(field("property"), inline(sb.toString())).where(field("id").eq(inline(Integer.toString(id)))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(connection, update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        }
+    }
+
+    public static void persistProperties(Map<String, String> properties, SqlSharkKB sharkKB) throws SharkKBException {
+        persistProperties(properties, 1, "knowledge_base", sharkKB);
+    }
+
+
 
 }

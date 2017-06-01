@@ -53,12 +53,12 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        return new SqlSemanticTag(-1, si, stSetID, sqlSharkKB);
+        return new SqlSemanticTag(si, sqlSharkKB);
     }
 
     @Override
     public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
-        return new SqlSemanticTag(-1, si[0], stSetID, sqlSharkKB); //TODO: multiple SIs ?
+        return new SqlSemanticTag(si[0], sqlSharkKB); //TODO: multiple SIs ?
     }
 
     @Override
@@ -140,7 +140,7 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
         try {
             rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
             while (rs.next()) {
-                list.add(new SqlSemanticTag(rs.getInt("id"), null, stSetID, sqlSharkKB));
+                list.add(new SqlSemanticTag(rs.getInt("id"), sqlSharkKB));
             }
 
         } catch (SQLException e) {
