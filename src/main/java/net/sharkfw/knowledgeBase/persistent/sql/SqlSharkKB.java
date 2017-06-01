@@ -464,10 +464,13 @@ public class SqlSharkKB implements SharkKB {
     }
 
     @Override
-    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException {
-        /** TODO get
-         *
-         */
+    public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException{
+        try {
+            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, infoSpace);
+            return ((List<ASIPInformation>) (List<?>) information).iterator();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
