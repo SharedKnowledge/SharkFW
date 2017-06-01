@@ -582,4 +582,5 @@ public class SqlSharkKB implements SharkKB {
     public FragmentationParameter[] getStandardFPSet() {
         return new FragmentationParameter[0];
     }
+
 }

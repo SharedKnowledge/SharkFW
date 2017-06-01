@@ -70,7 +70,6 @@ public class SqlSharkHelper {
         List<TagContainer> containerList = getTags(sharkKB, space, true);
         SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(information, space, sharkKB);
         String insertSet = prepareSqlInsertSet(connection, containerList, space, Collections.singletonList(sqlAsipInformation));
-        L.d(insertSet, insertSet);
         return executeInsertSuccess(connection, insertSet) ? sqlAsipInformation : null;
     }
 
@@ -95,8 +94,6 @@ public class SqlSharkHelper {
         Connection connection = createConnection(sharkKB);
 
         List<TagContainer> containerList = getTags(sharkKB, space, false);
-
-        L.d("ContainerList: " + containerList.size(), containerList);
 
         String sqlStatement = prepareSqlStatement(connection, containerList, space.getDirection());
 
@@ -180,7 +177,7 @@ public class SqlSharkHelper {
                 }
             }
             if(chainedCondition!=null){
-                where.and(field("set_kind").eq(inline(i))).and(chainedCondition);
+                where.or(field("set_kind").eq(inline(i))).and(chainedCondition);
             }
         }
         return where.getSQL();
@@ -205,6 +202,7 @@ public class SqlSharkHelper {
 //    }
 
     private static void mapSTSet(SqlSharkKB sharkKB, boolean create, STSet set, int setKind, List list) throws SharkKBException {
+        if (set==null) return;
         Iterator<SemanticTag> iterator = set.stTags();
         while (iterator.hasNext()){
             SemanticTag next = iterator.next();

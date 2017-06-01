@@ -143,7 +143,7 @@ public class SqlAsipInformation implements ASIPInformation {
 
     @Override
     public String getContentType() {
-        return null;
+        return this.contentType;
     }
 
 
@@ -159,7 +159,7 @@ public class SqlAsipInformation implements ASIPInformation {
 
     @Override
     public String getName() {
-        return null;
+        return this.name;
     }
 
     @Override
