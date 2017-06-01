@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.system.L;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -33,12 +34,8 @@ import static org.jooq.impl.DSL.when;
 public class SqlSharkHelper {
 
     static SqlSemanticTag getSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
-        try {
-            return new SqlSemanticTag(-1, semanticTag.getSI()[0], -1, sharkKB);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        if (semanticTag==null) throw new SharkKBException("No SemanticTag given.");
+        return new SqlSemanticTag(semanticTag.getSI()[0], sharkKB);
     }
 
     static SqlSemanticTag createSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) {
@@ -73,6 +70,7 @@ public class SqlSharkHelper {
         List<TagContainer> containerList = getTags(sharkKB, space, true);
         SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(information, space, sharkKB);
         String insertSet = prepareSqlInsertSet(connection, containerList, space, Collections.singletonList(sqlAsipInformation));
+        L.d(insertSet, insertSet);
         return executeInsertSuccess(connection, insertSet) ? sqlAsipInformation : null;
     }
 
@@ -82,7 +80,11 @@ public class SqlSharkHelper {
 
         for (SqlAsipInformation sqlAsipInformation : informationList) {
             for (TagContainer tagContainer : containerList) {
-                insertInto.values(tagContainer.setKind, sqlAsipInformation.getId(), tagContainer.id, asipSpace.getDirection());
+                insertInto.values(
+                        inline(tagContainer.setKind),
+                        inline(sqlAsipInformation.getId()),
+                        inline(tagContainer.id),
+                        inline(asipSpace.getDirection()));
             }
         }
         return insertInto.getSQL();
@@ -94,7 +96,11 @@ public class SqlSharkHelper {
 
         List<TagContainer> containerList = getTags(sharkKB, space, false);
 
+        L.d("ContainerList: " + containerList.size(), containerList);
+
         String sqlStatement = prepareSqlStatement(connection, containerList, space.getDirection());
+
+        L.d(sqlStatement, sqlStatement);
 
         List<Integer> informationIds = getInformationIds(connection, sqlStatement);
 
@@ -126,9 +132,9 @@ public class SqlSharkHelper {
     }
 
     private static boolean executeInsertSuccess(Connection connection, String sql){
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql) ){
-            if (rs.next()) return true;
-            else return false;
+        try {
+            SqlHelper.executeSQLCommand(connection, sql);
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -173,7 +179,9 @@ public class SqlSharkHelper {
                     chainedCondition = chainedCondition.or(condition);
                 }
             }
-            where.and(field("set_kind").eq(inline(i))).and(chainedCondition);
+            if(chainedCondition!=null){
+                where.and(field("set_kind").eq(inline(i))).and(chainedCondition);
+            }
         }
         return where.getSQL();
     }
@@ -219,13 +227,15 @@ public class SqlSharkHelper {
         mapSTSet(sharkKB, create, space.getTimes(), ASIPSpace.DIM_TIME, containerList);
         mapSTSet(sharkKB, create, space.getLocations(), ASIPSpace.DIM_LOCATION, containerList);
 
-        SqlSemanticTag sender;
-        if(create){
-            sender = createSemanticTag(sharkKB, space.getSender());
-        } else {
-            sender = getSemanticTag(sharkKB, space.getSender());
+        if(space.getSender()!=null){
+            SqlSemanticTag sender;
+            if(create){
+                sender = createSemanticTag(sharkKB, space.getSender());
+            } else {
+                sender = getSemanticTag(sharkKB, space.getSender());
+            }
+            containerList.add(new TagContainer(sender.getId(), ASIPSpace.DIM_SENDER));
         }
-        containerList.add(new TagContainer(sender.getId(), ASIPSpace.DIM_SENDER));
 
         return containerList;
     }

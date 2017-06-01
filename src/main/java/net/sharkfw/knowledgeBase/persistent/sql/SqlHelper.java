@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
+
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -21,94 +22,64 @@ import static org.jooq.impl.DSL.table;
  */
 public class SqlHelper {
 
-    private SqlHelper()
-    {
+    private SqlHelper() {
         //static usage only
     }
 
-    public static void importSQL(Connection conn, InputStream in) throws SQLException
-    {
+    public static void importSQL(Connection conn, InputStream in) throws SQLException {
         Scanner s = new Scanner(in);
         s.useDelimiter("(;(\r)?\n)|(--\n)");
         Statement st = null;
         conn.setAutoCommit(true);
-        try
-        {
+        try {
             st = conn.createStatement();
-            while (s.hasNext())
-            {
+            while (s.hasNext()) {
                 String line = s.next();
-                if (line.startsWith("/*!") && line.endsWith("*/"))
-                {
+                if (line.startsWith("/*!") && line.endsWith("*/")) {
                     int i = line.indexOf(' ');
                     line = line.substring(i + 1, line.length() - " */".length());
                 }
 
-                if (line.trim().length() > 0)
-                {
+                if (line.trim().length() > 0) {
                     st.executeUpdate(line);
                 }
             }
-        }
-        finally
-        {
+        } finally {
             if (st != null) st.close();
 
         }
     }
 
-    public static void executeSQLCommand(Connection conn, String sql) throws SQLException
-    {
+    public static void executeSQLCommand(Connection conn, String sql) throws SQLException {
         Statement st = null;
         conn.setAutoCommit(true);
-        try
-        {
+        try {
             st = conn.createStatement();
             st.executeUpdate(sql);
-        }
-        finally
-        {
+        } finally {
             if (st != null) st.close();
         }
     }
 
-    public static ResultSet executeSQLCommandWithResult(Connection conn, String sql) throws SQLException
-    {
-        Statement st = null;
+    public static ResultSet executeSQLCommandWithResult(Connection conn, String sql) throws SQLException {
         conn.setAutoCommit(true);
-        ResultSet rs = null;
-        try
-        {
-            st = conn.createStatement();
-            rs = st.executeQuery(sql);
-        }
-        finally
-        {
-            //if (st != null) st.close();
-        }
-        return rs;
+        Statement st = conn.createStatement();
+        return st.executeQuery(sql);
     }
 
-    public static int getLastCreatedEntry(Connection conn, String tableName) throws SQLException
-    {
+    public static int getLastCreatedEntry(Connection conn, String tableName) throws SQLException {
         int id = -1;
         String sql = "SELECT id FROM " + tableName + " ORDER BY id DESC LIMIT 1";
         Statement st = conn.createStatement();
-        try
-        {
+        try {
             ResultSet resultSet = st.executeQuery(sql);
             id = resultSet.getInt("id");
-        }
-        finally
-        {
+        } finally {
             st.close();
         }
-        if (id >= 0)
-        {
+        if (id >= 0) {
             return id;
-        }
-        else
-        {
+        } else {
             throw new SQLException();
         }
     }
@@ -159,7 +130,6 @@ public class SqlHelper {
     public static void persistProperties(Map<String, String> properties, SqlSharkKB sharkKB) throws SharkKBException {
         persistProperties(properties, 1, "knowledge_base", sharkKB);
     }
-
 
 
 }

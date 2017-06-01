@@ -44,13 +44,13 @@ public class SqlAsipInformation implements ASIPInformation {
         this.contentType = information.getContentType();
         connection = getConnection(this.sharkKB);
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = create.insertInto(table("asip_information"),
+        String sql = create.insertInto(table("information"),
                 field("content_type"),field("content_length"), field("content_stream"), field("name"))
                 .values(inline(contentType),inline(contentLength),
                         inline(content), inline(name)).getSQL();
 
         SqlHelper.executeSQLCommand(connection, sql);
-        this.id = SqlHelper.getLastCreatedEntry(connection, "asip_information");
+        this.id = SqlHelper.getLastCreatedEntry(connection, "information");
     }
 
     public SqlAsipInformation(int id, ASIPSpace space, SqlSharkKB sharkKB) throws SharkKBException {
@@ -73,15 +73,16 @@ public class SqlAsipInformation implements ASIPInformation {
             e.printStackTrace();
         }
         DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_information")).where(field("id")
+        String sql = getSetId.selectFrom(table("information")).where(field("id")
                 .eq(inline(id))).getSQL();
         ResultSet rs;
         try {
             rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
-            content = rs.getBytes("content_stream");
-            contentType = rs.getString("content_type");
-            content = rs.getBytes("content_stream");
-            content = rs.getBytes("content_stream");
+            this.id = rs.getInt("id");
+            this.content = rs.getBytes("content_stream");
+            this.contentType = rs.getString("content_type");
+            this.name = rs.getString("name");
+            this.contentLength = rs.getInt("content_length");
         }
         catch (SQLException e) {
             e.printStackTrace();
