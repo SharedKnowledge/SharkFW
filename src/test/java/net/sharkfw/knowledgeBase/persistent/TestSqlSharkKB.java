@@ -103,36 +103,34 @@ public class TestSqlSharkKB {
         SqlTimeSemanticTag timeTag = null;
         SqlSpatialSemanticTag spatialTag = null;
         SqlPeerSemanticTag peerTag = null;
-        SqlSTSet stSet = null;
-        stSet = new SqlSTSet(sqlSharkKB, "set");
-        SqlSNSemanticTag tagSN = new SqlSNSemanticTag(sis1, "testSNST", stSet.getStSetID(), sqlSharkKB);
+/*        SqlSNSemanticTag tagSN = new SqlSNSemanticTag(sis1, "testSNST", sqlSharkKB);
         assertNotNull(tagSN);
-        SqlSNSemanticTag tagSN2 = new SqlSNSemanticTag(sis2, "testSNST2", stSet.getStSetID(), sqlSharkKB);
+        SqlSNSemanticTag tagSN2 = new SqlSNSemanticTag(sis2, "testSNST2", sqlSharkKB);
         tagSN.setPredicate("TestPre", tagSN2);
         tagSN.setPredicate("TestPre2", tagSN2);
         Enumeration<String> result = tagSN.predicateNames();
-        tagSN.sourceTags("TestPre");
+        tagSN.sourceTags("TestPre");*/
         int i = 0;
 
-        tag = new SqlSemanticTag(sis3, "testTag", stSet.getStSetID(), sqlSharkKB);
+        tag = new SqlSemanticTag(sis3, "testTag", sqlSharkKB);
         tag.setProperty("P1", "AA");
         tag.setProperty("P2", "BB");
         tag.setProperty("P3", "CC");
 
-        SemanticTag tagReturned = stSet.getSemanticTag(sis3[0]);
-        assertEquals("BB", tagReturned.getProperty("P2"));
+/*        SemanticTag tagReturned = stSet.getSemanticTag(sis3[0]);
+        assertEquals("BB", tagReturned.getProperty("P2"));*/
 
         i++;
-        tagSN.removePredicate("TestPre", tagSN2);
-        tag = new SqlSemanticTag(sis1, "testTag", stSet.getStSetID(), sqlSharkKB);
-        timeTag = new SqlTimeSemanticTag(sis2, "testTimeTag", stSet.getStSetID(), sqlSharkKB, timeDusration, timeFrom);
-        spatialTag = new SqlSpatialSemanticTag(sis3, "testSpatialTag", stSet.getStSetID(), sqlSharkKB, wkt);
-        peerTag = new SqlPeerSemanticTag(sis4, "testPeerTag", stSet.getStSetID(), sqlSharkKB, addresses);
+        //tagSN.removePredicate("TestPre", tagSN2);
+        tag = new SqlSemanticTag(sis1, "testTag", sqlSharkKB);
+        timeTag = new SqlTimeSemanticTag(sis2, "testTimeTag", sqlSharkKB, timeDusration, timeFrom);
+        spatialTag = new SqlSpatialSemanticTag(sis3, "testSpatialTag", sqlSharkKB, wkt);
+        peerTag = new SqlPeerSemanticTag(sis4, "testPeerTag", sqlSharkKB, addresses);
         assertNotNull(tag);
         assertNotNull(timeTag);
         assertNotNull(spatialTag);
         assertNotNull(peerTag);
-        SemanticTag tagFromDB = stSet.getSemanticTag(new String[]{"si1"});
+        //SemanticTag tagFromDB = stSet.getSemanticTag(new String[]{"si1"});
 
 
     }
@@ -163,10 +161,10 @@ public class TestSqlSharkKB {
         SqlKnowledge knowledge = new SqlKnowledge(vocabulary, sqlSharkKB);
         SqlAsipInfoSpace infoSpace = new SqlAsipInfoSpace(space, knowledge, sqlSharkKB);
         byte[] contentArray = "TestData".getBytes();
-        SqlAsipInformation information = new SqlAsipInformation( "text", 5, contentArray, "info", infoSpace, sqlSharkKB);
+/*        SqlAsipInformation information = new SqlAsipInformation( "text", 5, contentArray, "info", infoSpace, sqlSharkKB);
 
         SqlAsipInformation testRead = new SqlAsipInformation(information.getId(), sqlSharkKB);
-        assertArrayEquals(contentArray, testRead.getContentAsByte());
+        assertArrayEquals(contentArray, testRead.getContentAsByte());*/
 
     }
 

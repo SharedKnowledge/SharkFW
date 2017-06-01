@@ -64,7 +64,7 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
         try {
-            return new SqlSemanticTag(sis, name, stSetID, sqlSharkKB);
+            return new SqlSemanticTag(sis, name, sqlSharkKB);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SharkKBException();
@@ -74,7 +74,7 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
         try {
-            return new SqlSemanticTag(new String[]{si}, name, stSetID, sqlSharkKB);
+            return new SqlSemanticTag(new String[]{si}, name, sqlSharkKB);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SharkKBException();

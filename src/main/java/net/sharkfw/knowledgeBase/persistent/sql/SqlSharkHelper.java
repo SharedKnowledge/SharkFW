@@ -75,9 +75,9 @@ public class SqlSharkHelper {
         }
 
         List<SqlAsipInformation> informationList = new ArrayList<>();
-        for (Integer id : infoIds) {
+/*        for (Integer id : infoIds) {
             informationList.add(new SqlAsipInformation(id, sharkKB));
-        }
+        }*/
 
         return informationList.iterator();
     }

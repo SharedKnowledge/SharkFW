@@ -30,7 +30,7 @@ public class SqlPeerSTSet extends SqlSTSet implements PeerSTSet {
     @Override
     public PeerSemanticTag createPeerSemanticTag(String name, String[] sis, String[] addresses) throws SharkKBException {
         try {
-            return new SqlPeerSemanticTag(sis, name, this.getStSetID(), this.getSqlSharkKB(), addresses);
+            return new SqlPeerSemanticTag(sis, name, this.getSqlSharkKB(), addresses);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SharkKBException();

@@ -36,7 +36,7 @@ public class SqlSpatialSTSet extends SqlSTSet implements SpatialSTSet {
     @Override
     public SpatialSemanticTag createSpatialSemanticTag(String name, String[] si, SharkGeometry geom) throws SharkKBException {
         try {
-            return new SqlSpatialSemanticTag(si, name, getStSetID(), getSqlSharkKB(), geom.getWKT());
+            return new SqlSpatialSemanticTag(si, name, getSqlSharkKB(), geom.getWKT());
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SharkKBException();

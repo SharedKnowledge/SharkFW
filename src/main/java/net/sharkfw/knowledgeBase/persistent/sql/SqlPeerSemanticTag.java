@@ -27,13 +27,12 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
      * Write to DB
      * @param sis
      * @param name
-     * @param stSetID
      * @param sharkKB
      * @param addresses
      * @throws SQLException
      */
-    public SqlPeerSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB, String[] addresses) throws SQLException {
-        super(sis, name, "peer", stSetID);
+    public SqlPeerSemanticTag(String[] sis, String name, SqlSharkKB sharkKB, String[] addresses) throws SQLException {
+        super(sis, name, "peer");
         this.addresses = addresses;
         try {
             Class.forName(sharkKB.getDialect());
@@ -43,8 +42,8 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
         }
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO semantic_tag (name, tag_set, tag_kind) VALUES "
-                + "(\'" + this.getName() + "\'," + this.getStSetID() + ",\"" + this.getTagKind()
+        sql.append("INSERT INTO semantic_tag (name, tag_kind) VALUES "
+                + "(\'" + this.getName() + "\'" + ",\"" + this.getTagKind()
                 + "\");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));

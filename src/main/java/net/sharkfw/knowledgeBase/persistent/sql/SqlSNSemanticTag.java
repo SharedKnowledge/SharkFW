@@ -21,9 +21,8 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
 
     private int semanticNetId;
 
-    public SqlSNSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB) throws SQLException {
-        super(sis, name, "s_net", stSetID);
-        semanticNetId = stSetID;
+    public SqlSNSemanticTag(String[] sis, String name, SqlSharkKB sharkKB) throws SQLException {
+        super(sis, name, "s_net");
         try {
             Class.forName(sharkKB.getDialect());
             connection = DriverManager.getConnection(sharkKB.getDbAddress());
@@ -32,8 +31,8 @@ public class SqlSNSemanticTag extends SqlSemanticTag implements SNSemanticTag {
         }
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
         String sql = create.insertInto(table("semantic_tag"),
-                field("name"), field("tag_set"), field("tag_kind"))
-                .values(inline(this.getName()), inline(this.getStSetID()), inline(this.getTagKind()))
+                field("name"), field("tag_kind"))
+                .values(inline(this.getName()), inline(this.getTagKind()))
                 .getSQL();
         SqlHelper.executeSQLCommand(connection, sql);
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));

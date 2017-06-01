@@ -23,8 +23,8 @@ public class SqlSpatialSemanticTag extends SqlSemanticTag implements SpatialSema
 
     private String wkt;
 
-    public SqlSpatialSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB, String wkt) throws SQLException {
-        super(sis, name, "spatial", stSetID);
+    public SqlSpatialSemanticTag(String[] sis, String name, SqlSharkKB sharkKB, String wkt) throws SQLException {
+        super(sis, name, "spatial");
         this.wkt = wkt;
         try {
             Class.forName(sharkKB.getDialect());
@@ -34,8 +34,8 @@ public class SqlSpatialSemanticTag extends SqlSemanticTag implements SpatialSema
         }
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO semantic_tag (name, tag_set, tag_kind, wkt) VALUES "
-                + "(\'" + this.getName() + "\'," + this.getStSetID() + ",\"" + this.getTagKind()
+        sql.append("INSERT INTO semantic_tag (name, tag_kind, wkt) VALUES "
+                + "(\'" + this.getName() + "\'" + ",\"" + this.getTagKind()
                 + "\",\"" + this.wkt + "\");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
@@ -52,7 +52,7 @@ public class SqlSpatialSemanticTag extends SqlSemanticTag implements SpatialSema
     }
 
     public SqlSpatialSemanticTag(SqlSemanticTag tag) throws SQLException {
-        super(tag.getSis(), tag.getName(), "spatial", tag.getStSetID());
+        super(tag.getSis(), tag.getName(), "spatial");
         DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
         String sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(getId()))).getSQL();
         String propertyString = null;

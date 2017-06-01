@@ -13,7 +13,8 @@ import java.util.Iterator;
 class SyncInformationSpace extends SyncPropertyHolder implements ASIPInformationSpace {
 
     SyncInformationSpace(ASIPInformationSpace target) {
-        super(target);
+        //super(target);
+        super(null);
     }
 
     SyncInformationSpace wrapSyncObject(ASIPInformationSpace target) {

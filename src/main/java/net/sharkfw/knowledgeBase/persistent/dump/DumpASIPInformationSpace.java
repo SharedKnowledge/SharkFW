@@ -11,13 +11,14 @@ import java.util.Iterator;
 /**
  * Created by j4rvis on 2/28/17.
  */
-public class DumpASIPInformationSpace extends DumpSystemPropertyHolder implements ASIPInformationSpace {
+public class DumpASIPInformationSpace implements ASIPInformationSpace {
 
     private final ASIPInformationSpace informationSpace;
+    private DumpSharkKB kb;
 
     public DumpASIPInformationSpace(DumpSharkKB dumpSharkKB, ASIPInformationSpace informationSpace) {
-        super(dumpSharkKB, informationSpace);
         this.informationSpace = informationSpace;
+        kb = dumpSharkKB;
     }
 
     @Override

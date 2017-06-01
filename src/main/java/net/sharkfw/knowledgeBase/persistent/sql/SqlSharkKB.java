@@ -15,10 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.jooq.impl.DSL.*;
 
@@ -37,6 +34,7 @@ public class SqlSharkKB implements SharkKB {
     private Connection connection;
     private String dbAddress;
     private String password;
+    private Map<String, String> properties;
 
     private String dialect;
 
@@ -110,7 +108,7 @@ public class SqlSharkKB implements SharkKB {
     public void setOwner(PeerSemanticTag owner) {
         //TODO: via properties
         try {
-            new SqlPeerSemanticTag(owner.getSI(), owner.getName(), -1, this, owner.getAddresses());
+            new SqlPeerSemanticTag(owner.getSI(), owner.getName(), this, owner.getAddresses());
         } catch (SQLException e) {
             e.printStackTrace();
         }

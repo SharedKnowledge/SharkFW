@@ -33,7 +33,7 @@ public class SqlTimeSTSet extends SqlSTSet implements TimeSTSet {
     @Override
     public TimeSemanticTag createTimeSemanticTag(long from, long duration) throws SharkKBException {
         try {
-            return new SqlTimeSemanticTag(null, "time", this.getStSetID(), this.getSqlSharkKB(), duration, from);
+            return new SqlTimeSemanticTag(null, "time", this.getSqlSharkKB(), duration, from);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SharkKBException();

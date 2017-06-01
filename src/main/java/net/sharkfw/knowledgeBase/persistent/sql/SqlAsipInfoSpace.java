@@ -82,47 +82,6 @@ public class SqlAsipInfoSpace implements ASIPInformationSpace {
         return null;
     }
 
-    @Override
-    public void setSystemProperty(String name, String value) {
-
-    }
-
-    @Override
-    public String getSystemProperty(String name) {
-        return null;
-    }
-
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return null;
-    }
-
-
     private static Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
         try {
             Class.forName(sharkKB.getDialect());

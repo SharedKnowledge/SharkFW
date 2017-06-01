@@ -31,21 +31,19 @@ public class SqlSemanticTag implements SemanticTag
     private String tagKind;
     private Map<String, String> properties;
 
-    public SqlSemanticTag(String[] sis, String name, String tagKind, int stSetID) {
+    public SqlSemanticTag(String[] sis, String name, String tagKind) {
         this.sis = sis;
         this.name = name;
         this.tagKind = tagKind;
-        this.stSetID = stSetID;
     }
 
     /**
      * Write SemanticTag to database
      * @param sis
      * @param name
-     * @param stSetID
      */
-    public SqlSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB) throws SQLException {
-        this(sis, name, "normal", stSetID);
+    public SqlSemanticTag(String[] sis, String name, SqlSharkKB sharkKB) throws SQLException {
+        this(sis, name, "normal");
 
         properties = new HashMap<>();
         try {
@@ -56,7 +54,7 @@ public class SqlSemanticTag implements SemanticTag
         }
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO semantic_tag (name, tag_set) VALUES " + "(\'" + this.name + "\'," + this.stSetID + ");");
+        sql.append("INSERT INTO semantic_tag (name) VALUES " + "(\'" + this.name + "\');");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         id = SqlHelper.getLastCreatedEntry(connection, "semantic_tag");
         ID = Integer.toString(id);
@@ -124,10 +122,10 @@ public class SqlSemanticTag implements SemanticTag
 
     private Map<String, String> extractProperties(String propertyString) {
         Map<String, String> map = new HashMap<>();
-        String[] keyValues = propertyString.split(";");
+        String[] keyValues = propertyString.split(">");
         String[] keyValue;
         for (int i = 0; i < keyValues.length; i++) {
-            keyValue = keyValues[i].split(":");
+            keyValue = keyValues[i].split("<");
             map.put(keyValue[0], keyValue[1]);
         }
         return map;
@@ -229,7 +227,7 @@ public class SqlSemanticTag implements SemanticTag
         Iterator it = properties.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
-            sb.append(pair.getKey() + ":" + pair.getValue() + ";");
+            sb.append(pair.getKey() + "<" + pair.getValue() + ">");
         }
 
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);

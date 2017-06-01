@@ -51,3 +51,10 @@ CREATE TABLE IF NOT EXISTS information (
 	name text,
 	property text
 );
+
+CREATE TABLE IF NOT EXISTS knowledge_base (
+	id integer PRIMARY KEY autoincrement,
+	property text,
+  owner_tag integer,
+  FOREIGN KEY (owner_tag) references semantic_tag(id)
+);

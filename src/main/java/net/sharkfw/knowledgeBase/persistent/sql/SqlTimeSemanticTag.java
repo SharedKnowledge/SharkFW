@@ -21,8 +21,8 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
     private long tagDuration;
     private long tagStart;
 
-    public SqlTimeSemanticTag(String[] sis, String name, int stSetID, SqlSharkKB sharkKB, long tagDuration, long tagStart) throws SQLException {
-        super(sis, name, "time", stSetID);
+    public SqlTimeSemanticTag(String[] sis, String name, SqlSharkKB sharkKB, long tagDuration, long tagStart) throws SQLException {
+        super(sis, name, "time");
         this.tagDuration = tagDuration;
         this.tagStart = tagStart;
         try {
@@ -33,8 +33,8 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
         }
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO semantic_tag (name, tag_set, tag_kind, t_duration, t_start) VALUES "
-                + "(\'" + this.getName() + "\'," + this.getStSetID() + ",\"" + this.getTagKind() + "\"," + tagDuration + "," + tagStart + ");");
+        sql.append("INSERT INTO semantic_tag (name, tag_kind, t_duration, t_start) VALUES "
+                + "(\'" + this.getName() + "\'" + ",\"" + this.getTagKind() + "\"," + tagDuration + "," + tagStart + ");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
         String sqlSIs = getSqlForSIs();
