@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.persistent;
+package net.sharkfw.knowledgeBase.persistent.dump;
 
 import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.knowledgeBase.SharkKBException;

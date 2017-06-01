@@ -33,17 +33,25 @@ import static org.jooq.impl.DSL.when;
 public class SqlSharkHelper {
 
     static SqlSemanticTag getSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
+        try {
+            return new SqlSemanticTag(-1, semanticTag.getSI()[0], -1, sharkKB);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
-    static SqlSemanticTag createSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag){
-
+    static SqlSemanticTag createSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) {
         try{
             return getSemanticTag(sharkKB, semanticTag);
         } catch (SharkKBException e) {
-            // TODO Create tag
-            return null;
+            try {
+                return new SqlSemanticTag(semanticTag.getSI(), semanticTag.getName(), sharkKB);
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
         }
+        return null;
     }
 
     static void removeSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag){
@@ -60,8 +68,7 @@ public class SqlSharkHelper {
         return null;
     }
 
-    static SqlAsipInformation createInformation(SqlSharkKB sharkKB, ASIPInformation information, ASIPSpace space) throws SQLException, SharkKBException {
-
+    static SqlAsipInformation addInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation information) throws SQLException, SharkKBException {
         Connection connection = createConnection(sharkKB);
         List<TagContainer> containerList = getTags(sharkKB, space, true);
         SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(information, space, sharkKB);
@@ -211,8 +218,14 @@ public class SqlSharkHelper {
         mapSTSet(sharkKB, create, space.getReceivers(), ASIPSpace.DIM_RECEIVER, containerList);
         mapSTSet(sharkKB, create, space.getTimes(), ASIPSpace.DIM_TIME, containerList);
         mapSTSet(sharkKB, create, space.getLocations(), ASIPSpace.DIM_LOCATION, containerList);
-        SqlSemanticTag sqlSemanticTag = getSemanticTag(sharkKB, space.getSender());
-        containerList.add(new TagContainer(sqlSemanticTag.getId(), ASIPSpace.DIM_SENDER));
+
+        SqlSemanticTag sender;
+        if(create){
+            sender = createSemanticTag(sharkKB, space.getSender());
+        } else {
+            sender = getSemanticTag(sharkKB, space.getSender());
+        }
+        containerList.add(new TagContainer(sender.getId(), ASIPSpace.DIM_SENDER));
 
         return containerList;
     }

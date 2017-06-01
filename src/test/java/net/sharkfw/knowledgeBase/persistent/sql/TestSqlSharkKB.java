@@ -1,4 +1,4 @@
-package net.sharkfw.knowledgeBase.persistent;
+package net.sharkfw.knowledgeBase.persistent.sql;
 import junit.framework.TestCase;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;

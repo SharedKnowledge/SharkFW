@@ -13,3 +13,4 @@ bin/net/sharkfw/knowledgeBase/sync/TODO
 bin/
 */**/target/
 target
+src\test\java\net\sharkfw\knowledgeBase\persistent\sql\information.db

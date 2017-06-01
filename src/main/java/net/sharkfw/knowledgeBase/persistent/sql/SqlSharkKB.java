@@ -5,6 +5,7 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -422,34 +423,57 @@ public class SqlSharkKB implements SharkKB {
 
     }
 
+    private ASIPInformation addInformation(ASIPInformation information, ASIPSpace space) throws SharkKBException {
+        try {
+            return SqlSharkHelper.addInformation(this, space, information);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public ASIPInformation addInformation(byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
+        InMemoInformation inMemoInformation = new InMemoInformation(content);
+        return this.addInformation(inMemoInformation, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
+        InMemoInformation inMemoInformation = new InMemoInformation();
+        inMemoInformation.setContent(contentIS, numberOfBytes);
+        return this.addInformation(inMemoInformation, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
+        InMemoInformation inMemoInformation = new InMemoInformation();
+        inMemoInformation.setContent(content);
+        return this.addInformation(inMemoInformation, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String name, String content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
+        InMemoInformation inMemoInformation = new InMemoInformation();
+        inMemoInformation.setContent(content);
+        inMemoInformation.setName(name);
+        return this.addInformation(inMemoInformation, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String name, byte[] content, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
+        InMemoInformation inMemoInformation = new InMemoInformation();
+        inMemoInformation.setContent(content);
+        inMemoInformation.setName(name);
+        return this.addInformation(inMemoInformation, semanticAnnotations);
     }
 
     @Override
     public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
-        return null;
+        InMemoInformation inMemoInformation = new InMemoInformation();
+        inMemoInformation.setContent(contentIS, numberOfBytes);
+        inMemoInformation.setName(name);
+        return this.addInformation(inMemoInformation, semanticAnnotations);
     }
 
     @Override
