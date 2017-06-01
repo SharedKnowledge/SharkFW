@@ -25,7 +25,6 @@ public class SqlSemanticTag implements SemanticTag
     public  String ID;
     private String[] sis;
     private String name;
-    private int stSetID;
     protected Connection connection;
     private String property;
     private String tagKind;
@@ -73,11 +72,10 @@ public class SqlSemanticTag implements SemanticTag
     }
 
     /**
-     * Get SemanticTag from database
+     * Get SemanticTag from database with SI
      * @param si
-     * @param stSetID
      */
-    public SqlSemanticTag(int id, String si, int stSetID, SqlSharkKB sharkKB) throws SharkKBException {
+    public SqlSemanticTag(String si, SqlSharkKB sharkKB) throws SharkKBException {
         try {
             Class.forName(sharkKB.getDialect());
             connection = DriverManager.getConnection(sharkKB.getDbAddress());
@@ -90,16 +88,12 @@ public class SqlSemanticTag implements SemanticTag
 
         DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
         String sql = null;
-        if (id == -1 && si != null) {
+        if (si != null) {
             sql = getEntry.selectFrom(table("semantic_tag").join("subject_identifier")
-                    .on(field("identifier").eq(inline(si)))).where((field("tag_set")
-                    .eq(inline(stSetID)))).and(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
+                    .on(field("identifier").eq(inline(si)))).where(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
         }
-        else if (id >= 0 && si == null) {
-            sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(id))).getSQL();
-        }
-        else if (id == -1 && si == null) {
-            sql = getEntry.selectFrom(table("semantic_tag")).where(field("tag_set").eq(inline(stSetID))).getSQL();
+        else {
+            throw new SharkKBException();
         }
         String propertyString = null;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
@@ -108,7 +102,6 @@ public class SqlSemanticTag implements SemanticTag
                 this.name = rs.getString("name");
                 this.id = Integer.parseInt(rs.getString("system_property"));
                 this.sis = getSisFromDB();
-                this.stSetID = stSetID;
                 propertyString = rs.getString("property");
             }
         }
@@ -119,6 +112,43 @@ public class SqlSemanticTag implements SemanticTag
             properties = extractProperties(propertyString);
         }
     }
+
+    /**
+     * Get SemanticTag from database with id
+     * @param id
+     */
+    public SqlSemanticTag(int id, SqlSharkKB sharkKB) throws SharkKBException {
+        try {
+            Class.forName(sharkKB.getDialect());
+            connection = DriverManager.getConnection(sharkKB.getDbAddress());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch ( SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = null;
+        sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(id))).getSQL();
+
+        String propertyString = null;
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
+            if (rs != null) {
+                this.name = rs.getString("name");
+                this.id = Integer.parseInt(rs.getString("system_property"));
+                this.sis = getSisFromDB();
+                propertyString = rs.getString("property");
+            }
+        }
+        catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+        if (propertyString != null) {
+            properties = extractProperties(propertyString);
+        }
+    }
+
 
     private Map<String, String> extractProperties(String propertyString) {
         Map<String, String> map = new HashMap<>();
@@ -178,10 +208,6 @@ public class SqlSemanticTag implements SemanticTag
             array[i] = list.get(i);
         }
         return array;
-    }
-
-    public int getStSetID() {
-        return stSetID;
     }
 
     public Connection getConnection() {
