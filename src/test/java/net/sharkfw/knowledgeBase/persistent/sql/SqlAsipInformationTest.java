@@ -267,4 +267,32 @@ public class SqlAsipInformationTest {
         Iterator<ASIPInformation> informationEmpty = sqlSharkKB.getInformation(space);
         Assert.assertFalse(informationEmpty.hasNext());
     }
+
+    @Test
+    public void multipleGetRequests() throws SharkKBException {
+        L.d("Using database: " + DB7, this);
+        SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION7, "org.sqlite.JDBC");
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1,set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
+
+        sqlSharkKB.addInformation(infoName1, infoContent1, space);
+
+        Iterator<ASIPInformation> information = sqlSharkKB.getInformation(space);
+        if (information.hasNext()) {
+            SqlAsipInformation next = (SqlAsipInformation) information.next();
+            Assert.assertEquals(infoName1, next.getName());
+        } else {
+            Assert.assertTrue(false);
+        }
+
+        sqlSharkKB.addInformation(infoName2, infoContent2, space2);
+
+        Iterator<ASIPInformation> information1 = sqlSharkKB.getInformation(space2);
+        if (information1.hasNext()) {
+            SqlAsipInformation next = (SqlAsipInformation) information1.next();
+            Assert.assertEquals(infoName2, next.getName());
+        } else {
+            Assert.assertTrue(false);
+        }
+    }
 }

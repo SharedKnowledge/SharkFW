@@ -523,36 +523,36 @@ public class SqlSharkKB implements SharkKB {
         try {
             Connection connection = SqlSharkHelper.createConnection(this);
             DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+            DSLContext sql1 = DSL.using(connection, SQLDialect.SQLITE);
             DeleteWhereStep<Record> deleteInformation = sql.deleteFrom(table("information"));
-            DeleteWhereStep<Record> deleteTagSet = sql.deleteFrom(table("tag_set"));
+            DeleteWhereStep<Record> deleteTagSet = sql1.deleteFrom(table("tag_set"));
 
             Condition chainedTagIds = null;
             Condition chainedIds = null;
 
             List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, space);
-            L.d("Got information", this);
             for (SqlAsipInformation sqlAsipInformation : information) {
-                Condition tagId = field("tag_id").eq(inline(sqlAsipInformation.getId()));
+                Condition infoId = field("info_id").eq(inline(sqlAsipInformation.getId()));
                 Condition id = field("id").eq(inline(sqlAsipInformation.getId()));
 
-                if(chainedTagIds==null) chainedTagIds=tagId;
-                else chainedTagIds = chainedTagIds.or(tagId);
+                if(chainedTagIds==null) chainedTagIds=infoId;
+                else chainedTagIds = chainedTagIds.or(infoId);
                 if(chainedIds==null) chainedIds=id;
                 else chainedIds = chainedIds.or(id);
             }
 
             if(chainedTagIds!=null){
                 String sqlTagSet = deleteTagSet.where(chainedTagIds).getSQL();
+                L.d(sqlTagSet, sqlTagSet);
                 try{
                     SqlHelper.executeSQLCommand(connection, sqlTagSet);
-                    L.d("1", this);
                 } catch (SQLException e){}
             }
             if (chainedIds!=null){
                 String sqlIds = deleteInformation.where(chainedIds).getSQL();
+                L.d(sqlIds, sqlIds);
                 try{
                     SqlHelper.executeSQLCommand(connection, sqlIds);
-                    L.d("2", this);
                 } catch (SQLException e){}
             }
         } catch (SQLException e) {
