@@ -13,12 +13,4 @@ bin/net/sharkfw/knowledgeBase/sync/TODO
 bin/
 */**/target/
 target
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info1.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info2.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info3.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info4.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info5.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info6.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info7.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info8.db
-src\test\java\net\sharkfw\knowledgeBase\persistent\sql\info9.db
+src/test/java/net/sharkfw/knowledgeBase/persistent/sql/*.db
