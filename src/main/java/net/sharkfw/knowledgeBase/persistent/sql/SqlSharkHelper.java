@@ -269,7 +269,8 @@ public class SqlSharkHelper {
         for (Integer id : informationIds) {
             DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
             String tagSet = sql.selectFrom(table("tag_set")).where(field("info_id").eq(inline(id))).getSQL();
-            HashMap<Integer, Integer> tagList = new HashMap<>();
+//            HashMap<Integer, Integer> tagList = new HashMap<>();
+            ArrayList<TagContainer> tagContainers = new ArrayList<>();
             SqlAsipSpace sqlAsipSpace = new SqlAsipSpace();
 
             try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, tagSet)){
@@ -277,34 +278,34 @@ public class SqlSharkHelper {
                     sqlAsipSpace.setDirection(rs.getInt("direction"));
                     int tagId = rs.getInt("tag_id");
                     int setKind = rs.getInt("set_kind");
-                    tagList.put(tagId, setKind);
+                    tagContainers.add(new TagContainer(tagId, setKind));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
 
-            for (Map.Entry<Integer, Integer> entry : tagList.entrySet()) {
-                switch (entry.getValue()){
+            for (TagContainer container : tagContainers) {
+                switch (container.setKind){
                     case ASIPSpace.DIM_TOPIC:
                     case ASIPSpace.DIM_TYPE:
-                        SqlSemanticTag tag = new SqlSemanticTag(entry.getKey(), sharkKB);
-                        sqlAsipSpace.addTag(tag, entry.getValue());
+                        SqlSemanticTag tag = new SqlSemanticTag(container.id, sharkKB);
+                        sqlAsipSpace.addTag(tag, container.setKind);
                         break;
                     case ASIPSpace.DIM_APPROVERS:
                     case ASIPSpace.DIM_RECEIVER:
                     case ASIPSpace.DIM_SENDER:
-                        SqlPeerSemanticTag peer = new SqlPeerSemanticTag(entry.getKey(),-1,  sharkKB);
-                        sqlAsipSpace.addTag(peer, entry.getValue());
+                        SqlPeerSemanticTag peer = new SqlPeerSemanticTag(container.id,-1,  sharkKB);
+                        sqlAsipSpace.addTag(peer, container.setKind);
                         break;
                     case DIM_TIME:
                         // TODO Implement Time
-                        SqlSemanticTag time = new SqlSemanticTag(entry.getKey(), sharkKB);
-                        sqlAsipSpace.addTag(time, entry.getValue());
+                        SqlSemanticTag time = new SqlSemanticTag(container.id, sharkKB);
+                        sqlAsipSpace.addTag(time, container.setKind);
                         break;
                     case DIM_LOCATION:
                         // TODO Implement Spatial
-                        SqlSemanticTag location = new SqlSemanticTag(entry.getKey(), sharkKB);
-                        sqlAsipSpace.addTag(location, entry.getValue());
+                        SqlSemanticTag location = new SqlSemanticTag(container.id, sharkKB);
+                        sqlAsipSpace.addTag(location, container.setKind);
                         break;
                 }
             };

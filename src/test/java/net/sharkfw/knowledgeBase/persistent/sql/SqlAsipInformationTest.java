@@ -12,24 +12,14 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -52,15 +42,15 @@ public class SqlAsipInformationTest {
     public static final String DB8 = "info8.db";
     public static final String DB9 = "info9.db";
 
-    public static final String CONNECTION1 = JDBC+PATH+DB1;
-    public static final String CONNECTION2 = JDBC+PATH+DB2;
-    public static final String CONNECTION3 = JDBC+PATH+DB3;
-    public static final String CONNECTION4 = JDBC+PATH+DB4;
-    public static final String CONNECTION5 = JDBC+PATH+DB5;
-    public static final String CONNECTION6 = JDBC+PATH+DB6;
-    public static final String CONNECTION7 = JDBC+PATH+DB7;
-    public static final String CONNECTION8 = JDBC+PATH+DB8;
-    public static final String CONNECTION9 = JDBC+PATH+DB9;
+    public static final String CONNECTION1 = JDBC + PATH + DB1;
+    public static final String CONNECTION2 = JDBC + PATH + DB2;
+    public static final String CONNECTION3 = JDBC + PATH + DB3;
+    public static final String CONNECTION4 = JDBC + PATH + DB4;
+    public static final String CONNECTION5 = JDBC + PATH + DB5;
+    public static final String CONNECTION6 = JDBC + PATH + DB6;
+    public static final String CONNECTION7 = JDBC + PATH + DB7;
+    public static final String CONNECTION8 = JDBC + PATH + DB8;
+    public static final String CONNECTION9 = JDBC + PATH + DB9;
 
     static String infoName1 = "sadhjhasödgdsa hasdög ";
     static String infoName2 = "sadhjhasödg hasadgasdgsdög ";
@@ -103,19 +93,20 @@ public class SqlAsipInformationTest {
 
     private static void deleteFiles() throws IOException {
         try {
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB1));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB2));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB3));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB4));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB5));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB6));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB7));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB8));
-            Files.delete(FileSystems.getDefault().getPath(PATH+DB9));
-        } catch (NoSuchFileException e) {}
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB1));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB2));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB3));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB4));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB5));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB6));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB7));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB8));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB9));
+        } catch (NoSuchFileException e) {
+        }
     }
 
-    private static void initSets(){
+    private static void initSets() {
         try {
             set1.merge(semanticTag1);
             set1.merge(semanticTag2);
@@ -197,7 +188,7 @@ public class SqlAsipInformationTest {
         L.d("Using database: " + DB4, this);
         SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION4, "org.sqlite.JDBC");
 
-        ASIPSpace space = sqlSharkKB.createASIPSpace(semanticTag1,semanticTag2, peerSemanticTag1, peerSemanticTag2, null, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space = sqlSharkKB.createASIPSpace(semanticTag1, semanticTag2, peerSemanticTag1, peerSemanticTag2, null, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space2 = sqlSharkKB.createASIPSpace(semanticTag3, null, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space3 = sqlSharkKB.createASIPSpace(null, semanticTag4, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
 
@@ -223,7 +214,7 @@ public class SqlAsipInformationTest {
         L.d("Using database: " + DB5, this);
         SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION5, "org.sqlite.JDBC");
 
-        ASIPSpace space = sqlSharkKB.createASIPSpace(set1,set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1, set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space3 = sqlSharkKB.createASIPSpace(semanticTag5, semanticTag4, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
 
@@ -239,7 +230,7 @@ public class SqlAsipInformationTest {
         Iterator<ASIPInformation> information = sqlSharkKB.getInformation(space);
         if (information.hasNext()) {
             SqlAsipInformation next = (SqlAsipInformation) information.next();
-            L.d("Quering the correct Information took " + (System.currentTimeMillis()-start) + "ms", this);
+            L.d("Quering the correct Information took " + (System.currentTimeMillis() - start) + "ms", this);
             Assert.assertEquals(infoName1, next.getName());
         } else {
             Assert.assertTrue(false);
@@ -250,7 +241,7 @@ public class SqlAsipInformationTest {
     public void removeInformation() throws SharkKBException {
         L.d("Using database: " + DB6, this);
         SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION6, "org.sqlite.JDBC");
-        ASIPSpace space = sqlSharkKB.createASIPSpace(set1,set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1, set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
 
         sqlSharkKB.addInformation(infoName1, infoContent1, space);
 
@@ -272,7 +263,7 @@ public class SqlAsipInformationTest {
     public void multipleGetRequests() throws SharkKBException {
         L.d("Using database: " + DB7, this);
         SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION7, "org.sqlite.JDBC");
-        ASIPSpace space = sqlSharkKB.createASIPSpace(set1,set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1, set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
 
         sqlSharkKB.addInformation(infoName1, infoContent1, space);
@@ -302,7 +293,7 @@ public class SqlAsipInformationTest {
         L.d("Using database: " + DB8, this);
         SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION8, "org.sqlite.JDBC");
 
-        ASIPSpace space = sqlSharkKB.createASIPSpace(set1,set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1, set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space3 = sqlSharkKB.createASIPSpace(semanticTag5, semanticTag4, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
 
@@ -316,19 +307,20 @@ public class SqlAsipInformationTest {
 
         Iterator<ASIPInformationSpace> informationSpaces = sqlSharkKB.informationSpaces();
 
-        while (informationSpaces.hasNext()){
+        while (informationSpaces.hasNext()) {
             ASIPInformationSpace next = informationSpaces.next();
-            L.d(L.asipSpace2String(next.getASIPSpace()), this);
-            if(SharkCSAlgebra.identical(next.getASIPSpace(), space)){
-                L.d("space", this);
-            } else if(SharkCSAlgebra.identical(next.getASIPSpace(), space2)){
-                L.d("space2", this);
-            } else if(SharkCSAlgebra.identical(next.getASIPSpace(), space3)){
-                L.d("space3", this);
+            if (SharkCSAlgebra.identical(next.getASIPSpace(), space)) {
+                Assert.assertTrue(true);
+                Assert.assertEquals(1, next.numberOfInformations());
+            } else if (SharkCSAlgebra.identical(next.getASIPSpace(), space2)) {
+                Assert.assertTrue(true);
+                Assert.assertEquals(2, next.numberOfInformations());
+            } else if (SharkCSAlgebra.identical(next.getASIPSpace(), space3)) {
+                Assert.assertTrue(true);
+                Assert.assertEquals(1, next.numberOfInformations());
             } else {
-                L.d("No space", this);
+                Assert.assertTrue(false);
             }
-            L.d("Infos:" + next.numberOfInformations(), this);
         }
     }
 
