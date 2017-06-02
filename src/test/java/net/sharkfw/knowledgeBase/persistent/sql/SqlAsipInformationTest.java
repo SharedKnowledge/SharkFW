@@ -74,7 +74,7 @@ public class SqlAsipInformationTest {
 
     static SemanticTag semanticTag1 = InMemoSharkKB.createInMemoSemanticTag("semanticTag1", "si:semanticTag1");
     static SemanticTag semanticTag2 = InMemoSharkKB.createInMemoSemanticTag("semanticTag2", "si:semanticTag2");
-    static SemanticTag semanticTag3 = InMemoSharkKB.createInMemoSemanticTag("semanticTag3", "si:semanticTag3");
+    static SemanticTag semanticTag3 = InMemoSharkKB.createInMemoSemanticTag("semanticTag3", new String[]{"si:semanticTag31", "si:semanticTag32"});
     static SemanticTag semanticTag4 = InMemoSharkKB.createInMemoSemanticTag("semanticTag4", "si:semanticTag4");
     static SemanticTag semanticTag5 = InMemoSharkKB.createInMemoSemanticTag("semanticTag5", "si:semanticTag5");
     static SemanticTag semanticTag6 = InMemoSharkKB.createInMemoSemanticTag("semanticTag6", "si:semanticTag6");
@@ -83,7 +83,7 @@ public class SqlAsipInformationTest {
 
     static PeerSemanticTag peerSemanticTag1 = InMemoSharkKB.createInMemoPeerSemanticTag("peerSemanticTag1", "si:peerSemanticTag1", "addr:peerSemanticTag1");
     static PeerSemanticTag peerSemanticTag2 = InMemoSharkKB.createInMemoPeerSemanticTag("peerSemanticTag2", "si:peerSemanticTag2", "addr:peerSemanticTag2");
-    static PeerSemanticTag peerSemanticTag3 = InMemoSharkKB.createInMemoPeerSemanticTag("peerSemanticTag3", "si:peerSemanticTag3", "addr:peerSemanticTag3");
+    static PeerSemanticTag peerSemanticTag3 = InMemoSharkKB.createInMemoPeerSemanticTag("peerSemanticTag3", new String[]{"si:peerSemanticTag31", "si:peerSemanticTag32"}, new String[]{"addr:peerSemanticTag31", "addr:peerSemanticTag32"});
     static PeerSemanticTag peerSemanticTag4 = InMemoSharkKB.createInMemoPeerSemanticTag("peerSemanticTag4", "si:peerSemanticTag4", "addr:peerSemanticTag4");
     static PeerSemanticTag peerSemanticTag5 = InMemoSharkKB.createInMemoPeerSemanticTag("peerSemanticTag5", "si:peerSemanticTag5", "addr:peerSemanticTag5");
     static PeerSemanticTag peerSemanticTag6 = InMemoSharkKB.createInMemoPeerSemanticTag("peerSemanticTag6", "si:peerSemanticTag6", "addr:peerSemanticTag6");
@@ -260,8 +260,6 @@ public class SqlAsipInformationTest {
             Assert.assertTrue(false);
         }
 
-        L.d("Information was inserted", this);
-
         sqlSharkKB.removeInformation(space);
 
         Iterator<ASIPInformation> informationEmpty = sqlSharkKB.getInformation(space);
@@ -295,4 +293,20 @@ public class SqlAsipInformationTest {
             Assert.assertTrue(false);
         }
     }
+/*
+    SELECT tag_set.set_kind, tag_set.direction, information.content_length,
+    information.content_stream, information.content_type, information.name,
+    information.property, semantic_tag.name, semantic_tag.property,
+    semantic_tag.system_property, semantic_tag.t_duration, semantic_tag.t_start,
+    semantic_tag.tag_kind, semantic_tag.wkt,
+    subject_identifier.identifier, address.address_name
+    FROM tag_set
+    INNER JOIN information ON tag_set.info_id = information.id
+    INNER JOIN ( semantic_tag
+                         INNER JOIN subject_identifier ON semantic_tag.id = subject_identifier.tag_id
+                         INNER JOIN address ON semantic_tag.id = address.tag_id)
+    ON tag_set.tag_id = semantic_tag.id
+
+    */
+
 }
