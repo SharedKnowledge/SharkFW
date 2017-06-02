@@ -36,6 +36,14 @@ public class SqlSemanticTag implements SemanticTag
         this.tagKind = tagKind;
     }
 
+    public SqlSemanticTag(int id, String[] sis, String name, String property, String tagKind) {
+        this.id = id;
+        this.sis = sis;
+        this.name = name;
+        this.property = property;
+        this.tagKind = tagKind;
+    }
+
     /**
      * Write SemanticTag to database
      * @param sis

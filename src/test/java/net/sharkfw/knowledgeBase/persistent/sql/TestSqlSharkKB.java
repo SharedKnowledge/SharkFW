@@ -150,17 +150,17 @@ public class TestSqlSharkKB {
         SqlSpatialSTSet locations = new SqlSpatialSTSet(sqlSharkKB);
         SqlTimeSTSet times = new SqlTimeSTSet(sqlSharkKB);
         int direction = 1;
-
-        SqlAsipSpace space = new SqlAsipSpace(topics, types, direction, sender,
-                receivers, approvers, times, locations, sqlSharkKB);
-        SemanticTag tag = space.getApprovers().getSemanticTag(sis1);
-        assertEquals("senderTag", tag.getName());
-
-        SqlVocabulary vocabulary = new SqlVocabulary(topics, types,
-                 peers, times, locations, sqlSharkKB);
-        SqlKnowledge knowledge = new SqlKnowledge(vocabulary, sqlSharkKB);
-        SqlAsipInfoSpace infoSpace = new SqlAsipInfoSpace(space, knowledge, sqlSharkKB);
-        byte[] contentArray = "TestData".getBytes();
+//
+//        SqlAsipSpace space = new SqlAsipSpace(topics, types, direction, sender,
+//                receivers, approvers, times, locations, sqlSharkKB);
+//        SemanticTag tag = space.getApprovers().getSemanticTag(sis1);
+//        assertEquals("senderTag", tag.getName());
+//
+//        SqlVocabulary vocabulary = new SqlVocabulary(topics, types,
+//                 peers, times, locations, sqlSharkKB);
+//        SqlKnowledge knowledge = new SqlKnowledge(vocabulary, sqlSharkKB);
+//        SqlAsipInfoSpace infoSpace = new SqlAsipInfoSpace(space, knowledge, sqlSharkKB);
+//        byte[] contentArray = "TestData".getBytes();
 /*        SqlAsipInformation information = new SqlAsipInformation( "text", 5, contentArray, "info", infoSpace, sqlSharkKB);
 
         SqlAsipInformation testRead = new SqlAsipInformation(information.getId(), sqlSharkKB);

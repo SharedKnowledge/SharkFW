@@ -1,8 +1,10 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.system.L;
 
 import org.jooq.Condition;
@@ -20,9 +22,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import static net.sharkfw.asip.ASIPSpace.DIM_APPROVERS;
+import static net.sharkfw.asip.ASIPSpace.DIM_LOCATION;
+import static net.sharkfw.asip.ASIPSpace.DIM_SENDER;
+import static net.sharkfw.asip.ASIPSpace.DIM_TIME;
+import static org.jooq.impl.DSL.boolAnd;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.table;
@@ -196,24 +205,6 @@ public class SqlSharkHelper {
         return where.getSQL();
     }
 
-//
-//    private static void getInfoId(Connection connection, List<Integer> infoIds, TagContainer tagContainer, int direction){
-//        DSLContext getTags = DSL.using(connection, SQLDialect.SQLITE);
-//        String tags = getTags.selectFrom(table("tag_set"))
-//                .where(field("set_kind").eq(inline(tagContainer.setKind)))
-//                .and(field("tag_id").eq(inline(tagContainer.id)))
-//                .and(field("direction").eq(inline(direction))).getSQL();
-//        int id = 0;
-//        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, tags) ){
-//            while (rs.next()) {
-//                id = rs.getInt("info_id");
-//                if(!infoIds.contains(id)) infoIds.add(id);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private static void mapSTSet(SqlSharkKB sharkKB, boolean create, STSet set, int setKind, List list) throws SharkKBException {
         if (set==null) return;
         Iterator<SemanticTag> iterator = set.stTags();
@@ -228,14 +219,14 @@ public class SqlSharkHelper {
         List<TagContainer> containerList = new ArrayList<>();
         mapSTSet(sharkKB, create, space.getTopics(), ASIPSpace.DIM_TOPIC, containerList);
         mapSTSet(sharkKB, create, space.getTypes(), ASIPSpace.DIM_TYPE, containerList);
-        mapSTSet(sharkKB, create, space.getApprovers(), ASIPSpace.DIM_APPROVERS,  containerList);
+        mapSTSet(sharkKB, create, space.getApprovers(), DIM_APPROVERS,  containerList);
         mapSTSet(sharkKB, create, space.getReceivers(), ASIPSpace.DIM_RECEIVER, containerList);
-        mapSTSet(sharkKB, create, space.getTimes(), ASIPSpace.DIM_TIME, containerList);
-        mapSTSet(sharkKB, create, space.getLocations(), ASIPSpace.DIM_LOCATION, containerList);
+        mapSTSet(sharkKB, create, space.getTimes(), DIM_TIME, containerList);
+        mapSTSet(sharkKB, create, space.getLocations(), DIM_LOCATION, containerList);
 
         if(space.getSender()!=null){
             SqlSemanticTag sender = getTag(sharkKB, space.getSender(), create);
-            containerList.add(new TagContainer(sender.getId(), ASIPSpace.DIM_SENDER));
+            containerList.add(new TagContainer(sender.getId(), DIM_SENDER));
         }
 
         return containerList;
@@ -267,6 +258,117 @@ public class SqlSharkHelper {
             }
         }
         return sender;
+    }
+
+    public static List<ASIPInformationSpace> getInfoSpaces(SqlSharkKB sharkKB, ASIPSpace asipSpace) throws SQLException, SharkKBException {
+
+        List<SqlAsipInfoSpace> sqlAsipInfoSpaces = new ArrayList<>();
+
+        Connection connection = createConnection(sharkKB);
+        List<Integer> informationIds = getInformationIds(connection, "SELECT id AS info_id FROM information;");
+        for (Integer id : informationIds) {
+            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+            String tagSet = sql.selectFrom(table("tag_set")).where(field("info_id").eq(inline(id))).getSQL();
+            HashMap<Integer, Integer> tagList = new HashMap<>();
+            SqlAsipSpace sqlAsipSpace = new SqlAsipSpace();
+
+            try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, tagSet)){
+                while (rs.next()) {
+                    sqlAsipSpace.setDirection(rs.getInt("direction"));
+                    int tagId = rs.getInt("tag_id");
+                    int setKind = rs.getInt("set_kind");
+                    tagList.put(tagId, setKind);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            for (Map.Entry<Integer, Integer> entry : tagList.entrySet()) {
+                switch (entry.getValue()){
+                    case ASIPSpace.DIM_TOPIC:
+                    case ASIPSpace.DIM_TYPE:
+                        SqlSemanticTag tag = new SqlSemanticTag(entry.getKey(), sharkKB);
+                        sqlAsipSpace.addTag(tag, entry.getValue());
+                        break;
+                    case ASIPSpace.DIM_APPROVERS:
+                    case ASIPSpace.DIM_RECEIVER:
+                    case ASIPSpace.DIM_SENDER:
+                        SqlPeerSemanticTag peer = new SqlPeerSemanticTag(entry.getKey(),-1,  sharkKB);
+                        sqlAsipSpace.addTag(peer, entry.getValue());
+                        break;
+                    case DIM_TIME:
+                        // TODO Implement Time
+                        SqlSemanticTag time = new SqlSemanticTag(entry.getKey(), sharkKB);
+                        sqlAsipSpace.addTag(time, entry.getValue());
+                        break;
+                    case DIM_LOCATION:
+                        // TODO Implement Spatial
+                        SqlSemanticTag location = new SqlSemanticTag(entry.getKey(), sharkKB);
+                        sqlAsipSpace.addTag(location, entry.getValue());
+                        break;
+                }
+            };
+
+            SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(id, sqlAsipSpace, sharkKB);
+            boolean added = false;
+
+            for (SqlAsipInfoSpace sqlAsipInfoSpace : sqlAsipInfoSpaces) {
+                ASIPSpace sqlAsipInfoSpaceASIPSpace = sqlAsipInfoSpace.getASIPSpace();
+                if(SharkCSAlgebra.identical(sqlAsipInfoSpaceASIPSpace, sqlAsipSpace)){
+                    sqlAsipInfoSpace.addInformation(sqlAsipInformation);
+                    added = true;
+                }
+            }
+
+            if(!added){
+                SqlAsipInfoSpace sqlAsipInfoSpace = new SqlAsipInfoSpace(sqlAsipSpace);
+                sqlAsipInfoSpace.addInformation(sqlAsipInformation);
+                sqlAsipInfoSpaces.add(sqlAsipInfoSpace);
+            }
+        }
+
+        return (List<ASIPInformationSpace>) (List<?>) sqlAsipInfoSpaces;
+
+//        Connection connection = createConnection(sqlSharkKB);
+//        String sql = " SELECT tag_set.set_kind, tag_set.direction, information.content_length,\n" +
+//                "\tinformation.id, information.content_stream, information.content_type, information.name, information.property,\n" +
+//                "\tsemantic_tag.id, semantic_tag.name, semantic_tag.property, semantic_tag.system_property, semantic_tag.t_duration, " +
+//                "semantic_tag.t_start, semantic_tag.tag_kind, semantic_tag.wkt,\n" +
+//                "subject_identifier.identifier, address.address_name\n" +
+//                "FROM tag_set\n" +
+//                "INNER JOIN information ON tag_set.info_id = information.id\n" +
+//                "INNER JOIN ( semantic_tag\n" +
+//                "INNER JOIN subject_identifier ON semantic_tag.id = subject_identifier.tag_id\n" +
+//                "INNER JOIN address ON semantic_tag.id = address.tag_id)\n" +
+//                "ON tag_set.tag_id = semantic_tag.id";
+//
+//        List<ASIPInformationSpace> informationSpaces = new ArrayList<>();
+//
+//        HashMap<Integer, SqlAsipInformation> infoMap = new HashMap<>();
+//        HashMap<Integer, SqlSemanticTag> tagMap = new HashMap<>();
+//
+//        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql) ){
+//            while (rs.next()) {
+//                int infoId = rs.getInt("information.info_id");
+//
+//                if(!infoMap.containsKey(infoId)){
+//                    String infoName = rs.getString("information.name");
+//                    byte[] infoContent = rs.getBytes("information.content_stream");
+//                    String infoContentType = rs.getString("information.content_type");
+//                    int infoContentLength = rs.getInt("information.content_length");
+//
+//                    SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(infoId, infoContent, infoContentType, infoName, infoContentLength);
+//                    infoMap.put(infoId, sqlAsipInformation);
+//                }
+//
+//                new ASIPInformationSpace()
+//
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
     }
 
 }

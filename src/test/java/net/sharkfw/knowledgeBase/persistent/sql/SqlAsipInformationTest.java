@@ -1,11 +1,13 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.asip.ASIPInformation;
+import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
@@ -293,6 +295,43 @@ public class SqlAsipInformationTest {
             Assert.assertTrue(false);
         }
     }
+
+    @Test
+    public void getInformationSpaces() throws SharkKBException {
+        long start = System.currentTimeMillis();
+        L.d("Using database: " + DB8, this);
+        SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION8, "org.sqlite.JDBC");
+
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1,set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space3 = sqlSharkKB.createASIPSpace(semanticTag5, semanticTag4, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
+
+        sqlSharkKB.addInformation(infoName1, infoContent1, space);
+        sqlSharkKB.addInformation(infoName2, infoContent2, space2);
+        sqlSharkKB.addInformation(infoName3, infoContent3, space2);
+        sqlSharkKB.addInformation(infoName4, infoContent4, space3);
+
+        long addedInfo = System.currentTimeMillis() - start;
+        L.d("Adding all Information took " + addedInfo + "ms", this);
+
+        Iterator<ASIPInformationSpace> informationSpaces = sqlSharkKB.informationSpaces();
+
+        while (informationSpaces.hasNext()){
+            ASIPInformationSpace next = informationSpaces.next();
+            L.d(L.asipSpace2String(next.getASIPSpace()), this);
+            if(SharkCSAlgebra.identical(next.getASIPSpace(), space)){
+                L.d("space", this);
+            } else if(SharkCSAlgebra.identical(next.getASIPSpace(), space2)){
+                L.d("space2", this);
+            } else if(SharkCSAlgebra.identical(next.getASIPSpace(), space3)){
+                L.d("space3", this);
+            } else {
+                L.d("No space", this);
+            }
+            L.d("Infos:" + next.numberOfInformations(), this);
+        }
+    }
+
 /*
     SELECT tag_set.set_kind, tag_set.direction, information.content_length,
     information.content_stream, information.content_type, information.name,

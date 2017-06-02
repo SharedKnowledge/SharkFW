@@ -76,6 +76,11 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     }
 
+    public SqlPeerSemanticTag(int id, String[] sis, String name, String property, String tagKind, String[] addresses) {
+        super(id, sis, name, property, tagKind);
+        this.addresses = addresses;
+    }
+
     /**
      * Read from DB
      * @param si

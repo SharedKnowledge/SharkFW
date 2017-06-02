@@ -13,7 +13,7 @@ import net.sharkfw.knowledgeBase.*;
  *
  * @author thsc
  */
-public class InMemoInformationSpace extends PropertyHolderDelegate implements ASIPInformationSpace, ASIPSpace {
+public class InMemoInformationSpace implements ASIPInformationSpace, ASIPSpace {
     private STSet topics;
     private STSet types;
     private PeerSTSet approvers;

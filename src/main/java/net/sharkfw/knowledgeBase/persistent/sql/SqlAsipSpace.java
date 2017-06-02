@@ -2,274 +2,100 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.table;
+import static org.jooq.impl.DSL.time;
 
 public class SqlAsipSpace implements ASIPSpace {
 
+    private STSet topics;
+    private STSet types;
+    private PeerSTSet approvers;
+    private PeerSTSet receivers;
+    private PeerSemanticTag sender;
+    private SpatialSTSet locations;
+    private TimeSTSet times;
+    private int direction = DIRECTION_INOUT;
 
-    private int id;
-    private SqlSharkKB sharkKB;
-    private Connection connection;
-
-
-
-    public SqlAsipSpace(SqlSTSet topics, SqlSTSet types, int direction, PeerSemanticTag sender,
-                        SqlPeerSTSet receivers, SqlPeerSTSet approvers, SqlTimeSTSet times, SqlSpatialSTSet locations, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
-
-        connection = getConnection(sharkKB);
-        this.sharkKB = sharkKB;
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = create.insertInto(table("asip_space"),
-                field("topic_set"),field("type_set"), field("receiver_set"), field("approver_set"), field("time_set"),
-                field("location_set"), field("sender_peer_tag"), field("direction"))
-                .values(inline(topics != null ? topics.getStSetID() : -1),inline(types != null ? types.getStSetID() : -1),
-                        inline(receivers != null ? receivers.getStSetID() : -1), inline(approvers != null ? approvers.getStSetID() : -1),inline(times != null ? times.getStSetID() : -1),
-                        inline(locations != null ? locations.getStSetID() : -1), inline(sender.getSystemProperty("ID")), inline(direction)).getSQL();
-
-
-
-        SqlHelper.executeSQLCommand(connection, sql);
-        id = SqlHelper.getLastCreatedEntry(connection, "asip_space");
-
-        }
-
-    SqlAsipSpace(int id, SqlSharkKB sharkKB) {
-        this.id = id;
-        this.sharkKB = sharkKB;
+    public SqlAsipSpace() {
+        topics = InMemoSharkKB.createInMemoSTSet();
+        types= InMemoSharkKB.createInMemoSTSet();
+        approvers = InMemoSharkKB.createInMemoPeerSTSet();
+        receivers = InMemoSharkKB.createInMemoPeerSTSet();
+        locations = InMemoSharkKB.createInMemoSpatialSTSet();
+        times = InMemoSharkKB.createInMemoTimeSTSet();
     }
 
-    public int getId() {
-        return id;
+    public void addTag(SemanticTag tag, int type) throws SharkKBException {
+        switch (type){
+            case DIM_TOPIC:
+                topics.merge(tag);
+                break;
+            case DIM_TYPE:
+                types.merge(tag);
+                break;
+            case DIM_APPROVERS:
+                approvers.merge((PeerSemanticTag) tag);
+                break;
+            case DIM_SENDER:
+                sender = (PeerSemanticTag) tag;
+                break;
+            case DIM_RECEIVER:
+                receivers.merge((PeerSemanticTag) tag);
+                break;
+            case DIM_TIME:
+                times.merge((TimeSemanticTag) tag);
+                break;
+            case DIM_LOCATION:
+                locations.merge((SpatialSemanticTag) tag);
+                break;
+        }
     }
 
     @Override
     public STSet getTopics() {
-        return getSet("topic_set");
+        return topics;
     }
-
 
     @Override
     public STSet getTypes() {
-
-        return getSet("type_set");
+        return types;
     }
 
     @Override
     public int getDirection() {
-
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return -1;
-        }
-        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
-                .eq(inline(id))).getSQL();
-        ResultSet rs;
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
-            return rs.getInt("direction");
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        }
+        return direction;
     }
 
     @Override
     public PeerSemanticTag getSender() {
-
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
-        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
-                .eq(inline(id))).getSQL();
-        ResultSet rs;
-        int tagId = -1;
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
-            tagId = rs.getInt("sender_peer_tag");
-            if (tagId !=  - 1) {
-                return new SqlPeerSemanticTag(tagId, - 1, sharkKB);
-            }
-            else {
-                return null;
-            }
-
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return sender;
     }
 
     @Override
     public PeerSTSet getReceivers() {
-
-        return getPeerSet("receiver_set");
+        return receivers;
     }
 
     @Override
     public PeerSTSet getApprovers() {
-
-        return getPeerSet("approver_set");
+        return approvers;
     }
 
     @Override
     public TimeSTSet getTimes() {
-
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
-        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
-                .eq(inline(id))).getSQL();
-        ResultSet rs;
-        int setId = -1;
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
-            setId = rs.getInt("time_set");
-            if (setId !=  - 1) {
-                return new SqlTimeSTSet(sharkKB, setId);
-            }
-            else {
-                return null;
-            }
-
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        return times;
     }
 
     @Override
     public SpatialSTSet getLocations() {
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
-        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
-                .eq(inline(id))).getSQL();
-        ResultSet rs;
-        int setId = -1;
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
-            setId = rs.getInt("location_set");
-            if (setId !=  - 1) {
-                return new SqlSpatialSTSet(sharkKB, setId);
-            }
-            else {
-                return null;
-            }
-
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-
+        return locations;
     }
 
-
-    private STSet getSet (String column) {
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
-        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
-                .eq(inline(id))).getSQL();
-
-        int setId = -1;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-            setId = rs.getInt(column);
-            if (setId !=  - 1) {
-                return new SqlSTSet(sharkKB, setId);
-            }
-            else {
-                return null;
-            }
-
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    private PeerSTSet getPeerSet (String column) {
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
-        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_space")).where(field("id")
-                .eq(inline(id))).getSQL();
-
-        int setId = -1;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-            setId = rs.getInt(column);
-            if (setId !=  - 1) {
-                return new SqlPeerSTSet(sharkKB, setId);
-            }
-            else {
-                return null;
-            }
-
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
-        try {
-            Class.forName(sharkKB.getDialect());
-            return DriverManager.getConnection(sharkKB.getDbAddress());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        }
-
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 }

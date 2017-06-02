@@ -30,6 +30,7 @@ public class SqlAsipInformation implements ASIPInformation {
     private String contentType;
     private String name;
     private long contentLength;
+
     public SqlAsipInformation(ASIPInformation information, ASIPSpace space, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
         this.sharkKB = sharkKB;
         this.asipSpace = space;
@@ -50,6 +51,14 @@ public class SqlAsipInformation implements ASIPInformation {
         this.id = id;
         this.sharkKB = sharkKB;
         getDataFromDB();
+    }
+
+    public SqlAsipInformation(int id, byte[] content, String contentType, String name, long contentLength) {
+        this.id = id;
+        this.content = content;
+        this.contentType = contentType;
+        this.name = name;
+        this.contentLength = contentLength;
     }
 
     public int getId() {
@@ -192,18 +201,5 @@ public class SqlAsipInformation implements ASIPInformation {
     public void setName(String name) throws SharkKBException {
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

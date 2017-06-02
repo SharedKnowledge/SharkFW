@@ -12,8 +12,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
@@ -21,80 +23,29 @@ import static org.jooq.impl.DSL.table;
 
 public class SqlAsipInfoSpace implements ASIPInformationSpace {
 
-    public int getId() {
-        return id;
+    private List<SqlAsipInformation> infos = new ArrayList<>();
+    private SqlAsipSpace space;
+
+    public SqlAsipInfoSpace(SqlAsipSpace space) {
+        this.space = space;
     }
 
-    private int id;
-    private SqlSharkKB sharkKB;
-    protected Connection connection;
-
-    public SqlAsipInfoSpace(SqlAsipSpace space, SqlKnowledge knowledge, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
-
-        connection = getConnection(sharkKB);
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = create.insertInto(table("asip_information_space"),
-                field("asip_space"),field("knowledge"))
-                .values(inline(space.getId()),inline(knowledge.getId())).getSQL();
-        SqlHelper.executeSQLCommand(connection, sql);
-        id = SqlHelper.getLastCreatedEntry(connection, "asip_information_space");
-
-        String update = create.update(table("semantic_tag")).set(field("system_property"), inline(Integer.toString(id))).where(field("id").eq(inline(Integer.toString(id)))).getSQL();
-        SqlHelper.executeSQLCommand(connection, update);
-    }
-
-    SqlAsipInfoSpace(int id, SqlSharkKB sharkKB){
-
-        this.id = id;
-        this.sharkKB = sharkKB;
+    public void addInformation(SqlAsipInformation sqlAsipInformation){
+        infos.add(sqlAsipInformation);
     }
 
     @Override
     public ASIPSpace getASIPSpace() throws SharkKBException {
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return null;
-        }
-        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getSetId.selectFrom(table("asip_information_space")).where(field("id")
-                .eq(inline(id))).getSQL();
-        ResultSet rs;
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
-            int id = rs.getInt("asip_space");
-            return new SqlAsipSpace(id, sharkKB);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return space;
     }
 
     @Override
     public int numberOfInformations() {
-        return 0;
+        return infos.size();
     }
 
     @Override
     public Iterator<ASIPInformation> informations() throws SharkKBException {
-        return null;
+        return ((List<ASIPInformation>) (List<?>) infos).iterator();
     }
-
-    private static Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
-        try {
-            Class.forName(sharkKB.getDialect());
-            return DriverManager.getConnection(sharkKB.getDbAddress());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        }
-
-    }
-
-
 }

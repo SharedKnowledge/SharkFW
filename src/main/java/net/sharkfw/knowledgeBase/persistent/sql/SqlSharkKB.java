@@ -128,19 +128,7 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public Iterator<ASIPInformationSpace> getAllInformationSpaces() throws SharkKBException {
-        DSLContext getAddresses = DSL.using(this.getConnection(), SQLDialect.SQLITE);
-        String tags = getAddresses.selectFrom(table("asip_information")).getSQL();
-        ResultSet rs = null;
-        List<ASIPInformationSpace> list = new ArrayList<>();
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
-            while (rs.next()) {
-                list.add(new SqlAsipInfoSpace(rs.getInt("id"), this));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list.iterator();
+        return this.informationSpaces();
     }
 
     @Override
@@ -510,6 +498,11 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces() throws SharkKBException {
+        try {
+            return SqlSharkHelper.getInfoSpaces(this, null).iterator();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
