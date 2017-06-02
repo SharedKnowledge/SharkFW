@@ -14,3 +14,4 @@ bin/
 */**/target/
 target
 src/test/java/net/sharkfw/knowledgeBase/persistent/sql/*.db
+src/main/java/net/sharkfw/knowledgeBase/persistent/sql/*.db
