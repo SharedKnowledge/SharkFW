@@ -245,7 +245,26 @@ public class SqlAsipInformationTest {
     }
 
     @Test
-    public void getInformation_success() {
+    public void removeInformation() throws SharkKBException {
+        L.d("Using database: " + DB6, this);
+        SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION6, "org.sqlite.JDBC");
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1,set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
 
+        sqlSharkKB.addInformation(infoName1, infoContent1, space);
+
+        Iterator<ASIPInformation> information = sqlSharkKB.getInformation(space);
+        if (information.hasNext()) {
+            SqlAsipInformation next = (SqlAsipInformation) information.next();
+            Assert.assertEquals(infoName1, next.getName());
+        } else {
+            Assert.assertTrue(false);
+        }
+
+        L.d("Information was inserted", this);
+
+        sqlSharkKB.removeInformation(space);
+
+        Iterator<ASIPInformation> informationEmpty = sqlSharkKB.getInformation(space);
+        Assert.assertFalse(informationEmpty.hasNext());
     }
 }

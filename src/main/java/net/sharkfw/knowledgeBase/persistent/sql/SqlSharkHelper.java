@@ -55,7 +55,7 @@ public class SqlSharkHelper {
 
     }
 
-    private static Connection createConnection(SqlSharkKB sharkKB) throws SQLException {
+    static Connection createConnection(SqlSharkKB sharkKB) throws SQLException {
         try {
             Class.forName(sharkKB.getDialect());
             return DriverManager.getConnection(sharkKB.getDbAddress());
