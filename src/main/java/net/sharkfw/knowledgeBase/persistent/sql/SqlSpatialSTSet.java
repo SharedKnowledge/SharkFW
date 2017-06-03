@@ -51,12 +51,8 @@ public class SqlSpatialSTSet extends SqlSTSet implements SpatialSTSet {
     @Override
     public SpatialSemanticTag getSpatialSemanticTag(String si) throws SharkKBException {
         SqlSemanticTag tag = new SqlSemanticTag(si, getSqlSharkKB());
-        try {
-            return new SqlSpatialSemanticTag(tag);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        }
+        return new SqlSpatialSemanticTag(tag.getId(), getSqlSharkKB());
+
     }
 
     @Override

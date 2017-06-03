@@ -1,12 +1,14 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.TimeSemanticTag;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.jooq.impl.DSL.field;
@@ -49,6 +51,45 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
             e.printStackTrace();
         }
     }
+
+    public SqlTimeSemanticTag(String si, SqlSharkKB sharkKB) throws SharkKBException {
+        super(si, sharkKB);
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = null;
+        if (si != null) {
+            sql = getEntry.selectFrom(table("semantic_tag").join("subject_identifier")
+                    .on(field("identifier").eq(inline(si)))).where(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
+        }
+        else {
+            throw new SharkKBException();
+        }
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
+            if (rs != null) {
+                this.tagDuration = Integer.parseInt(rs.getString("t_duration"));
+                this.tagStart = Integer.parseInt(rs.getString("t_start"));
+            }
+        } catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+    }
+
+    public SqlTimeSemanticTag(int id, SqlSharkKB sharkKB) throws SharkKBException {
+        super(id, sharkKB);
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = null;
+        sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(id))).getSQL();
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+            if (rs != null) {
+                this.tagDuration = Integer.parseInt(rs.getString("t_duration"));
+                this.tagStart = Integer.parseInt(rs.getString("t_start"));
+            }
+        } catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+    }
+
+
 
 
     @Override

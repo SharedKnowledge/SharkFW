@@ -48,23 +48,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
         SqlHelper.executeSQLCommand(connection, sql.toString());
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
         SqlHelper.executeSQLCommand(connection, this.getSqlForSIs());
-
-        StringBuilder sqlAddresses = new StringBuilder();
-        sqlAddresses.append("PRAGMA foreign_keys = ON; ");
-        sqlAddresses.append("INSERT INTO address (address_name, tag_id) VALUES ");
-        for (int i = 0; i < this.addresses.length; i++)
-        {
-            if (i != this.addresses.length - 1)
-            {
-                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + ',');
-            }
-            else
-            {
-                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + "; ");
-            }
-        }
-        SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
-
+        setAddresses(this.addresses);
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
         String update = create.update(table("semantic_tag")).set(field("system_property"), inline(Integer.toString(this.getId()))).where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
 
@@ -85,7 +69,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
      * Read from DB
      * @param si
      */
-    public SqlPeerSemanticTag(String si, int stSet, SqlSharkKB sharkKb) throws SharkKBException {
+    public SqlPeerSemanticTag(String si, SqlSharkKB sharkKb) throws SharkKBException {
         super(si, sharkKb);
         addresses = getAddresses();
     }
@@ -94,7 +78,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
      * Read from DB
      * @param id
      */
-    public SqlPeerSemanticTag(int id, int stSet, SqlSharkKB sharkKb) throws SharkKBException {
+    public SqlPeerSemanticTag(int id, SqlSharkKB sharkKb) throws SharkKBException {
         super(id, sharkKb);
         addresses = getAddresses();
     }
@@ -123,16 +107,57 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     @Override
     public void setAddresses(String[] addresses) {
+        DSLContext deleteAddresses = DSL.using(this.getConnection(), SQLDialect.SQLITE);
+        String sql = deleteAddresses.deleteFrom(table("address")).where(field("tag_id")
+                .eq(inline(this.getSystemProperty("id")))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(this.getConnection(), sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        addAddressesToDB(addresses);
+
 
     }
 
     @Override
     public void removeAddress(String address) {
-
+        DSLContext deleteAddresse = DSL.using(this.getConnection(), SQLDialect.SQLITE);
+        String sql = deleteAddresse.deleteFrom(table("address")).where(field("tag_id")
+                .eq(inline(this.getSystemProperty("id")))
+                .and(field("address_name").eq(inline(address)))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(this.getConnection(), sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void addAddress(String address) {
+        addAddressesToDB(new String[]{address});
+    }
 
+    private void addAddressesToDB(String[] addresses) {
+        StringBuilder sqlAddresses = new StringBuilder();
+        sqlAddresses.append("PRAGMA foreign_keys = ON; ");
+        sqlAddresses.append("INSERT INTO address (address_name, tag_id) VALUES ");
+        for (int i = 0; i < this.addresses.length; i++)
+        {
+            if (i != this.addresses.length - 1)
+            {
+                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + ',');
+            }
+            else
+            {
+                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + "; ");
+            }
+        }
+        try {
+            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
+            this.addresses = addresses;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

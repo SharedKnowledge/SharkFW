@@ -48,7 +48,7 @@ public class SqlSharkHelper {
     }
     static SqlPeerSemanticTag getPeerSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
         if (semanticTag==null) throw new SharkKBException("No SemanticTag given.");
-        return new SqlPeerSemanticTag(semanticTag.getSI()[0], -1, sharkKB);
+        return new SqlPeerSemanticTag(semanticTag.getSI()[0], sharkKB);
     }
 
     static SqlSemanticTag createSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) {
@@ -294,7 +294,7 @@ public class SqlSharkHelper {
                     case ASIPSpace.DIM_APPROVERS:
                     case ASIPSpace.DIM_RECEIVER:
                     case ASIPSpace.DIM_SENDER:
-                        SqlPeerSemanticTag peer = new SqlPeerSemanticTag(container.id,-1,  sharkKB);
+                        SqlPeerSemanticTag peer = new SqlPeerSemanticTag(container.id,  sharkKB);
                         sqlAsipSpace.addTag(peer, container.setKind);
                         break;
                     case DIM_TIME:

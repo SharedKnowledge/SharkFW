@@ -51,17 +51,42 @@ public class SqlSpatialSemanticTag extends SqlSemanticTag implements SpatialSema
         }
     }
 
-    public SqlSpatialSemanticTag(SqlSemanticTag tag) throws SQLException {
-        super(tag.getSis(), tag.getName(), "spatial");
+    public SqlSpatialSemanticTag(int id, SqlSharkKB sharkKB) throws SharkKBException {
+        super(id, sharkKB);
         DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
         String sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(getId()))).getSQL();
-        String propertyString = null;
-            ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
+        ResultSet rs = null;
+        try {
+            rs = SqlHelper.executeSQLCommandWithResult(connection, sql);
             if (rs != null) {
                 wkt = rs.getString("wkt");
             }
-
+        } catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
     }
+
+    public SqlSpatialSemanticTag(String si, SqlSharkKB sharkKB) throws SharkKBException {
+        super(si, sharkKB);
+        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
+        String sql = null;
+        if (si != null) {
+            sql = getEntry.selectFrom(table("semantic_tag").join("subject_identifier")
+                    .on(field("identifier").eq(inline(si)))).where(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
+        }
+        else {
+            throw new SharkKBException();
+        }
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+
+            if (rs != null) {
+                wkt = rs.getString("wkt");
+            }
+        } catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+    }
+
 
 
     @Override

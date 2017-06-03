@@ -253,7 +253,8 @@ public class SqlSemanticTag implements SemanticTag
 
     @Override
     public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        //TODO: transfer?
+        properties.put(name,value);
+        persistProperties();
     }
 
     private void persistProperties() throws SharkKBException {
@@ -295,18 +296,53 @@ public class SqlSemanticTag implements SemanticTag
 
     @Override
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return null;
-        //TODO: ???
+        if (properties != null) {
+            Set<String> set = properties.keySet();
+            return Collections.enumeration(set);
+        }
+        else
+            return null;
     }
 
     @Override
     public void removeSI(String si) throws SharkKBException {
-
+        DSLContext deleteSI = DSL.using(this.getConnection(), SQLDialect.SQLITE);
+        String sql = deleteSI.deleteFrom(table("subject_identifier")).where(field("tag_id")
+                .eq(inline(this.getSystemProperty("id")))
+                .and(field("identifier").eq(inline(si)))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(this.getConnection(), sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void addSI(String si) throws SharkKBException {
+        addSIsToDB(new String[]{si});
+    }
 
+    private void addSIsToDB(String[] sis) {
+        StringBuilder sqlAddresses = new StringBuilder();
+        this.sis = sis;
+        sqlAddresses.append("INSERT INTO subject_identifier (identifier, tag_id) VALUES ");
+        for (int i = 0; i < this.sis.length; i++)
+        {
+            if (i != this.sis.length - 1)
+            {
+                sqlAddresses.append("(\'" + this.sis[i] + "\'," + this.getId() + ")" + ',');
+            }
+            else
+            {
+                sqlAddresses.append("(\'" + this.sis[i] + "\'," + this.getId() + ")" + "; ");
+            }
+        }
+        try {
+            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -317,11 +353,32 @@ public class SqlSemanticTag implements SemanticTag
     @Override
     public void setName(String newName) {
 
+        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+        String update = create.update(table("semantic_tag")).set(field("name"), inline(newName))
+                .where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
+        try {
+            SqlHelper.executeSQLCommand(connection, update);
+            name = newName;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void merge(SemanticTag st) {
-
+        String[] paramSI = st.getSI();
+        String[] thisSI = this.getSI();
+        List<String> newSIs = new ArrayList<>();
+        for (String i : paramSI) {
+            for (String j : thisSI) {
+                if (!(j.equals(i))) {
+                    newSIs.add(i);
+                }
+            }
+        }
+        String[] arr = new String[newSIs.size()];
+        arr = newSIs.toArray(arr);
+        addSIsToDB(arr);
     }
 
     @Override

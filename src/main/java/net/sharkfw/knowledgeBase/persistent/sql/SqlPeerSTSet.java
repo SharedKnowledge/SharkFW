@@ -55,12 +55,12 @@ public class SqlPeerSTSet extends SqlSTSet implements PeerSTSet {
 
     @Override
     public PeerSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        return new SqlPeerSemanticTag(sis[0], getStSetID(), getSqlSharkKB());
+        return new SqlPeerSemanticTag(sis[0], getSqlSharkKB());
     }
 
     @Override
     public PeerSemanticTag getSemanticTag(String si) throws SharkKBException {
-        return new SqlPeerSemanticTag(si, getStSetID(), getSqlSharkKB());
+        return new SqlPeerSemanticTag(si, getSqlSharkKB());
     }
 
     @Override
@@ -75,7 +75,7 @@ public class SqlPeerSTSet extends SqlSTSet implements PeerSTSet {
             rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
             while (rs.next()) {
                 id = rs.getInt("id");
-                list.add(new SqlPeerSemanticTag(id, getStSetID(), getSqlSharkKB()));
+                list.add(new SqlPeerSemanticTag(id, getSqlSharkKB()));
             }
 
         } catch (SQLException e) {
