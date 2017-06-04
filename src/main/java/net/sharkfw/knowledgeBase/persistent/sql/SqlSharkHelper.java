@@ -4,7 +4,6 @@ import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.system.L;
 
 import org.jooq.Condition;
@@ -21,12 +20,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static net.sharkfw.asip.ASIPSpace.DIM_APPROVERS;
 import static net.sharkfw.asip.ASIPSpace.DIM_LOCATION;
@@ -340,7 +336,7 @@ public class SqlSharkHelper {
 
     public static List<ASIPInformationSpace> getInfoSpaces(SqlSharkKB sharkKB, ASIPSpace asipSpace) throws SQLException, SharkKBException {
 
-        List<SqlAsipInfoSpace> sqlAsipInfoSpaces = new ArrayList<>();
+        List<SqlAsipInformationSpace> sqlAsipInformationSpaces = new ArrayList<>();
 
         Connection connection = createConnection(sharkKB);
         List<Integer> informationIds = getInformationIds(connection, "SELECT id AS info_id FROM information;");
@@ -391,22 +387,22 @@ public class SqlSharkHelper {
             SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(id, sqlAsipSpace, sharkKB);
             boolean added = false;
 
-            for (SqlAsipInfoSpace sqlAsipInfoSpace : sqlAsipInfoSpaces) {
-                ASIPSpace sqlAsipInfoSpaceASIPSpace = sqlAsipInfoSpace.getASIPSpace();
+            for (SqlAsipInformationSpace sqlAsipInformationSpace : sqlAsipInformationSpaces) {
+                ASIPSpace sqlAsipInfoSpaceASIPSpace = sqlAsipInformationSpace.getASIPSpace();
                 if(SharkCSAlgebra.identical(sqlAsipInfoSpaceASIPSpace, sqlAsipSpace)){
-                    sqlAsipInfoSpace.addInformation(sqlAsipInformation);
+                    sqlAsipInformationSpace.addInformation(sqlAsipInformation);
                     added = true;
                 }
             }
 
             if(!added){
-                SqlAsipInfoSpace sqlAsipInfoSpace = new SqlAsipInfoSpace(sqlAsipSpace);
-                sqlAsipInfoSpace.addInformation(sqlAsipInformation);
-                sqlAsipInfoSpaces.add(sqlAsipInfoSpace);
+                SqlAsipInformationSpace sqlAsipInformationSpace = new SqlAsipInformationSpace(sharkKB, sqlAsipSpace);
+                sqlAsipInformationSpace.addInformation(sqlAsipInformation);
+                sqlAsipInformationSpaces.add(sqlAsipInformationSpace);
             }
         }
 
-        return (List<ASIPInformationSpace>) (List<?>) sqlAsipInfoSpaces;
+        return (List<ASIPInformationSpace>) (List<?>) sqlAsipInformationSpaces;
 
 //        Connection connection = createConnection(sqlSharkKB);
 //        String sql = " SELECT tag_set.set_kind, tag_set.direction, information.content_length,\n" +

@@ -159,7 +159,7 @@ public class TestSqlSharkKB {
 //        SqlVocabulary vocabulary = new SqlVocabulary(topics, types,
 //                 peers, times, locations, sqlSharkKB);
 //        SqlKnowledge knowledge = new SqlKnowledge(vocabulary, sqlSharkKB);
-//        SqlAsipInfoSpace infoSpace = new SqlAsipInfoSpace(space, knowledge, sqlSharkKB);
+//        SqlAsipInformationSpace infoSpace = new SqlAsipInformationSpace(space, knowledge, sqlSharkKB);
 //        byte[] contentArray = "TestData".getBytes();
 /*        SqlAsipInformation information = new SqlAsipInformation( "text", 5, contentArray, "info", infoSpace, sqlSharkKB);
 

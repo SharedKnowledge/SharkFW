@@ -21,16 +21,18 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.table;
 
-public class SqlAsipInfoSpace implements ASIPInformationSpace {
+public class SqlAsipInformationSpace implements ASIPInformationSpace {
 
+    private final SqlSharkKB sharkKB;
     private List<SqlAsipInformation> infos = new ArrayList<>();
     private SqlAsipSpace space;
 
-    public SqlAsipInfoSpace(SqlAsipSpace space) {
+    public SqlAsipInformationSpace(SqlSharkKB sharkKB, SqlAsipSpace space) {
+        this.sharkKB = sharkKB;
         this.space = space;
     }
 
-    public void addInformation(SqlAsipInformation sqlAsipInformation){
+    protected void addInformation(SqlAsipInformation sqlAsipInformation){
         infos.add(sqlAsipInformation);
     }
 

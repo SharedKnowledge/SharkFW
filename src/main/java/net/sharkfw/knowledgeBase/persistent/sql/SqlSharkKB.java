@@ -134,7 +134,12 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
-        return null; //TODO: ID Problem
+        try {
+            return SqlSharkHelper.getInfoSpaces(this, space).iterator();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
