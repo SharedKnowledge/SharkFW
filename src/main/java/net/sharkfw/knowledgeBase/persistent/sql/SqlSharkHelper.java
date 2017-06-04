@@ -9,6 +9,7 @@ import net.sharkfw.system.L;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.DeleteWhereStep;
 import org.jooq.InsertValuesStep4;
 import org.jooq.Record;
 import org.jooq.SQLDialect;
@@ -111,6 +112,22 @@ public class SqlSharkHelper {
         return insertInto.getSQL();
     }
 
+    static SqlAsipInformation getInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation information){
+        try {
+            List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(sharkKB, space);
+            for (SqlAsipInformation sqlAsipInformation : informationList) {
+                if(sqlAsipInformation.getName().equals(information.getName())){
+                    return sqlAsipInformation;
+                }
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     static List<SqlAsipInformation> getInformation(SqlSharkKB sharkKB, ASIPSpace space) throws SharkKBException, SQLException {
 
         Connection connection = createConnection(sharkKB);
@@ -129,6 +146,54 @@ public class SqlSharkHelper {
         }
 
         return informationList;
+    }
+
+    public static void removeInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation asipInformation) throws SharkKBException {
+        try {
+            Connection connection = SqlSharkHelper.createConnection(sharkKB);
+            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+            DSLContext sql1 = DSL.using(connection, SQLDialect.SQLITE);
+            DeleteWhereStep<Record> deleteInformation = sql.deleteFrom(table("information"));
+            DeleteWhereStep<Record> deleteTagSet = sql1.deleteFrom(table("tag_set"));
+
+            Condition chainedTagIds = null;
+            Condition chainedIds = null;
+
+            List<SqlAsipInformation> informationList = new ArrayList<>();
+
+            if(asipInformation==null){
+                informationList.addAll(SqlSharkHelper.getInformation(sharkKB, space));
+            } else {
+                informationList.add(SqlSharkHelper.getInformation(sharkKB, space, asipInformation));
+            }
+
+            for (SqlAsipInformation sqlAsipInformation : informationList) {
+                Condition infoId = field("info_id").eq(inline(sqlAsipInformation.getId()));
+                Condition id = field("id").eq(inline(sqlAsipInformation.getId()));
+
+                if(chainedTagIds==null) chainedTagIds=infoId;
+                else chainedTagIds = chainedTagIds.or(infoId);
+                if(chainedIds==null) chainedIds=id;
+                else chainedIds = chainedIds.or(id);
+            }
+
+            if(chainedTagIds!=null){
+                String sqlTagSet = deleteTagSet.where(chainedTagIds).getSQL();
+                L.d(sqlTagSet, sqlTagSet);
+                try{
+                    SqlHelper.executeSQLCommand(connection, sqlTagSet);
+                } catch (SQLException e){}
+            }
+            if (chainedIds!=null){
+                String sqlIds = deleteInformation.where(chainedIds).getSQL();
+                L.d(sqlIds, sqlIds);
+                try{
+                    SqlHelper.executeSQLCommand(connection, sqlIds);
+                } catch (SQLException e){}
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     static List<SqlAsipInformation> addInformation(SqlSharkKB sharkKB, ASIPSpace space, Iterator<ASIPInformation> informationIterator) throws SQLException, SharkKBException {
@@ -172,6 +237,19 @@ public class SqlSharkHelper {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public static int getNumberOfInformation(Connection connection){
+        String sql = "SELECT * FROM information;";
+        int size = 0;
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql) ){
+            while (rs.next()) {
+                size++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return size;
     }
 
     private static String prepareSqlStatement(Connection connection, List<TagContainer> containerList, int direction){

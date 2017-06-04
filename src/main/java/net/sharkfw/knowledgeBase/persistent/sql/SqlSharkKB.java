@@ -387,14 +387,29 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-
-        // TODO
-        // GET ALL INFOS for this space
-        // Check if sqlInfoName.eq infoName
-        // merge
-        // else
-        // add
-
+        try {
+            List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(this, space);
+            for (SqlAsipInformation sqlAsipInformation : informationList) {
+                while (information.hasNext()){
+                    ASIPInformation next = information.next();
+                    boolean merged = false;
+                    if(sqlAsipInformation.getName().equals(next.getName())){
+                        sqlAsipInformation.setContent(next.getContentAsByte());
+                        sqlAsipInformation.setContentType(next.getContentType());
+                        merged = true;
+                    }
+                    if(!merged){
+                        new SqlAsipInformation(next, space, this);
+                    }
+                }
+            }
+            List<ASIPInformationSpace> infoSpaces = SqlSharkHelper.getInfoSpaces(this, space);
+            if (infoSpaces != null){
+                return infoSpaces.get(0);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
 
     }
@@ -454,7 +469,7 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
-        SqlSharkHelper.r
+        SqlSharkHelper.removeInformation(this, infoSpace, info);
     }
 
     @Override
@@ -470,6 +485,12 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
+        try {
+            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, infoSpace);
+            return ((List<ASIPInformation>) (List<?>) information).iterator();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -485,7 +506,7 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void removeInformationSpace(ASIPSpace space) throws SharkKBException {
-
+        SqlSharkHelper.removeInformation(this, space, null);
     }
 
     @Override
@@ -532,11 +553,17 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public SharkVocabulary getVocabulary() {
+        // TODO
         return null;
     }
 
     @Override
     public int getNumberInformation() throws SharkKBException {
+        try {
+            return SqlSharkHelper.getNumberOfInformation(SqlSharkHelper.createConnection(this));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 
@@ -572,6 +599,12 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public Iterator<ASIPInformationSpace> informationSpaces(ASIPSpace as, boolean matchAny) throws SharkKBException {
+        try {
+            List<ASIPInformationSpace> infoSpaces = SqlSharkHelper.getInfoSpaces(this, as);
+            return infoSpaces.iterator();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
