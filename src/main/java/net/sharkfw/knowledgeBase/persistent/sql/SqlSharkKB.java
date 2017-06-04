@@ -28,6 +28,7 @@ import static org.jooq.impl.DSL.*;
 /**
  * Created by Dustin Feurich on 31.03.2017.
  */
+@SuppressWarnings("Duplicates")
 public class SqlSharkKB implements SharkKB {
 
     private SharkKB sharkKB;
@@ -386,31 +387,13 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
-        /** TODO add/merge
-         * iterator.next;
-         *
-         * add info to INFO -> info_id
-         *
-         *
-         * each dimension as dimension_type
-         *      getTag or createTag -> tag_id
-         *      add to SET info_id, dimension_type, tag_id, space.direction
-         */
 
-
-
-        STSet topics = space.getTopics();
-        Iterator<SemanticTag> semanticTagIterator = topics.stTags();
-        while (semanticTagIterator.hasNext()){
-            SemanticTag next = semanticTagIterator.next();
-
-
-
-            SqlSemanticTag semanticTag = SqlSharkHelper.createSemanticTag(this, next);
-
-
-        }
-
+        // TODO
+        // GET ALL INFOS for this space
+        // Check if sqlInfoName.eq infoName
+        // merge
+        // else
+        // add
 
         return null;
 
@@ -471,13 +454,7 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void removeInformation(ASIPInformation info, ASIPSpace infoSpace) throws SharkKBException {
-        /**
-         * option 1:
-         * get INFO where info -> info_id
-         * remove
-         *
-         * option 2:
-         */
+        SqlSharkHelper.r
     }
 
     @Override
