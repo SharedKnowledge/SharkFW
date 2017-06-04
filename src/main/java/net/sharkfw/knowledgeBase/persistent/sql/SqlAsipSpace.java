@@ -20,7 +20,7 @@ public class SqlAsipSpace implements ASIPSpace {
     private TimeSTSet times;
     private int direction = DIRECTION_INOUT;
 
-    public SqlAsipSpace() {
+    protected SqlAsipSpace() {
         topics = InMemoSharkKB.createInMemoSTSet();
         types= InMemoSharkKB.createInMemoSTSet();
         approvers = InMemoSharkKB.createInMemoPeerSTSet();
@@ -29,7 +29,7 @@ public class SqlAsipSpace implements ASIPSpace {
         times = InMemoSharkKB.createInMemoTimeSTSet();
     }
 
-    public void addTag(SemanticTag tag, int type) throws SharkKBException {
+    protected void addTag(SemanticTag tag, int type) throws SharkKBException {
         switch (type){
             case DIM_TOPIC:
                 topics.merge(tag);

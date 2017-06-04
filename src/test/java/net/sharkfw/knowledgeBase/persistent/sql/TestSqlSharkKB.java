@@ -35,7 +35,7 @@ public class TestSqlSharkKB {
     public static final String[] sis3 = new String[]{"si5", "si6"};
     public static final String[] sis4 = new String[]{"si7", "si8"};
 
-    //@Ignore
+    @Ignore
     @Before
     public void testConnectionAndBuild() throws SQLException, ClassNotFoundException {
         SqlSharkKB sqlSharkKB = new SqlSharkKB(connection, "org.sqlite.JDBC");
@@ -89,7 +89,7 @@ public class TestSqlSharkKB {
     }
 
 
-    //@Ignore
+    @Ignore
     @Test
     public void testSemanticTagCreation() throws SQLException, SharkKBException {
 
