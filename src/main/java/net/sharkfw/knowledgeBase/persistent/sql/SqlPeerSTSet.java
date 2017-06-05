@@ -1,18 +1,18 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
-import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoTimeSemanticTag;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
+import net.sharkfw.knowledgeBase.FragmentationParameter;
+import net.sharkfw.knowledgeBase.PeerSTSet;
+import net.sharkfw.knowledgeBase.PeerSemanticTag;
+import net.sharkfw.knowledgeBase.STSet;
+import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkKBException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.table;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created by dfe on 24.05.2017.
@@ -52,27 +52,16 @@ public class SqlPeerSTSet extends SqlSTSet implements PeerSTSet {
         return createPeerSemanticTag(name, new String[]{si}, new String[]{address});
     }
 
-
-    @Override
-    public PeerSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        return new SqlPeerSemanticTag(sis[0], getSqlSharkKB());
-    }
-
-    @Override
-    public PeerSemanticTag getSemanticTag(String si) throws SharkKBException {
-        return new SqlPeerSemanticTag(si, getSqlSharkKB());
-    }
-
     @Override
     public Enumeration<PeerSemanticTag> peerTags() {
-        DSLContext getTags = DSL.using(this.getConnection(), SQLDialect.SQLITE);
-        String tags = getTags.selectFrom(table("semantic_tag")).where(field("tag_kind")
-                .eq(inline("peer"))).and(field("tag_set").eq(inline(this.getStSetID()))).getSQL();
+//        DSLContext getTags = DSL.using(this.getConnection(), SQLDialect.SQLITE);
+//        String tags = getTags.selectFrom(table("semantic_tag")).where(field("tag_kind")
+//                .eq(inline("peer"))).and(field("tag_set").eq(inline(this.getStSetID()))).getSQL();
         ResultSet rs = null;
         List<PeerSemanticTag> list = new ArrayList<>();
         int id = 0;
         try {
-            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
+//            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
             while (rs.next()) {
                 id = rs.getInt("id");
                 list.add(new SqlPeerSemanticTag(id, getSqlSharkKB()));
@@ -86,6 +75,16 @@ public class SqlPeerSTSet extends SqlSTSet implements PeerSTSet {
             return null;
         }
         return Collections.enumeration(list);
+    }
+
+    @Override
+    public PeerSemanticTag getSemanticTag(String si) throws SharkKBException {
+        return new SqlPeerSemanticTag(si, getSqlSharkKB());
+    }
+
+    @Override
+    public PeerSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
+        return new SqlPeerSemanticTag(sis[0], getSqlSharkKB());
     }
 
     @Override

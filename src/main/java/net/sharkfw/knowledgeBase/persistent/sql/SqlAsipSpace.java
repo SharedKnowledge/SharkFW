@@ -4,13 +4,6 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
-import java.sql.SQLException;
-
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.table;
-import static org.jooq.impl.DSL.time;
-
 public class SqlAsipSpace implements ASIPSpace {
 
     private STSet topics;

@@ -2,9 +2,6 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,11 +9,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.ALL;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.AND;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.DELETE;
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.EQ;
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.table;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_ADDRESS_NAME;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_ID;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_SYSTEM_PROPERTY;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_TAG_ID;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FROM;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.QU;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.SELECT;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.SET;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.TABLE_ADDRESS;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.TABLE_SEMANTIC_TAG;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.UPDATE;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.WHERE;
 
 /**
  * Created by Dustin Feurich on 18.04.2017.
@@ -27,6 +35,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     /**
      * Write to DB
+     *
      * @param sis
      * @param name
      * @param sharkKB
@@ -44,15 +53,12 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
         }
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO semantic_tag (name, tag_kind) VALUES "
-                + "(\'" + this.getName() + "\'" + ",\"" + this.getTagKind()
-                + "\");");
+        sql.append("INSERT INTO semantic_tag (name, tag_kind) VALUES " + "(\'" + this.getName() + "\'" + ",\"" + this.getTagKind() + "\");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
         SqlHelper.executeSQLCommand(connection, this.getSqlForSIs());
         setAddresses(this.addresses);
-        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId())
-                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId()) + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
             SqlHelper.executeSQLCommand(connection, update);
         } catch (SQLException e) {
@@ -68,6 +74,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     /**
      * Read from DB
+     *
      * @param si
      */
     public SqlPeerSemanticTag(String si, SqlSharkKB sharkKb) throws SharkKBException {
@@ -77,6 +84,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     /**
      * Read from DB
+     *
      * @param id
      */
     public SqlPeerSemanticTag(int id, SqlSharkKB sharkKb) throws SharkKBException {
@@ -117,8 +125,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     @Override
     public void removeAddress(String address) {
-        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id") +
-                AND + FIELD_ADDRESS_NAME + EQ + QU + address + QU;
+        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id") + AND + FIELD_ADDRESS_NAME + EQ + QU + address + QU;
         try {
             SqlHelper.executeSQLCommand(this.getConnection(), sql);
         } catch (SQLException e) {
@@ -135,14 +142,10 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
         StringBuilder sqlAddresses = new StringBuilder();
         sqlAddresses.append("PRAGMA foreign_keys = ON; ");
         sqlAddresses.append("INSERT INTO address (address_name, tag_id) VALUES ");
-        for (int i = 0; i < this.addresses.length; i++)
-        {
-            if (i != this.addresses.length - 1)
-            {
+        for (int i = 0; i < this.addresses.length; i++) {
+            if (i != this.addresses.length - 1) {
                 sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + ',');
-            }
-            else
-            {
+            } else {
                 sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + "; ");
             }
         }

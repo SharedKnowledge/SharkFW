@@ -19,11 +19,6 @@ import static net.sharkfw.asip.ASIPSpace.DIM_APPROVERS;
 import static net.sharkfw.asip.ASIPSpace.DIM_LOCATION;
 import static net.sharkfw.asip.ASIPSpace.DIM_SENDER;
 import static net.sharkfw.asip.ASIPSpace.DIM_TIME;
-import static org.jooq.impl.DSL.boolAnd;
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.table;
-import static org.jooq.impl.DSL.when;
 
 /**
  * Created by j4rvis on 5/31/17.

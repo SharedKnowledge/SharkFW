@@ -3,10 +3,6 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.system.L;
 
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
 import java.io.InputStream;
 import java.sql.*;
 import java.util.HashMap;
@@ -17,9 +13,6 @@ import java.util.Scanner;
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.EQ;
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_ID;
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.inline;
-import static org.jooq.impl.DSL.table;
 
 /**
  * Created by Dustin Feurich on 03.04.2017.
@@ -54,6 +47,18 @@ public class SqlHelper {
         }
     }
 
+    public static void executeSQLCommand(Connection conn, String sql, byte[] blob) throws SQLException {
+        L.d(sql, sql);
+        PreparedStatement st = null;
+        conn.setAutoCommit(true);
+        try {
+            st = conn.prepareStatement(sql);
+            st.setBytes(1, blob);
+            st.executeUpdate();
+        } finally {
+            if (st != null) st.close();
+        }
+    }
     public static void executeSQLCommand(Connection conn, String sql) throws SQLException {
         L.d(sql, sql);
         Statement st = null;

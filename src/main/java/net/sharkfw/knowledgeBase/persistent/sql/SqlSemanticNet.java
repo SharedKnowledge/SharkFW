@@ -45,11 +45,12 @@ public class SqlSemanticNet implements SemanticNet {
 
     @Override
     public SNSemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
-        try {
-            return new SqlSNSemanticTag(sis, name, sqlSharkKB);
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
+//        try {
+//            return new SqlSNSemanticTag(sis, name, sqlSharkKB);
+//        } catch (SQLException e) {
+//            throw new SharkKBException(e.toString());
+//        }
+        return null;
     }
 
     @Override

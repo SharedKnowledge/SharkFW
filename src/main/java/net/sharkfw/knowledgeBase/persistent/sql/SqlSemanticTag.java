@@ -2,31 +2,55 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
-import static org.jooq.impl.DSL.*;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.ALL;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.AND;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.BC;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.BO;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.DELETE;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.DOT;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.EQ;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_ID;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_NAME;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_PROPERTY;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_SUBJECT_IDENTIFIER_IDENTIFIER;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_SYSTEM_PROPERTY;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_TAG_ID;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FROM;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.INSERTINTO;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.JOIN;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.ON;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.QU;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.SELECT;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.SET;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.TABLE_SEMANTIC_TAG;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.TABLE_SUBJECT_IDENTIFIER;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.UPDATE;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.VALUES;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.WHERE;
 
 /**
  * Created by Dustin Feurich
  */
-public class SqlSemanticTag implements SemanticTag
-{
+public class SqlSemanticTag implements SemanticTag {
+    public String ID;
+    protected Connection connection;
     private int id;
-    public  String ID;
     private String[] sis;
     private String name;
-    protected Connection connection;
     private String property;
     private String tagKind;
     private Map<String, String> properties;
@@ -47,6 +71,7 @@ public class SqlSemanticTag implements SemanticTag
 
     /**
      * Write SemanticTag to database
+     *
      * @param sis
      * @param name
      */
@@ -67,8 +92,7 @@ public class SqlSemanticTag implements SemanticTag
 
         String sqlSIs = getSqlForSIs();
         if (sqlSIs != null) SqlHelper.executeSQLCommand(connection, getSqlForSIs());
-        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId())
-                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId()) + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
             SqlHelper.executeSQLCommand(connection, update);
         } catch (SQLException e) {
@@ -78,6 +102,7 @@ public class SqlSemanticTag implements SemanticTag
 
     /**
      * Get SemanticTag from database with SI
+     *
      * @param si
      */
     public SqlSemanticTag(String si, SqlSharkKB sharkKB) throws SharkKBException {
@@ -86,16 +111,13 @@ public class SqlSemanticTag implements SemanticTag
             connection = DriverManager.getConnection(sharkKB.getDbAddress());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }
-        catch ( SQLException e) {
+        } catch (SQLException e) {
             throw new SharkKBException(e.toString());
         }
         String sql;
         if (si != null) {
-             sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON +
-             FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU + WHERE + TABLE_SEMANTIC_TAG + DOT + FIELD_ID + EQ + FIELD_TAG_ID;
-        }
-        else {
+            sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON + FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU + WHERE + TABLE_SEMANTIC_TAG + DOT + FIELD_ID + EQ + FIELD_TAG_ID;
+        } else {
             throw new SharkKBException();
         }
         String propertyString = null;
@@ -107,8 +129,7 @@ public class SqlSemanticTag implements SemanticTag
                 this.sis = getSisFromDB();
                 propertyString = rs.getString("property");
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new SharkKBException(e.toString());
         }
         if (propertyString != null) {
@@ -118,6 +139,7 @@ public class SqlSemanticTag implements SemanticTag
 
     /**
      * Get SemanticTag from database with id
+     *
      * @param id
      */
     public SqlSemanticTag(int id, SqlSharkKB sharkKB) throws SharkKBException {
@@ -126,8 +148,7 @@ public class SqlSemanticTag implements SemanticTag
             connection = DriverManager.getConnection(sharkKB.getDbAddress());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }
-        catch ( SQLException e) {
+        } catch (SQLException e) {
             throw new SharkKBException(e.toString());
         }
         String sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + WHERE + FIELD_ID + EQ + id;
@@ -140,8 +161,7 @@ public class SqlSemanticTag implements SemanticTag
                 this.sis = getSisFromDB();
                 propertyString = rs.getString("property");
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new SharkKBException(e.toString());
         }
         if (propertyString != null) {
@@ -161,20 +181,15 @@ public class SqlSemanticTag implements SemanticTag
         return map;
     }
 
-    protected String getSqlForSIs()
-    {
+    protected String getSqlForSIs() {
         if (sis == null) return null;
         StringBuilder sql = new StringBuilder();
         sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO subject_identifier (identifier, tag_id) VALUES ");
-        for (int i = 0; i < sis.length; i++)
-        {
-            if (i != sis.length - 1)
-            {
+        for (int i = 0; i < sis.length; i++) {
+            if (i != sis.length - 1) {
                 sql.append("(\'" + sis[i] + "\'," + id + ")" + ',');
-            }
-            else
-            {
+            } else {
                 sql.append("(\'" + sis[i] + "\'," + id + ")" + "; ");
             }
         }
@@ -183,6 +198,10 @@ public class SqlSemanticTag implements SemanticTag
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String[] getSis() {
@@ -231,72 +250,8 @@ public class SqlSemanticTag implements SemanticTag
     }
 
     @Override
-    public String getSystemProperty(String name) {
-        return Integer.toString(id);
-    }
-
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-        properties.put(name,value);
-        persistProperties();
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        properties.put(name,value);
-        persistProperties();
-    }
-
-    private void persistProperties() throws SharkKBException {
-        StringBuilder sb = new StringBuilder();
-        Iterator it = properties.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            sb.append(pair.getKey() + "<" + pair.getValue() + ">");
-        }
-        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_PROPERTY + EQ + QU + sb.toString() + QU
-                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
-        try {
-            SqlHelper.executeSQLCommand(connection, update);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        }
-
-
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        return properties.get(name);
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-        properties.remove(name);
-        persistProperties();
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        Set<String> set = properties.keySet();
-        return Collections.enumeration(set);
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        if (properties != null) {
-            Set<String> set = properties.keySet();
-            return Collections.enumeration(set);
-        }
-        else
-            return null;
-    }
-
-    @Override
     public void removeSI(String si) throws SharkKBException {
-        String sql = DELETE + FROM + TABLE_SUBJECT_IDENTIFIER + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id") + AND +
-                FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU;
+        String sql = DELETE + FROM + TABLE_SUBJECT_IDENTIFIER + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id") + AND + FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU;
         try {
             SqlHelper.executeSQLCommand(this.getConnection(), sql);
         } catch (SQLException e) {
@@ -309,38 +264,9 @@ public class SqlSemanticTag implements SemanticTag
         addSIsToDB(new String[]{si});
     }
 
-    private void addSIsToDB(String[] sis) {
-        StringBuilder sqlAddresses = new StringBuilder();
-        this.sis = sis;
-        sqlAddresses.append("INSERT INTO subject_identifier (identifier, tag_id) VALUES ");
-        for (int i = 0; i < this.sis.length; i++)
-        {
-            if (i != this.sis.length - 1)
-            {
-                sqlAddresses.append("(\'" + this.sis[i] + "\'," + this.getId() + ")" + ',');
-            }
-            else
-            {
-                sqlAddresses.append("(\'" + this.sis[i] + "\'," + this.getId() + ")" + "; ");
-            }
-        }
-        try {
-            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void setSystemProperty(String name, String value) {
-        //TODO: column SystemProperty used as ID
-    }
-
     @Override
     public void setName(String newName) {
-        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_NAME + EQ + QU + newName + QU
-                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_NAME + EQ + QU + newName + QU + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
             SqlHelper.executeSQLCommand(connection, update);
             name = newName;
@@ -386,7 +312,87 @@ public class SqlSemanticTag implements SemanticTag
         return false;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    @Override
+    public void setProperty(String name, String value) throws SharkKBException {
+        properties.put(name, value);
+        persistProperties();
+    }
+
+    @Override
+    public String getProperty(String name) throws SharkKBException {
+        return properties.get(name);
+    }
+
+    @Override
+    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
+        properties.put(name, value);
+        persistProperties();
+    }
+
+    @Override
+    public void removeProperty(String name) throws SharkKBException {
+        properties.remove(name);
+        persistProperties();
+    }
+
+    @Override
+    public Enumeration<String> propertyNames() throws SharkKBException {
+        Set<String> set = properties.keySet();
+        return Collections.enumeration(set);
+    }
+
+    @Override
+    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
+        if (properties != null) {
+            Set<String> set = properties.keySet();
+            return Collections.enumeration(set);
+        } else return null;
+    }
+
+    private void persistProperties() throws SharkKBException {
+        StringBuilder sb = new StringBuilder();
+        Iterator it = properties.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            sb.append(pair.getKey() + "<" + pair.getValue() + ">");
+        }
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_PROPERTY + EQ + QU + sb.toString() + QU + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
+        try {
+            SqlHelper.executeSQLCommand(connection, update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SharkKBException();
+        }
+
+
+    }
+
+    private void addSIsToDB(String[] sis) {
+        StringBuilder sqlAddresses = new StringBuilder();
+        this.sis = sis;
+        sqlAddresses.append("INSERT INTO subject_identifier (identifier, tag_id) VALUES ");
+        for (int i = 0; i < this.sis.length; i++) {
+            if (i != this.sis.length - 1) {
+                sqlAddresses.append("(\'" + this.sis[i] + "\'," + this.getId() + ")" + ',');
+            } else {
+                sqlAddresses.append("(\'" + this.sis[i] + "\'," + this.getId() + ")" + "; ");
+            }
+        }
+        try {
+            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setSystemProperty(String name, String value) {
+        //TODO: column SystemProperty used as ID
+    }
+
+    @Override
+    public String getSystemProperty(String name) {
+        return Integer.toString(id);
     }
 }

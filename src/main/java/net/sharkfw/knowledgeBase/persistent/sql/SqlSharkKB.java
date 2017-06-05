@@ -9,12 +9,6 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.DeleteWhereStep;
-import org.jooq.Record;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +19,6 @@ import java.util.*;
 
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlHelper.*;
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
-import static org.jooq.impl.DSL.*;
 
 /**
  * Created by Dustin Feurich on 31.03.2017.
@@ -47,7 +40,6 @@ public class SqlSharkKB implements SharkKB {
 
     private String dialect;
 
-    private SQLDialect jooqDialect = SQLDialect.SQLITE;
     public final String JDBC_SQLITE = "org.sqlite.JDBC";
 //    public final String scriptFile = ".\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\sharkNet.sql";
     public final String scriptFile = "./src/main/java/net/sharkfw/knowledgeBase/persistent/sql/sharkNet.sql";
@@ -161,10 +153,6 @@ public class SqlSharkKB implements SharkKB {
     private void initDatabase(InMemoSharkKB sharkKB)
     {
 
-    }
-
-    public SQLDialect getJooqDialect() {
-        return jooqDialect;
     }
 
     public String getDbAddress() {
