@@ -6,14 +6,6 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.L;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.DeleteWhereStep;
-import org.jooq.InsertValuesStep4;
-import org.jooq.Record;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -151,19 +143,16 @@ public class SqlSharkHelper {
     }
 
     private static String prepareSqlInsertSet(Connection connection, List<TagContainer> containerList, ASIPSpace asipSpace, List<SqlAsipInformation> informationList){
-        DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
-        InsertValuesStep4<Record, Object, Object, Object, Object> insertInto = sql.insertInto(table("tag_set"), field("set_kind"), field("info_id"), field("tag_id"), field("direction"));
+
+        String sql = INSERTINTO+TABLE_TAG_SET+BO+FIELD_SET_KIND+","+FIELD_INFO_ID+","+FIELD_TAG_ID+","+FIELD_DIRECTION+BC+VALUES;
 
         for (SqlAsipInformation sqlAsipInformation : informationList) {
             for (TagContainer tagContainer : containerList) {
-                insertInto.values(
-                        inline(tagContainer.setKind),
-                        inline(sqlAsipInformation.getId()),
-                        inline(tagContainer.id),
-                        inline(asipSpace.getDirection()));
+                sql=sql+BO+tagContainer.setKind+","+sqlAsipInformation.getId()+","+tagContainer.id+","+asipSpace.getDirection()+BC+",";
             }
+            sql = sql.substring(0, sql.length()-1);
         }
-        return insertInto.getSQL();
+        return sql;
     }
 
     static SqlAsipInformation getInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation information){
@@ -205,17 +194,8 @@ public class SqlSharkHelper {
     public static void removeInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation asipInformation) throws SharkKBException {
         try {
             Connection connection = SqlSharkHelper.createConnection(sharkKB);
-//            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
-//            DSLContext sql1 = DSL.using(connection, SQLDialect.SQLITE);
-//            DeleteWhereStep<Record> deleteInformation = sql.deleteFrom(table("information"));
-//            DeleteWhereStep<Record> deleteTagSet = sql1.deleteFrom(table("tag_set"));
-
             String deleteInformation = DELETE+FROM+TABLE_INFORMATION;
             String deleteTagSet = DELETE+FROM+TABLE_TAG_SET;
-
-//            Condition chainedTagIds = null;
-//            Condition chainedIds = null;
-//
 
             String chainedTagIds = "";
             String chainedIds = "";
@@ -229,8 +209,6 @@ public class SqlSharkHelper {
             }
 
             for (SqlAsipInformation sqlAsipInformation : informationList) {
-//                Condition infoId = field("info_id").eq(inline(sqlAsipInformation.getId()));
-//                Condition id = field("id").eq(inline(sqlAsipInformation.getId()));
                 String infoId = FIELD_INFO_ID+EQ+sqlAsipInformation.getId();
                 String id = FIELD_ID+EQ+sqlAsipInformation.getId();
 
@@ -260,8 +238,6 @@ public class SqlSharkHelper {
 
         List<TagContainer> containerList = getTags(sharkKB, space, true);
 
-        // Create the information and get the Id
-
         ArrayList<SqlAsipInformation> informationList = new ArrayList<>();
 
         while (informationIterator.hasNext()){
@@ -275,6 +251,7 @@ public class SqlSharkHelper {
     }
 
     private static boolean executeInsertSuccess(Connection connection, String sql){
+        L.d(sql, sql);
         try {
             SqlHelper.executeSQLCommand(connection, sql);
             return true;
@@ -311,43 +288,7 @@ public class SqlSharkHelper {
         return size;
     }
 
-    /*select * from tag_set where ((((((((
-            ((direction = 0 or set_kind = 0) and (tag_id = 1 or tag_id = 2))
-            or set_kind = 1) and (tag_id = 3 or tag_id = 4 or tag_id = 5))
-            or set_kind = 2) and (tag_id = 6 or tag_id = 7))
-            or set_kind = 3) and tag_id = 6)
-            or set_kind = 4) and (tag_id = 8 or tag_id = 9 or tag_id = 10))*/
-
     private static String prepareSqlStatement(Connection connection, List<TagContainer> containerList, int direction){
-        /*DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
-//        String sql = SELECT+ALL+FROM+TABLE_TAG_SET+WHERE+FIELD_DIRECTION+EQ+direction
-        SelectConditionStep<Record> where = sql.selectFrom(table("tag_set")).where(field("direction").eq(inline(direction)));
-
-        List<List<Condition>> conditions = new ArrayList<>();
-        for (int i = 0; i<7; i++){
-            conditions.add(new ArrayList<Condition>());
-        }
-
-        for (TagContainer container : containerList) {
-            Condition tagId = field("tag_id").eq(inline(container.id));
-            conditions.get(container.setKind).add(tagId);
-        }
-
-        for (int i = 0; i < conditions.size(); i++){
-            List<Condition> conditionList = conditions.get(i);
-            Condition chainedCondition = null;
-
-            for (Condition condition : conditionList) {
-                if(chainedCondition==null) chainedCondition = condition;
-                else {
-                    chainedCondition = chainedCondition.or(condition);
-                }
-            }
-            if(chainedCondition!=null){
-                where.or(field("set_kind").eq(inline(i))).and(chainedCondition);
-            }
-        }
-        return where.getSQL();*/
         String sql = SELECT+DISTINCT+COUNT+BO+FIELD_INFO_ID+BC+AS+" count,"+FIELD_INFO_ID+","+FIELD_SET_KIND+","+FIELD_DIRECTION+FROM+TABLE_TAG_SET+WHERE+FIELD_DIRECTION+EQ+direction;
 
         List<List<String>> conditions = new ArrayList<>();
@@ -447,10 +388,7 @@ public class SqlSharkHelper {
         Connection connection = createConnection(sharkKB);
         List<Integer> informationIds = getInformationIds(connection, "SELECT id AS info_id FROM information;");
         for (Integer id : informationIds) {
-//            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
             String tagSet = SELECT+ALL+FROM+TABLE_TAG_SET+WHERE+FIELD_INFO_ID+EQ+id;
-//            String tagSet = sql.selectFrom(table("tag_set")).where(field("info_id").eq(inline(id))).getSQL();
-//            HashMap<Integer, Integer> tagList = new HashMap<>();
             ArrayList<TagContainer> tagContainers = new ArrayList<>();
             SqlAsipSpace sqlAsipSpace = new SqlAsipSpace();
 
@@ -510,47 +448,6 @@ public class SqlSharkHelper {
         }
 
         return (List<ASIPInformationSpace>) (List<?>) sqlAsipInformationSpaces;
-
-//        Connection connection = createConnection(sqlSharkKB);
-//        String sql = " SELECT tag_set.set_kind, tag_set.direction, information.content_length,\n" +
-//                "\tinformation.id, information.content_stream, information.content_type, information.name, information.property,\n" +
-//                "\tsemantic_tag.id, semantic_tag.name, semantic_tag.property, semantic_tag.system_property, semantic_tag.t_duration, " +
-//                "semantic_tag.t_start, semantic_tag.tag_kind, semantic_tag.wkt,\n" +
-//                "subject_identifier.identifier, address.address_name\n" +
-//                "FROM tag_set\n" +
-//                "INNER JOIN information ON tag_set.info_id = information.id\n" +
-//                "INNER JOIN ( semantic_tag\n" +
-//                "INNER JOIN subject_identifier ON semantic_tag.id = subject_identifier.tag_id\n" +
-//                "INNER JOIN address ON semantic_tag.id = address.tag_id)\n" +
-//                "ON tag_set.tag_id = semantic_tag.id";
-//
-//        List<ASIPInformationSpace> informationSpaces = new ArrayList<>();
-//
-//        HashMap<Integer, SqlAsipInformation> infoMap = new HashMap<>();
-//        HashMap<Integer, SqlSemanticTag> tagMap = new HashMap<>();
-//
-//        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql) ){
-//            while (rs.next()) {
-//                int infoId = rs.getInt("information.info_id");
-//
-//                if(!infoMap.containsKey(infoId)){
-//                    String infoName = rs.getString("information.name");
-//                    byte[] infoContent = rs.getBytes("information.content_stream");
-//                    String infoContentType = rs.getString("information.content_type");
-//                    int infoContentLength = rs.getInt("information.content_length");
-//
-//                    SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(infoId, infoContent, infoContentType, infoName, infoContentLength);
-//                    infoMap.put(infoId, sqlAsipInformation);
-//                }
-//
-//                new ASIPInformationSpace()
-//
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
     }
 
 }
