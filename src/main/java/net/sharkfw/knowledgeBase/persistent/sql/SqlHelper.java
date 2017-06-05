@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.system.L;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -21,6 +22,55 @@ import static org.jooq.impl.DSL.table;
  * Created by Dustin Feurich on 03.04.2017.
  */
 public class SqlHelper {
+    // TABLE
+    public final static String TABLE_INFORMATION = " information";
+    public final static String TABLE_TAG_SET = " tag_set";
+    public final static String TABLE_SEMANTIC_TAG = " semantic_tag";
+    public final static String TABLE_ADDRESS = " address";
+    public final static String TABLE_SUBJECT_IDENTIFIER = " subject_identifier";
+    public final static String TABLE_RELATION = " relation";
+    public final static String TABLE_KNOWLEDGE_BASE = " knowledge_base";
+
+    // FIELDS
+    public final static String FIELD_ID = " id";
+    public final static String FIELD_SUBJECT_IDENTIFIER_IDENTIFIER = " identifier";
+    public final static String FIELD_TAG_ID = " tag_id";
+    public final static String FIELD_INFO_ID = " info_id";
+    public final static String FIELD_SET_KIND = " set_kind";
+    public final static String FIELD_DIRECTION = " direction";
+    public final static String FIELD_NAME = " name";
+    public final static String FIELD_SYSTEM_PROPERTY = " system_property";
+    public final static String FIELD_PROPERTY = " property";
+    public final static String FIELD_TAG_KIND = " tag_kind";
+    public final static String FIELD_WKT = " wkt";
+    public final static String FIELD_TIME_DURATION = " t_duration";
+    public final static String FIELD_TIME_START = " t_start";
+    public final static String FIELD_ADDRESS_NAME = " address_name";
+    public final static String FIELD_SOURCE_TAG_ID = " source_tag_id";
+    public final static String FIELD_TARGET_TAG_ID = " target_tag_id";
+    public final static String FIELD_CONTENT_STREAM = " content_stream";
+    public final static String FIELD_CONTENT_TYPE = " content_type";
+    public final static String FIELD_CONTENT_LENGTH = " content_length";
+    public final static String FIELD_OWNER_TAG = " owner_tag";
+    public final static String FIELD_FOREIGN_KEYS = " foreign_keys";
+
+    // METHODS
+    public final static String INSERTINTO = " INSERT INTO";
+    public final static String DELETE = " DELETE";
+    public final static String UPDATE = " UPDATE";
+    public final static String PRAGMA = " PRAGMA";
+    public final static String JOIN = " JOIN";
+    public final static String SELECT = " SELECT";
+    public final static String FROM = " FROM";
+    public final static String WHERE = " WHERE";
+    public final static String ON = " ON";
+    public final static String EQ = " =";
+    public final static String BO = "(";
+    public final static String BC = ")";
+    public final static String ALL = " *";
+    public final static String OR = " OR";
+    public final static String AND = " AND";
+    public final static String VALUES = " VALUES";
 
     private SqlHelper() {
         //static usage only
@@ -51,6 +101,7 @@ public class SqlHelper {
     }
 
     public static void executeSQLCommand(Connection conn, String sql) throws SQLException {
+        L.d(sql, sql);
         Statement st = null;
         conn.setAutoCommit(true);
         try {
@@ -62,6 +113,7 @@ public class SqlHelper {
     }
 
     public static ResultSet executeSQLCommandWithResult(Connection conn, String sql) throws SQLException {
+        L.d(sql, sql);
         conn.setAutoCommit(true);
         Statement st = conn.createStatement();
         return st.executeQuery(sql);

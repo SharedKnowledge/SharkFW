@@ -12,7 +12,6 @@ import org.jooq.DeleteWhereStep;
 import org.jooq.InsertValuesStep4;
 import org.jooq.Record;
 import org.jooq.SQLDialect;
-import org.jooq.SelectConditionStep;
 import org.jooq.impl.DSL;
 
 import java.sql.Connection;
@@ -38,6 +37,57 @@ import static org.jooq.impl.DSL.when;
  * Created by j4rvis on 5/31/17.
  */
 public class SqlSharkHelper {
+
+    // TABLE
+    public final static String TABLE_INFORMATION = " information";
+    public final static String TABLE_TAG_SET = " tag_set";
+    public final static String TABLE_SEMANTIC_TAG = " semantic_tag";
+    public final static String TABLE_ADDRESS = " address";
+    public final static String TABLE_SUBJECT_IDENTIFIER = " subject_identifier";
+    public final static String TABLE_RELATION = " relation";
+    public final static String TABLE_KNOWLEDGE_BASE = " knowledge_base";
+
+    // FIELDS
+    public final static String FIELD_ID = " id";
+    public final static String FIELD_SUBJECT_IDENTIFIER_IDENTIFIER = " identifier";
+    public final static String FIELD_TAG_ID = " tag_id";
+    public final static String FIELD_INFO_ID = " info_id";
+    public final static String FIELD_SET_KIND = " set_kind";
+    public final static String FIELD_DIRECTION = " direction";
+    public final static String FIELD_NAME = " name";
+    public final static String FIELD_SYSTEM_PROPERTY = " system_property";
+    public final static String FIELD_PROPERTY = " property";
+    public final static String FIELD_TAG_KIND = " tag_kind";
+    public final static String FIELD_WKT = " wkt";
+    public final static String FIELD_TIME_DURATION = " t_duration";
+    public final static String FIELD_TIME_START = " t_start";
+    public final static String FIELD_ADDRESS_NAME = " address_name";
+    public final static String FIELD_SOURCE_TAG_ID = " source_tag_id";
+    public final static String FIELD_TARGET_TAG_ID = " target_tag_id";
+    public final static String FIELD_CONTENT_STREAM = " content_stream";
+    public final static String FIELD_CONTENT_TYPE = " content_type";
+    public final static String FIELD_CONTENT_LENGTH = " content_length";
+    public final static String FIELD_OWNER_TAG = " owner_tag";
+    public final static String FIELD_FOREIGN_KEYS = " foreign_keys";
+
+    // METHODS
+    public final static String INSERTINTO = " INSERT INTO";
+    public final static String DELETE = " DELETE";
+    public final static String UPDATE = " UPDATE";
+    public final static String PRAGMA = " PRAGMA";
+    public final static String JOIN = " JOIN";
+    public final static String SELECT = " SELECT";
+    public final static String FROM = " FROM";
+    public final static String WHERE = " WHERE";
+    public final static String ON = " ON";
+    public final static String EQ = " =";
+    public final static String BO = "(";
+    public final static String BC = ")";
+    public final static String ALL = " *";
+    public final static String OR = " OR";
+    public final static String AND = " AND";
+    public final static String VALUES = " VALUES";
+
 
     static SqlSemanticTag getSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
         if (semanticTag==null) throw new SharkKBException("No SemanticTag given.");
@@ -248,8 +298,16 @@ public class SqlSharkHelper {
         return size;
     }
 
+    /*select * from tag_set where ((((((((
+            ((direction = 0 or set_kind = 0) and (tag_id = 1 or tag_id = 2))
+            or set_kind = 1) and (tag_id = 3 or tag_id = 4 or tag_id = 5))
+            or set_kind = 2) and (tag_id = 6 or tag_id = 7))
+            or set_kind = 3) and tag_id = 6)
+            or set_kind = 4) and (tag_id = 8 or tag_id = 9 or tag_id = 10))*/
+
     private static String prepareSqlStatement(Connection connection, List<TagContainer> containerList, int direction){
-        DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+        /*DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+//        String sql = SELECT+ALL+FROM+TABLE_TAG_SET+WHERE+FIELD_DIRECTION+EQ+direction
         SelectConditionStep<Record> where = sql.selectFrom(table("tag_set")).where(field("direction").eq(inline(direction)));
 
         List<List<Condition>> conditions = new ArrayList<>();
@@ -276,7 +334,41 @@ public class SqlSharkHelper {
                 where.or(field("set_kind").eq(inline(i))).and(chainedCondition);
             }
         }
-        return where.getSQL();
+        return where.getSQL();*/
+        String sql = SELECT+ALL+FROM+TABLE_TAG_SET+WHERE+FIELD_DIRECTION+EQ+direction;
+
+        List<List<String>> conditions = new ArrayList<>();
+        for (int i = 0; i<7; i++){
+            conditions.add(new ArrayList<String>());
+        }
+
+        for (TagContainer container : containerList) {
+            String tagId = FIELD_TAG_ID+EQ+container.id;
+            conditions.get(container.setKind).add(tagId);
+        }
+
+        boolean first = true;
+
+        for (int i = 0; i < conditions.size(); i++){
+            List<String> conditionList = conditions.get(i);
+            String chainedCondition = "";
+
+            for (String condition : conditionList) {
+                if(chainedCondition.isEmpty()) chainedCondition = condition;
+                else {
+                    chainedCondition = chainedCondition+OR+condition;
+                }
+            }
+            if(!chainedCondition.isEmpty()){
+                if(first){
+                    first=false;
+                    sql = sql+AND+ BO + BO +FIELD_SET_KIND+EQ+i+AND+ BO +chainedCondition+ BC + BC;
+                } else {
+                    sql = sql+OR+ BO +FIELD_SET_KIND+EQ+i+AND+ BO +chainedCondition+ BC + BC;
+                }
+            }
+        }
+        return sql+ BC;
     }
 
     private static void mapSTSet(SqlSharkKB sharkKB, boolean create, STSet set, int setKind, List list) throws SharkKBException {
@@ -333,6 +425,7 @@ public class SqlSharkHelper {
         }
         return sender;
     }
+
 
     public static List<ASIPInformationSpace> getInfoSpaces(SqlSharkKB sharkKB, ASIPSpace asipSpace) throws SQLException, SharkKBException {
 
