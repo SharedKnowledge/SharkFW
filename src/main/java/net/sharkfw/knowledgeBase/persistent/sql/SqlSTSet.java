@@ -26,7 +26,7 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
     /**
      * Write StSet to database
      */
-    public SqlSTSet(SqlSharkKB sharkKB, String type) throws SQLException {
+    public SqlSTSet(SqlSharkKB sharkKB, String type, SqlAsipInformationSpace sqlAsipInformationSpace) throws SQLException {
         try {
             Class.forName(sharkKB.getDialect());
             connection = DriverManager.getConnection(sharkKB.getDbAddress());

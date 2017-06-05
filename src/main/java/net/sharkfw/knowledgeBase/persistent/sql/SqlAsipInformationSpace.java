@@ -30,6 +30,8 @@ public class SqlAsipInformationSpace implements ASIPInformationSpace {
     public SqlAsipInformationSpace(SqlSharkKB sharkKB, SqlAsipSpace space) {
         this.sharkKB = sharkKB;
         this.space = space;
+        this.space.addInformationSpace(this);
+        this.space.addSharkKb(sharkKB);
     }
 
     protected void addInformation(SqlAsipInformation sqlAsipInformation){

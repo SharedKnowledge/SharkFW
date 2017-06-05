@@ -4,6 +4,8 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
+import java.sql.SQLException;
+
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.table;
@@ -19,14 +21,29 @@ public class SqlAsipSpace implements ASIPSpace {
     private SpatialSTSet locations;
     private TimeSTSet times;
     private int direction = DIRECTION_INOUT;
+    private SqlAsipInformationSpace sqlAsipInformationSpace;
+    private SqlSharkKB sqlSharkKB;
 
     protected SqlAsipSpace() {
+        try {
+            topics = new SqlSTSet(sqlSharkKB, "TOPIC", sqlAsipInformationSpace);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         topics = InMemoSharkKB.createInMemoSTSet();
         types= InMemoSharkKB.createInMemoSTSet();
         approvers = InMemoSharkKB.createInMemoPeerSTSet();
         receivers = InMemoSharkKB.createInMemoPeerSTSet();
         locations = InMemoSharkKB.createInMemoSpatialSTSet();
         times = InMemoSharkKB.createInMemoTimeSTSet();
+    }
+
+    protected void addInformationSpace(SqlAsipInformationSpace sqlAsipInformationSpace){
+        this.sqlAsipInformationSpace = sqlAsipInformationSpace;
+    }
+
+    protected void addSharkKb(SqlSharkKB sqlSharkKB){
+        this.sqlSharkKB = sqlSharkKB;
     }
 
     protected void addTag(SemanticTag tag, int type) throws SharkKBException {
