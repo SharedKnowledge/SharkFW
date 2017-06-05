@@ -25,11 +25,11 @@ public class SqlAsipSpace implements ASIPSpace {
     private SqlSharkKB sqlSharkKB;
 
     protected SqlAsipSpace() {
-        try {
-            topics = new SqlSTSet(sqlSharkKB, "TOPIC", sqlAsipInformationSpace);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            topics = new SqlSTSet(sqlSharkKB, "TOPIC", sqlAsipInformationSpace);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
         topics = InMemoSharkKB.createInMemoSTSet();
         types= InMemoSharkKB.createInMemoSTSet();
         approvers = InMemoSharkKB.createInMemoPeerSTSet();

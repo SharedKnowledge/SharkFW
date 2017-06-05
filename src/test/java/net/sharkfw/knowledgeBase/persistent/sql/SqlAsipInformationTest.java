@@ -9,6 +9,7 @@ import net.sharkfw.knowledgeBase.STSet;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkCSAlgebra;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.system.L;
 
@@ -21,6 +22,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -122,6 +124,16 @@ public class SqlAsipInformationTest {
             Files.delete(FileSystems.getDefault().getPath(PATH + DB7));
             Files.delete(FileSystems.getDefault().getPath(PATH + DB8));
             Files.delete(FileSystems.getDefault().getPath(PATH + DB9));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB10));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB11));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB12));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB13));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB14));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB15));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB16));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB17));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB18));
+            Files.delete(FileSystems.getDefault().getPath(PATH + DB19));
         } catch (NoSuchFileException e) {
         }
     }
@@ -230,31 +242,25 @@ public class SqlAsipInformationTest {
 
     @Test
     public void getMultipleInformationWithComplexSpace() throws SharkKBException {
-        long start = System.currentTimeMillis();
         L.d("Using database: " + DB5, this);
         SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION5, "org.sqlite.JDBC");
 
         ASIPSpace space = sqlSharkKB.createASIPSpace(set1, set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
         ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
-        ASIPSpace space3 = sqlSharkKB.createASIPSpace(semanticTag5, semanticTag4, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space3 = sqlSharkKB.createASIPSpace(set1, set2, peerSet2, null, null, null, null, ASIPSpace.DIRECTION_IN);
 
         sqlSharkKB.addInformation(infoName1, infoContent1, space);
         sqlSharkKB.addInformation(infoName2, infoContent2, space2);
         sqlSharkKB.addInformation(infoName3, infoContent3, space2);
         sqlSharkKB.addInformation(infoName4, infoContent4, space3);
 
-        long addedInfo = System.currentTimeMillis() - start;
-
-        L.d("Adding all Information took " + addedInfo + "ms", this);
-
         Iterator<ASIPInformation> information = sqlSharkKB.getInformation(space);
-        if (information.hasNext()) {
+        int infos = 0;
+        while (information.hasNext()) {
             SqlAsipInformation next = (SqlAsipInformation) information.next();
-            L.d("Quering the correct Information took " + (System.currentTimeMillis() - start) + "ms", this);
-            Assert.assertEquals(infoName1, next.getName());
-        } else {
-            Assert.assertTrue(false);
+            infos++;
         }
+        Assert.assertEquals(1, infos);
     }
 
     @Test
@@ -262,21 +268,24 @@ public class SqlAsipInformationTest {
         L.d("Using database: " + DB6, this);
         SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION6, "org.sqlite.JDBC");
         ASIPSpace space = sqlSharkKB.createASIPSpace(set1, set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space3 = sqlSharkKB.createASIPSpace(semanticTag5, semanticTag4, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
 
         sqlSharkKB.addInformation(infoName1, infoContent1, space);
-
-        Iterator<ASIPInformation> information = sqlSharkKB.getInformation(space);
-        if (information.hasNext()) {
-            SqlAsipInformation next = (SqlAsipInformation) information.next();
-            Assert.assertEquals(infoName1, next.getName());
-        } else {
-            Assert.assertTrue(false);
-        }
+        sqlSharkKB.addInformation(infoName3, infoContent3, space2);
+        sqlSharkKB.addInformation(infoName4, infoContent4, space2);
+        sqlSharkKB.addInformation(infoName5, infoContent5, space3);
 
         sqlSharkKB.removeInformation(space);
 
-        Iterator<ASIPInformation> informationEmpty = sqlSharkKB.getInformation(space);
-        Assert.assertFalse(informationEmpty.hasNext());
+        int allInfos = 0;
+        Iterator<ASIPInformationSpace> allInformationSpaces = sqlSharkKB.getAllInformationSpaces();
+        while (allInformationSpaces.hasNext()){
+            ASIPInformationSpace next = allInformationSpaces.next();
+            allInfos+=next.numberOfInformations();
+        }
+        L.d("All infos: " + allInfos, this);
+        Assert.assertEquals(3, allInfos);
     }
 
     @Test
@@ -385,7 +394,57 @@ public class SqlAsipInformationTest {
         sqlSharkKB.addInformation(infoName3, infoContent3, space2);
         sqlSharkKB.addInformation(infoName4, infoContent4, space3);
 
+        int allInfos = 0;
+        Iterator<ASIPInformationSpace> allInformationSpaces = sqlSharkKB.getAllInformationSpaces();
+        while (allInformationSpaces.hasNext()){
+            ASIPInformationSpace next = allInformationSpaces.next();
+            allInfos+=next.numberOfInformations();
+        }
+        L.d("All infos: " + allInfos, this);
+
         sqlSharkKB.removeInformationSpace(space);
+
+        int allInfos2 = 0;
+        Iterator<ASIPInformationSpace> allInformationSpaces2 = sqlSharkKB.getAllInformationSpaces();
+        while (allInformationSpaces2.hasNext()){
+            ASIPInformationSpace next = allInformationSpaces2.next();
+            allInfos2+=next.numberOfInformations();
+        }
+        L.d("All infos2: " + allInfos2, this);
+
+
+        Iterator<ASIPInformationSpace> informationSpacesSecond = sqlSharkKB.informationSpaces();
+        int numberOfSpaces = 0;
+        while (informationSpacesSecond.hasNext()) {
+            numberOfSpaces++;
+            informationSpacesSecond.next();
+        }
+
+        Assert.assertEquals(2, numberOfSpaces);
+    }
+
+    @Test
+    public void mergeInformation() throws SharkKBException {
+        L.d("Using database: " + DB11, this);
+        SqlSharkKB sqlSharkKB = new SqlSharkKB(CONNECTION11, "org.sqlite.JDBC");
+
+        ASIPSpace space = sqlSharkKB.createASIPSpace(set1, set2, peerSet1, peerSemanticTag1, peerSet2, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space2 = sqlSharkKB.createASIPSpace(set2, set1, peerSet3, peerSemanticTag2, peerSet1, null, null, ASIPSpace.DIRECTION_IN);
+        ASIPSpace space3 = sqlSharkKB.createASIPSpace(semanticTag5, semanticTag4, null, null, null, null, null, ASIPSpace.DIRECTION_IN);
+
+        ASIPInformation asipInformation1 = new InMemoInformation();
+        asipInformation1.setName(infoName1);
+        asipInformation1.setContent(infoContent1);
+        ASIPInformation asipInformation2 = new InMemoInformation();
+        asipInformation2.setName(infoName2);
+        asipInformation2.setContent(infoContent2);
+        ASIPInformation asipInformation3 = new InMemoInformation();
+        asipInformation3.setName(infoName3);
+        asipInformation3.setContent(infoContent3);
+
+        sqlSharkKB.mergeInformation(Arrays.asList(asipInformation1, asipInformation2, asipInformation3).iterator(), space);
+        sqlSharkKB.addInformation(infoName3, infoContent3, space2);
+        sqlSharkKB.addInformation(infoName4, infoContent4, space3);
 
         Iterator<ASIPInformationSpace> informationSpacesSecond = sqlSharkKB.informationSpaces();
 
@@ -393,11 +452,19 @@ public class SqlAsipInformationTest {
 
         while (informationSpacesSecond.hasNext()) {
             numberOfSpaces++;
-            informationSpacesSecond.next();
+            ASIPInformationSpace next = informationSpacesSecond.next();
+            if (SharkCSAlgebra.identical(space, next.getASIPSpace())) {
+                L.d("1", this);
+                Assert.assertEquals(3, next.numberOfInformations());
+            } else if (SharkCSAlgebra.identical(space2, next.getASIPSpace())) {
+                L.d("2", this);
+                Assert.assertEquals(1, next.numberOfInformations());
+            } else if (SharkCSAlgebra.identical(space, next.getASIPSpace())) {
+                L.d("3", this);
+                Assert.assertEquals(1, next.numberOfInformations());
+            }
         }
-
-        Assert.assertEquals(2, numberOfSpaces);
-
+        Assert.assertEquals(3, numberOfSpaces);
     }
 
 /*

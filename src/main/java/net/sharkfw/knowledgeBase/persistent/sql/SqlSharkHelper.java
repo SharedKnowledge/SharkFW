@@ -90,6 +90,11 @@ public class SqlSharkHelper {
     public final static String AND = " AND";
     public final static String VALUES = " VALUES";
     public final static String SET = " SET";
+    public final static String DISTINCT = " DISTINCT";
+    public final static String COUNT = " COUNT";
+    public final static String AS = " AS";
+    public final static String HAVING = " HAVING";
+    public final static String GROUPBY = " GROUP BY";
 
 
     static SqlSemanticTag getSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
@@ -163,7 +168,7 @@ public class SqlSharkHelper {
 
     static SqlAsipInformation getInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation information){
         try {
-            List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(sharkKB, space);
+            List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(sharkKB, space, false);
             for (SqlAsipInformation sqlAsipInformation : informationList) {
                 if(sqlAsipInformation.getName().equals(information.getName())){
                     return sqlAsipInformation;
@@ -177,11 +182,11 @@ public class SqlSharkHelper {
         return null;
     }
 
-    static List<SqlAsipInformation> getInformation(SqlSharkKB sharkKB, ASIPSpace space) throws SharkKBException, SQLException {
+    static List<SqlAsipInformation> getInformation(SqlSharkKB sharkKB, ASIPSpace space, boolean create) throws SharkKBException, SQLException {
 
         Connection connection = createConnection(sharkKB);
 
-        List<TagContainer> containerList = getTags(sharkKB, space, false);
+        List<TagContainer> containerList = getTags(sharkKB, space, create);
 
         String sqlStatement = prepareSqlStatement(connection, containerList, space.getDirection());
 
@@ -200,44 +205,49 @@ public class SqlSharkHelper {
     public static void removeInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation asipInformation) throws SharkKBException {
         try {
             Connection connection = SqlSharkHelper.createConnection(sharkKB);
-            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
-            DSLContext sql1 = DSL.using(connection, SQLDialect.SQLITE);
-            DeleteWhereStep<Record> deleteInformation = sql.deleteFrom(table("information"));
-            DeleteWhereStep<Record> deleteTagSet = sql1.deleteFrom(table("tag_set"));
+//            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+//            DSLContext sql1 = DSL.using(connection, SQLDialect.SQLITE);
+//            DeleteWhereStep<Record> deleteInformation = sql.deleteFrom(table("information"));
+//            DeleteWhereStep<Record> deleteTagSet = sql1.deleteFrom(table("tag_set"));
 
-            Condition chainedTagIds = null;
-            Condition chainedIds = null;
+            String deleteInformation = DELETE+FROM+TABLE_INFORMATION;
+            String deleteTagSet = DELETE+FROM+TABLE_TAG_SET;
+
+//            Condition chainedTagIds = null;
+//            Condition chainedIds = null;
+//
+
+            String chainedTagIds = "";
+            String chainedIds = "";
 
             List<SqlAsipInformation> informationList = new ArrayList<>();
 
             if(asipInformation==null){
-                informationList.addAll(SqlSharkHelper.getInformation(sharkKB, space));
+                informationList.addAll(SqlSharkHelper.getInformation(sharkKB, space, false));
             } else {
                 informationList.add(SqlSharkHelper.getInformation(sharkKB, space, asipInformation));
             }
 
             for (SqlAsipInformation sqlAsipInformation : informationList) {
-                Condition infoId = field("info_id").eq(inline(sqlAsipInformation.getId()));
-                Condition id = field("id").eq(inline(sqlAsipInformation.getId()));
+//                Condition infoId = field("info_id").eq(inline(sqlAsipInformation.getId()));
+//                Condition id = field("id").eq(inline(sqlAsipInformation.getId()));
+                String infoId = FIELD_INFO_ID+EQ+sqlAsipInformation.getId();
+                String id = FIELD_ID+EQ+sqlAsipInformation.getId();
 
-                if(chainedTagIds==null) chainedTagIds=infoId;
-                else chainedTagIds = chainedTagIds.or(infoId);
-                if(chainedIds==null) chainedIds=id;
-                else chainedIds = chainedIds.or(id);
+                if(chainedTagIds.isEmpty()) chainedTagIds=infoId;
+                else chainedTagIds = chainedTagIds+OR+infoId;
+                if(chainedIds.isEmpty()) chainedIds=id;
+                else chainedIds = chainedIds+OR+id;
             }
 
-            if(chainedTagIds!=null){
-                String sqlTagSet = deleteTagSet.where(chainedTagIds).getSQL();
-                L.d(sqlTagSet, sqlTagSet);
+            if(!chainedTagIds.isEmpty()){
                 try{
-                    SqlHelper.executeSQLCommand(connection, sqlTagSet);
+                    SqlHelper.executeSQLCommand(connection, deleteTagSet+WHERE+chainedTagIds);
                 } catch (SQLException e){}
             }
-            if (chainedIds!=null){
-                String sqlIds = deleteInformation.where(chainedIds).getSQL();
-                L.d(sqlIds, sqlIds);
+            if (!chainedIds.isEmpty()){
                 try{
-                    SqlHelper.executeSQLCommand(connection, sqlIds);
+                    SqlHelper.executeSQLCommand(connection, deleteInformation+WHERE+chainedIds);
                 } catch (SQLException e){}
             }
         } catch (SQLException e) {
@@ -338,7 +348,7 @@ public class SqlSharkHelper {
             }
         }
         return where.getSQL();*/
-        String sql = SELECT+ALL+FROM+TABLE_TAG_SET+WHERE+FIELD_DIRECTION+EQ+direction;
+        String sql = SELECT+DISTINCT+COUNT+BO+FIELD_INFO_ID+BC+AS+" count,"+FIELD_INFO_ID+","+FIELD_SET_KIND+","+FIELD_DIRECTION+FROM+TABLE_TAG_SET+WHERE+FIELD_DIRECTION+EQ+direction;
 
         List<List<String>> conditions = new ArrayList<>();
         for (int i = 0; i<7; i++){
@@ -371,7 +381,7 @@ public class SqlSharkHelper {
                 }
             }
         }
-        return sql+ BC;
+        return sql+BC+GROUPBY+FIELD_INFO_ID+HAVING+" count = "+containerList.size();
     }
 
     private static void mapSTSet(SqlSharkKB sharkKB, boolean create, STSet set, int setKind, List list) throws SharkKBException {
@@ -437,8 +447,9 @@ public class SqlSharkHelper {
         Connection connection = createConnection(sharkKB);
         List<Integer> informationIds = getInformationIds(connection, "SELECT id AS info_id FROM information;");
         for (Integer id : informationIds) {
-            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
-            String tagSet = sql.selectFrom(table("tag_set")).where(field("info_id").eq(inline(id))).getSQL();
+//            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+            String tagSet = SELECT+ALL+FROM+TABLE_TAG_SET+WHERE+FIELD_INFO_ID+EQ+id;
+//            String tagSet = sql.selectFrom(table("tag_set")).where(field("info_id").eq(inline(id))).getSQL();
 //            HashMap<Integer, Integer> tagList = new HashMap<>();
             ArrayList<TagContainer> tagContainers = new ArrayList<>();
             SqlAsipSpace sqlAsipSpace = new SqlAsipSpace();

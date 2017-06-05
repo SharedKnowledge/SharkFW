@@ -393,23 +393,30 @@ public class SqlSharkKB implements SharkKB {
     @Override
     public ASIPInformationSpace mergeInformation(Iterator<ASIPInformation> information, ASIPSpace space) throws SharkKBException {
         try {
-            List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(this, space);
-            for (SqlAsipInformation sqlAsipInformation : informationList) {
+            List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(this, space, true);
+            if(informationList.isEmpty()){
                 while (information.hasNext()){
                     ASIPInformation next = information.next();
-                    boolean merged = false;
-                    if(sqlAsipInformation.getName().equals(next.getName())){
-                        sqlAsipInformation.setContent(next.getContentAsByte());
-                        sqlAsipInformation.setContentType(next.getContentType());
-                        merged = true;
-                    }
-                    if(!merged){
-                        new SqlAsipInformation(next, space, this);
+                    new SqlAsipInformation(next, space, this);
+                }
+            } else {
+                for (SqlAsipInformation sqlAsipInformation : informationList) {
+                    while (information.hasNext()){
+                        ASIPInformation next = information.next();
+                        boolean merged = false;
+                        if(sqlAsipInformation.getName().equals(next.getName())){
+                            sqlAsipInformation.setContent(next.getContentAsByte());
+                            sqlAsipInformation.setContentType(next.getContentType());
+                            merged = true;
+                        }
+                        if(!merged){
+                            new SqlAsipInformation(next, space, this);
+                        }
                     }
                 }
             }
             List<ASIPInformationSpace> infoSpaces = SqlSharkHelper.getInfoSpaces(this, space);
-            if (infoSpaces != null){
+            if (infoSpaces != null && !infoSpaces.isEmpty()){
                 return infoSpaces.get(0);
             }
         } catch (SQLException e) {
@@ -480,7 +487,7 @@ public class SqlSharkKB implements SharkKB {
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace) throws SharkKBException{
         try {
-            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, infoSpace);
+            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, infoSpace, false);
             return ((List<ASIPInformation>) (List<?>) information).iterator();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -491,7 +498,7 @@ public class SqlSharkKB implements SharkKB {
     @Override
     public Iterator<ASIPInformation> getInformation(ASIPSpace infoSpace, boolean fullyInside, boolean matchAny) throws SharkKBException {
         try {
-            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, infoSpace);
+            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, infoSpace, false);
             return ((List<ASIPInformation>) (List<?>) information).iterator();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -516,44 +523,45 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public void removeInformation(ASIPSpace space) throws SharkKBException {
-        try {
-            Connection connection = SqlSharkHelper.createConnection(this);
-            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
-            DSLContext sql1 = DSL.using(connection, SQLDialect.SQLITE);
-            DeleteWhereStep<Record> deleteInformation = sql.deleteFrom(table("information"));
-            DeleteWhereStep<Record> deleteTagSet = sql1.deleteFrom(table("tag_set"));
-
-            Condition chainedTagIds = null;
-            Condition chainedIds = null;
-
-            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, space);
-            for (SqlAsipInformation sqlAsipInformation : information) {
-                Condition infoId = field("info_id").eq(inline(sqlAsipInformation.getId()));
-                Condition id = field("id").eq(inline(sqlAsipInformation.getId()));
-
-                if(chainedTagIds==null) chainedTagIds=infoId;
-                else chainedTagIds = chainedTagIds.or(infoId);
-                if(chainedIds==null) chainedIds=id;
-                else chainedIds = chainedIds.or(id);
-            }
-
-            if(chainedTagIds!=null){
-                String sqlTagSet = deleteTagSet.where(chainedTagIds).getSQL();
-                L.d(sqlTagSet, sqlTagSet);
-                try{
-                    SqlHelper.executeSQLCommand(connection, sqlTagSet);
-                } catch (SQLException e){}
-            }
-            if (chainedIds!=null){
-                String sqlIds = deleteInformation.where(chainedIds).getSQL();
-                L.d(sqlIds, sqlIds);
-                try{
-                    SqlHelper.executeSQLCommand(connection, sqlIds);
-                } catch (SQLException e){}
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        SqlSharkHelper.removeInformation(this, space, null);
+//        try {
+//            Connection connection = SqlSharkHelper.createConnection(this);
+//            DSLContext sql = DSL.using(connection, SQLDialect.SQLITE);
+//            DSLContext sql1 = DSL.using(connection, SQLDialect.SQLITE);
+//            DeleteWhereStep<Record> deleteInformation = sql.deleteFrom(table("information"));
+//            DeleteWhereStep<Record> deleteTagSet = sql1.deleteFrom(table("tag_set"));
+//
+//            Condition chainedTagIds = null;
+//            Condition chainedIds = null;
+//
+//            List<SqlAsipInformation> information = SqlSharkHelper.getInformation(this, space, false);
+//            for (SqlAsipInformation sqlAsipInformation : information) {
+//                Condition infoId = field("info_id").eq(inline(sqlAsipInformation.getId()));
+//                Condition id = field("id").eq(inline(sqlAsipInformation.getId()));
+//
+//                if(chainedTagIds==null) chainedTagIds=infoId;
+//                else chainedTagIds = chainedTagIds.or(infoId);
+//                if(chainedIds==null) chainedIds=id;
+//                else chainedIds = chainedIds.or(id);
+//            }
+//
+//            if(chainedTagIds!=null){
+//                String sqlTagSet = deleteTagSet.where(chainedTagIds).getSQL();
+//                L.d(sqlTagSet, sqlTagSet);
+//                try{
+//                    SqlHelper.executeSQLCommand(connection, sqlTagSet);
+//                } catch (SQLException e){}
+//            }
+//            if (chainedIds!=null){
+//                String sqlIds = deleteInformation.where(chainedIds).getSQL();
+//                L.d(sqlIds, sqlIds);
+//                try{
+//                    SqlHelper.executeSQLCommand(connection, sqlIds);
+//                } catch (SQLException e){}
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
