@@ -83,10 +83,13 @@ public class SqlSharkHelper {
     public final static String EQ = " =";
     public final static String BO = "(";
     public final static String BC = ")";
+    public final static String QU = "\"";
     public final static String ALL = " *";
+    public final static String DOT = ".";
     public final static String OR = " OR";
     public final static String AND = " AND";
     public final static String VALUES = " VALUES";
+    public final static String SET = " SET";
 
 
     static SqlSemanticTag getSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {

@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
 import static org.jooq.impl.DSL.*;
 
 /**
@@ -59,19 +60,15 @@ public class SqlSemanticTag implements SemanticTag
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        StringBuilder sql = new StringBuilder();
-        sql.append("PRAGMA foreign_keys = ON; ");
-        sql.append("INSERT INTO semantic_tag (name) VALUES " + "(\'" + this.name + "\');");
-        SqlHelper.executeSQLCommand(connection, sql.toString());
+        String sql = INSERTINTO + TABLE_SEMANTIC_TAG + BO + FIELD_NAME + BC + VALUES + BO + QU + this.name + QU + BC;
+        SqlHelper.executeSQLCommand(connection, sql);
         id = SqlHelper.getLastCreatedEntry(connection, "semantic_tag");
         ID = Integer.toString(id);
 
         String sqlSIs = getSqlForSIs();
         if (sqlSIs != null) SqlHelper.executeSQLCommand(connection, getSqlForSIs());
-
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String update = create.update(table("semantic_tag")).set(field("system_property"), inline(Integer.toString(this.getId()))).where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
-
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId())
+                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
             SqlHelper.executeSQLCommand(connection, update);
         } catch (SQLException e) {
@@ -93,12 +90,10 @@ public class SqlSemanticTag implements SemanticTag
         catch ( SQLException e) {
             throw new SharkKBException(e.toString());
         }
-
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = null;
+        String sql;
         if (si != null) {
-            sql = getEntry.selectFrom(table("semantic_tag").join("subject_identifier")
-                    .on(field("identifier").eq(inline(si)))).where(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
+             sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON +
+             FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU + WHERE + TABLE_SEMANTIC_TAG + DOT + FIELD_ID + EQ + FIELD_TAG_ID;
         }
         else {
             throw new SharkKBException();
@@ -135,10 +130,7 @@ public class SqlSemanticTag implements SemanticTag
         catch ( SQLException e) {
             throw new SharkKBException(e.toString());
         }
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = null;
-        sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(id))).getSQL();
-
+        String sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + WHERE + FIELD_ID + EQ + id;
         String propertyString = null;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
 
@@ -198,9 +190,7 @@ public class SqlSemanticTag implements SemanticTag
     }
 
     private String[] getSisFromDB() {
-        DSLContext getSis = DSL.using(this.getConnection(), SQLDialect.SQLITE);
-        String tags = getSis.selectFrom(table("subject_identifier")).where(field("tag_id")
-                .eq(inline(this.getSystemProperty("id")))).getSQL();
+        String tags = SELECT + ALL + FROM + TABLE_SUBJECT_IDENTIFIER + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id");
         ResultSet rs = null;
         List<String> list = new ArrayList<>();
         try {
@@ -264,9 +254,8 @@ public class SqlSemanticTag implements SemanticTag
             Map.Entry pair = (Map.Entry) it.next();
             sb.append(pair.getKey() + "<" + pair.getValue() + ">");
         }
-
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String update = create.update(table("semantic_tag")).set(field("property"), inline(sb.toString())).where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_PROPERTY + EQ + QU + sb.toString() + QU
+                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
             SqlHelper.executeSQLCommand(connection, update);
         } catch (SQLException e) {
@@ -306,10 +295,8 @@ public class SqlSemanticTag implements SemanticTag
 
     @Override
     public void removeSI(String si) throws SharkKBException {
-        DSLContext deleteSI = DSL.using(this.getConnection(), SQLDialect.SQLITE);
-        String sql = deleteSI.deleteFrom(table("subject_identifier")).where(field("tag_id")
-                .eq(inline(this.getSystemProperty("id")))
-                .and(field("identifier").eq(inline(si)))).getSQL();
+        String sql = DELETE + FROM + TABLE_SUBJECT_IDENTIFIER + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id") + AND +
+                FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU;
         try {
             SqlHelper.executeSQLCommand(this.getConnection(), sql);
         } catch (SQLException e) {
@@ -352,10 +339,8 @@ public class SqlSemanticTag implements SemanticTag
 
     @Override
     public void setName(String newName) {
-
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String update = create.update(table("semantic_tag")).set(field("name"), inline(newName))
-                .where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_NAME + EQ + QU + newName + QU
+                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
             SqlHelper.executeSQLCommand(connection, update);
             name = newName;

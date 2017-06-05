@@ -23,7 +23,7 @@ import static org.jooq.impl.DSL.table;
 public class SqlTimeSTSet extends SqlSTSet implements TimeSTSet {
 
     public SqlTimeSTSet(SqlSharkKB sharkKB) throws SQLException {
-        super(sharkKB, "time");
+        super(sharkKB, "time", null);
     }
 
     public SqlTimeSTSet(SqlSharkKB sharkKB, int id) {

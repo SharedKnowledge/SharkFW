@@ -20,7 +20,7 @@ import static org.jooq.impl.DSL.table;
 public class SqlPeerSTSet extends SqlSTSet implements PeerSTSet {
 
     public SqlPeerSTSet(SqlSharkKB sharkKB) throws SQLException {
-        super(sharkKB, "peer");
+        super(sharkKB, "peer", null);
     }
 
     public SqlPeerSTSet(SqlSharkKB sharkKB, int id) {

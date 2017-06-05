@@ -26,7 +26,7 @@ import static org.jooq.impl.DSL.table;
 public class SqlSpatialSTSet extends SqlSTSet implements SpatialSTSet {
 
     public SqlSpatialSTSet(SqlSharkKB sharkKB) throws SQLException {
-        super(sharkKB, "spatial");
+        super(sharkKB, "spatial", null);
     }
 
     public SqlSpatialSTSet(SqlSharkKB sharkKB, int id) {

@@ -99,10 +99,10 @@ public class TestSqlSharkKB {
         long timeDusration = 100000;
         String wkt = "LINESTRING (30 10, 10 30, 40 40)";
 
-        SqlSemanticTag tag = null;
+/*        SqlSemanticTag tag = null;
         SqlTimeSemanticTag timeTag = null;
         SqlSpatialSemanticTag spatialTag = null;
-        SqlPeerSemanticTag peerTag = null;
+        SqlPeerSemanticTag peerTag = null;*/
 /*        SqlSNSemanticTag tagSN = new SqlSNSemanticTag(sis1, "testSNST", sqlSharkKB);
         assertNotNull(tagSN);
         SqlSNSemanticTag tagSN2 = new SqlSNSemanticTag(sis2, "testSNST2", sqlSharkKB);
@@ -110,26 +110,28 @@ public class TestSqlSharkKB {
         tagSN.setPredicate("TestPre2", tagSN2);
         Enumeration<String> result = tagSN.predicateNames();
         tagSN.sourceTags("TestPre");*/
-        int i = 0;
+/*        int i = 0;
 
         tag = new SqlSemanticTag(sis3, "testTag", sqlSharkKB);
         tag.setProperty("P1", "AA");
         tag.setProperty("P2", "BB");
-        tag.setProperty("P3", "CC");
+        tag.setProperty("P3", "CC");*/
 
 /*        SemanticTag tagReturned = stSet.getSemanticTag(sis3[0]);
         assertEquals("BB", tagReturned.getProperty("P2"));*/
 
-        i++;
+
         //tagSN.removePredicate("TestPre", tagSN2);
-        tag = new SqlSemanticTag(sis1, "testTag", sqlSharkKB);
-        timeTag = new SqlTimeSemanticTag(sis2, "testTimeTag", sqlSharkKB, timeDusration, timeFrom);
+        SqlSemanticTag tag = new SqlSemanticTag(sis1, "testTag", sqlSharkKB);
+        SqlSemanticTag tag2 = new SqlSemanticTag("si1", sqlSharkKB);
+
+/*        timeTag = new SqlTimeSemanticTag(sis2, "testTimeTag", sqlSharkKB, timeDusration, timeFrom);
         spatialTag = new SqlSpatialSemanticTag(sis3, "testSpatialTag", sqlSharkKB, wkt);
         peerTag = new SqlPeerSemanticTag(sis4, "testPeerTag", sqlSharkKB, addresses);
         assertNotNull(tag);
         assertNotNull(timeTag);
         assertNotNull(spatialTag);
-        assertNotNull(peerTag);
+        assertNotNull(peerTag);*/
         //SemanticTag tagFromDB = stSet.getSemanticTag(new String[]{"si1"});
 
 
@@ -141,8 +143,8 @@ public class TestSqlSharkKB {
 
         String[] addresses = new String[]{"Treskowallee 8", "Wilhelminenhofstraße 6", "Rathenaustraße 10"};
         SqlSharkKB sqlSharkKB = new SqlSharkKB(connection, "org.sqlite.JDBC");
-        SqlSTSet topics = new SqlSTSet(sqlSharkKB, "topic");
-        SqlSTSet types = new SqlSTSet(sqlSharkKB, "type");
+        SqlSTSet topics = new SqlSTSet(sqlSharkKB, "topic", null);
+        SqlSTSet types = new SqlSTSet(sqlSharkKB, "type", null);
         SqlPeerSTSet approvers = new SqlPeerSTSet(sqlSharkKB);
         SqlPeerSTSet receivers = new SqlPeerSTSet(sqlSharkKB);
         SqlPeerSTSet peers = new SqlPeerSTSet(sqlSharkKB);

@@ -11,6 +11,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.EQ;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FROM;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.table;
@@ -41,9 +44,8 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
         String sqlSIs = getSqlForSIs();
         if (sqlSIs != null) SqlHelper.executeSQLCommand(connection, getSqlForSIs());
-
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String update = create.update(table("semantic_tag")).set(field("system_property"), inline(Integer.toString(this.getId()))).where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId())
+                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
 
         try {
             SqlHelper.executeSQLCommand(connection, update);
@@ -54,11 +56,10 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
 
     public SqlTimeSemanticTag(String si, SqlSharkKB sharkKB) throws SharkKBException {
         super(si, sharkKB);
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
         String sql = null;
         if (si != null) {
-            sql = getEntry.selectFrom(table("semantic_tag").join("subject_identifier")
-                    .on(field("identifier").eq(inline(si)))).where(field("semantic_tag.id").eq(field("tag_id"))).getSQL();
+            sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON +
+                    FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU + WHERE + TABLE_SEMANTIC_TAG + DOT + FIELD_ID + EQ + FIELD_TAG_ID;
         }
         else {
             throw new SharkKBException();
@@ -76,9 +77,7 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
 
     public SqlTimeSemanticTag(int id, SqlSharkKB sharkKB) throws SharkKBException {
         super(id, sharkKB);
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = null;
-        sql = getEntry.selectFrom(table("semantic_tag")).where(field("id").eq(inline(id))).getSQL();
+        String sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + WHERE + FIELD_ID + EQ + id;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
             if (rs != null) {
                 this.tagDuration = Integer.parseInt(rs.getString("t_duration"));

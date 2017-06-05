@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.EQ;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.table;
@@ -49,9 +51,8 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
         this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
         SqlHelper.executeSQLCommand(connection, this.getSqlForSIs());
         setAddresses(this.addresses);
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String update = create.update(table("semantic_tag")).set(field("system_property"), inline(Integer.toString(this.getId()))).where(field("id").eq(inline(Integer.toString(this.getId())))).getSQL();
-
+        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId())
+                + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
             SqlHelper.executeSQLCommand(connection, update);
         } catch (SQLException e) {
@@ -85,9 +86,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     @Override
     public String[] getAddresses() {
-        DSLContext getAddresses = DSL.using(this.getConnection(), SQLDialect.SQLITE);
-        String tags = getAddresses.selectFrom(table("address")).where(field("tag_id")
-                .eq(inline(this.getSystemProperty("id")))).getSQL();
+        String tags = SELECT + ALL + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id");
         ResultSet rs = null;
         List<String> list = new ArrayList<>();
         try {
@@ -107,25 +106,19 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     @Override
     public void setAddresses(String[] addresses) {
-        DSLContext deleteAddresses = DSL.using(this.getConnection(), SQLDialect.SQLITE);
-        String sql = deleteAddresses.deleteFrom(table("address")).where(field("tag_id")
-                .eq(inline(this.getSystemProperty("id")))).getSQL();
+        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id");
         try {
             SqlHelper.executeSQLCommand(this.getConnection(), sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         addAddressesToDB(addresses);
-
-
     }
 
     @Override
     public void removeAddress(String address) {
-        DSLContext deleteAddresse = DSL.using(this.getConnection(), SQLDialect.SQLITE);
-        String sql = deleteAddresse.deleteFrom(table("address")).where(field("tag_id")
-                .eq(inline(this.getSystemProperty("id")))
-                .and(field("address_name").eq(inline(address)))).getSQL();
+        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id") +
+                AND + FIELD_ADDRESS_NAME + EQ + QU + address + QU;
         try {
             SqlHelper.executeSQLCommand(this.getConnection(), sql);
         } catch (SQLException e) {
