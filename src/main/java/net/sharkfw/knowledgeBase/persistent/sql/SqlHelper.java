@@ -14,6 +14,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.EQ;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_ID;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.inline;
 import static org.jooq.impl.DSL.table;
@@ -120,8 +123,8 @@ public class SqlHelper {
             Map.Entry pair = (Map.Entry) it.next();
             sb.append(pair.getKey() + "<" + pair.getValue() + ">");
         }
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-        String update = create.update(table(table)).set(field("property"), inline(sb.toString())).where(field("id").eq(inline(Integer.toString(id)))).getSQL();
+        String update = UPDATE + table + SET + FIELD_PROPERTY + EQ + QU + sb.toString() + QU
+                + WHERE + FIELD_ID + EQ + Integer.toString(id);
         try {
             SqlHelper.executeSQLCommand(connection, update);
         } catch (SQLException e) {

@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlHelper.*;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
 import static org.jooq.impl.DSL.*;
 
 /**
@@ -282,9 +284,7 @@ public class SqlSharkKB implements SharkKB {
 
         String propertyString = null;
         Map<String, String> properties;
-
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
 
             if (rs != null) {
@@ -308,9 +308,7 @@ public class SqlSharkKB implements SharkKB {
     public String getProperty(String name) throws SharkKBException {
         String propertyString = null;
         Map<String, String> properties;
-
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
 
             if (rs != null) {
@@ -339,8 +337,7 @@ public class SqlSharkKB implements SharkKB {
         String propertyString = null;
         Map<String, String> properties;
 
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
 
             if (rs != null) {
@@ -365,8 +362,7 @@ public class SqlSharkKB implements SharkKB {
         String propertyString = null;
         Map<String, String> properties;
 
-        DSLContext getEntry = DSL.using(connection, SQLDialect.SQLITE);
-        String sql = getEntry.selectFrom(table("knowledge_base")).getSQL();
+        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
 
             if (rs != null) {
