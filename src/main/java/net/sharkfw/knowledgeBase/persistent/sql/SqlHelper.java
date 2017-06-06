@@ -141,7 +141,7 @@ public class SqlHelper {
     }
 
     public static void persistProperties(Map<String, String> properties, SqlSharkKB sharkKB) throws SharkKBException {
-        persistProperties(properties, 1, "knowledge_base", sharkKB);
+        persistProperties(properties, 1, TABLE_KNOWLEDGE_BASE, sharkKB);
     }
 
 

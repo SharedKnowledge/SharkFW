@@ -42,10 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.ALL;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FROM;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.SELECT;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.TABLE_KNOWLEDGE_BASE;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
 
 /**
  * Created by Dustin Feurich on 31.03.2017.
@@ -291,6 +288,25 @@ public class SqlSharkKB implements SharkKB {
 
         String propertyString = null;
         Map<String, String> properties;
+        String sqlSelect = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
+        int kbID = -1;
+
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sqlSelect)) {
+            if (rs.next()) {
+                kbID = rs.getInt(("id"));
+            }
+        } catch (SQLException e) {
+            throw new SharkKBException(e.toString());
+        }
+
+        if (kbID == -1) {
+            String sqlInsert = INSERTINTO + TABLE_KNOWLEDGE_BASE + " DEFAULT VALUES;";
+            try {
+                SqlHelper.executeSQLCommand(connection, sqlInsert);
+            } catch (SQLException e) {
+                throw new SharkKBException(e.toString());
+            }
+        }
         String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
 
