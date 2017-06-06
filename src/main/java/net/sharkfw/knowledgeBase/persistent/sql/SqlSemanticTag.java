@@ -116,18 +116,19 @@ public class SqlSemanticTag implements SemanticTag {
         }
         String sql;
         if (si != null) {
-            sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON + FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU + WHERE + TABLE_SEMANTIC_TAG + DOT + FIELD_ID + EQ + FIELD_TAG_ID;
+            sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON + TABLE_SEMANTIC_TAG + DOT + "id" + EQ + FIELD_TAG_ID + WHERE + FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU;
         } else {
             throw new SharkKBException();
         }
         String propertyString = null;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-
-            if (rs != null) {
+            if (rs.next()) {
                 this.name = rs.getString("name");
                 this.id = Integer.parseInt(rs.getString("system_property"));
                 this.sis = getSisFromDB();
                 propertyString = rs.getString("property");
+            } else {
+                throw new SharkKBException("No restults.");
             }
         } catch (SQLException e) {
             throw new SharkKBException(e.toString());
@@ -155,12 +156,12 @@ public class SqlSemanticTag implements SemanticTag {
         String propertyString = null;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
 
-            if (rs != null) {
+            if (rs.next()) {
                 this.name = rs.getString("name");
                 this.id = Integer.parseInt(rs.getString("system_property"));
                 this.sis = getSisFromDB();
                 propertyString = rs.getString("property");
-            }
+            } else throw new SharkKBException("no results");
         } catch (SQLException e) {
             throw new SharkKBException(e.toString());
         }
@@ -210,10 +211,8 @@ public class SqlSemanticTag implements SemanticTag {
 
     private String[] getSisFromDB() {
         String tags = SELECT + ALL + FROM + TABLE_SUBJECT_IDENTIFIER + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id");
-        ResultSet rs = null;
         List<String> list = new ArrayList<>();
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags)){
             while (rs.next()) {
                 list.add(rs.getString("identifier"));
             }

@@ -84,7 +84,9 @@ public class SqlHelper {
         Statement st = conn.createStatement();
         try {
             ResultSet resultSet = st.executeQuery(sql);
-            id = resultSet.getInt("id");
+            if(resultSet.next()){
+                id = resultSet.getInt("id");
+            } else throw new SQLException("No results");
         } finally {
             st.close();
         }

@@ -125,6 +125,9 @@ public class SqlSharkHelper {
             return DriverManager.getConnection(sharkKB.getDbAddress());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        } catch (SQLException e){
+            e.printStackTrace();
+            throw new SQLException(e.getCause());
         }
         return null;
     }
