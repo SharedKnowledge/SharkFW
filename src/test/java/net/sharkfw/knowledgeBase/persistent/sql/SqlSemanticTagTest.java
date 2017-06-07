@@ -2,6 +2,7 @@ package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.SharkKBException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -16,9 +17,10 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by dfe on 06.06.2017.
  */
+@Ignore
 public class SqlSemanticTagTest {
 
-    public static final String PATH = "jdbc:sqlite:.\\src\\test\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\info1.db";
+    public static final String PATH = "jdbc:sqlite:.\\src\\test\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\info12.db";
     public static final String[] sis1 = new String[]{"si1", "si2"};
     public static final String[] sis2 = new String[]{"si3", "si4"};
     public static final String[] sis3 = new String[]{"si5", "si6"};
@@ -28,7 +30,6 @@ public class SqlSemanticTagTest {
     public static final long timeFrom = System.currentTimeMillis();
     public static final long timeDusration = 100000;
     public static final String wkt = "LINESTRING (30 10, 10 30, 40 40)";
-
 
     @Before
     public void testConnectionAndBuild() throws SQLException, ClassNotFoundException {
@@ -116,10 +117,6 @@ public class SqlSemanticTagTest {
         assertEquals("three", sqlSharkKB.getProperty("Prop3"));
         assertEquals("four", sqlSharkKB.getProperty("Prop4"));
         assertEquals("five", sqlSharkKB.getProperty("Prop5"));
-
-
-
-
 
     }
 
