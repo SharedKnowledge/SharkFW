@@ -75,7 +75,7 @@ public class SyncManagerTest {
         bobEngine.stopTCP();
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void sync_with_reply_success() throws IOException, SharkKBException, InterruptedException {
 

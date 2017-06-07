@@ -44,11 +44,11 @@ public class SyncComponent {
         this.writable = writable;
         this.approvedMembers.merge(this.owner);
 
-        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_OWNER, ASIPMessageSerializerHelper.serializeTag(owner).toString());
-        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_NAME, ASIPMessageSerializerHelper.serializeTag(uniqueName).toString());
-        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(members).toString());
-        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
-        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_WRITABLE, writable);
+//        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_OWNER, ASIPMessageSerializerHelper.serializeTag(owner).toString());
+//        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_NAME, ASIPMessageSerializerHelper.serializeTag(uniqueName).toString());
+//        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(members).toString());
+//        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
+//        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_WRITABLE, writable);
 
     }
 
@@ -95,7 +95,7 @@ public class SyncComponent {
     public void addApprovedMember(PeerSTSet members){
         try {
             approvedMembers.merge(members);
-            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
+//            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
