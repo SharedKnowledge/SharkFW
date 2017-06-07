@@ -26,7 +26,7 @@ public class SqlSemanticNet implements SemanticNet {
         }
         this.sqlSharkKB = sharkKB;
         StringBuilder sql = new StringBuilder();
-        sql.append("PRAGMA foreign_keys = ON; ");
+//        sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO semantic_net VALUES (NULL);");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         stSetID = SqlHelper.getLastCreatedEntry(connection, "semantic_net");

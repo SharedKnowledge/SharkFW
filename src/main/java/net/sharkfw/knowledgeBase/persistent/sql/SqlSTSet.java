@@ -35,7 +35,7 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
         }
         this.sqlSharkKB = sharkKB;
         StringBuilder sql = new StringBuilder();
-        sql.append("PRAGMA foreign_keys = ON; ");
+//        sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO tag_set (set_kind) VALUES (\"" + type + "\");");
         SqlHelper.executeSQLCommand(connection, sql.toString());
         stSetID = SqlHelper.getLastCreatedEntry(connection, "tag_set");

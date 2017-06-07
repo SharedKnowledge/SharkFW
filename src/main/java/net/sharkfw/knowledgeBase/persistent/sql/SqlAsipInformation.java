@@ -133,12 +133,13 @@ public class SqlAsipInformation implements ASIPInformation {
 //        String sql = getSetId.selectFrom(table("information")).where(field("id").eq(inline(id))).getSQL();
         String sql = SELECT + ALL + FROM + TABLE_INFORMATION + WHERE + FIELD_ID + EQ + id;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-            if (rs == null) return;
-            this.id = rs.getInt("id");
-            this.content = rs.getBytes("content_stream");
-            this.contentType = rs.getString("content_type");
-            this.name = rs.getString("name");
-            this.contentLength = rs.getInt("content_length");
+            if(rs.next()){
+                this.id = rs.getInt("id");
+                this.content = rs.getBytes("content_stream");
+                this.contentType = rs.getString("content_type");
+                this.name = rs.getString("name");
+                this.contentLength = rs.getInt("content_length");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

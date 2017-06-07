@@ -185,7 +185,7 @@ public class SqlSemanticTag implements SemanticTag {
     protected String getSqlForSIs() {
         if (sis == null) return null;
         StringBuilder sql = new StringBuilder();
-        sql.append("PRAGMA foreign_keys = ON; ");
+//        sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO subject_identifier (identifier, tag_id) VALUES ");
         for (int i = 0; i < sis.length; i++) {
             if (i != sis.length - 1) {
