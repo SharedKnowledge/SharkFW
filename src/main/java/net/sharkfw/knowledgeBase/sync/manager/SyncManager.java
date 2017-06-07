@@ -190,6 +190,17 @@ public class SyncManager {
         return null;
     }
 
+    public SyncComponent restoreSyncComponent(SharkKB kb){
+        try {
+            SyncComponent syncComponent = new SyncComponent(kb);
+            components.add(syncComponent);
+            return syncComponent;
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void removeSyncComponent(SyncComponent component) {
         components.remove(component);
     }
@@ -352,7 +363,7 @@ public class SyncManager {
             try {
                 if(SharkCSAlgebra.isIn(component.getApprovedMembers(), peer) || SharkCSAlgebra.identical(component.getOwner(), peer)){
                     doSync(component, peer);
-//                    L.d(peer.getName() + " already is an approved Member or the Owner so try to SYNC!", this);
+//                    L.d(peer.getName() + " already isj an approved Member or the Owner so try to SYNC!", this);
                 } else if(SharkCSAlgebra.isIn(component.getMembers(), peer)){
                     doInvite(component, peer);
                     L.d(peer.getName() + " is a Member so INVITE!", this);

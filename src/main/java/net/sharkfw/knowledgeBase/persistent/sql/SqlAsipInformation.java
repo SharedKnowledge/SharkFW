@@ -6,27 +6,14 @@ import net.sharkfw.knowledgeBase.SharkKBException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.ALL;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.BC;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.BO;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.EQ;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_CONTENT_LENGTH;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_CONTENT_STREAM;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_CONTENT_TYPE;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_ID;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FIELD_NAME;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.FROM;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.INSERTINTO;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.SELECT;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.TABLE_INFORMATION;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.VALUES;
-import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.WHERE;
+import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
 
 public class SqlAsipInformation implements ASIPInformation {
 
@@ -48,7 +35,7 @@ public class SqlAsipInformation implements ASIPInformation {
         this.contentType = information.getContentType();
         connection = getConnection(this.sharkKB);
 
-        String sql = INSERTINTO + TABLE_INFORMATION + BO + FIELD_CONTENT_TYPE + "," + FIELD_CONTENT_LENGTH + "," + FIELD_CONTENT_STREAM + "," + FIELD_NAME + BC + VALUES + BO + "\""+contentType + "\"" + "," + "\"" + contentLength + "\"" + "," + "?" + "," +  "\"" +name + "\"" + BC;
+        String sql = INSERTINTO + TABLE_INFORMATION + BO + FIELD_CONTENT_TYPE + "," + FIELD_CONTENT_LENGTH + "," + FIELD_CONTENT_STREAM + "," + FIELD_NAME + BC + VALUES + BO + "\"" + contentType + "\"" + "," + "\"" + contentLength + "\"" + "," + "?" + "," + "\"" + name + "\"" + BC;
 
         SqlHelper.executeSQLCommand(connection, sql, content);
         this.id = SqlHelper.getLastCreatedEntry(connection, "information");
@@ -96,7 +83,9 @@ public class SqlAsipInformation implements ASIPInformation {
     @Override
     public void setContent(byte[] content) {
 
-    }    @Override
+    }
+
+    @Override
     public byte[] getContentAsByte() {
         if (content != null) {
             return content;
@@ -129,11 +118,9 @@ public class SqlAsipInformation implements ASIPInformation {
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
-//        DSLContext getSetId = DSL.using(connection, SQLDialect.SQLITE);
-//        String sql = getSetId.selectFrom(table("information")).where(field("id").eq(inline(id))).getSQL();
         String sql = SELECT + ALL + FROM + TABLE_INFORMATION + WHERE + FIELD_ID + EQ + id;
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-            if(rs.next()){
+            if (rs.next()) {
                 this.id = rs.getInt("id");
                 this.content = rs.getBytes("content_stream");
                 this.contentType = rs.getString("content_type");
@@ -173,9 +160,6 @@ public class SqlAsipInformation implements ASIPInformation {
     @Override
     public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
         return null;
-    }    @Override
-    public void setContentType(String mimetype) {
-
     }
 
     private Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
@@ -189,44 +173,41 @@ public class SqlAsipInformation implements ASIPInformation {
             e.printStackTrace();
             throw new SharkKBException();
         }
-
     }
-
-
 
     @Override
     public String getContentType() {
         return this.contentType;
     }
 
+    @Override
+    public void setContentType(String mimetype) {
 
+    }
 
     @Override
     public void streamContent(OutputStream os) {
 
     }
 
-
     @Override
     public long getContentLength() {
-        return 0;
+        return this.contentLength;
     }
-
 
     @Override
     public String getName() {
         return this.name;
     }
 
-
-    @Override
-    public String getContentAsString() throws SharkKBException {
-        return null;
-    }
-
     @Override
     public void setName(String name) throws SharkKBException {
 
+    }
+
+    @Override
+    public String getContentAsString() throws SharkKBException {
+        return new String(content, StandardCharsets.UTF_8);
     }
 
 }

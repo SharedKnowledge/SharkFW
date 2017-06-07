@@ -4,7 +4,6 @@ import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.system.L;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,10 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static net.sharkfw.asip.ASIPSpace.DIM_APPROVERS;
-import static net.sharkfw.asip.ASIPSpace.DIM_LOCATION;
-import static net.sharkfw.asip.ASIPSpace.DIM_SENDER;
-import static net.sharkfw.asip.ASIPSpace.DIM_TIME;
+import static net.sharkfw.asip.ASIPSpace.*;
 
 /**
  * Created by j4rvis on 5/31/17.
@@ -85,16 +81,17 @@ public class SqlSharkHelper {
 
 
     static SqlSemanticTag getSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
-        if (semanticTag==null) throw new SharkKBException("No SemanticTag given.");
+        if (semanticTag == null) throw new SharkKBException("No SemanticTag given.");
         return new SqlSemanticTag(semanticTag.getSI()[0], sharkKB);
     }
+
     static SqlPeerSemanticTag getPeerSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
-        if (semanticTag==null) throw new SharkKBException("No SemanticTag given.");
+        if (semanticTag == null) throw new SharkKBException("No SemanticTag given.");
         return new SqlPeerSemanticTag(semanticTag.getSI()[0], sharkKB);
     }
 
     static SqlSemanticTag createSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) {
-        try{
+        try {
             return getSemanticTag(sharkKB, semanticTag);
         } catch (SharkKBException e) {
             try {
@@ -107,7 +104,7 @@ public class SqlSharkHelper {
     }
 
     static SqlPeerSemanticTag createPeerSemanticTag(SqlSharkKB sharkKB, PeerSemanticTag semanticTag) {
-        try{
+        try {
             return getPeerSemanticTag(sharkKB, semanticTag);
         } catch (SharkKBException e) {
             try {
@@ -125,7 +122,7 @@ public class SqlSharkHelper {
             return DriverManager.getConnection(sharkKB.getDbAddress());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException(e.getCause());
         }
@@ -140,24 +137,24 @@ public class SqlSharkHelper {
         return executeInsertSuccess(connection, insertSet) ? sqlAsipInformation : null;
     }
 
-    private static String prepareSqlInsertSet(Connection connection, List<TagContainer> containerList, ASIPSpace asipSpace, List<SqlAsipInformation> informationList){
+    private static String prepareSqlInsertSet(Connection connection, List<TagContainer> containerList, ASIPSpace asipSpace, List<SqlAsipInformation> informationList) {
 
-        String sql = INSERTINTO+TABLE_TAG_SET+BO+FIELD_SET_KIND+","+FIELD_INFO_ID+","+FIELD_TAG_ID+","+FIELD_DIRECTION+BC+VALUES;
+        String sql = INSERTINTO + TABLE_TAG_SET + BO + FIELD_SET_KIND + "," + FIELD_INFO_ID + "," + FIELD_TAG_ID + "," + FIELD_DIRECTION + BC + VALUES;
 
         for (SqlAsipInformation sqlAsipInformation : informationList) {
             for (TagContainer tagContainer : containerList) {
-                sql=sql+BO+tagContainer.setKind+","+sqlAsipInformation.getId()+","+tagContainer.id+","+asipSpace.getDirection()+BC+",";
+                sql = sql + BO + tagContainer.setKind + "," + sqlAsipInformation.getId() + "," + tagContainer.id + "," + asipSpace.getDirection() + BC + ",";
             }
-            sql = sql.substring(0, sql.length()-1);
+            sql = sql.substring(0, sql.length() - 1);
         }
         return sql;
     }
 
-    static SqlAsipInformation getInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation information){
+    static SqlAsipInformation getInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation information) {
         try {
             List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(sharkKB, space, false);
             for (SqlAsipInformation sqlAsipInformation : informationList) {
-                if(sqlAsipInformation.getName().equals(information.getName())){
+                if (sqlAsipInformation.getName().equals(information.getName())) {
                     return sqlAsipInformation;
                 }
             }
@@ -177,8 +174,6 @@ public class SqlSharkHelper {
 
         String sqlStatement = prepareSqlStatement(connection, containerList, space.getDirection());
 
-        L.d(sqlStatement, sqlStatement);
-
         List<Integer> informationIds = getInformationIds(connection, sqlStatement);
 
         List<SqlAsipInformation> informationList = new ArrayList<>();
@@ -192,39 +187,41 @@ public class SqlSharkHelper {
     public static void removeInformation(SqlSharkKB sharkKB, ASIPSpace space, ASIPInformation asipInformation) throws SharkKBException {
         try {
             Connection connection = SqlSharkHelper.createConnection(sharkKB);
-            String deleteInformation = DELETE+FROM+TABLE_INFORMATION;
-            String deleteTagSet = DELETE+FROM+TABLE_TAG_SET;
+            String deleteInformation = DELETE + FROM + TABLE_INFORMATION;
+            String deleteTagSet = DELETE + FROM + TABLE_TAG_SET;
 
             String chainedTagIds = "";
             String chainedIds = "";
 
             List<SqlAsipInformation> informationList = new ArrayList<>();
 
-            if(asipInformation==null){
+            if (asipInformation == null) {
                 informationList.addAll(SqlSharkHelper.getInformation(sharkKB, space, false));
             } else {
                 informationList.add(SqlSharkHelper.getInformation(sharkKB, space, asipInformation));
             }
 
             for (SqlAsipInformation sqlAsipInformation : informationList) {
-                String infoId = FIELD_INFO_ID+EQ+sqlAsipInformation.getId();
-                String id = FIELD_ID+EQ+sqlAsipInformation.getId();
+                String infoId = FIELD_INFO_ID + EQ + sqlAsipInformation.getId();
+                String id = FIELD_ID + EQ + sqlAsipInformation.getId();
 
-                if(chainedTagIds.isEmpty()) chainedTagIds=infoId;
-                else chainedTagIds = chainedTagIds+OR+infoId;
-                if(chainedIds.isEmpty()) chainedIds=id;
-                else chainedIds = chainedIds+OR+id;
+                if (chainedTagIds.isEmpty()) chainedTagIds = infoId;
+                else chainedTagIds = chainedTagIds + OR + infoId;
+                if (chainedIds.isEmpty()) chainedIds = id;
+                else chainedIds = chainedIds + OR + id;
             }
 
-            if(!chainedTagIds.isEmpty()){
-                try{
-                    SqlHelper.executeSQLCommand(connection, deleteTagSet+WHERE+chainedTagIds);
-                } catch (SQLException e){}
+            if (!chainedTagIds.isEmpty()) {
+                try {
+                    SqlHelper.executeSQLCommand(connection, deleteTagSet + WHERE + chainedTagIds);
+                } catch (SQLException e) {
+                }
             }
-            if (!chainedIds.isEmpty()){
-                try{
-                    SqlHelper.executeSQLCommand(connection, deleteInformation+WHERE+chainedIds);
-                } catch (SQLException e){}
+            if (!chainedIds.isEmpty()) {
+                try {
+                    SqlHelper.executeSQLCommand(connection, deleteInformation + WHERE + chainedIds);
+                } catch (SQLException e) {
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -238,7 +235,7 @@ public class SqlSharkHelper {
 
         ArrayList<SqlAsipInformation> informationList = new ArrayList<>();
 
-        while (informationIterator.hasNext()){
+        while (informationIterator.hasNext()) {
             ASIPInformation next = informationIterator.next();
             informationList.add(new SqlAsipInformation(next, space, sharkKB));
         }
@@ -248,8 +245,7 @@ public class SqlSharkHelper {
         return executeInsertSuccess(connection, insertSet) ? informationList : null;
     }
 
-    private static boolean executeInsertSuccess(Connection connection, String sql){
-        L.d(sql, sql);
+    private static boolean executeInsertSuccess(Connection connection, String sql) {
         try {
             SqlHelper.executeSQLCommand(connection, sql);
             return true;
@@ -259,13 +255,13 @@ public class SqlSharkHelper {
         }
     }
 
-    private static List<Integer> getInformationIds(Connection connection, String sql){
+    private static List<Integer> getInformationIds(Connection connection, String sql) {
         ArrayList<Integer> list = new ArrayList<>();
         int id = 0;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql) ){
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
             while (rs.next()) {
                 id = rs.getInt("info_id");
-                if(!list.contains(id)) list.add(id);
+                if (!list.contains(id)) list.add(id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -273,10 +269,10 @@ public class SqlSharkHelper {
         return list;
     }
 
-    public static int getNumberOfInformation(Connection connection){
+    public static int getNumberOfInformation(Connection connection) {
         String sql = "SELECT * FROM information;";
         int size = 0;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql) ){
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
             while (rs.next()) {
                 size++;
             }
@@ -286,47 +282,47 @@ public class SqlSharkHelper {
         return size;
     }
 
-    private static String prepareSqlStatement(Connection connection, List<TagContainer> containerList, int direction){
-        String sql = SELECT+DISTINCT+COUNT+BO+FIELD_INFO_ID+BC+AS+" count,"+FIELD_INFO_ID+","+FIELD_SET_KIND+","+FIELD_DIRECTION+FROM+TABLE_TAG_SET+WHERE+FIELD_DIRECTION+EQ+direction;
+    private static String prepareSqlStatement(Connection connection, List<TagContainer> containerList, int direction) {
+        String sql = SELECT + DISTINCT + COUNT + BO + FIELD_INFO_ID + BC + AS + " count," + FIELD_INFO_ID + "," + FIELD_SET_KIND + "," + FIELD_DIRECTION + FROM + TABLE_TAG_SET + WHERE + FIELD_DIRECTION + EQ + direction;
 
         List<List<String>> conditions = new ArrayList<>();
-        for (int i = 0; i<7; i++){
+        for (int i = 0; i < 7; i++) {
             conditions.add(new ArrayList<String>());
         }
 
         for (TagContainer container : containerList) {
-            String tagId = FIELD_TAG_ID+EQ+container.id;
+            String tagId = FIELD_TAG_ID + EQ + container.id;
             conditions.get(container.setKind).add(tagId);
         }
 
         boolean first = true;
 
-        for (int i = 0; i < conditions.size(); i++){
+        for (int i = 0; i < conditions.size(); i++) {
             List<String> conditionList = conditions.get(i);
             String chainedCondition = "";
 
             for (String condition : conditionList) {
-                if(chainedCondition.isEmpty()) chainedCondition = condition;
+                if (chainedCondition.isEmpty()) chainedCondition = condition;
                 else {
-                    chainedCondition = chainedCondition+OR+condition;
+                    chainedCondition = chainedCondition + OR + condition;
                 }
             }
-            if(!chainedCondition.isEmpty()){
-                if(first){
-                    first=false;
-                    sql = sql+AND+ BO + BO +FIELD_SET_KIND+EQ+i+AND+ BO +chainedCondition+ BC + BC;
+            if (!chainedCondition.isEmpty()) {
+                if (first) {
+                    first = false;
+                    sql = sql + AND + BO + BO + FIELD_SET_KIND + EQ + i + AND + BO + chainedCondition + BC + BC;
                 } else {
-                    sql = sql+OR+ BO +FIELD_SET_KIND+EQ+i+AND+ BO +chainedCondition+ BC + BC;
+                    sql = sql + OR + BO + FIELD_SET_KIND + EQ + i + AND + BO + chainedCondition + BC + BC;
                 }
             }
         }
-        return sql+BC+GROUPBY+FIELD_INFO_ID+HAVING+" count = "+containerList.size();
+        return sql + BC + GROUPBY + FIELD_INFO_ID + HAVING + " count = " + containerList.size();
     }
 
     private static void mapSTSet(SqlSharkKB sharkKB, boolean create, STSet set, int setKind, List list) throws SharkKBException {
-        if (set==null) return;
+        if (set == null) return;
         Iterator<SemanticTag> iterator = set.stTags();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             SemanticTag next = iterator.next();
             SqlSemanticTag sqlSemanticTag = getTag(sharkKB, next, create);
             list.add(new TagContainer(sqlSemanticTag.getId(), setKind));
@@ -337,12 +333,12 @@ public class SqlSharkHelper {
         List<TagContainer> containerList = new ArrayList<>();
         mapSTSet(sharkKB, create, space.getTopics(), ASIPSpace.DIM_TOPIC, containerList);
         mapSTSet(sharkKB, create, space.getTypes(), ASIPSpace.DIM_TYPE, containerList);
-        mapSTSet(sharkKB, create, space.getApprovers(), DIM_APPROVERS,  containerList);
+        mapSTSet(sharkKB, create, space.getApprovers(), DIM_APPROVERS, containerList);
         mapSTSet(sharkKB, create, space.getReceivers(), ASIPSpace.DIM_RECEIVER, containerList);
         mapSTSet(sharkKB, create, space.getTimes(), DIM_TIME, containerList);
         mapSTSet(sharkKB, create, space.getLocations(), DIM_LOCATION, containerList);
 
-        if(space.getSender()!=null){
+        if (space.getSender() != null) {
             SqlSemanticTag sender = getTag(sharkKB, space.getSender(), create);
             containerList.add(new TagContainer(sender.getId(), DIM_SENDER));
         }
@@ -350,26 +346,16 @@ public class SqlSharkHelper {
         return containerList;
     }
 
-    private static class TagContainer{
-        int id;
-        int setKind;
-
-        public TagContainer(int id, int setKind) {
-            this.id = id;
-            this.setKind = setKind;
-        }
-    }
-
     private static SqlSemanticTag getTag(SqlSharkKB sharkKB, SemanticTag semanticTag, boolean create) throws SharkKBException {
         SqlSemanticTag sender;
-        if(create){
-            if(semanticTag instanceof PeerSemanticTag){
+        if (create) {
+            if (semanticTag instanceof PeerSemanticTag) {
                 sender = createPeerSemanticTag(sharkKB, (PeerSemanticTag) semanticTag);
             } else {
                 sender = createSemanticTag(sharkKB, semanticTag);
             }
         } else {
-            if(semanticTag instanceof PeerSemanticTag){
+            if (semanticTag instanceof PeerSemanticTag) {
                 sender = getPeerSemanticTag(sharkKB, semanticTag);
             } else {
                 sender = getSemanticTag(sharkKB, semanticTag);
@@ -378,7 +364,6 @@ public class SqlSharkHelper {
         return sender;
     }
 
-
     public static List<ASIPInformationSpace> getInfoSpaces(SqlSharkKB sharkKB, ASIPSpace asipSpace) throws SQLException, SharkKBException {
 
         List<SqlAsipInformationSpace> sqlAsipInformationSpaces = new ArrayList<>();
@@ -386,11 +371,11 @@ public class SqlSharkHelper {
         Connection connection = createConnection(sharkKB);
         List<Integer> informationIds = getInformationIds(connection, "SELECT id AS info_id FROM information;");
         for (Integer id : informationIds) {
-            String tagSet = SELECT+ALL+FROM+TABLE_TAG_SET+WHERE+FIELD_INFO_ID+EQ+id;
+            String tagSet = SELECT + ALL + FROM + TABLE_TAG_SET + WHERE + FIELD_INFO_ID + EQ + id;
             ArrayList<TagContainer> tagContainers = new ArrayList<>();
             SqlAsipSpace sqlAsipSpace = new SqlAsipSpace();
 
-            try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, tagSet)){
+            try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, tagSet)) {
                 while (rs.next()) {
                     sqlAsipSpace.setDirection(rs.getInt("direction"));
                     int tagId = rs.getInt("tag_id");
@@ -402,7 +387,7 @@ public class SqlSharkHelper {
             }
 
             for (TagContainer container : tagContainers) {
-                switch (container.setKind){
+                switch (container.setKind) {
                     case ASIPSpace.DIM_TOPIC:
                     case ASIPSpace.DIM_TYPE:
                         SqlSemanticTag tag = new SqlSemanticTag(container.id, sharkKB);
@@ -411,7 +396,7 @@ public class SqlSharkHelper {
                     case ASIPSpace.DIM_APPROVERS:
                     case ASIPSpace.DIM_RECEIVER:
                     case ASIPSpace.DIM_SENDER:
-                        SqlPeerSemanticTag peer = new SqlPeerSemanticTag(container.id,  sharkKB);
+                        SqlPeerSemanticTag peer = new SqlPeerSemanticTag(container.id, sharkKB);
                         sqlAsipSpace.addTag(peer, container.setKind);
                         break;
                     case DIM_TIME:
@@ -425,20 +410,21 @@ public class SqlSharkHelper {
                         sqlAsipSpace.addTag(location, container.setKind);
                         break;
                 }
-            };
+            }
+            ;
 
             SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(id, sqlAsipSpace, sharkKB);
             boolean added = false;
 
             for (SqlAsipInformationSpace sqlAsipInformationSpace : sqlAsipInformationSpaces) {
                 ASIPSpace sqlAsipInfoSpaceASIPSpace = sqlAsipInformationSpace.getASIPSpace();
-                if(SharkCSAlgebra.identical(sqlAsipInfoSpaceASIPSpace, sqlAsipSpace)){
+                if (SharkCSAlgebra.identical(sqlAsipInfoSpaceASIPSpace, sqlAsipSpace)) {
                     sqlAsipInformationSpace.addInformation(sqlAsipInformation);
                     added = true;
                 }
             }
 
-            if(!added){
+            if (!added) {
                 SqlAsipInformationSpace sqlAsipInformationSpace = new SqlAsipInformationSpace(sharkKB, sqlAsipSpace);
                 sqlAsipInformationSpace.addInformation(sqlAsipInformation);
                 sqlAsipInformationSpaces.add(sqlAsipInformationSpace);
@@ -446,6 +432,16 @@ public class SqlSharkHelper {
         }
 
         return (List<ASIPInformationSpace>) (List<?>) sqlAsipInformationSpaces;
+    }
+
+    private static class TagContainer {
+        int id;
+        int setKind;
+
+        public TagContainer(int id, int setKind) {
+            this.id = id;
+            this.setKind = setKind;
+        }
     }
 
 }

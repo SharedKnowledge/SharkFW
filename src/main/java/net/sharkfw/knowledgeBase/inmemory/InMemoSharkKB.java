@@ -776,7 +776,7 @@ public class InMemoSharkKB extends AbstractSharkKB implements SharkKB, SystemPro
     @Override
     public ASIPInformation addInformation(String name, InputStream contentIS, int numberOfBytes, ASIPSpace semanticAnnotations) throws SharkKBException {
         ASIPSpace mergeASIPSpace = this.mergeASIPSpace(semanticAnnotations);
-        return this.getKnowledge().addInformation(null, contentIS, numberOfBytes, mergeASIPSpace);
+        return this.getKnowledge().addInformation(name, contentIS, numberOfBytes, mergeASIPSpace);
     }
 
     @Override

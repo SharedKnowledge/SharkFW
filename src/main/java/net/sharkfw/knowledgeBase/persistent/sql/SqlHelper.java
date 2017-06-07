@@ -48,7 +48,6 @@ public class SqlHelper {
     }
 
     public static void executeSQLCommand(Connection conn, String sql, byte[] blob) throws SQLException {
-        L.d(sql, sql);
         PreparedStatement st = null;
         conn.setAutoCommit(true);
         try {
@@ -60,7 +59,6 @@ public class SqlHelper {
         }
     }
     public static void executeSQLCommand(Connection conn, String sql) throws SQLException {
-        L.d(sql, sql);
         Statement st = null;
         conn.setAutoCommit(true);
         try {
@@ -72,7 +70,6 @@ public class SqlHelper {
     }
 
     public static ResultSet executeSQLCommandWithResult(Connection conn, String sql) throws SQLException {
-        L.d(sql, sql);
         conn.setAutoCommit(true);
         Statement st = conn.createStatement();
         return st.executeQuery(sql);

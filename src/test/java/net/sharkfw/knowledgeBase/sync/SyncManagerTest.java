@@ -8,6 +8,7 @@ import net.sharkfw.knowledgeBase.sync.manager.port.SyncMergeKP;
 import net.sharkfw.peer.J2SESharkEngine;
 import net.sharkfw.system.L;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -74,10 +75,11 @@ public class SyncManagerTest {
         bobEngine.stopTCP();
     }
 
+    @Ignore
     @Test
     public void sync_with_reply_success() throws IOException, SharkKBException, InterruptedException {
 
-        L.setLogLevel(L.LOGLEVEL_WARNING);
+        L.setLogLevel(L.LOGLEVEL_ALL);
 
         // Basics
         J2SESharkEngine aliceEngine = new J2SESharkEngine();

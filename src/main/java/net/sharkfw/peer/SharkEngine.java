@@ -154,7 +154,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 //    }
     @SuppressWarnings("unused")
     private boolean mailAvailable = true; // a guess
-    private long sessionTimeOut = 3000;
+    private long sessionTimeOut = 5000;
     private Set<String> persistPortNames;
     private boolean allowEmptyContextPoints = true;
     private SharkKB unsentMessagesKB;
