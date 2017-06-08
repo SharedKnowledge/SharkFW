@@ -139,22 +139,6 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
     }
 
     private void addAddressesToDB(String[] addresses) {
-//        StringBuilder sqlAddresses = new StringBuilder();
-////        sqlAddresses.append("PRAGMA foreign_keys = ON; ");
-//        sqlAddresses.append("INSERT INTO address (address_name, tag_id) VALUES ");
-//        for (int i = 0; i < this.addresses.length; i++) {
-//            if (i != this.addresses.length - 1) {
-//                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + ',');
-//            } else {
-//                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + "; ");
-//            }
-//        }
-//        try {
-//            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
-//            this.addresses = addresses;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
 
         List<String> addressesList = Arrays.asList(getAddresses());
         ArrayList<String> strings = new ArrayList<>();
