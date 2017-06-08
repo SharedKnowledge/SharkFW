@@ -48,7 +48,7 @@ import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.WHERE;
 public class SqlSemanticTag implements SemanticTag {
     public String ID;
     protected Connection connection;
-    private int id;
+    protected int id;
     private String[] sis;
     private String name;
     private String property;

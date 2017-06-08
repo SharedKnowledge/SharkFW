@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.ALL;
@@ -70,6 +71,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
     public SqlPeerSemanticTag(int id, String[] sis, String name, String property, String tagKind, String[] addresses) {
         super(id, sis, name, property, tagKind);
         this.addresses = addresses;
+        setAddresses(this.addresses);
     }
 
     /**
@@ -94,11 +96,9 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     @Override
     public String[] getAddresses() {
-        String tags = SELECT + ALL + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id");
-        ResultSet rs = null;
+        String tags = SELECT + ALL + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.id;
         List<String> list = new ArrayList<>();
-        try {
-            rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), tags);){
             while (rs.next()) {
                 list.add(rs.getString("address_name"));
             }
@@ -114,7 +114,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     @Override
     public void setAddresses(String[] addresses) {
-        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id");
+        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.id;
         try {
             SqlHelper.executeSQLCommand(this.getConnection(), sql);
         } catch (SQLException e) {
@@ -125,7 +125,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
 
     @Override
     public void removeAddress(String address) {
-        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.getSystemProperty("id") + AND + FIELD_ADDRESS_NAME + EQ + QU + address + QU;
+        String sql = DELETE + FROM + TABLE_ADDRESS + WHERE + FIELD_TAG_ID + EQ + this.id + AND + FIELD_ADDRESS_NAME + EQ + QU + address + QU;
         try {
             SqlHelper.executeSQLCommand(this.getConnection(), sql);
         } catch (SQLException e) {
@@ -139,21 +139,53 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
     }
 
     private void addAddressesToDB(String[] addresses) {
-        StringBuilder sqlAddresses = new StringBuilder();
-//        sqlAddresses.append("PRAGMA foreign_keys = ON; ");
-        sqlAddresses.append("INSERT INTO address (address_name, tag_id) VALUES ");
-        for (int i = 0; i < this.addresses.length; i++) {
-            if (i != this.addresses.length - 1) {
-                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + ',');
-            } else {
-                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + "; ");
+//        StringBuilder sqlAddresses = new StringBuilder();
+////        sqlAddresses.append("PRAGMA foreign_keys = ON; ");
+//        sqlAddresses.append("INSERT INTO address (address_name, tag_id) VALUES ");
+//        for (int i = 0; i < this.addresses.length; i++) {
+//            if (i != this.addresses.length - 1) {
+//                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + ',');
+//            } else {
+//                sqlAddresses.append("(\'" + this.addresses[i] + "\'," + this.getId() + ")" + "; ");
+//            }
+//        }
+//        try {
+//            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
+//            this.addresses = addresses;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+
+        List<String> addressesList = Arrays.asList(getAddresses());
+        ArrayList<String> strings = new ArrayList<>();
+
+        for (String address : addresses) {
+            if (!addressesList.contains(address)) {
+                strings.add(address);
             }
         }
-        try {
-            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
-            this.addresses = addresses;
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        String[] stringArr = new String[strings.size()];
+        stringArr = strings.toArray(stringArr);
+
+        if (stringArr.length > 0) {
+            StringBuilder sqlAddresses = new StringBuilder();
+            sqlAddresses.append("INSERT INTO address (address_name, tag_id) VALUES ");
+            for (int i = 0; i < this.addresses.length; i++) {
+                if (i == 0) {
+                    sqlAddresses.append("(\'" + stringArr[i] + "\'," + this.getId() + ")");
+                } else {
+                    sqlAddresses.append(",(\'" + stringArr[i] + "\'," + this.getId() + ")");
+                }
+            }
+            sqlAddresses.append(";");
+            try {
+                SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
+                this.addresses = getAddresses();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 }
