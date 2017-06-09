@@ -13,24 +13,37 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.system.L;
 import net.sharkfw.system.SharkException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by j4rvis on 26.08.16.
  */
 public class SyncInviteKP extends KnowledgePort {
 
+    public interface SyncInviteListener{
+        void onSyncInvitation(ASIPInterest interest);
+    }
+
     private final SyncManager syncManager;
     private final SharkKB rootKB;
+    private final boolean selfConstructed;
+    private List<SyncInviteListener> syncInviteListenerList = new ArrayList<>();
 
-    public SyncInviteKP(SharkEngine se, SyncManager syncManager, SharkKB rootKB) {
+    public SyncInviteKP(SharkEngine se, SyncManager syncManager, SharkKB rootKB, boolean selfConstructed) {
         super(se);
+        this.selfConstructed = selfConstructed;
         this.syncManager = syncManager;
         if(rootKB!=null){
             this.rootKB = rootKB;
         } else {
             this.rootKB = new InMemoSharkKB();
         }
+    }
+
+    public void addSyncInviteListener(SyncInviteListener syncInviteListener){
+        syncInviteListenerList.add(syncInviteListener);
     }
 
     @Override
@@ -62,24 +75,30 @@ public class SyncInviteKP extends KnowledgePort {
 
         L.w("Do we already know the component? " + !isNewInvite, this);
         if(isNewInvite){
-            Iterator<SemanticTag> topics = interest.getTopics().stTags();
-            // Create an empty kb based on the first topic
-            SemanticTag next = topics.next();
+            if(selfConstructed){
+                for (SyncInviteListener syncInviteListener : syncInviteListenerList) {
+                    syncInviteListener.onSyncInvitation(interest);
+                }
+            } else {
+                Iterator<SemanticTag> topics = interest.getTopics().stTags();
+                // Create an empty kb based on the first topic
+                SemanticTag next = topics.next();
 
-            // Necessary to share same peers!
-            InMemoSharkKB inMemoSharkKB = new InMemoSharkKB(
-                    InMemoSharkKB.createInMemoSemanticNet(),
-                    InMemoSharkKB.createInMemoSemanticNet(),
-                    this.rootKB.getPeersAsTaxonomy(),
-                    InMemoSharkKB.createInMemoSpatialSTSet(),
-                    InMemoSharkKB.createInMemoTimeSTSet()
-            );
+                // Necessary to share same peers!
+                InMemoSharkKB inMemoSharkKB = new InMemoSharkKB(
+                        InMemoSharkKB.createInMemoSemanticNet(),
+                        InMemoSharkKB.createInMemoSemanticNet(),
+                        this.rootKB.getPeersAsTaxonomy(),
+                        InMemoSharkKB.createInMemoSpatialSTSet(),
+                        InMemoSharkKB.createInMemoTimeSTSet()
+                );
 
-            interest.getApprovers().merge(this.se.getOwner());
+                interest.getApprovers().merge(this.se.getOwner());
 
-            SyncComponent component = syncManager.createInvitedSyncComponent(inMemoSharkKB, next, interest.getReceivers(), interest.getApprovers(), interest.getSender(), true);
-            // Trigger the listeners
+                SyncComponent component = syncManager.createInvitedSyncComponent(inMemoSharkKB, next, interest.getReceivers(), interest.getApprovers(), interest.getSender(), true);
+                // Trigger the listeners
 //            syncManager.triggerInviteListener(component);
+            }
         }
 
         // set myself in approver aswell and reply with an OfferTypeTag

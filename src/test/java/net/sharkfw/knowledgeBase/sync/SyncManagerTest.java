@@ -79,7 +79,7 @@ public class SyncManagerTest {
     @Test
     public void sync_with_reply_success() throws IOException, SharkKBException, InterruptedException {
 
-        L.setLogLevel(L.LOGLEVEL_ALL);
+        L.setLogLevel(L.LOGLEVEL_WARNING);
 
         // Basics
         J2SESharkEngine aliceEngine = new J2SESharkEngine();
@@ -155,7 +155,7 @@ public class SyncManagerTest {
 
     @Test
     public void getComponentByName_success(){
-        L.setLogLevel(L.LOGLEVEL_ALL);
+        L.setLogLevel(L.LOGLEVEL_WARNING);
 
         // Basics
         J2SESharkEngine aliceEngine = new J2SESharkEngine();

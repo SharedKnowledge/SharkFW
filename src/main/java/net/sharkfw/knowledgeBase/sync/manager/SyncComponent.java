@@ -50,25 +50,45 @@ public class SyncComponent {
 //        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
 //        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_WRITABLE, writable);
 
+//        this(kb);
+//
+//        if(this.uniqueName==null){
+//            this.uniqueName=uniqueName;
+//            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_NAME, ASIPMessageSerializerHelper.serializeTag(uniqueName).toString());
+//        }
+//        if(this.members==null){
+//            this.members = members;
+//            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(members).toString());
+//        }
+//        if(this.owner==null){
+//            this.owner = owner;
+//            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_OWNER, ASIPMessageSerializerHelper.serializeTag(owner).toString());
+//        }
+//        this.writable = writable;
+//        this.approvedMembers.merge(this.owner);
+//
+//        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
+//        KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_WRITABLE, writable);
+
     }
 
-    public SyncComponent(SharkKB kb) throws SharkKBException {
-        this.syncKB = new SyncKB(kb);
-
-        String ownerString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_OWNER);
-        if(ownerString!=null) this.owner=ASIPMessageSerializerHelper.deserializePeerTag(ownerString);
-
-        String nameString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_OWNER);
-        if(nameString!=null) this.uniqueName=ASIPMessageSerializerHelper.deserializeTag(nameString);
-
-        String memberString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_MEMBERS);
-        if(memberString!=null) this.members=ASIPMessageSerializerHelper.deserializePeerSTSet(null, memberString);
-
-        String approvedMembersString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_APPROVED_MEMBERS);
-        if(approvedMembersString!=null) this.approvedMembers=ASIPMessageSerializerHelper.deserializePeerSTSet(null, approvedMembersString);
-
-        this.writable = KnowledgeUtils.getInfoAsBoolean(syncKB, getSpace(), SYNC_APPROVED_MEMBERS);
-    }
+//    public SyncComponent(SharkKB kb) throws SharkKBException {
+//        this.syncKB = new SyncKB(kb);
+//
+//        String ownerString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_OWNER);
+//        if(ownerString!=null) this.owner=ASIPMessageSerializerHelper.deserializePeerTag(ownerString);
+//
+//        String nameString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_OWNER);
+//        if(nameString!=null) this.uniqueName=ASIPMessageSerializerHelper.deserializeTag(nameString);
+//
+//        String memberString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_MEMBERS);
+//        if(memberString!=null) this.members=ASIPMessageSerializerHelper.deserializePeerSTSet(null, memberString);
+//
+//        String approvedMembersString = KnowledgeUtils.getInfoAsString(syncKB, getSpace(), SYNC_APPROVED_MEMBERS);
+//        if(approvedMembersString!=null) this.approvedMembers=ASIPMessageSerializerHelper.deserializePeerSTSet(null, approvedMembersString);
+//
+//        this.writable = KnowledgeUtils.getInfoAsBoolean(syncKB, getSpace(), SYNC_WRITABLE);
+//    }
 
     private ASIPSpace getSpace() throws SharkKBException {
         return this.syncKB.createASIPSpace(null, SYNC_TYPE, null, null, null, null, null, ASIPSpace.DIRECTION_INOUT);
@@ -86,7 +106,6 @@ public class SyncComponent {
     public void addApprovedMember(PeerSemanticTag peerSemanticTag){
         try {
             approvedMembers.merge(peerSemanticTag);
-            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -95,7 +114,6 @@ public class SyncComponent {
     public void addApprovedMember(PeerSTSet members){
         try {
             approvedMembers.merge(members);
-//            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_APPROVED_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(approvedMembers).toString());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -104,7 +122,6 @@ public class SyncComponent {
     public void addMember(PeerSemanticTag member){
         try {
             members.merge(member);
-            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(members).toString());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
@@ -113,7 +130,6 @@ public class SyncComponent {
     public void removeMember(PeerSemanticTag member){
         try {
             members.removeSemanticTag(member);
-            KnowledgeUtils.setInfoWithName(syncKB, getSpace(), SYNC_MEMBERS, ASIPMessageSerializerHelper.serializeSTSet(members).toString());
         } catch (SharkKBException e) {
             e.printStackTrace();
         }

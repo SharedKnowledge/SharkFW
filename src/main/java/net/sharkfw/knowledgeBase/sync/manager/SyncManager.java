@@ -23,11 +23,6 @@ public class SyncManager {
 
     private final ExecutorService executor;
 
-    // Interfaces
-    public interface SyncInviteListener {
-        void onInvitation(SyncComponent component);
-    }
-
     // Public CONSTANTS
     public static final String SHARK_SYNC_INVITE_TYPE_SI = "http://www.sharksystem.net/sync/invite";
     public static final String SHARK_SYNC_ACCEPT_TYPE_SI = "http://www.sharksystem.net/sync/accept";
@@ -61,12 +56,28 @@ public class SyncManager {
         this.syncMergeKP.addSyncMergeListener(listener);
     }
 
+    public void addSyncAcceptListener(SyncAcceptKP.SyncAcceptListener listener){
+        this.syncAcceptKP.addSyncAcceptListener(listener);
+    }
+
+    public void addSyncInviteListener(SyncInviteKP.SyncInviteListener listener){
+        this.syncInviteKP.addSyncInviteListener(listener);
+    }
+
     /**
      * Activate Invitation, so that other peers can invite us to their components.
      * @param allow
      */
     public void allowInvitation(boolean allow){
-        this.allowInvitation(allow, null);
+        this.allowInvitation(allow, null, false);
+    }
+
+    /**
+     * Activate Invitation, so that other peers can invite us to their components.
+     * @param allow
+     */
+    public void allowInvitation(boolean allow, boolean selfConstructed){
+        this.allowInvitation(allow, null, selfConstructed);
     }
 
     /**
@@ -75,9 +86,9 @@ public class SyncManager {
      * @param allow
      * @param sharkKB
      */
-    public void allowInvitation(boolean allow, SharkKB sharkKB) {
+    public void allowInvitation(boolean allow, SharkKB sharkKB, boolean selfConstructed) {
         if (allow) {
-            this.syncInviteKP = new SyncInviteKP(this.engine, this, sharkKB);
+            this.syncInviteKP = new SyncInviteKP(this.engine, this, sharkKB, selfConstructed);
         } else {
             this.syncInviteKP = null;
         }
@@ -189,17 +200,17 @@ public class SyncManager {
         }
         return null;
     }
-
-    public SyncComponent restoreSyncComponent(SharkKB kb){
-        try {
-            SyncComponent syncComponent = new SyncComponent(kb);
-            components.add(syncComponent);
-            return syncComponent;
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//
+//    public SyncComponent restoreSyncComponent(SharkKB kb){
+//        try {
+//            SyncComponent syncComponent = new SyncComponent(kb);
+//            components.add(syncComponent);
+//            return syncComponent;
+//        } catch (SharkKBException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
     public void removeSyncComponent(SyncComponent component) {
         components.remove(component);

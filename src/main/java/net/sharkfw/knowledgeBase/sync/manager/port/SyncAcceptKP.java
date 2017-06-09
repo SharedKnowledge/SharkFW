@@ -1,11 +1,14 @@
 package net.sharkfw.knowledgeBase.sync.manager.port;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
+import net.sharkfw.knowledgeBase.PeerSTSet;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
@@ -21,11 +24,20 @@ import net.sharkfw.system.L;
  */
 public class SyncAcceptKP extends KnowledgePort {
 
+    public interface SyncAcceptListener{
+        void onSyncInviteAccepted(SyncComponent component, PeerSTSet approvers);
+    }
+
     private final SyncManager syncManager;
+    private List<SyncAcceptListener> syncAcceptListeners = new ArrayList<>();
 
     public SyncAcceptKP(SharkEngine se, SyncManager syncManager) {
         super(se);
         this.syncManager = syncManager;
+    }
+
+    public void addSyncAcceptListener(SyncAcceptListener syncAcceptListener){
+        syncAcceptListeners.add(syncAcceptListener);
     }
 
     @Override
@@ -43,9 +55,14 @@ public class SyncAcceptKP extends KnowledgePort {
                 Iterator<SemanticTag> iterator = interest.getTopics().stTags();
                 while (iterator.hasNext()){
                     SemanticTag next = iterator.next();
+                    L.d(L.semanticTag2String(next), this);
                     SyncComponent component = syncManager.getComponentByName(next);
                     if (component!=null){
+                        L.w("Found component!", this);
                         component.addApprovedMember(interest.getApprovers());
+                        for (SyncAcceptListener syncAcceptListener : syncAcceptListeners) {
+                            syncAcceptListener.onSyncInviteAccepted(component, interest.getApprovers());
+                        }
                         this.syncManager.doSync(component, peer, message);
                     }
                 }
