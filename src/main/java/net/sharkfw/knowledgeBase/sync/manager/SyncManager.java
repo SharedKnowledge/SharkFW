@@ -316,21 +316,21 @@ public class SyncManager {
                 public void run() {
                     try {
                         SharkKB changes = getChanges(component, peer);
-                        if (hasChanged(changes)) {
-                            L.d("We have some Changes so send insert to " + peer.getName(), this);
-                            // We do have some changes we can send!
-                            ASIPOutMessage outMessage = engine.createASIPOutMessage(
-                                    peer.getAddresses(),
-                                    engine.getOwner(),
-                                    peer,
-                                    null,
-                                    null,
-                                    component.getUniqueName(),
-                                    SyncManager.SHARK_SYNC_MERGE_TAG, 1);
+                        L.d("We have some Changes so send insert to " + peer.getName(), this);
+                        // We do have some changes we can send!
+                        ASIPOutMessage outMessage = engine.createASIPOutMessage(
+                                peer.getAddresses(),
+                                engine.getOwner(),
+                                peer,
+                                null,
+                                null,
+                                component.getUniqueName(),
+                                SyncManager.SHARK_SYNC_MERGE_TAG, 1);
 
-                            outMessage.insert(changes);
-                            mergeInfoSerializer.add(component.getUniqueName(), peer);
-                        }
+                        outMessage.insert(changes);
+                        mergeInfoSerializer.add(component.getUniqueName(), peer);
+//                        if (hasChanged(changes)) {
+//                        }
                     } catch (SharkKBException e) {
                         e.printStackTrace();
                     }
@@ -355,12 +355,12 @@ public class SyncManager {
             public void run() {
                 try {
                     SharkKB changes = getChanges(component, peer);
-                    if (hasChanged(changes)) {
-                        ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
-                        response.insert(changes);
-                        L.w(engine.getOwner().getName() + " sent changes!", this);
-                        mergeInfoSerializer.add(component.getUniqueName(), peer);
-                    }
+//                    if (hasChanged(changes)) {
+                    ASIPOutMessage response = message.createResponse(null, SyncManager.SHARK_SYNC_MERGE_TAG);
+                    response.insert(changes);
+                    L.w(engine.getOwner().getName() + " sent changes!", this);
+                    mergeInfoSerializer.add(component.getUniqueName(), peer);
+//                    }
                 } catch (SharkKBException e) {
                     e.printStackTrace();
                 }
@@ -386,10 +386,19 @@ public class SyncManager {
     }
 
     public void doInviteOrSync(SyncComponent component){
-        Enumeration<PeerSemanticTag> members = component.getMembers().peerTags();
-        PeerSTSet approvedMembers = component.getApprovedMembers();
-        while (members.hasMoreElements()){
-            PeerSemanticTag member = members.nextElement();
+        PeerSTSet approvedMembers = null;
+        Enumeration<PeerSemanticTag> membersEnum = null;
+        try {
+            approvedMembers = component.getApprovedMembersWithoutPeer(this.engine.getOwner());
+            membersEnum = component.getMembersWithoutPeer(this.engine.getOwner()).peerTags();
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return;
+        }
+        Enumeration<PeerSemanticTag> approvedMembersEnum = approvedMembers.peerTags();
+
+        while (membersEnum.hasMoreElements()){
+            PeerSemanticTag member = membersEnum.nextElement();
             try {
                 if(!SharkCSAlgebra.isIn(approvedMembers, member)) {
                     doInvite(component, member);
@@ -398,7 +407,6 @@ public class SyncManager {
                 e.printStackTrace();
             }
         }
-        Enumeration<PeerSemanticTag> approvedMembersEnum = approvedMembers.peerTags();
         while (approvedMembersEnum.hasMoreElements()){
             doSync(component, approvedMembersEnum.nextElement());
         }

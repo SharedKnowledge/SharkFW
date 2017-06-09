@@ -2,10 +2,12 @@ package net.sharkfw.knowledgeBase.sync.manager;
 
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.L;
+import net.sharkfw.system.Util;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * Created by j4rvis on 12/9/16.
@@ -19,17 +21,17 @@ public class SyncMergeInfoSerializer {
         this.storage = storage;
     }
 
-    public void add(SemanticTag kbName, PeerSemanticTag peer){
+    public void add(SemanticTag kbName, PeerSemanticTag peer) {
         SyncMergeInfo syncMergeProperty = new SyncMergeInfo(peer, kbName, System.currentTimeMillis());
         add(syncMergeProperty);
     }
 
-    public void add(SyncMergeInfo syncMergeInfo){
+    public void add(SyncMergeInfo syncMergeInfo) {
         ArrayList<SyncMergeInfo> list = pullList();
         boolean added = false;
         for (SyncMergeInfo mergeInfo : list) {
-            if (SharkCSAlgebra.identical(mergeInfo.getPeer(), syncMergeInfo.getPeer())){
-                if (SharkCSAlgebra.identical(mergeInfo.getKbName(), syncMergeInfo.getKbName())){
+            if (SharkCSAlgebra.identical(mergeInfo.getPeer(), syncMergeInfo.getPeer())) {
+                if (SharkCSAlgebra.identical(mergeInfo.getKbName(), syncMergeInfo.getKbName())) {
                     int index = list.indexOf(mergeInfo);
                     list.remove(index);
                     list.add(index, syncMergeInfo);
@@ -37,15 +39,15 @@ public class SyncMergeInfoSerializer {
                 }
             }
         }
-        if(!added) list.add(syncMergeInfo);
+        if (!added) list.add(syncMergeInfo);
         pushList(list);
     }
 
-    public SyncMergeInfo get(PeerSemanticTag peer, SemanticTag kbName){
+    public SyncMergeInfo get(PeerSemanticTag peer, SemanticTag kbName) {
         ArrayList<SyncMergeInfo> info = pullList();
         for (SyncMergeInfo syncMergeInfo : info) {
-            if(SharkCSAlgebra.identical(syncMergeInfo.getKbName(), kbName)){
-                if (SharkCSAlgebra.identical(syncMergeInfo.getPeer(), peer)){
+            if (SharkCSAlgebra.identical(syncMergeInfo.getKbName(), kbName)) {
+                if (SharkCSAlgebra.identical(syncMergeInfo.getPeer(), peer)) {
                     return syncMergeInfo;
                 }
             }
@@ -53,7 +55,7 @@ public class SyncMergeInfoSerializer {
         return null;
     }
 
-    private ArrayList<SyncMergeInfo> pullList(){
+    private ArrayList<SyncMergeInfo> pullList() {
         ArrayList<SyncMergeInfo> temp = new ArrayList<>();
 
         String property = "";
@@ -62,38 +64,61 @@ public class SyncMergeInfoSerializer {
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
-        if(property != null){
-            JSONObject object = new JSONObject(property);
-            if(object.has(SYNC_MERGE_PROPERTY_LIST)){
-                JSONArray jsonArray = object.getJSONArray(SYNC_MERGE_PROPERTY_LIST);
-                for(int i = 0;i<jsonArray.length();i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    SyncMergeInfo date = new SyncMergeInfo(jsonObject);
-                    temp.add(date);
-                }
+        if (property != null) {
+
+            Vector<String> vector = Util.string2Vector(property, "**");
+
+            for (String s : vector) {
+                temp.add(SyncMergeInfo.createMergeInfo(s));
             }
+
+//            property = property.substring(1, property.length());
+//            JSONObject object = new JSONObject(property);
+//            if (object.has(SYNC_MERGE_PROPERTY_LIST)) {
+//                JSONArray jsonArray = object.getJSONArray(SYNC_MERGE_PROPERTY_LIST);
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                    SyncMergeInfo date = new SyncMergeInfo(jsonObject);
+//                    temp.add(date);
+//                }
+//            }
         }
         return temp;
+
+
+
     }
 
-    private void pushList(ArrayList<SyncMergeInfo> list ){
-        if(list.isEmpty()) return;
 
-        JSONObject object = new JSONObject();
-        JSONArray array = new JSONArray();
+    private void pushList(ArrayList<SyncMergeInfo> list) {
+        if (list.isEmpty()) return;
 
-        for ( SyncMergeInfo date : list){
-            array.put(date.asJSON());
+        Vector<String> v = new Vector<>();
+
+        for (SyncMergeInfo syncMergeInfo : list) {
+            v.add(syncMergeInfo.toString());
         }
 
-        object.put(SYNC_MERGE_PROPERTY_LIST, array);
-        String s = object.toString();
+        String s = Util.vector2String(v, "**");
 
+//
+//        JSONObject object = new JSONObject();
+//        JSONArray array = new JSONArray();
+//
+//        for (SyncMergeInfo date : list) {
+//            array.put(date.asJSON());
+//        }
+//
+//        object.put(SYNC_MERGE_PROPERTY_LIST, array);
+//        String s = object.toString();
+//
+//        L.d("json: " + s, this);
 
         try {
-            this.storage.setProperty(SYNC_MERGE_PROPERTY_LIST, s);
+            this.storage.setProperty(SYNC_MERGE_PROPERTY_LIST,s );
         } catch (SharkKBException e) {
             e.printStackTrace();
         }
     }
+
 }

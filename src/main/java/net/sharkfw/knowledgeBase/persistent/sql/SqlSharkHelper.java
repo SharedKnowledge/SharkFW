@@ -169,18 +169,24 @@ public class SqlSharkHelper {
     static List<SqlAsipInformation> getInformation(SqlSharkKB sharkKB, ASIPSpace space, boolean create) throws SharkKBException, SQLException {
 
         Connection connection = createConnection(sharkKB);
-
-        List<TagContainer> containerList = getTags(sharkKB, space, create);
-
-        String sqlStatement = prepareSqlStatement(connection, containerList, space.getDirection());
-
-        List<Integer> informationIds = getInformationIds(connection, sqlStatement);
-
         List<SqlAsipInformation> informationList = new ArrayList<>();
-        for (Integer id : informationIds) {
-            informationList.add(new SqlAsipInformation(id, space, sharkKB));
-        }
 
+        if(space!=null){
+            List<TagContainer> containerList = getTags(sharkKB, space, create);
+
+            String sqlStatement = prepareSqlStatement(connection, containerList, space.getDirection());
+
+            List<Integer> informationIds = getInformationIds(connection, sqlStatement);
+
+            for (Integer id : informationIds) {
+                informationList.add(new SqlAsipInformation(id, space, sharkKB));
+            }
+        } else {
+            List<Integer> informationIds = getInformationIds(connection, SELECT+FIELD_ID+AS+FIELD_INFO_ID+FROM+TABLE_INFORMATION);
+            for (Integer id : informationIds) {
+                informationList.add(new SqlAsipInformation(id, space, sharkKB));
+            }
+        }
         return informationList;
     }
 
@@ -368,10 +374,12 @@ public class SqlSharkHelper {
 
         List<SqlAsipInformationSpace> sqlAsipInformationSpaces = new ArrayList<>();
 
+
+        List<SqlAsipInformation> informationList = SqlSharkHelper.getInformation(sharkKB, asipSpace, false);
         Connection connection = createConnection(sharkKB);
-        List<Integer> informationIds = getInformationIds(connection, "SELECT id AS info_id FROM information;");
-        for (Integer id : informationIds) {
-            String tagSet = SELECT + ALL + FROM + TABLE_TAG_SET + WHERE + FIELD_INFO_ID + EQ + id;
+////        List<Integer> informationIds = getInformationIds(connection, "SELECT id AS info_id FROM information;");
+        for (SqlAsipInformation information : informationList) {
+            String tagSet = SELECT + ALL + FROM + TABLE_TAG_SET + WHERE + FIELD_INFO_ID + EQ + information.getId();
             ArrayList<TagContainer> tagContainers = new ArrayList<>();
             SqlAsipSpace sqlAsipSpace = new SqlAsipSpace();
 
@@ -411,22 +419,22 @@ public class SqlSharkHelper {
                         break;
                 }
             }
-            ;
-
-            SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(id, sqlAsipSpace, sharkKB);
+//            ;
+//
+//            SqlAsipInformation sqlAsipInformation = new SqlAsipInformation(information.getId(), sqlAsipSpace, sharkKB);
             boolean added = false;
-
+//
             for (SqlAsipInformationSpace sqlAsipInformationSpace : sqlAsipInformationSpaces) {
                 ASIPSpace sqlAsipInfoSpaceASIPSpace = sqlAsipInformationSpace.getASIPSpace();
                 if (SharkCSAlgebra.identical(sqlAsipInfoSpaceASIPSpace, sqlAsipSpace)) {
-                    sqlAsipInformationSpace.addInformation(sqlAsipInformation);
+                    sqlAsipInformationSpace.addInformation(information);
                     added = true;
                 }
             }
 
             if (!added) {
                 SqlAsipInformationSpace sqlAsipInformationSpace = new SqlAsipInformationSpace(sharkKB, sqlAsipSpace);
-                sqlAsipInformationSpace.addInformation(sqlAsipInformation);
+                sqlAsipInformationSpace.addInformation(information);
                 sqlAsipInformationSpaces.add(sqlAsipInformationSpace);
             }
         }

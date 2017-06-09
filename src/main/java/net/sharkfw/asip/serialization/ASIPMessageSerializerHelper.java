@@ -176,6 +176,8 @@ public class ASIPMessageSerializerHelper {
             jsonArray.put(property);
         }
 
+//        L.d(jsonArray.toString());
+
         return jsonArray;
     }
 
@@ -661,8 +663,21 @@ public class ASIPMessageSerializerHelper {
             return;
         }
 
+//        if(properties.startsWith("{")){
+//            properties = "[" +properties + "]";
+//        }
+
+//        L.d(properties);
+
+//        [{"NAME":"Shark_System_Last_Modified","VALUE":"1497022278967"}]
+
         JSONObject jsonObject = new JSONObject(properties);
 
+//        JSONArray jsonArray = new JSONArray(properties);
+
+//        Iterator<Object> iterator = jsonArray.iterator();
+//        while (iterator.hasNext()){
+//            JSONObject jsonObject = (JSONObject) iterator.next();
         if (jsonObject.has(PropertyHolder.PROPERTIES) && !jsonObject.isNull(PropertyHolder.PROPERTIES)) {
 
             if (!(jsonObject.get(PropertyHolder.PROPERTIES) instanceof JSONArray)) return;
@@ -677,7 +692,7 @@ public class ASIPMessageSerializerHelper {
                 target.setProperty(name, value);
             }
         }
-
+//        }
     }
 
     public static void deserializeRelations(Taxonomy target, String relations) {

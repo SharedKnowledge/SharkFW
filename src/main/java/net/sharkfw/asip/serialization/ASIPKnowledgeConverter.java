@@ -167,7 +167,7 @@ public class ASIPKnowledgeConverter {
             }
         }
         if(jsonObject.has(PropertyHolder.PROPERTIES)){
-            ASIPMessageSerializerHelper.deserializeProperties(kb, jsonObject.get(PropertyHolder.PROPERTIES).toString());
+            ASIPMessageSerializerHelper.deserializeProperties(kb, jsonObject.toString());
         }
 
         this.knowledge = kb;

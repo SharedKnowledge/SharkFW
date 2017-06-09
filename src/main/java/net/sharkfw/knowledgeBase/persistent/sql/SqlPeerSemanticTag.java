@@ -44,34 +44,21 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
      * @throws SQLException
      */
     public SqlPeerSemanticTag(String[] sis, String name, SqlSharkKB sharkKB, String[] addresses) throws SQLException {
-        super(sis, name, "peer");
+        super(sis, name, "peer", sharkKB);
         this.addresses = addresses;
-        try {
-            Class.forName(sharkKB.getDialect());
-            connection = DriverManager.getConnection(sharkKB.getDbAddress());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
         StringBuilder sql = new StringBuilder();
 //        sql.append("PRAGMA foreign_keys = ON; ");
         sql.append("INSERT INTO semantic_tag (name, tag_kind) VALUES " + "(\'" + this.getName() + "\'" + ",\"" + this.getTagKind() + "\");");
-        SqlHelper.executeSQLCommand(connection, sql.toString());
-        this.setId(SqlHelper.getLastCreatedEntry(connection, "semantic_tag"));
-        SqlHelper.executeSQLCommand(connection, this.getSqlForSIs());
+        SqlHelper.executeSQLCommand(this.getConnection(), sql.toString());
+        this.setId(SqlHelper.getLastCreatedEntry(this.getConnection(), "semantic_tag"));
+        SqlHelper.executeSQLCommand(this.getConnection(), this.getSqlForSIs());
         setAddresses(this.addresses);
         String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId()) + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
-            SqlHelper.executeSQLCommand(connection, update);
+            SqlHelper.executeSQLCommand(this.getConnection(), update);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-    }
-
-    public SqlPeerSemanticTag(int id, String[] sis, String name, String property, String tagKind, String[] addresses) {
-        super(id, sis, name, property, tagKind);
-        this.addresses = addresses;
-        setAddresses(this.addresses);
     }
 
     /**
@@ -164,7 +151,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
             }
             sqlAddresses.append(";");
             try {
-                SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
+                SqlHelper.executeSQLCommand(this.getConnection(), sqlAddresses.toString());
                 this.addresses = getAddresses();
             } catch (SQLException e) {
                 e.printStackTrace();

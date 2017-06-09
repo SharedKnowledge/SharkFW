@@ -12,48 +12,42 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
 
-public class SqlAsipInformation implements ASIPInformation {
+public class SqlAsipInformation extends SqlSharkPropertyHolder implements ASIPInformation {
 
     private ASIPSpace asipSpace;
     private int id;
     private SqlSharkKB sharkKB;
-    private Connection connection;
     private byte[] content;
     private String contentType;
     private String name;
     private long contentLength;
 
     public SqlAsipInformation(ASIPInformation information, ASIPSpace space, SqlSharkKB sharkKB) throws SharkKBException, SQLException {
+        super(TABLE_INFORMATION);
         this.sharkKB = sharkKB;
         this.asipSpace = space;
         this.content = information.getContentAsByte();
         this.name = information.getName();
         this.contentLength = information.getContentLength();
         this.contentType = information.getContentType();
-        connection = getConnection(this.sharkKB);
 
         String sql = INSERTINTO + TABLE_INFORMATION + BO + FIELD_CONTENT_TYPE + "," + FIELD_CONTENT_LENGTH + "," + FIELD_CONTENT_STREAM + "," + FIELD_NAME + BC + VALUES + BO + "\"" + contentType + "\"" + "," + "\"" + contentLength + "\"" + "," + "?" + "," + "\"" + name + "\"" + BC;
 
-        SqlHelper.executeSQLCommand(connection, sql, content);
-        this.id = SqlHelper.getLastCreatedEntry(connection, "information");
+        SqlHelper.executeSQLCommand(this.getConnection(), sql, content);
+        this.id = SqlHelper.getLastCreatedEntry(this.getConnection(), "information");
+        this.setProperties(information);
     }
 
     public SqlAsipInformation(int id, ASIPSpace space, SqlSharkKB sharkKB) throws SharkKBException {
+        super(TABLE_INFORMATION);
         this.asipSpace = space;
         this.id = id;
         this.sharkKB = sharkKB;
         getDataFromDB();
-    }
-
-    public SqlAsipInformation(int id, byte[] content, String contentType, String name, long contentLength) {
-        this.id = id;
-        this.content = content;
-        this.contentType = contentType;
-        this.name = name;
-        this.contentLength = contentLength;
     }
 
     public int getId() {
@@ -113,13 +107,8 @@ public class SqlAsipInformation implements ASIPInformation {
 
     private void getDataFromDB() throws SharkKBException {
 
-        try {
-            connection = getConnection(sharkKB);
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-        }
         String sql = SELECT + ALL + FROM + TABLE_INFORMATION + WHERE + FIELD_ID + EQ + id;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), sql)) {
             if (rs.next()) {
                 this.id = rs.getInt("id");
                 this.content = rs.getBytes("content_stream");
@@ -130,36 +119,6 @@ public class SqlAsipInformation implements ASIPInformation {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        return null;
     }
 
     private Connection getConnection(SqlSharkKB sharkKB) throws SharkKBException {
@@ -210,4 +169,8 @@ public class SqlAsipInformation implements ASIPInformation {
         return new String(content, StandardCharsets.UTF_8);
     }
 
+    @Override
+    public Connection getConnection() {
+        return this.sharkKB.getConnection();
+    }
 }

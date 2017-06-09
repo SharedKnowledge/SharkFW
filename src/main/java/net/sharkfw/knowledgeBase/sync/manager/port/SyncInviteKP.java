@@ -76,6 +76,7 @@ public class SyncInviteKP extends KnowledgePort {
         L.w("Do we already know the component? " + !isNewInvite, this);
         if(isNewInvite){
             if(selfConstructed){
+                L.d("SyncComponent is selfConstructed", this);
                 for (SyncInviteListener syncInviteListener : syncInviteListenerList) {
                     syncInviteListener.onSyncInvitation(interest);
                 }

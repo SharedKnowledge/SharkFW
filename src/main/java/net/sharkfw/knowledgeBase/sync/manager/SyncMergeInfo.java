@@ -4,6 +4,8 @@ import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.system.L;
+import net.sharkfw.system.Util;
 import org.json.JSONObject;
 
 /**
@@ -26,6 +28,21 @@ public class SyncMergeInfo {
         this.date = date;
     }
 
+    public static SyncMergeInfo createMergeInfo(String s){
+        String[] array = Util.string2array(s); /*Util.unescape(s, "\"")*/
+
+        try {
+            return new SyncMergeInfo(
+                    ASIPMessageSerializerHelper.deserializePeerTag(array[0]),
+                    ASIPMessageSerializerHelper.deserializeTag(array[1]),
+                    Long.parseLong(array[2]));
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public SyncMergeInfo(JSONObject serialized){
         JSONObject object = serialized;
 
@@ -38,6 +55,18 @@ public class SyncMergeInfo {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String toString(){
+        String[] array = new String[3];
+        try {
+            array[0] = ASIPMessageSerializerHelper.serializeTag(peer).toString();
+            array[1] = ASIPMessageSerializerHelper.serializeTag(kbName).toString();
+            array[2] = String.valueOf(date);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        return Util.array2string(array)/*Util.escape(, "\"")*/;
     }
 
     public String asString(){

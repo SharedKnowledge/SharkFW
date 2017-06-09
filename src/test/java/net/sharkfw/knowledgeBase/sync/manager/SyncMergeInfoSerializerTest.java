@@ -3,6 +3,7 @@ package net.sharkfw.knowledgeBase.sync.manager;
 import net.sharkfw.knowledgeBase.PeerSemanticTag;
 import net.sharkfw.knowledgeBase.SemanticTag;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
+import net.sharkfw.system.L;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,6 +14,7 @@ public class SyncMergeInfoSerializerTest {
 
     @Test
     public void addNewProperty_success(){
+        L.setLogLevel(L.LOGLEVEL_ALL);
         InMemoSharkKB inMemoSharkKB = new InMemoSharkKB();
         SyncMergeInfoSerializer syncMergeInfoSerializer = new SyncMergeInfoSerializer(inMemoSharkKB);
 
@@ -28,6 +30,8 @@ public class SyncMergeInfoSerializerTest {
 
     @Test
     public void getProperty_success(){
+        L.setLogLevel(L.LOGLEVEL_ALL);
+
         InMemoSharkKB inMemoSharkKB = new InMemoSharkKB();
         SyncMergeInfoSerializer syncMergeInfoSerializer = new SyncMergeInfoSerializer(inMemoSharkKB);
 
@@ -48,6 +52,7 @@ public class SyncMergeInfoSerializerTest {
 
     @Test
     public void getProptertyByPeer_success(){
+        L.setLogLevel(L.LOGLEVEL_ALL);
         InMemoSharkKB inMemoSharkKB = new InMemoSharkKB();
         SyncMergeInfoSerializer syncMergeInfoSerializer = new SyncMergeInfoSerializer(inMemoSharkKB);
         PeerSemanticTag peerSemanticTag = InMemoSharkKB.createInMemoPeerSemanticTag("BOB", "bob.de", "tcp://localhost:7070");

@@ -1,6 +1,7 @@
 package net.sharkfw.knowledgeBase.persistent.sql;
 
 import net.sharkfw.knowledgeBase.SemanticTag;
+import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
 
 import java.sql.Connection;
@@ -45,28 +46,22 @@ import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.WHERE;
 /**
  * Created by Dustin Feurich
  */
-public class SqlSemanticTag implements SemanticTag {
+public class SqlSemanticTag extends SqlSharkPropertyHolder implements SemanticTag {
     public String ID;
-    protected Connection connection;
     protected int id;
     private String[] sis;
     private String name;
     private String property;
     private String tagKind;
     private Map<String, String> properties;
+    private ConnectionHolder connectionHolder;
 
-    public SqlSemanticTag(String[] sis, String name, String tagKind) {
+    public SqlSemanticTag(String[] sis, String name, String tagKind, ConnectionHolder connectionHolder) {
+        super(TABLE_SEMANTIC_TAG);
         this.sis = sis;
         this.name = name;
         this.tagKind = tagKind;
-    }
-
-    public SqlSemanticTag(int id, String[] sis, String name, String property, String tagKind) {
-        this.id = id;
-        this.sis = sis;
-        this.name = name;
-        this.property = property;
-        this.tagKind = tagKind;
+        this.connectionHolder = connectionHolder;
     }
 
     /**
@@ -76,28 +71,25 @@ public class SqlSemanticTag implements SemanticTag {
      * @param name
      */
     public SqlSemanticTag(String[] sis, String name, SqlSharkKB sharkKB) throws SQLException {
-        this(sis, name, "normal");
+        this(sis, name, "normal", sharkKB);
 
-        properties = new HashMap<>();
-        try {
-            Class.forName(sharkKB.getDialect());
-            connection = DriverManager.getConnection(sharkKB.getDbAddress());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
         String sql = INSERTINTO + TABLE_SEMANTIC_TAG + BO + FIELD_NAME + BC + VALUES + BO + QU + this.name + QU + BC;
-        SqlHelper.executeSQLCommand(connection, sql);
-        id = SqlHelper.getLastCreatedEntry(connection, "semantic_tag");
+        SqlHelper.executeSQLCommand(this.getConnection(), sql);
+        id = SqlHelper.getLastCreatedEntry(this.getConnection(), "semantic_tag");
         ID = Integer.toString(id);
 
         String sqlSIs = getSqlForSIs();
-        if (sqlSIs != null) SqlHelper.executeSQLCommand(connection, getSqlForSIs());
+        if (sqlSIs != null) SqlHelper.executeSQLCommand(this.getConnection(), getSqlForSIs());
         String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_SYSTEM_PROPERTY + EQ + Integer.toString(this.getId()) + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
-            SqlHelper.executeSQLCommand(connection, update);
+            SqlHelper.executeSQLCommand(this.getConnection(), update);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Connection getConnection(){
+        return this.connectionHolder.getConnection();
     }
 
     /**
@@ -106,14 +98,7 @@ public class SqlSemanticTag implements SemanticTag {
      * @param si
      */
     public SqlSemanticTag(String si, SqlSharkKB sharkKB) throws SharkKBException {
-        try {
-            Class.forName(sharkKB.getDialect());
-            connection = DriverManager.getConnection(sharkKB.getDbAddress());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
+        this(null, null, null, sharkKB);
         String sql;
         if (si != null) {
             sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON + TABLE_SEMANTIC_TAG + DOT + "id" + EQ + FIELD_TAG_ID + WHERE + FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU;
@@ -121,7 +106,7 @@ public class SqlSemanticTag implements SemanticTag {
             throw new SharkKBException();
         }
         String propertyString = null;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), sql)) {
             if (rs.next()) {
                 this.name = rs.getString("name");
                 this.id = Integer.parseInt(rs.getString("system_property"));
@@ -144,17 +129,10 @@ public class SqlSemanticTag implements SemanticTag {
      * @param id
      */
     public SqlSemanticTag(int id, SqlSharkKB sharkKB) throws SharkKBException {
-        try {
-            Class.forName(sharkKB.getDialect());
-            connection = DriverManager.getConnection(sharkKB.getDbAddress());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
+        this(null, null, null, sharkKB);
         String sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + WHERE + FIELD_ID + EQ + id;
         String propertyString = null;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
+        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), sql)) {
 
             if (rs.next()) {
                 this.name = rs.getString("name");
@@ -226,10 +204,6 @@ public class SqlSemanticTag implements SemanticTag {
         return array;
     }
 
-    public Connection getConnection() {
-        return connection;
-    }
-
     public String getProperty() {
         return property;
     }
@@ -267,7 +241,7 @@ public class SqlSemanticTag implements SemanticTag {
     public void setName(String newName) {
         String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_NAME + EQ + QU + newName + QU + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
         try {
-            SqlHelper.executeSQLCommand(connection, update);
+            SqlHelper.executeSQLCommand(this.getConnection(), update);
             name = newName;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -311,61 +285,6 @@ public class SqlSemanticTag implements SemanticTag {
         return false;
     }
 
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-        properties.put(name, value);
-        persistProperties();
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        return properties.get(name);
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        properties.put(name, value);
-        persistProperties();
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-        properties.remove(name);
-        persistProperties();
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        Set<String> set = properties.keySet();
-        return Collections.enumeration(set);
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
-        if (properties != null) {
-            Set<String> set = properties.keySet();
-            return Collections.enumeration(set);
-        } else return null;
-    }
-
-    private void persistProperties() throws SharkKBException {
-        StringBuilder sb = new StringBuilder();
-        Iterator it = properties.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            sb.append(pair.getKey() + "<" + pair.getValue() + ">");
-        }
-        String update = UPDATE + TABLE_SEMANTIC_TAG + SET + FIELD_PROPERTY + EQ + QU + sb.toString() + QU + WHERE + FIELD_ID + EQ + Integer.toString(this.getId());
-        try {
-            SqlHelper.executeSQLCommand(connection, update);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        }
-
-
-    }
-
     private void addSIsToDB(String[] sis) {
         StringBuilder sqlAddresses = new StringBuilder();
         this.sis = sis;
@@ -378,7 +297,7 @@ public class SqlSemanticTag implements SemanticTag {
             }
         }
         try {
-            SqlHelper.executeSQLCommand(connection, sqlAddresses.toString());
+            SqlHelper.executeSQLCommand(this.getConnection(), sqlAddresses.toString());
 
         } catch (SQLException e) {
             e.printStackTrace();

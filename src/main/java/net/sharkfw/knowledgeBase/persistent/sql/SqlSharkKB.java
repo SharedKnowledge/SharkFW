@@ -4,25 +4,7 @@ import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
-import net.sharkfw.knowledgeBase.FPSet;
-import net.sharkfw.knowledgeBase.FragmentationParameter;
-import net.sharkfw.knowledgeBase.Knowledge;
-import net.sharkfw.knowledgeBase.KnowledgeBaseListener;
-import net.sharkfw.knowledgeBase.PeerSTSet;
-import net.sharkfw.knowledgeBase.PeerSemanticNet;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.PeerTaxonomy;
-import net.sharkfw.knowledgeBase.STSet;
-import net.sharkfw.knowledgeBase.SemanticNet;
-import net.sharkfw.knowledgeBase.SemanticTag;
-import net.sharkfw.knowledgeBase.SharkKB;
-import net.sharkfw.knowledgeBase.SharkKBException;
-import net.sharkfw.knowledgeBase.SharkVocabulary;
-import net.sharkfw.knowledgeBase.SpatialSTSet;
-import net.sharkfw.knowledgeBase.SpatialSemanticTag;
-import net.sharkfw.knowledgeBase.Taxonomy;
-import net.sharkfw.knowledgeBase.TimeSTSet;
-import net.sharkfw.knowledgeBase.TimeSemanticTag;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoInformation;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 
@@ -34,13 +16,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
 
@@ -48,7 +24,7 @@ import static net.sharkfw.knowledgeBase.persistent.sql.SqlSharkHelper.*;
  * Created by Dustin Feurich on 31.03.2017.
  */
 @SuppressWarnings("Duplicates")
-public class SqlSharkKB implements SharkKB {
+public class SqlSharkKB extends SqlSharkPropertyHolder implements SharkKB {
 
     public final String JDBC_SQLITE = "org.sqlite.JDBC";
     //    public final String scriptFile = ".\\src\\main\\java\\net\\sharkfw\\knowledgeBase\\persistent\\sql\\sharkNet.sql";
@@ -58,7 +34,6 @@ public class SqlSharkKB implements SharkKB {
     private Connection connection;
     private String dbAddress;
     private String password;
-    private Map<String, String> properties;
     private String dialect;
 
     /**
@@ -67,10 +42,12 @@ public class SqlSharkKB implements SharkKB {
      * @param dbAddress
      */
     public SqlSharkKB(String dbAddress) {
+        super(TABLE_KNOWLEDGE_BASE);
         new SqlSharkKB(dbAddress, JDBC_SQLITE);
     }
 
     public SqlSharkKB(String dbAddress, String dialect, InputStream stream) {
+        super(TABLE_KNOWLEDGE_BASE);
         this.dialect = dialect;
         this.dbAddress = dbAddress;
         try {
@@ -101,20 +78,13 @@ public class SqlSharkKB implements SharkKB {
         this(dbAddress, dialect, (InputStream) null);
     }
 
-    /**
-     * Constructor for a new database with initial data from a InMemoSharkKB
-     *
-     * @param sharkKB
-     * @param dbAddress
-     * @param dialect
-     */
-    public SqlSharkKB(String dbAddress, String dialect, InMemoSharkKB sharkKB) {
-        this(dbAddress, dialect);
-        initDatabase(sharkKB);
-    }
-
     public Connection getConnection() {
         return connection;
+    }
+
+    @Override
+    public int getId() {
+        return 1;
     }
 
     /**
@@ -140,14 +110,6 @@ public class SqlSharkKB implements SharkKB {
 
     public String getDbAddress() {
         return dbAddress;
-    }    @Override
-    public void setOwner(PeerSemanticTag owner) {
-        //TODO: via properties
-        try {
-            new SqlPeerSemanticTag(owner.getSI(), owner.getName(), this, owner.getAddresses());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public String getDialect() {
@@ -163,6 +125,16 @@ public class SqlSharkKB implements SharkKB {
     public PeerSemanticTag getOwner() {
         //TODO: via properties
         return null;
+    }
+
+    @Override
+    public void setOwner(PeerSemanticTag owner) {
+        //TODO: via properties
+        try {
+            new SqlPeerSemanticTag(owner.getSI(), owner.getName(), this, owner.getAddresses());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -189,7 +161,9 @@ public class SqlSharkKB implements SharkKB {
     @Override
     public void semanticTagChanged(SemanticTag tag, STSet stset) {
         //TODO:???
-    }    @Override
+    }
+
+    @Override
     public Iterator<ASIPInformationSpace> getInformationSpaces(ASIPSpace space) throws SharkKBException {
         try {
             return SqlSharkHelper.getInfoSpaces(this, space).iterator();
@@ -207,7 +181,9 @@ public class SqlSharkKB implements SharkKB {
     @Override
     public ASIPInterest asASIPInterest() throws SharkKBException {
         return null;
-    }    @Override
+    }
+
+    @Override
     public ASIPSpace createASIPSpace(STSet topics, STSet types, PeerSTSet approvers, PeerSemanticTag sender, PeerSTSet receiver, TimeSTSet times, SpatialSTSet locations, int direction) throws SharkKBException {
         return inMemoSharkKB.createASIPSpace(topics, types, approvers, sender, receiver, times, locations, direction);
     }
@@ -215,7 +191,8 @@ public class SqlSharkKB implements SharkKB {
     @Override
     public STSet getTopicSTSet() throws SharkKBException {
         // TODO get all Tags with kind topic
-        return null;
+        // TODO GANZ SCHLIMMER WORKARAOUND!!!!!!!
+        return InMemoSharkKB.createInMemoSTSet();
     }
 
     @Override
@@ -223,7 +200,9 @@ public class SqlSharkKB implements SharkKB {
         // TODO get all Tags with kind topic
         // TODO Add relations
         return null;
-    }    @Override
+    }
+
+    @Override
     public ASIPSpace createASIPSpace(SemanticTag topic, SemanticTag type, PeerSemanticTag approver, PeerSemanticTag sender, PeerSemanticTag receiver, TimeSemanticTag time, SpatialSemanticTag location, int direction) throws SharkKBException {
         return inMemoSharkKB.createASIPSpace(topic, type, approver, sender, receiver, time, location, direction);
     }
@@ -235,7 +214,8 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public STSet getTypeSTSet() throws SharkKBException {
-        return null;
+        // TODO GANZ SCHLIMMER WORKARAOUND!!!!!!!
+        return InMemoSharkKB.createInMemoSTSet();
     }
 
     @Override
@@ -250,7 +230,8 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public PeerSTSet getPeerSTSet() throws SharkKBException {
-        return null;
+        // TODO GANZ SCHLIMMER WORKARAOUND!!!!!!!
+        return InMemoSharkKB.createInMemoPeerSTSet();
     }
 
     @Override
@@ -265,12 +246,14 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public TimeSTSet getTimeSTSet() throws SharkKBException {
-        return null;
+        // TODO GANZ SCHLIMMER WORKARAOUND!!!!!!!
+        return InMemoSharkKB.createInMemoTimeSTSet();
     }
 
     @Override
     public SpatialSTSet getSpatialSTSet() throws SharkKBException {
-        return null;
+        // TODO GANZ SCHLIMMER WORKARAOUND!!!!!!!
+        return InMemoSharkKB.createInMemoSpatialSTSet();
     }
 
     @Override
@@ -280,124 +263,6 @@ public class SqlSharkKB implements SharkKB {
 
     @Override
     public ASIPInterest contextualize(ASIPSpace as, FPSet fps) throws SharkKBException {
-        return null;
-    }
-
-    @Override
-    public void setProperty(String name, String value) throws SharkKBException {
-
-        String propertyString = null;
-        Map<String, String> properties;
-        String sqlSelect = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
-        int kbID = -1;
-
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sqlSelect)) {
-            if (rs.next()) {
-                kbID = rs.getInt(("id"));
-            }
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
-
-        if (kbID == -1) {
-            String sqlInsert = INSERTINTO + TABLE_KNOWLEDGE_BASE + " DEFAULT VALUES;";
-            try {
-                SqlHelper.executeSQLCommand(connection, sqlInsert);
-            } catch (SQLException e) {
-                throw new SharkKBException(e.toString());
-            }
-        }
-        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-
-            if (rs != null) {
-                propertyString = rs.getString("property");
-            }
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
-        if (propertyString != null && propertyString != "") {
-            properties = SqlHelper.extractProperties(propertyString);
-        } else {
-            properties = new HashMap<String, String>();
-        }
-        properties.put(name, value);
-        SqlHelper.persistProperties(properties, this);
-    }
-
-    @Override
-    public String getProperty(String name) throws SharkKBException {
-        String propertyString = null;
-        Map<String, String> properties;
-        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-
-            if (rs != null) {
-                propertyString = rs.getString("property");
-            }
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
-        if (propertyString != null && propertyString != "") {
-            properties = SqlHelper.extractProperties(propertyString);
-        } else {
-            properties = new HashMap<String, String>();
-        }
-        return properties.get(name);
-    }
-
-    @Override
-    public void setProperty(String name, String value, boolean transfer) throws SharkKBException {
-        setProperty(name, value);
-    }
-
-    @Override
-    public void removeProperty(String name) throws SharkKBException {
-        String propertyString = null;
-        Map<String, String> properties;
-
-        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-
-            if (rs != null) {
-                propertyString = rs.getString("property");
-            }
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
-        if (propertyString != null && propertyString != "") {
-            properties = SqlHelper.extractProperties(propertyString);
-        } else {
-            properties = new HashMap<String, String>();
-        }
-        properties.remove(name);
-        SqlHelper.persistProperties(properties, this);
-    }
-
-    @Override
-    public Enumeration<String> propertyNames() throws SharkKBException {
-        String propertyString = null;
-        Map<String, String> properties;
-
-        String sql = SELECT + ALL + FROM + TABLE_KNOWLEDGE_BASE;
-        try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(connection, sql)) {
-
-            if (rs != null) {
-                propertyString = rs.getString("property");
-            }
-        } catch (SQLException e) {
-            throw new SharkKBException(e.toString());
-        }
-        if (propertyString != null && propertyString != "") {
-            properties = SqlHelper.extractProperties(propertyString);
-        } else {
-            properties = new HashMap<String, String>();
-        }
-        return Collections.enumeration(properties.keySet());
-    }
-
-    @Override
-    public Enumeration<String> propertyNames(boolean all) throws SharkKBException {
         return null;
     }
 
@@ -554,18 +419,6 @@ public class SqlSharkKB implements SharkKB {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public ArrayList<ASIPSpace> assimilate(SharkKB target, ASIPSpace interest, FragmentationParameter[] backgroundFP, Knowledge knowledge, boolean learnTags, boolean deleteAssimilated) throws SharkKBException {
         return null;
@@ -618,13 +471,13 @@ public class SqlSharkKB implements SharkKB {
     }
 
     @Override
-    public void setStandardFPSet(FragmentationParameter[] fps) {
-
+    public FragmentationParameter[] getStandardFPSet() {
+        return new FragmentationParameter[0];
     }
 
     @Override
-    public FragmentationParameter[] getStandardFPSet() {
-        return new FragmentationParameter[0];
+    public void setStandardFPSet(FragmentationParameter[] fps) {
+
     }
 
 }

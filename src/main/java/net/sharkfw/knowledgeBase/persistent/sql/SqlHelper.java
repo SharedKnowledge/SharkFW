@@ -108,8 +108,8 @@ public class SqlHelper {
 
     }
 
-    public static Map<String, String> extractProperties(String propertyString) {
-        Map<String, String> map = new HashMap<>();
+    public static HashMap<String, String> extractProperties(String propertyString) {
+        HashMap<String, String> map = new HashMap<>();
         String[] keyValues = propertyString.split(">");
         String[] keyValue;
         for (int i = 0; i < keyValues.length; i++) {
@@ -118,28 +118,5 @@ public class SqlHelper {
         }
         return map;
     }
-
-    public static void persistProperties(Map<String, String> properties, int id, String table, SqlSharkKB sharkKB) throws SharkKBException {
-        Connection connection = getConnection(sharkKB);
-        StringBuilder sb = new StringBuilder();
-        Iterator it = properties.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            sb.append(pair.getKey() + "<" + pair.getValue() + ">");
-        }
-        String update = UPDATE + table + SET + FIELD_PROPERTY + EQ + QU + sb.toString() + QU
-                + WHERE + FIELD_ID + EQ + Integer.toString(id);
-        try {
-            SqlHelper.executeSQLCommand(connection, update);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SharkKBException();
-        }
-    }
-
-    public static void persistProperties(Map<String, String> properties, SqlSharkKB sharkKB) throws SharkKBException {
-        persistProperties(properties, 1, TABLE_KNOWLEDGE_BASE, sharkKB);
-    }
-
 
 }

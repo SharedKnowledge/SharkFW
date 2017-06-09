@@ -187,6 +187,14 @@ public class Util {
         return buf.toString();
     }
 
+    public static String escape(String s, String toEscape){
+        return s.replace(toEscape, "\\"+toEscape);
+    }
+
+    public static String unescape(String s, String toUnescape){
+        return s.replace("\\"+toUnescape, toUnescape);
+    }
+
     /**
      * Deserialize a string into a string array. This is the deserialization method
      * to match <code>array2String</code>. It deserializes a string using

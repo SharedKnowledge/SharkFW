@@ -147,8 +147,32 @@ public class SyncComponent {
         return members;
     }
 
+    public PeerSTSet getMembersWithoutPeer(PeerSemanticTag peer) throws SharkKBException {
+        PeerSTSet peerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+        Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = members.peerTags();
+        while (peerSemanticTagEnumeration.hasMoreElements()){
+            PeerSemanticTag nextElement = peerSemanticTagEnumeration.nextElement();
+            if(!SharkCSAlgebra.identical(nextElement, peer)){
+                peerSTSet.merge(nextElement);
+            }
+        }
+        return peerSTSet;
+    }
+
     public PeerSTSet getApprovedMembers(){
         return approvedMembers;
+    }
+
+    public PeerSTSet getApprovedMembersWithoutPeer(PeerSemanticTag peer) throws SharkKBException {
+        PeerSTSet peerSTSet = InMemoSharkKB.createInMemoPeerSTSet();
+        Enumeration<PeerSemanticTag> peerSemanticTagEnumeration = approvedMembers.peerTags();
+        while (peerSemanticTagEnumeration.hasMoreElements()){
+            PeerSemanticTag nextElement = peerSemanticTagEnumeration.nextElement();
+            if(!SharkCSAlgebra.identical(nextElement, peer)){
+                peerSTSet.merge(nextElement);
+            }
+        }
+        return peerSTSet;
     }
 
     public PeerSemanticTag getOwner() {
