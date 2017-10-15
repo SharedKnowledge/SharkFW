@@ -10,6 +10,7 @@ import net.sharkfw.knowledgeBase.sync.manager.port.SyncAcceptKP;
 import net.sharkfw.knowledgeBase.sync.manager.port.SyncInviteKP;
 import net.sharkfw.knowledgeBase.sync.manager.port.SyncMergeKP;
 import net.sharkfw.peer.SharkEngine;
+import net.sharkfw.routing.SemanticRoutingKP;
 import net.sharkfw.system.L;
 
 import java.util.*;
@@ -36,6 +37,8 @@ public class SyncManager {
     private final SyncMergeKP syncMergeKP;
     private SyncInviteKP syncInviteKP;
 
+    private SemanticRoutingKP semanticRoutingKP;
+
     // Lists
     private final SyncMergeInfoSerializer mergeInfoSerializer;
     // TODO you will just be notified but can't decide if you ant to accept
@@ -48,12 +51,19 @@ public class SyncManager {
         this.engine = engine;
         this.syncAcceptKP = new SyncAcceptKP(this.engine, this);
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
+
+        this.semanticRoutingKP = new SemanticRoutingKP(this.engine, this);
+
         this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
         executor = Executors.newSingleThreadExecutor();
     }
 
     public void addSyncMergeListener(SyncMergeKP.SyncMergeListener listener){
         this.syncMergeKP.addSyncMergeListener(listener);
+    }
+
+    public void addSemanticRoutingListener(SemanticRoutingKP.SemanticRoutingListener listener) {
+        this.semanticRoutingKP.addSemanticRoutingListener(listener);
     }
 
     public void addSyncAcceptListener(SyncAcceptKP.SyncAcceptListener listener){
