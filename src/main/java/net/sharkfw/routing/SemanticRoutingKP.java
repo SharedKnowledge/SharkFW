@@ -51,14 +51,18 @@ public class SemanticRoutingKP extends KnowledgePort {
         try {
             SharkKB previousChanges = syncManager.getChanges(component, message.getPhysicalSender());
             if(previousChanges != null && syncManager.hasChanged(previousChanges)){
-                //TODO: compare new message with entryProfile
-                //syncManager.doSync(component, message.getPhysicalSender(), message);
+
+                if (syncManager.checkWithEntryProfile(component, message.getPhysicalSender(), message)) {
+
+                    //syncManager.doSync(component, message.getPhysicalSender(), message); TODO: alter doSync for SemanticRoutingKP
+                    component.getKb().putChanges((SharkKB) asipKnowledge);
+                    L.w(se.getOwner().getName() + " merged the message!", this);
+                    for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
+                        listener.onNewMerge(component, (SharkKB) asipKnowledge); //Display of the new message in Android
+                    }
+                }
             }
-            //component.getKb().putChanges((SharkKB) asipKnowledge); //TODO: putChanges only if the message passes the entryProfile
-            L.w(se.getOwner().getName() + " merged the message!", this);
-            for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
-                listener.onNewMerge(component, (SharkKB) asipKnowledge); //Display of the new message in Android
-            }
+
         } catch (SharkKBException e) {
             e.printStackTrace();
         }

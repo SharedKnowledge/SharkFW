@@ -504,4 +504,14 @@ public class SyncManager {
             return false;
         }
     }
+
+    public boolean checkWithEntryProfile(SyncComponent component, PeerSemanticTag physicalSender, ASIPInMessage message) {
+
+        boolean isInteresting = false;
+        ASIPInterest interest = message.getInterest();
+        //TODO: Retrieve entryProfile
+
+
+        return isInteresting;
+    }
 }
