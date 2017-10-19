@@ -54,7 +54,7 @@ public class SemanticRoutingKP extends KnowledgePort {
 
                 if (syncManager.checkWithEntryProfile(component, message.getPhysicalSender(), message)) {
 
-                    //syncManager.doSync(component, message.getPhysicalSender(), message); TODO: alter doSync for SemanticRoutingKP
+                    syncManager.doSync(component, message.getPhysicalSender(), message); //TODO: alter doSync for SemanticRoutingKP
                     component.getKb().putChanges((SharkKB) asipKnowledge);
                     L.w(se.getOwner().getName() + " merged the message!", this);
                     for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
