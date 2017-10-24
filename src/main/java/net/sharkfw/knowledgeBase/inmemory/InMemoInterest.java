@@ -58,7 +58,7 @@ public class InMemoInterest implements ASIPInterest {
     /**
      * Creates an kepInterest.
      */
-    InMemoInterest(STSet topics, STSet types, PeerSemanticTag sender,
+    public InMemoInterest(STSet topics, STSet types, PeerSemanticTag sender,
                    PeerSTSet approvers, PeerSTSet receivers, TimeSTSet times,
                    SpatialSTSet locations, int direction) throws SharkKBException {
 
