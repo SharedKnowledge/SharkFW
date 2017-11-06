@@ -36,13 +36,6 @@ public class SyncManager {
     private final SyncAcceptKP syncAcceptKP;
     private final SyncMergeKP syncMergeKP;
     private SyncInviteKP syncInviteKP;
-    private SemanticRoutingKP semanticRoutingKP;
-
-    // Semantic Routing
-    private ASIPInterest activeEntryProfile;
-    private List<ASIPInterest> entryProfiles;
-    private ASIPInterest activeOutProfile;
-
 
     // Lists
     private final SyncMergeInfoSerializer mergeInfoSerializer;
@@ -56,21 +49,12 @@ public class SyncManager {
         this.engine = engine;
         this.syncAcceptKP = new SyncAcceptKP(this.engine, this);
         this.syncMergeKP = new SyncMergeKP(this.engine, this);
-
-        this.semanticRoutingKP = new SemanticRoutingKP(this.engine, this);
-        this.activeEntryProfile = null;
-        this.entryProfiles = new ArrayList<>();
-        this.activeOutProfile = null;
         this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
         executor = Executors.newSingleThreadExecutor();
     }
 
     public void addSyncMergeListener(SyncMergeKP.SyncMergeListener listener){
         this.syncMergeKP.addSyncMergeListener(listener);
-    }
-
-    public void addSemanticRoutingListener(SemanticRoutingKP.SemanticRoutingListener listener) {
-        this.semanticRoutingKP.addSemanticRoutingListener(listener);
     }
 
     public void addSyncAcceptListener(SyncAcceptKP.SyncAcceptListener listener){
@@ -510,57 +494,6 @@ public class SyncManager {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public boolean checkWithEntryProfile(SyncComponent component, PeerSemanticTag physicalSender, ASIPInMessage message) {
-
-        boolean isInteresting = false;
-        ASIPInterest interest = message.getInterest();
-        //TODO: Retrieve entryProfile
-
-
-
-        return isInteresting;
-    }
-
-    public ASIPInterest getActiveEntryProfile() {
-        return activeEntryProfile;
-    }
-
-    public void setActiveEntryProfile(ASIPInterest activeEntryProfile) {
-        this.activeEntryProfile = activeEntryProfile;
-    }
-
-    public ASIPInterest getActiveOutProfile() {
-        return activeOutProfile;
-    }
-
-    public void setActiveOutProfile(ASIPInterest activeOutProfile) {
-        this.activeOutProfile = activeOutProfile;
-    }
-
-    public void addEntryProfile(ASIPInterest profile) {
-        this.entryProfiles.add(profile);
-    }
-
-    public List<ASIPInterest> getEntryProfiles() {
-        return entryProfiles;
-    }
-
-    public boolean removeEntryProfile(ASIPInterest profile) {
-        for (ASIPInterest interest: entryProfiles)
-        {
-            try {
-                if (SharkCSAlgebra.identical(interest, profile)) {
-                    entryProfiles.remove(interest);
-                    return true;
-                }
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return false;
     }
 
 }

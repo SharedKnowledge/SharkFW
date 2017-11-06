@@ -6,6 +6,7 @@ import net.sharkfw.asip.engine.ASIPConnection;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.SharkKB;
 import net.sharkfw.knowledgeBase.SharkKBException;
+import net.sharkfw.knowledgeBase.broadcast.BroadcastManager;
 import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.knowledgeBase.sync.manager.port.SyncMergeKP;
@@ -31,32 +32,32 @@ public class SemanticRoutingKP extends KnowledgePort {
         void onNewMerge(SyncComponent component, SharkKB changes);
     }
 
-    private SyncManager syncManager;
+    private BroadcastManager broadcastManager;
     private List<SemanticRoutingKP.SemanticRoutingListener> mergeListeners = new ArrayList<>();
 
-    public SemanticRoutingKP(SharkEngine se, SyncManager syncManager) {
+    public SemanticRoutingKP(SharkEngine se, BroadcastManager boradcastManager) {
         super(se);
-        this.syncManager = syncManager;
+        this.broadcastManager = broadcastManager;
     }
 
     @Override
     protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
         if(message.getType()==null || message.getType().isAny()) return;
-        if(!SyncManager.SHARK_SYNC_MERGE_TAG.getName().equals(message.getType().getName())) return;
+        if(!BroadcastManager.SHARK_BROADCAST_TAG.getName().equals(message.getType().getName())) return;
 
         L.w(this.se.getOwner().getName() + " received a Message from " + message.getPhysicalSender().getName(), this);
-        SyncComponent component = syncManager.getComponentByName(message.getTopic());
+        SyncComponent component = broadcastManager.getBroadcastComponent();
         if(component == null) return;
 
         try {
-            SharkKB previousChanges = syncManager.getChanges(component, message.getPhysicalSender());
-            if(previousChanges != null && syncManager.hasChanged(previousChanges)){
+            SharkKB previousChanges = broadcastManager.getChanges(component, message.getPhysicalSender());
+            if(broadcastManager.hasChanged(previousChanges)) {
 
-                if (syncManager.checkWithEntryProfile(component, message.getPhysicalSender(), message)) {
+                if (broadcastManager.checkWithEntryProfile(component, message.getPhysicalSender(), message)) {
 
-                    syncManager.doSync(component, message.getPhysicalSender(), message); //TODO: alter doSync for SemanticRoutingKP
+                    //broadcastManager.doBroadcast(component, message.getPhysicalSender(), message); //TODO: Check OutProfile and resend message
                     component.getKb().putChanges((SharkKB) asipKnowledge);
-                    L.w(se.getOwner().getName() + " merged the message!", this);
+                    L.w(se.getOwner().getName() + " received the message!", this);
                     for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
                         listener.onNewMerge(component, (SharkKB) asipKnowledge); //Display of the new message in Android
                     }
