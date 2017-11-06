@@ -10,6 +10,7 @@ import net.sharkfw.asip.engine.SimpleASIPStub;
 import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.broadcast.BroadcastManager;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.ports.KnowledgePort;
@@ -84,6 +85,7 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private SecurityLevel signatureLevel = SharkEngine.SecurityLevel.IF_POSSIBLE;
     private SharkKB storage;
     private SyncManager syncManager;
+    private BroadcastManager broadcastManager;
     private SharkPkiStorage pkiStorage;
     /*********************************************************************
      * moved from system factory to here                   *
@@ -189,6 +191,14 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
 //            this.syncManager.startUpdateProcess(15);
         }
         return this.syncManager;
+
+    }
+
+    public BroadcastManager getBroadcastManager() {
+        if (broadcastManager == null) {
+            broadcastManager = new BroadcastManager(this);
+        }
+        return broadcastManager;
 
     }
 
