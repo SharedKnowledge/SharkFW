@@ -92,6 +92,10 @@ public class BroadcastManager {
         }
     }
 
+    public void addSemanticRoutingListener(SemanticRoutingKP.SemanticRoutingListener listener){
+        this.semanticRoutingKP.addSemanticRoutingListener(listener);
+    }
+
     public ASIPInterest getActiveEntryProfile() {
         return activeEntryProfile;
     }
@@ -122,6 +126,33 @@ public class BroadcastManager {
 
     public void setBroadcastComponent(SyncComponent broadcastComponent) {
         this.broadcastComponent = broadcastComponent;
+    }
+
+    /**
+     * Create a syncComponent
+     * @param kb
+     * @param uniqueName
+     * @param members
+     * @param owner
+     * @param writable
+     * @return
+     */
+    public SyncComponent createSyncComponent(
+            SharkKB kb,
+            SemanticTag uniqueName,
+            PeerSTSet members,
+            PeerSemanticTag owner,
+            boolean writable) {
+
+        if (broadcastComponent != null) return broadcastComponent;
+        SyncComponent component = null;
+        try {
+            component = new SyncComponent(kb, uniqueName, members, owner, writable);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        broadcastComponent = component;
+        return component;
     }
 
     public boolean removeEntryProfile(ASIPInterest profile) {
