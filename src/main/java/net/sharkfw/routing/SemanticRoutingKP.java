@@ -53,7 +53,7 @@ public class SemanticRoutingKP extends KnowledgePort {
             SharkKB previousChanges = broadcastManager.getChanges(component, message.getPhysicalSender());
             if(broadcastManager.hasChanged(previousChanges)) {
 
-                if (broadcastManager.checkWithEntryProfile(component, message.getPhysicalSender(), message)) {
+                if (broadcastManager.checkWithEntryProfile((SharkKB) asipKnowledge, message.getPhysicalSender(), message)) {
 
                     //broadcastManager.doBroadcast(component, message.getPhysicalSender(), message); //TODO: Check OutProfile and resend message
                     component.getKb().putChanges((SharkKB) asipKnowledge);

@@ -1,6 +1,8 @@
 package net.sharkfw.knowledgeBase.broadcast;
 
 import net.sharkfw.asip.ASIPInterest;
+import net.sharkfw.asip.ASIPKnowledge;
+import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -47,15 +49,24 @@ public class BroadcastManager {
         executor = Executors.newSingleThreadExecutor();
     }
 
-    public boolean checkWithEntryProfile(SyncComponent component, PeerSemanticTag physicalSender, ASIPInMessage message) {
+    public boolean checkWithEntryProfile(SharkKB newKnowledge, PeerSemanticTag physicalSender, ASIPInMessage message) {
 
         if (activeEntryProfile == null) return false;
         boolean isInteresting = false;
-        ASIPInterest interest = message.getInterest();
-        //TODO: Retrieve entryProfile
-
-
-
+        try {
+            if (newKnowledge.getTopicSTSet() == null || SharkCSAlgebra.isIn(newKnowledge.getTopicSTSet(), broadcastComponent.getKb().getTopicSTSet())) {
+                isInteresting = true;
+            }
+            if (newKnowledge.getSpatialSTSet() == null || SharkCSAlgebra.isIn(newKnowledge.getSpatialSTSet(), broadcastComponent.getKb().getSpatialSTSet())) {
+                isInteresting = true;
+            }
+            if (newKnowledge.getTimeSTSet() == null || SharkCSAlgebra.isIn(newKnowledge.getTimeSTSet(), broadcastComponent.getKb().getTimeSTSet())) {
+                isInteresting = true;
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return false;
+        }
         return isInteresting;
     }
 
