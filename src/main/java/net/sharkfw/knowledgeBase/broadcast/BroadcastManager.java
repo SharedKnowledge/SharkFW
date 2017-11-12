@@ -4,15 +4,18 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPInMessage;
+import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
+import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.knowledgeBase.sync.manager.SyncMergeInfo;
 import net.sharkfw.knowledgeBase.sync.manager.SyncMergeInfoSerializer;
 import net.sharkfw.knowledgeBase.sync.manager.port.SyncAcceptKP;
 import net.sharkfw.knowledgeBase.sync.manager.port.SyncMergeKP;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.routing.SemanticRoutingKP;
+import net.sharkfw.system.L;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +53,8 @@ public class BroadcastManager {
     }
 
     public boolean checkWithEntryProfile(SharkKB newKnowledge, PeerSemanticTag physicalSender, ASIPInMessage message) {
-
-        if (activeEntryProfile == null) return false;
+        return true; //TODO
+        /*if (activeEntryProfile == null) return false;
         boolean isInteresting = false;
         try {
             if (newKnowledge.getTopicSTSet() == null || SharkCSAlgebra.isIn(newKnowledge.getTopicSTSet(), broadcastComponent.getKb().getTopicSTSet())) {
@@ -67,7 +70,7 @@ public class BroadcastManager {
             e.printStackTrace();
             return false;
         }
-        return isInteresting;
+        return isInteresting;*/
     }
 
     public SharkKB getChanges(SyncComponent component, PeerSemanticTag peerSemanticTag) throws SharkKBException {
@@ -100,6 +103,34 @@ public class BroadcastManager {
         } catch (SharkKBException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public void sendBroadcastMessage(final SyncComponent component, final List<PeerSemanticTag> peers) {
+        for (final PeerSemanticTag peer : peers) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        SharkKB changes = getChanges(component, peer);
+                        L.d("Broadcast insert sent to: " + peer.getName(), this);
+                        ASIPOutMessage outMessage = engine.createASIPOutMessage(
+                                peer.getAddresses(),
+                                engine.getOwner(),
+                                peer,
+                                null,
+                                null,
+                                component.getUniqueName(),
+                                SHARK_BROADCAST_TAG, 1);
+
+                        outMessage.insert(changes);
+                        mergeInfoSerializer.add(component.getUniqueName(), peer);
+                    } catch (SharkKBException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            executor.submit(runnable);
         }
     }
 
