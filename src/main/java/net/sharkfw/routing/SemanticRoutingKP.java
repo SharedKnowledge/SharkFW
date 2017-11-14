@@ -35,34 +35,37 @@ public class SemanticRoutingKP extends KnowledgePort {
     private BroadcastManager broadcastManager;
     private List<SemanticRoutingKP.SemanticRoutingListener> mergeListeners = new ArrayList<>();
 
-    public SemanticRoutingKP(SharkEngine se, BroadcastManager boradcastManager) {
+    public SemanticRoutingKP(SharkEngine se, BroadcastManager broadcastManager) {
         super(se);
         this.broadcastManager = broadcastManager;
     }
 
     @Override
     protected void handleInsert(ASIPInMessage message, ASIPConnection asipConnection, ASIPKnowledge asipKnowledge) {
+        System.out.println("___________________0______________________");
         if(message.getType()==null || message.getType().isAny()) return;
+        System.out.println("___________________1______________________");
         if(!BroadcastManager.SHARK_BROADCAST_TAG.getName().equals(message.getType().getName())) return;
-
+        System.out.println("___________________2______________________");
         L.w(this.se.getOwner().getName() + " received a Message from " + message.getPhysicalSender().getName(), this);
         SyncComponent component = broadcastManager.getBroadcastComponent();
         if(component == null) return;
 
         try {
-            SharkKB previousChanges = broadcastManager.getChanges(component, message.getPhysicalSender());
-            if(broadcastManager.hasChanged(previousChanges)) {
+            /*SharkKB previousChanges = broadcastManager.getChanges(component, message.getPhysicalSender());
+            if(broadcastManager.hasChanged(previousChanges)) {*/
 
                 if (broadcastManager.checkWithEntryProfile((SharkKB) asipKnowledge, message.getPhysicalSender(), message)) {
 
                     //broadcastManager.doBroadcast(component, message.getPhysicalSender(), message); //TODO: Check OutProfile and resend message
                     component.getKb().putChanges((SharkKB) asipKnowledge);
                     L.w(se.getOwner().getName() + " received the message!", this);
+                    System.out.println("___________________3______________________");
                     for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
                         listener.onNewMerge(component, (SharkKB) asipKnowledge); //Display of the new message in Android
                     }
                 }
-            }
+            //}
 
         } catch (SharkKBException e) {
             e.printStackTrace();

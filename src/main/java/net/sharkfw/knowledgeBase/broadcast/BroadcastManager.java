@@ -73,25 +73,8 @@ public class BroadcastManager {
         return isInteresting;*/
     }
 
-    public SharkKB getChanges(SyncComponent component, PeerSemanticTag peerSemanticTag) throws SharkKBException {
-        SharkKB changes = null;
-        SyncMergeInfo mergeInfo = this.mergeInfoSerializer.get(peerSemanticTag, component.getUniqueName());
-
-        if(mergeInfo!=null) {
-            long lastMerged = mergeInfo.getDate();
-            long lastChanges = component.getKb().getTimeOfLastChanges();
-
-            if (lastChanges > lastMerged) {
-                changes = component.getKb().getChanges(lastMerged);
-            }
-        } else {
-            changes = component.getKb();
-        }
-        return changes;
-    }
-
     public boolean hasChanged(SharkKB sharkKB){
-        boolean changed = false;
+        boolean changed = true;
         try {
             if(!sharkKB.getTopicSTSet().isEmpty()) changed = true;
             if(!sharkKB.getTypeSTSet().isEmpty()) changed = true;
@@ -102,7 +85,7 @@ public class BroadcastManager {
             return changed;
         } catch (SharkKBException e) {
             e.printStackTrace();
-            return false;
+            return true;
         }
     }
 
@@ -111,9 +94,11 @@ public class BroadcastManager {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        SharkKB changes = getChanges(component, peer);
+                        SharkKB changes = component.getKb();
                         L.d("Broadcast insert sent to: " + peer.getName(), this);
+                        System.out.println("_________________________________________");
+                        System.out.println("Broadcast insert sent to: " + peer.getName());
+                        System.out.println("_________________________________________");
                         ASIPOutMessage outMessage = engine.createASIPOutMessage(
                                 peer.getAddresses(),
                                 engine.getOwner(),
@@ -125,9 +110,7 @@ public class BroadcastManager {
 
                         outMessage.insert(changes);
                         mergeInfoSerializer.add(component.getUniqueName(), peer);
-                    } catch (SharkKBException e) {
-                        e.printStackTrace();
-                    }
+
                 }
             };
             executor.submit(runnable);
