@@ -29,7 +29,7 @@ public class SemanticRoutingKP extends KnowledgePort {
          * @param component
          * @param changes
          */
-        void onNewMerge(SyncComponent component, SharkKB changes);
+        void onNewMerge(SyncComponent component, SharkKB changes, boolean accepted);
     }
 
     private BroadcastManager broadcastManager;
@@ -52,17 +52,20 @@ public class SemanticRoutingKP extends KnowledgePort {
         if(component == null) return;
 
         try {
-            /*SharkKB previousChanges = broadcastManager.getChanges(component, message.getPhysicalSender());
-            if(broadcastManager.hasChanged(previousChanges)) {*/
-
                 if (broadcastManager.checkWithEntryProfile((SharkKB) asipKnowledge, message.getPhysicalSender(), message)) {
 
-                    //broadcastManager.doBroadcast(component, message.getPhysicalSender(), message); //TODO: Check OutProfile and resend message
+                    //broadcastManager.doBroadcast(component, message.getPhysicalSender(), message);
                     component.getKb().putChanges((SharkKB) asipKnowledge);
                     L.w(se.getOwner().getName() + " received the message!", this);
                     System.out.println("___________________3______________________");
                     for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
-                        listener.onNewMerge(component, (SharkKB) asipKnowledge); //Display of the new message in Android
+                        listener.onNewMerge(component, (SharkKB) asipKnowledge, true); //Display of the new message in Android
+                    }
+                    //TODO: Check OutProfile and resend message
+                }
+                else {
+                    for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
+                        listener.onNewMerge(component, (SharkKB) asipKnowledge, false); //Message was rejected
                     }
                 }
             //}

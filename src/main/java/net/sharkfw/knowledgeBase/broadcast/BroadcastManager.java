@@ -18,6 +18,7 @@ import net.sharkfw.routing.SemanticRoutingKP;
 import net.sharkfw.system.L;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,24 +54,35 @@ public class BroadcastManager {
     }
 
     public boolean checkWithEntryProfile(SharkKB newKnowledge, PeerSemanticTag physicalSender, ASIPInMessage message) {
-        return true; //TODO
-        /*if (activeEntryProfile == null) return false;
+
+        if (activeEntryProfile == null || activeEntryProfile.getTopics() == null) return true;
         boolean isInteresting = false;
+        String profileSI = null;
         try {
-            if (newKnowledge.getTopicSTSet() == null || SharkCSAlgebra.isIn(newKnowledge.getTopicSTSet(), broadcastComponent.getKb().getTopicSTSet())) {
-                isInteresting = true;
-            }
-            if (newKnowledge.getSpatialSTSet() == null || SharkCSAlgebra.isIn(newKnowledge.getSpatialSTSet(), broadcastComponent.getKb().getSpatialSTSet())) {
-                isInteresting = true;
-            }
-            if (newKnowledge.getTimeSTSet() == null || SharkCSAlgebra.isIn(newKnowledge.getTimeSTSet(), broadcastComponent.getKb().getTimeSTSet())) {
-                isInteresting = true;
-            }
+            profileSI = activeEntryProfile.getTopics().tags().nextElement().getSI()[0];
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        System.out.println("_________ checkWithEntryProfile ________");
+        System.out.println("_________ Entry profile SI: " + profileSI);
+
+        Enumeration<SemanticTag> topicTags = null;
+        try {
+            topicTags = newKnowledge.getTopicSTSet().tags();
         } catch (SharkKBException e) {
             e.printStackTrace();
             return false;
         }
-        return isInteresting;*/
+        SemanticTag currentElement;
+        while (topicTags.hasMoreElements()) {
+            currentElement = topicTags.nextElement();
+            System.out.println("_________ TAG SI: " + currentElement.getSI()[0]);
+            if (profileSI.equals(currentElement.getSI()[0])) {
+                isInteresting = true;
+            }
+        }
+        return isInteresting;
+
     }
 
     public boolean hasChanged(SharkKB sharkKB){
@@ -96,9 +108,7 @@ public class BroadcastManager {
                 public void run() {
                         SharkKB changes = component.getKb();
                         L.d("Broadcast insert sent to: " + peer.getName(), this);
-                        System.out.println("_________________________________________");
                         System.out.println("Broadcast insert sent to: " + peer.getName());
-                        System.out.println("_________________________________________");
                         ASIPOutMessage outMessage = engine.createASIPOutMessage(
                                 peer.getAddresses(),
                                 engine.getOwner(),
