@@ -82,12 +82,17 @@ public class SqlSharkHelper {
 
     static SqlSemanticTag getSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
         if (semanticTag == null) throw new SharkKBException("No SemanticTag given.");
-        return new SqlSemanticTag(semanticTag.getSI()[0], sharkKB);
+        return new SqlSemanticTag(semanticTag.getSI()[0], sharkKB, "topic");
     }
 
     static SqlPeerSemanticTag getPeerSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
         if (semanticTag == null) throw new SharkKBException("No SemanticTag given.");
         return new SqlPeerSemanticTag(semanticTag.getSI()[0], sharkKB);
+    }
+
+    static SqlTimeSemanticTag getTimeSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) throws SharkKBException {
+        if (semanticTag == null) throw new SharkKBException("No SemanticTag given.");
+        return new SqlTimeSemanticTag(semanticTag.getSI()[0], sharkKB);
     }
 
     static SqlSemanticTag createSemanticTag(SqlSharkKB sharkKB, SemanticTag semanticTag) {
@@ -109,6 +114,18 @@ public class SqlSharkHelper {
         } catch (SharkKBException e) {
             try {
                 return new SqlPeerSemanticTag(semanticTag.getSI(), semanticTag.getName(), sharkKB, semanticTag.getAddresses());
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return null;
+    }
+    static SqlTimeSemanticTag createTimeSemanticTag(SqlSharkKB sharkKB, TimeSemanticTag semanticTag) {
+        try {
+            return getTimeSemanticTag(sharkKB, semanticTag);
+        } catch (SharkKBException e) {
+            try {
+                return new SqlTimeSemanticTag(semanticTag.getSI(), semanticTag.getName(), sharkKB, semanticTag.getDuration(), semanticTag.getFrom());
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
@@ -357,13 +374,21 @@ public class SqlSharkHelper {
         if (create) {
             if (semanticTag instanceof PeerSemanticTag) {
                 sender = createPeerSemanticTag(sharkKB, (PeerSemanticTag) semanticTag);
-            } else {
+            }
+            else if (semanticTag instanceof TimeSemanticTag) {
+                sender = createTimeSemanticTag(sharkKB, (TimeSemanticTag) semanticTag);
+            }
+            else {
                 sender = createSemanticTag(sharkKB, semanticTag);
             }
         } else {
             if (semanticTag instanceof PeerSemanticTag) {
                 sender = getPeerSemanticTag(sharkKB, semanticTag);
-            } else {
+            }
+            else if (semanticTag instanceof TimeSemanticTag) {
+                sender = getTimeSemanticTag(sharkKB, semanticTag);
+            }
+            else {
                 sender = getSemanticTag(sharkKB, semanticTag);
             }
         }
@@ -408,8 +433,7 @@ public class SqlSharkHelper {
                         sqlAsipSpace.addTag(peer, container.setKind);
                         break;
                     case DIM_TIME:
-                        // TODO Implement Time
-                        SqlSemanticTag time = new SqlSemanticTag(container.id, sharkKB);
+                        SqlTimeSemanticTag time = new SqlTimeSemanticTag(container.id, sharkKB);
                         sqlAsipSpace.addTag(time, container.setKind);
                         break;
                     case DIM_LOCATION:

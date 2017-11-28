@@ -48,19 +48,19 @@ public class SqlAsipSpace implements ASIPSpace {
                 types.merge(tag);
                 break;
             case DIM_APPROVERS:
-                approvers.merge((PeerSemanticTag) tag);
+                approvers.merge(tag);
                 break;
             case DIM_SENDER:
                 sender = (PeerSemanticTag) tag;
                 break;
             case DIM_RECEIVER:
-                receivers.merge((PeerSemanticTag) tag);
+                receivers.merge(tag);
                 break;
             case DIM_TIME:
-                times.merge((TimeSemanticTag) tag);
+                times.merge(tag);
                 break;
             case DIM_LOCATION:
-                locations.merge((SpatialSemanticTag) tag);
+                locations.merge(tag);
                 break;
         }
     }

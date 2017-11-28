@@ -67,7 +67,7 @@ public class SqlPeerSemanticTag extends SqlSemanticTag implements PeerSemanticTa
      * @param si
      */
     public SqlPeerSemanticTag(String si, SqlSharkKB sharkKb) throws SharkKBException {
-        super(si, sharkKb);
+        super(si, sharkKb, "peer");
         addresses = getAddresses();
     }
 

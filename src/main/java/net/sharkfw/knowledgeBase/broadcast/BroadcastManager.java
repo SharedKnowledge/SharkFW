@@ -17,9 +17,7 @@ import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.routing.SemanticRoutingKP;
 import net.sharkfw.system.L;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,6 +36,8 @@ public class BroadcastManager {
     private List<ASIPInterest> entryProfiles;
     private ASIPInterest activeOutProfile;
 
+    private HashMap<Long, String> sentMessages;
+
     private final SyncMergeInfoSerializer mergeInfoSerializer;
     private SyncComponent broadcastComponent;
     private SharkEngine engine;
@@ -51,6 +51,7 @@ public class BroadcastManager {
         this.mergeInfoSerializer = new SyncMergeInfoSerializer(this.engine.getStorage());
         this.broadcastComponent = null;
         executor = Executors.newSingleThreadExecutor();
+        sentMessages = new HashMap<>();
     }
 
     public boolean checkWithEntryProfile(SharkKB newKnowledge, PeerSemanticTag physicalSender, ASIPInMessage message) {
@@ -85,19 +86,34 @@ public class BroadcastManager {
 
     }
 
-    public boolean hasChanged(SharkKB sharkKB){
-        boolean changed = true;
+    public boolean isUnknown(SharkKB newKnowledge){
         try {
-            if(!sharkKB.getTopicSTSet().isEmpty()) changed = true;
-            if(!sharkKB.getTypeSTSet().isEmpty()) changed = true;
-            if(!sharkKB.getPeerSTSet().isEmpty()) changed = true;
-            if(!sharkKB.getTimeSTSet().isEmpty()) changed = true;
-            if(!sharkKB.getSpatialSTSet().isEmpty()) changed = true;
-            if(sharkKB.getNumberInformation() > 0) changed = true;
-            return changed;
+            System.out.println("START isUknown______________");
+            Enumeration<TimeSemanticTag> timeTags = newKnowledge.getTimeSTSet().timeTags();
+            TimeSemanticTag tag;
+            if (timeTags.hasMoreElements()) {
+                tag = timeTags.nextElement();
+                if (tag != null) {
+                    System.out.println("_____TIMETAG FROM: " + tag.getFrom());
+                    System.out.println("_____TIMETAG SI: " + tag.getSI()[0]);
+                    if (sentMessages.containsKey(tag.getFrom())) {
+                        return false; //Message was already received
+                    }
+                    else {
+                        sentMessages.put(tag.getFrom(), "message"); //Message was not already received
+                        return true;
+                    }
+                }
+                else {
+                    return true; //TimeTag is any
+                }
+            }
+            else {
+                return true; //TimeTag is any
+            }
         } catch (SharkKBException e) {
             e.printStackTrace();
-            return true;
+            return false;
         }
     }
 
@@ -163,6 +179,10 @@ public class BroadcastManager {
         this.broadcastComponent = broadcastComponent;
     }
 
+    public HashMap<Long, String> getSentMessages() {
+        return sentMessages;
+    }
+
     /**
      * Create a syncComponent
      * @param kb
@@ -204,5 +224,9 @@ public class BroadcastManager {
             }
         }
         return false;
+    }
+
+    public boolean checkWithOutProfile() { //TODO
+        return true;
     }
 }

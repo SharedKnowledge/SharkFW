@@ -56,15 +56,15 @@ public class SqlSemanticTagTest {
         SqlSemanticTag tagCreated2 = new SqlSemanticTag(sis2, names[1], sqlSharkKB);
         SqlSemanticTag tagCreated3 = new SqlSemanticTag(sis3, names[2], sqlSharkKB);
 
-        SqlSemanticTag tagRetrievedWithSI1 = new SqlSemanticTag(sis1[0], sqlSharkKB);
+        SqlSemanticTag tagRetrievedWithSI1 = new SqlSemanticTag(sis1[0], sqlSharkKB, "topic");
         assertNotNull(tagRetrievedWithSI1);
         assertArrayEquals(sis1, tagRetrievedWithSI1.getSis());
         assertEquals(names[0], tagRetrievedWithSI1.getName());
-        SqlSemanticTag tagRetrievedWithSI2 = new SqlSemanticTag(sis2[0], sqlSharkKB);
+        SqlSemanticTag tagRetrievedWithSI2 = new SqlSemanticTag(sis2[0], sqlSharkKB, "topic");
         assertNotNull(tagRetrievedWithSI2);
         assertArrayEquals(sis2, tagRetrievedWithSI2.getSis());
         assertEquals(names[1], tagRetrievedWithSI2.getName());
-        SqlSemanticTag tagRetrievedWithSI3 = new SqlSemanticTag(sis3[0], sqlSharkKB);
+        SqlSemanticTag tagRetrievedWithSI3 = new SqlSemanticTag(sis3[0], sqlSharkKB, "topic");
         assertNotNull(tagRetrievedWithSI3);
         assertArrayEquals(sis3, tagRetrievedWithSI3.getSis());
         assertEquals(names[2], tagRetrievedWithSI3.getName());

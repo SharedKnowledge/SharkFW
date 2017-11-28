@@ -186,6 +186,7 @@ public class SyncKB implements SharkKB{
      */
     public void putChanges(SharkKB changes) throws SharkKBException {
         // merge tags first
+        System.out.println("MEEEEERGE");
         this.topics.merge(changes.getTopicSTSet());
         this.types.merge(changes.getTypeSTSet());
         this.peers.merge(changes.getPeerSTSet());

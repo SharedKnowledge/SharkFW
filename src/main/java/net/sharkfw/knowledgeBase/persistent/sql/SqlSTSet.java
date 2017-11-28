@@ -125,12 +125,12 @@ public class SqlSTSet extends AbstractSTSet implements STSet {
 
     @Override
     public SemanticTag getSemanticTag(String[] si) throws SharkKBException {
-        return new SqlSemanticTag(si[0], sqlSharkKB); //TODO: multiple SIs ?
+        return new SqlSemanticTag(si[0], sqlSharkKB, "topic"); //TODO: multiple SIs ?
     }
 
     @Override
     public SemanticTag getSemanticTag(String si) throws SharkKBException {
-        return new SqlSemanticTag(si, sqlSharkKB);
+        return new SqlSemanticTag(si, sqlSharkKB, "topic");
     }
 
     @Override
