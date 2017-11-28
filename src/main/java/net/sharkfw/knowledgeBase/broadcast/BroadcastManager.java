@@ -36,7 +36,7 @@ public class BroadcastManager {
     private List<ASIPInterest> entryProfiles;
     private ASIPInterest activeOutProfile;
 
-    private HashMap<Long, String> sentMessages;
+    private HashMap<String, String> sentMessages;
 
     private final SyncMergeInfoSerializer mergeInfoSerializer;
     private SyncComponent broadcastComponent;
@@ -87,33 +87,21 @@ public class BroadcastManager {
     }
 
     public boolean isUnknown(SharkKB newKnowledge){
+        Enumeration<SemanticTag> topicTags = null;
         try {
-            System.out.println("START isUknown______________");
-            Enumeration<TimeSemanticTag> timeTags = newKnowledge.getTimeSTSet().timeTags();
-            TimeSemanticTag tag;
-            if (timeTags.hasMoreElements()) {
-                tag = timeTags.nextElement();
-                if (tag != null) {
-                    System.out.println("_____TIMETAG FROM: " + tag.getFrom());
-                    System.out.println("_____TIMETAG SI: " + tag.getSI()[0]);
-                    if (sentMessages.containsKey(tag.getFrom())) {
-                        return false; //Message was already received
-                    }
-                    else {
-                        sentMessages.put(tag.getFrom(), "message"); //Message was not already received
-                        return true;
-                    }
-                }
-                else {
-                    return true; //TimeTag is any
-                }
-            }
-            else {
-                return true; //TimeTag is any
-            }
+            topicTags = newKnowledge.getTopicSTSet().tags();
         } catch (SharkKBException e) {
             e.printStackTrace();
             return false;
+        }
+        SemanticTag topic = topicTags.nextElement();
+        System.out.println("_________ IS UNKNOWN SI_____: " + topic.getSI()[0]);
+        if (sentMessages.containsKey(topic.getSI()[0])) {
+            return false;
+        }
+        else {
+            sentMessages.put(topic.getSI()[0], "message");
+            return true;
         }
     }
 
@@ -179,7 +167,7 @@ public class BroadcastManager {
         this.broadcastComponent = broadcastComponent;
     }
 
-    public HashMap<Long, String> getSentMessages() {
+    public HashMap<String, String> getSentMessages() {
         return sentMessages;
     }
 

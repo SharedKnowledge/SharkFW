@@ -99,7 +99,6 @@ public class SqlSemanticTag extends SqlSharkPropertyHolder implements SemanticTa
      */
     public SqlSemanticTag(String si, SqlSharkKB sharkKB, String tagKind) throws SharkKBException {
         this(null, null, tagKind, sharkKB);
-        System.out.println("_____SQLSEMANTICTAG REQUEST:    kind: " + tagKind + "   SI: " + si);
         String sql;
         if (si != null) {
             sql = SELECT + ALL + FROM + TABLE_SEMANTIC_TAG + JOIN + TABLE_SUBJECT_IDENTIFIER + ON + TABLE_SEMANTIC_TAG + DOT + "id" + EQ + FIELD_TAG_ID + WHERE + FIELD_SUBJECT_IDENTIFIER_IDENTIFIER + EQ + QU + si + QU;
