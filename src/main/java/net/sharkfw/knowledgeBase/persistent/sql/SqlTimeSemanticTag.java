@@ -55,8 +55,8 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
 
             if (rs != null) {
                 rs.next();
-                this.tagDuration = rs.getInt("t_duration");
-                this.tagStart = rs.getInt("t_start");
+                this.tagDuration = rs.getLong("t_duration");
+                this.tagStart = rs.getLong("t_start");
             }
         } catch (SQLException e) {
             throw new SharkKBException(e.toString());
@@ -69,8 +69,8 @@ public class SqlTimeSemanticTag extends SqlSemanticTag implements TimeSemanticTa
         try (ResultSet rs = SqlHelper.executeSQLCommandWithResult(this.getConnection(), sql)) {
             if (rs != null) {
                 rs.next();
-                this.tagDuration = rs.getInt("t_duration");
-                this.tagStart = rs.getInt("t_start");
+                this.tagDuration = rs.getLong("t_duration");
+                this.tagStart = rs.getLong("t_start");
             }
         } catch (SQLException e) {
             throw new SharkKBException(e.toString());
