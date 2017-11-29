@@ -29,7 +29,7 @@ public class SemanticRoutingKP extends KnowledgePort {
          * @param component
          * @param changes
          */
-        void onNewMerge(SyncComponent component, SharkKB changes, boolean accepted);
+        void onNewMerge(SyncComponent component, SharkKB changes, boolean accepted, boolean forwarding);
     }
 
     private BroadcastManager broadcastManager;
@@ -56,16 +56,21 @@ public class SemanticRoutingKP extends KnowledgePort {
                     component.getKb().putChanges((SharkKB) asipKnowledge);
                     L.w(se.getOwner().getName() + " received the message!", this);
                     System.out.println("___________________3______________________");
-                    for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
-                        listener.onNewMerge(component, (SharkKB) asipKnowledge, true); //Display of the new message in Android
-                    }
-                    if (broadcastManager.checkWithOutProfile()) {   //TODO:
 
+                    if (broadcastManager.checkWithOutProfile()) {   //TODO:
+                        for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
+                            listener.onNewMerge(component, (SharkKB) asipKnowledge, true, true);
+                        }
+                    }
+                    else {
+                        for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
+                            listener.onNewMerge(component, (SharkKB) asipKnowledge, true, false);
+                        }
                     }
                 }
                 else {
                     for (SemanticRoutingKP.SemanticRoutingListener listener : this.mergeListeners) {
-                        listener.onNewMerge(component, (SharkKB) asipKnowledge, false); //Message was rejected
+                        listener.onNewMerge(component, (SharkKB) asipKnowledge, false, false); //Message was rejected
                     }
                 }
             //}

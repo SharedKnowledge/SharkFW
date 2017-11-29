@@ -97,7 +97,8 @@ public class BroadcastManager {
         SemanticTag topic = topicTags.nextElement();
         System.out.println("_________ IS UNKNOWN SI_____: " + topic.getSI()[0]);
         if (sentMessages.containsKey(topic.getSI()[0])) {
-            return false;
+            //return false;
+            return true; //temporarily true for debugging purposes
         }
         else {
             sentMessages.put(topic.getSI()[0], "message");
@@ -129,6 +130,32 @@ public class BroadcastManager {
             };
             executor.submit(runnable);
         }
+    }
+
+    public void sendBroadcastMessage(final SyncComponent component, final PeerSemanticTag peer) {
+
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    SharkKB changes = component.getKb();
+                    L.d("Broadcast insert sent to: " + peer.getName(), this);
+                    System.out.println("Broadcast insert sent to: " + peer.getName());
+                    ASIPOutMessage outMessage = engine.createASIPOutMessage(
+                            peer.getAddresses(),
+                            engine.getOwner(),
+                            peer,
+                            null,
+                            null,
+                            component.getUniqueName(),
+                            SHARK_BROADCAST_TAG, 1);
+
+                    outMessage.insert(changes);
+                    mergeInfoSerializer.add(component.getUniqueName(), peer);
+
+                }
+            };
+            executor.submit(runnable);
+
     }
 
     public void addSemanticRoutingListener(SemanticRoutingKP.SemanticRoutingListener listener){
