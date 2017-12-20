@@ -59,31 +59,47 @@ public class BroadcastManager {
         if (activeEntryProfile == null || activeEntryProfile.getTopics() == null) return true;
         boolean isInteresting = false;
         String profileSI = null;
-        try {
-            profileSI = activeEntryProfile.getTopics().tags().nextElement().getSI()[0];
-        } catch (SharkKBException e) {
-            e.printStackTrace();
+        if (activeEntryProfile.getTopics() instanceof SemanticNet) {
+            isInteresting = checkSemanticNet((SemanticNet) activeEntryProfile.getTopics(), "Topic");
         }
-        System.out.println("_________ checkWithEntryProfile ________");
-        System.out.println("_________ Entry profile SI: " + profileSI);
-
-        Enumeration<SemanticTag> topicTags = null;
-        try {
-            topicTags = newKnowledge.getTopicSTSet().tags();
-        } catch (SharkKBException e) {
-            e.printStackTrace();
-            return false;
+        if (activeEntryProfile.getReceivers() instanceof SemanticNet && isInteresting) {
+            isInteresting = checkSemanticNet((SemanticNet) activeEntryProfile.getReceivers(), "Receivers");
         }
-        SemanticTag currentElement;
-        while (topicTags.hasMoreElements()) {
-            currentElement = topicTags.nextElement();
-            System.out.println("_________ TAG SI: " + currentElement.getSI()[0]);
-            if (profileSI.equals(currentElement.getSI()[0])) {
-                isInteresting = true;
+        if (activeEntryProfile.getApprovers() instanceof SemanticNet && isInteresting) {
+            isInteresting = checkSemanticNet((SemanticNet) activeEntryProfile.getApprovers(), "Approvers");
+        }
+        else {
+            try {
+                profileSI = activeEntryProfile.getTopics().tags().nextElement().getSI()[0];
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+            }
+            Enumeration<SemanticTag> topicTags = null;
+            try {
+                topicTags = newKnowledge.getTopicSTSet().tags();
+            } catch (SharkKBException e) {
+                e.printStackTrace();
+                return false;
+            }
+            SemanticTag currentElement;
+            while (topicTags.hasMoreElements()) {
+                currentElement = topicTags.nextElement();
+                System.out.println("_________ TAG SI: " + currentElement.getSI()[0]);
+                if (profileSI.equals(currentElement.getSI()[0])) {
+                    isInteresting = true;
+                }
             }
         }
         return isInteresting;
 
+    }
+
+    private boolean checkSemanticNet(SemanticNet net, String netKind) {
+        boolean isInteresting = false;
+        Enumeration<SemanticTag> tags = null;
+
+
+        return isInteresting;
     }
 
     public boolean isUnknown(SharkKB newKnowledge){

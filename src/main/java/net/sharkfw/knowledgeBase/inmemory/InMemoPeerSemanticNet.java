@@ -54,12 +54,17 @@ public class InMemoPeerSemanticNet extends InMemoSemanticNet implements PeerSema
 
     @Override
     public PeerSNSemanticTag getSemanticTag(String[] sis) throws SharkKBException {
-        return (PeerSNSemanticTag) super.getSemanticTag(sis);
+        try {
+            return (PeerSNSemanticTag) this.getTagStorage().getSemanticTag(sis);
+        }
+        catch (ClassCastException e) {
+            return null;
+        }
     }
 
     @Override
     public PeerSNSemanticTag getSemanticTag(String si) throws SharkKBException {
-        return (PeerSNSemanticTag) super.getSemanticTag(si);
+        return (PeerSNSemanticTag) this.getTagStorage().getSemanticTag(si);
     }
 
     @Override
@@ -76,7 +81,12 @@ public class InMemoPeerSemanticNet extends InMemoSemanticNet implements PeerSema
     
     @Override
     public PeerSNSemanticTag merge(SemanticTag tag) throws SharkKBException {
-        return (PeerSNSemanticTag) super.merge(tag);
+        try {
+            return (PeerSNSemanticTag) super.merge(tag);
+        }
+        catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public Enumeration<PeerSemanticTag> peerTags() throws SharkKBException {
