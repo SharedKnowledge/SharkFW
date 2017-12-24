@@ -11,6 +11,8 @@ import net.sharkfw.asip.engine.serializer.SharkProtocolNotSupportedException;
 import net.sharkfw.asip.engine.serializer.XMLSerializer;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.broadcast.BroadcastManager;
+import net.sharkfw.knowledgeBase.broadcast.CompositeFilter;
+import net.sharkfw.knowledgeBase.broadcast.SemanticFilter;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
 import net.sharkfw.ports.KnowledgePort;
@@ -63,6 +65,9 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
     private final Stub[] protocolStubs = new Stub[Protocols.NUMBERPROTOCOLS];
     private final HashMap<Integer, String> deliveredInformation =
             new HashMap<>();
+
+    private CompositeFilter semanticFilters = new CompositeFilter();
+
     protected ASIPStub asipStub;
     /**
      * A collection containing all active <code>LocalInterest</code>'s wrapped up
@@ -200,6 +205,18 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         }
         return broadcastManager;
 
+    }
+
+    public void addSemanticFilter(SemanticFilter filter) {
+        semanticFilters.add(filter);
+    }
+
+    public void removeSemanticFilter(SemanticFilter filter) {
+        semanticFilters.remove(filter);
+    }
+
+    public boolean executeSemanticFilters(ASIPInMessage message, ASIPKnowledge knowledge) {
+        return semanticFilters.filter(message, knowledge);
     }
 
     public void setEngineOwnerPeer(PeerSemanticTag tag) {
