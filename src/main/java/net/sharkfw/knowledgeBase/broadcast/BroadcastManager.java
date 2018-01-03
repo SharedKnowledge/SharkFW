@@ -6,6 +6,7 @@ import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.knowledgeBase.*;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
 import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
@@ -60,13 +61,13 @@ public class BroadcastManager {
         boolean isInteresting = false;
         String profileSI = null;
         if (activeEntryProfile.getTopics() instanceof SemanticNet) {
-            isInteresting = checkSemanticNet((SemanticNet) activeEntryProfile.getTopics(), "Topic");
+            isInteresting = checkSemanticNet(activeEntryProfile.getTopics(), "Topic", newKnowledge);
         }
         if (activeEntryProfile.getReceivers() instanceof SemanticNet && isInteresting) {
-            isInteresting = checkSemanticNet((SemanticNet) activeEntryProfile.getReceivers(), "Receivers");
+            isInteresting = checkSemanticNet(activeEntryProfile.getReceivers(), "Receivers", newKnowledge);
         }
         if (activeEntryProfile.getApprovers() instanceof SemanticNet && isInteresting) {
-            isInteresting = checkSemanticNet((SemanticNet) activeEntryProfile.getApprovers(), "Approvers");
+            isInteresting = checkSemanticNet(activeEntryProfile.getApprovers(), "Approvers",newKnowledge);
         }
         else {
             try {
@@ -94,12 +95,27 @@ public class BroadcastManager {
 
     }
 
-    private boolean checkSemanticNet(SemanticNet net, String netKind) {
-        boolean isInteresting = false;
-        Enumeration<SemanticTag> tags = null;
-
-
-        return isInteresting;
+    private boolean checkSemanticNet(STSet profileSet, String netKind, SharkKB newKnowledge) {
+        SemanticNet inputNet = null;
+        FragmentationParameter fp = new FragmentationParameter(true, true, 10); //TODO: use the user data for FP
+        try {
+            inputNet = (SemanticNet) newKnowledge.getTopicSTSet();
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+            return false;
+        }
+        SemanticNet resultNet = null;
+        try {
+            resultNet = SharkCSAlgebra.contextualize(inputNet, profileSet, fp);
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        if (resultNet == null || resultNet.isEmpty()) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     public boolean isUnknown(SharkKB newKnowledge){
