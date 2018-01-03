@@ -215,8 +215,8 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         semanticFilters.remove(filter);
     }
 
-    public boolean executeSemanticFilters(ASIPInMessage message, ASIPKnowledge knowledge) {
-        return semanticFilters.filter(message, knowledge);
+    public boolean executeSemanticFilters(ASIPInMessage message, SharkKB newKnowledge, ASIPInterest entryProfile) {
+        return semanticFilters.filter(message, newKnowledge, entryProfile);
     }
 
     public void setEngineOwnerPeer(PeerSemanticTag tag) {
