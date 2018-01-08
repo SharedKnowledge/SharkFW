@@ -9,39 +9,82 @@ import java.util.Enumeration;
 
 public class PeerFilter implements SemanticFilter {
 
-    @Override
-    public boolean filter(ASIPInMessage message, SharkKB newKnowledge, ASIPInterest activeEntryProfile) {
-        if (activeEntryProfile == null || activeEntryProfile.getApprovers() == null) return true;
-        boolean isInteresting = false;
-        String profileSI = null;
-        if (activeEntryProfile.getApprovers() instanceof SemanticNet) {
-            isInteresting = checkSemanticNet(activeEntryProfile.getApprovers(), "Peer", newKnowledge);
+    private Dimension dimension;
+
+    public PeerFilter(Dimension dimension) {
+        if (dimension == Dimension.SENDER || dimension == Dimension.APPROVERS || dimension == Dimension.RECEIVERS) {
+            this.dimension = dimension;
         }
         else {
-            try {
-                profileSI = activeEntryProfile.getApprovers().tags().nextElement().getSI()[0];
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-            }
-            Enumeration<SemanticTag> peerTags = null;
-            try {
-                peerTags = newKnowledge.getPeerSTSet().tags();
-            } catch (SharkKBException e) {
-                e.printStackTrace();
-                return false;
-            }
-            SemanticTag currentElement;
-            while (peerTags.hasMoreElements()) {
-                currentElement = peerTags.nextElement();
-                if (profileSI.equals(currentElement.getSI()[0])) {
-                    isInteresting = true;
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public boolean filter(ASIPInMessage message, SharkKB newKnowledge, ASIPInterest activeEntryProfile) {
+        if (activeEntryProfile == null) return true;
+        boolean isInteresting = false;
+        switch (dimension){
+            case SENDER:
+                isInteresting = checkPeerSemanticTag(newKnowledge, activeEntryProfile);
+            case RECEIVERS:
+                if (activeEntryProfile.getReceivers() instanceof SemanticNet) {
+                    isInteresting = checkPeerSemanticNet(activeEntryProfile.getTopics(), newKnowledge);
                 }
+                else {
+                    isInteresting = checkPeerSemanticTag(newKnowledge, activeEntryProfile);
+                }
+                break;
+            case APPROVERS:
+                if (activeEntryProfile.getApprovers() instanceof SemanticNet) {
+                    isInteresting = checkPeerSemanticNet(activeEntryProfile.getTypes(), newKnowledge);
+                }
+                else {
+                    isInteresting = checkPeerSemanticTag(newKnowledge, activeEntryProfile);
+                }
+                break;
+            default:
+                isInteresting = false;
+                break;
+        }
+        return isInteresting;
+    }
+
+    private boolean checkPeerSemanticTag(SharkKB newKnowledge, ASIPInterest activeEntryProfile) {
+        boolean isInteresting = false;
+        String profileSI = null;
+        try {
+            if (dimension == Dimension.SENDER) {
+                profileSI = activeEntryProfile.getSender().getSI()[0];
+            }
+            else if (dimension == Dimension.RECEIVERS) {
+                profileSI = activeEntryProfile.getReceivers().tags().nextElement().getSI()[0];
+            }
+            else {
+                profileSI = activeEntryProfile.getApprovers().tags().nextElement().getSI()[0];
+            }
+        } catch (SharkKBException e) {
+            e.printStackTrace();
+        }
+        Enumeration<SemanticTag> dimensionTags = null;
+        try {
+            dimensionTags = newKnowledge.getPeerSTSet().tags();
+        }
+        catch (SharkKBException e) {
+            e.printStackTrace();
+            return false;
+        }
+        SemanticTag currentElement;
+        while (dimensionTags.hasMoreElements()) {
+            currentElement = dimensionTags.nextElement();
+            if (profileSI.equals(currentElement.getSI()[0])) {
+                isInteresting = true;
             }
         }
         return isInteresting;
     }
 
-    private boolean checkSemanticNet(STSet profileSet, String netKind, SharkKB newKnowledge) {
+    private boolean checkPeerSemanticNet(STSet profileSet, SharkKB newKnowledge) {
         SemanticNet inputNet = null;
         FragmentationParameter fp = new FragmentationParameter(true, true, 10); //TODO: use the user data for FP
         try {
@@ -62,5 +105,9 @@ public class PeerFilter implements SemanticFilter {
         else {
             return true;
         }
+    }
+
+    public Dimension getDimension() {
+        return dimension;
     }
 }
