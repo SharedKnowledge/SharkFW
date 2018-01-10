@@ -27,6 +27,7 @@ public class PeerFilter implements SemanticFilter {
         switch (dimension){
             case SENDER:
                 isInteresting = checkPeerSemanticTag(newKnowledge, activeEntryProfile);
+                break;
             case RECEIVERS:
                 if (activeEntryProfile.getReceivers() instanceof SemanticNet) {
                     isInteresting = checkPeerSemanticNet(activeEntryProfile.getTopics(), newKnowledge);
