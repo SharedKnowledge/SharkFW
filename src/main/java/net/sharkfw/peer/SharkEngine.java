@@ -219,6 +219,14 @@ abstract public class SharkEngine implements WhiteAndBlackListManager {
         return semanticFilters.filter(message, newKnowledge, entryProfile);
     }
 
+    public int getFilterCount() {
+        return semanticFilters.getFilterCount();
+    }
+
+    public void swapFilterPosition(int oldPosition, int newPosition) {
+        semanticFilters.swapFilterPosition(oldPosition, newPosition);
+    }
+
     public void setEngineOwnerPeer(PeerSemanticTag tag) {
         this.engineOwnerPeer = tag;
     }
