@@ -75,4 +75,12 @@ public class SpatialFilter implements SemanticFilter {
             return false;
         }
     }
+
+    public Dimension getDimension() {
+        return dimension;
+    }
+
+    public double getDecisionThreshold() {
+        return decisionThreshold;
+    }
 }

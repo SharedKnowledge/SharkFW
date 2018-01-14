@@ -42,5 +42,8 @@ public class CompositeFilter implements SemanticFilter {
         }
     }
 
+    public List<SemanticFilter> getAll() {
+        return new ArrayList<>(childFilters);
+    }
 
 }
