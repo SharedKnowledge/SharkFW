@@ -8,6 +8,7 @@ import net.sharkfw.knowledgeBase.spatial.LocationProfile;
 import net.sharkfw.knowledgeBase.spatial.SpatialInformation;
 import net.sharkfw.knowledgeBase.spatial.StochasticDecider;
 import net.sharkfw.knowledgeBase.spatial.StochasticDeciderImpl;
+import net.sharkfw.system.L;
 
 import java.util.Enumeration;
 
@@ -20,6 +21,7 @@ public class SpatialFilter implements SemanticFilter {
 
     public SpatialFilter(Dimension dimension, LocationProfile locationProfile, double decisionThreshold) {
         if (dimension == Dimension.SPATIAL) {
+            L.d("Creating Spatial Filter!");
             this.dimension = dimension;
             this.locationProfile = locationProfile;
             this.decisionThreshold = decisionThreshold;
@@ -82,5 +84,13 @@ public class SpatialFilter implements SemanticFilter {
 
     public double getDecisionThreshold() {
         return decisionThreshold;
+    }
+
+    public void setDecisionThreshold(double decisionThreshold) {
+        this.decisionThreshold = decisionThreshold;
+    }
+
+    public LocationProfile getLocationProfile() {
+        return locationProfile;
     }
 }
