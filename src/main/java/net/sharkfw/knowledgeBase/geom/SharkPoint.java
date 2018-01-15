@@ -7,12 +7,12 @@ import java.util.Locale;
 /**
  * @author Max Oehme (546545)
  */
-public class PointGeometry implements SharkGeometry {
+public class SharkPoint implements SharkGeometry {
 
     private double x, y;
     private final String wktPattern = "POINT(%f %f)";
 
-    public PointGeometry(SharkGeometry sharkGeometry) throws SharkKBException {
+    public SharkPoint(SharkGeometry sharkGeometry) throws SharkKBException {
         if (isPoint(sharkGeometry.getWKT())){
             parseWkt(sharkGeometry.getWKT());
         } else {
@@ -20,7 +20,7 @@ public class PointGeometry implements SharkGeometry {
         }
     }
 
-    public PointGeometry(double x, double y) {
+    public SharkPoint(double x, double y) {
         this.x = x;
         this.y = y;
     }

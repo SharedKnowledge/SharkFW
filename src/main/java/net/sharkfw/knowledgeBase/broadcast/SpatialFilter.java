@@ -3,8 +3,8 @@ package net.sharkfw.knowledgeBase.broadcast;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.geom.PointGeometry;
-import net.sharkfw.knowledgeBase.spatial.LocationProfile;
+import net.sharkfw.knowledgeBase.geom.SharkPoint;
+import net.sharkfw.knowledgeBase.spatial.SharkLocationProfile;
 import net.sharkfw.knowledgeBase.spatial.SpatialInformation;
 import net.sharkfw.knowledgeBase.spatial.StochasticDecider;
 import net.sharkfw.knowledgeBase.spatial.StochasticDeciderImpl;
@@ -16,14 +16,14 @@ public class SpatialFilter implements SemanticFilter {
 
     private Dimension dimension;
     private StochasticDecider stochasticDecider = new StochasticDeciderImpl();
-    private LocationProfile locationProfile = null;
+    private SharkLocationProfile sharkLocationProfile = null;
     private double decisionThreshold;
 
-    public SpatialFilter(Dimension dimension, LocationProfile locationProfile, double decisionThreshold) {
+    public SpatialFilter(Dimension dimension, SharkLocationProfile sharkLocationProfile, double decisionThreshold) {
         if (dimension == Dimension.SPATIAL) {
             L.d("Creating Spatial Filter!");
             this.dimension = dimension;
-            this.locationProfile = locationProfile;
+            this.sharkLocationProfile = sharkLocationProfile;
             this.decisionThreshold = decisionThreshold;
         }
         else {
@@ -61,11 +61,11 @@ public class SpatialFilter implements SemanticFilter {
     }
 
     private boolean checkSpatialSemanticTag(SpatialSemanticTag spatialSemanticTag) {
-        if (PointGeometry.isPoint(spatialSemanticTag.getGeometry().getWKT())) {
+        if (SharkPoint.isPoint(spatialSemanticTag.getGeometry().getWKT())) {
             try {
-                PointGeometry destPoint = new PointGeometry(spatialSemanticTag.getGeometry());
+                SharkPoint destPoint = new SharkPoint(spatialSemanticTag.getGeometry());
 
-                SpatialInformation spatialInformation = locationProfile.calculateSpatialInformationFromProfile(destPoint);
+                SpatialInformation spatialInformation = sharkLocationProfile.createSpatialInformationFromProfile(destPoint);
                 double probability = stochasticDecider.calculateProbability(spatialInformation);
 
                 return decisionThreshold >= probability;
@@ -90,7 +90,7 @@ public class SpatialFilter implements SemanticFilter {
         this.decisionThreshold = decisionThreshold;
     }
 
-    public LocationProfile getLocationProfile() {
-        return locationProfile;
+    public SharkLocationProfile getSharkLocationProfile() {
+        return sharkLocationProfile;
     }
 }
