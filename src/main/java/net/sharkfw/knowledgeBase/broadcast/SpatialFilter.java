@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.broadcast;
 
+import com.sun.istack.internal.NotNull;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
@@ -19,7 +20,7 @@ public class SpatialFilter implements SemanticFilter {
     private SharkLocationProfile sharkLocationProfile = null;
     private double decisionThreshold;
 
-    public SpatialFilter(Dimension dimension, SharkLocationProfile sharkLocationProfile, double decisionThreshold) {
+    public SpatialFilter(Dimension dimension, @NotNull SharkLocationProfile sharkLocationProfile, double decisionThreshold) {
         if (dimension == Dimension.SPATIAL) {
             L.d("Creating Spatial Filter!");
             this.dimension = dimension;
