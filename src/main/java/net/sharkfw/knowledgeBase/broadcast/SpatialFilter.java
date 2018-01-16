@@ -6,8 +6,8 @@ import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkPoint;
 import net.sharkfw.knowledgeBase.spatial.SharkLocationProfile;
 import net.sharkfw.knowledgeBase.spatial.SpatialInformation;
-import net.sharkfw.knowledgeBase.spatial.StochasticDecider;
-import net.sharkfw.knowledgeBase.spatial.StochasticDeciderImpl;
+import net.sharkfw.knowledgeBase.spatial.SpatialProbability;
+import net.sharkfw.knowledgeBase.spatial.SpatialProbabilityImpl;
 import net.sharkfw.system.L;
 
 import java.util.Enumeration;
@@ -15,7 +15,7 @@ import java.util.Enumeration;
 public class SpatialFilter implements SemanticFilter {
 
     private Dimension dimension;
-    private StochasticDecider stochasticDecider = new StochasticDeciderImpl();
+    private SpatialProbability spatialProbability = new SpatialProbabilityImpl();
     private SharkLocationProfile sharkLocationProfile;
     private double decisionThreshold;
 
@@ -66,7 +66,7 @@ public class SpatialFilter implements SemanticFilter {
                 SharkPoint destPoint = new SharkPoint(spatialSemanticTag.getGeometry());
 
                 SpatialInformation spatialInformation = sharkLocationProfile.createSpatialInformationFromProfile(destPoint);
-                double probability = stochasticDecider.calculateProbability(spatialInformation);
+                double probability = spatialProbability.calculateProbability(spatialInformation);
 
                 return decisionThreshold >= probability;
             } catch (SharkKBException e) {

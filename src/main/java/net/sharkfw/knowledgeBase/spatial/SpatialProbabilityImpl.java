@@ -3,7 +3,7 @@ package net.sharkfw.knowledgeBase.spatial;
 /**
  * @author Max Oehme (546545)
  */
-public class StochasticDeciderImpl implements StochasticDecider{
+public class SpatialProbabilityImpl implements SpatialProbability {
 
     public double calculateProbability(SpatialInformation spatialGeometryInformation) {
         double d_src = spatialGeometryInformation.getSourceToProfileDistance(),
@@ -21,15 +21,16 @@ public class StochasticDeciderImpl implements StochasticDecider{
             p_source = 1;
         }
 
-        if (d_dest == 0) {
+        if (d_dest > 0) {
             p_destination = Math.pow(1 / ((d_dest / d_middle) + 1), k_pow);
         } else{
             p_destination = 1;
         }
 
         int delta_k = k_ex - k_ent;
+        delta_k = delta_k == 0 ? 1 : delta_k;
 
-        double part_src = d_src * ((( 1 - (delta_k / (delta_k * (k_ent > k_ex ? -1 : 1))) ) / 2) + (delta_k * (k_ent > k_ex ? -1 : 1)) * p_source);
+        double part_src = d_src * ((( 1 - (delta_k / (delta_k * (k_ent > k_ex ? -1 : 1))) ) / 2) + (k_ent > k_ex ? -1 : 1) * p_source);
         double part_dest = d_dest * p_destination;
 
         double p;

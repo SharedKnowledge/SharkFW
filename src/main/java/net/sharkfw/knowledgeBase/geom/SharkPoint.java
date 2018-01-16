@@ -64,4 +64,13 @@ public class SharkPoint implements SharkGeometry {
         this.x = Double.parseDouble(wkt.substring(wkt.indexOf('(')+1, wkt.indexOf(' ')));
         this.y = Double.parseDouble(wkt.substring(wkt.indexOf(' ')+1, wkt.indexOf(')')));
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SharkPoint) {
+            return ((SharkPoint) obj).getX() == this.getX() && ((SharkPoint) obj).getY() == this.getY();
+        } else {
+            return false;
+        }
+    }
 }
