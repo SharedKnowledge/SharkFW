@@ -68,6 +68,8 @@ public class SpatialFilter implements SemanticFilter {
                 SpatialInformation spatialInformation = sharkLocationProfile.createSpatialInformationFromProfile(destPoint);
                 double probability = spatialProbability.calculateProbability(spatialInformation);
 
+                L.d("Probability: " + probability + ", Threshold: " + decisionThreshold + ", ForData: " + spatialInformation.toString(), this);
+
                 return decisionThreshold >= probability;
             } catch (SharkKBException e) {
                 e.printStackTrace();
