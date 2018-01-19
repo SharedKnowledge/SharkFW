@@ -4,9 +4,9 @@ import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.geom.SharkPoint;
-import net.sharkfw.knowledgeBase.spatial.SharkLocationProfile;
-import net.sharkfw.knowledgeBase.spatial.SpatialInformation;
-import net.sharkfw.knowledgeBase.spatial.SpatialProbability;
+import net.sharkfw.knowledgeBase.spatial.ISharkLocationProfile;
+import net.sharkfw.knowledgeBase.spatial.ISpatialInformation;
+import net.sharkfw.knowledgeBase.spatial.ISpatialProbability;
 import net.sharkfw.knowledgeBase.spatial.SpatialProbabilityImpl;
 import net.sharkfw.system.L;
 
@@ -15,16 +15,21 @@ import java.util.Enumeration;
 public class SpatialFilter implements SemanticFilter {
 
     private Dimension dimension;
-    private SpatialProbability spatialProbability = new SpatialProbabilityImpl();
-    private SharkLocationProfile sharkLocationProfile;
+    private ISpatialProbability spatialProbability;
+    private ISharkLocationProfile sharkLocationProfile;
     private double decisionThreshold;
 
-    public SpatialFilter(Dimension dimension, SharkLocationProfile sharkLocationProfile, double decisionThreshold) {
+    public SpatialFilter(Dimension dimension, ISharkLocationProfile sharkLocationProfile, double decisionThreshold) {
+        this(dimension, new SpatialProbabilityImpl(), sharkLocationProfile, decisionThreshold);
+    }
+
+    public SpatialFilter(Dimension dimension, ISpatialProbability spatialProbability, ISharkLocationProfile sharkLocationProfile, double decisionThreshold) {
         if (dimension == Dimension.SPATIAL && sharkLocationProfile != null) {
             L.d("Creating Spatial Filter!");
             this.dimension = dimension;
             this.sharkLocationProfile = sharkLocationProfile;
             this.decisionThreshold = decisionThreshold;
+            this.spatialProbability = spatialProbability;
         }
         else {
             throw new IllegalArgumentException();
@@ -65,7 +70,7 @@ public class SpatialFilter implements SemanticFilter {
             try {
                 SharkPoint destPoint = new SharkPoint(spatialSemanticTag.getGeometry());
 
-                SpatialInformation spatialInformation = sharkLocationProfile.createSpatialInformationFromProfile(destPoint);
+                ISpatialInformation spatialInformation = sharkLocationProfile.createSpatialInformationFromProfile(destPoint);
                 double probability = spatialProbability.calculateProbability(spatialInformation);
 
                 L.d("Probability: " + probability + ", Threshold: " + decisionThreshold + ", ForData: " + spatialInformation.toString(), this);
@@ -92,7 +97,7 @@ public class SpatialFilter implements SemanticFilter {
         this.decisionThreshold = decisionThreshold;
     }
 
-    public SharkLocationProfile getSharkLocationProfile() {
+    public ISharkLocationProfile getSharkLocationProfile() {
         return sharkLocationProfile;
     }
 }

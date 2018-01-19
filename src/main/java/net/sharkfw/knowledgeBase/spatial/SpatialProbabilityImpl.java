@@ -3,9 +3,9 @@ package net.sharkfw.knowledgeBase.spatial;
 /**
  * @author Max Oehme (546545)
  */
-public class SpatialProbabilityImpl implements SpatialProbability {
+public class SpatialProbabilityImpl implements ISpatialProbability {
 
-    public double calculateProbability(SpatialInformation spatialGeometryInformation) {
+    public double calculateProbability(ISpatialInformation spatialGeometryInformation) {
         double d_src = spatialGeometryInformation.getSourceToProfileDistance(),
                 d_middle = spatialGeometryInformation.getEntranceExitInProfileDistance(),
                 d_dest = spatialGeometryInformation.getDestinationToProfileDistance();

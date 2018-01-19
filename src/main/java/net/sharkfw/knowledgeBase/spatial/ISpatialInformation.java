@@ -3,7 +3,7 @@ package net.sharkfw.knowledgeBase.spatial;
 /**
  * @author Max Oehme (546545)
  */
-public interface SpatialInformation {
+public interface ISpatialInformation {
 
     double getSourceToProfileDistance();
 

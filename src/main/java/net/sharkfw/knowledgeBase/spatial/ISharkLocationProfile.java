@@ -5,6 +5,6 @@ import net.sharkfw.knowledgeBase.geom.SharkPoint;
 /**
  * @author Max Oehme (546545)
  */
-public interface SharkLocationProfile {
-    SpatialInformation createSpatialInformationFromProfile(SharkPoint sharkPoint);
+public interface ISharkLocationProfile {
+    ISpatialInformation createSpatialInformationFromProfile(SharkPoint sharkPoint);
 }

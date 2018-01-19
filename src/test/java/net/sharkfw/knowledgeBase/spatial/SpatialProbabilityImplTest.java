@@ -9,7 +9,7 @@ import org.junit.Test;
  * @author Max Oehme (546545)
  */
 public class SpatialProbabilityImplTest {
-    SpatialProbability decider;
+    ISpatialProbability decider;
 
     @Before
     public void setUp() {
@@ -53,7 +53,7 @@ public class SpatialProbabilityImplTest {
 
     }
 
-    class SpatialInformationImpl implements SpatialInformation {
+    class SpatialInformationImpl implements ISpatialInformation {
 
         private double sourceToProfile;
         private double entrenceToExit;
