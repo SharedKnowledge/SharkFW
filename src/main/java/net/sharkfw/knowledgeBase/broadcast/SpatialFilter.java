@@ -74,8 +74,8 @@ public class SpatialFilter implements SemanticFilter {
                 double probability = spatialProbability.calculateProbability(spatialInformation);
 
                 L.d("Probability: " + probability + ", Threshold: " + decisionThreshold + ", ForData: " + spatialInformation.toString(), this);
-
-                return decisionThreshold >= probability;
+                System.out.println("Probability: " + probability + ", Threshold: " + decisionThreshold + ", ForData: " + spatialInformation.toString());
+                return decisionThreshold <= probability;
             } catch (SharkKBException e) {
                 e.printStackTrace();
                 return false;
