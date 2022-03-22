@@ -141,6 +141,24 @@ public class XMLSerializer {
         }
 
 
+        openTagWritten = semanticNetConstructor(tagEnum, tag, semanticNet, buf, openTagWritten);
+
+        if (openTagWritten) {
+            if (semanticNet) {
+                buf.append(this.endTag(PREDICATES_TAG));
+            } else {
+                buf.append(this.endTag(SUB_SUPER_TAG));
+            }
+        }
+
+        if (buf.length() > 0) {
+            return buf.toString();
+        } else {
+            return null;
+        }
+    }
+
+    private boolean semanticNetConstructor(Enumeration<SemanticTag> tagEnum, SemanticTag tag, boolean semanticNet, StringBuilder buf, boolean openTagWritten) {
         if (semanticNet) {
 
             // Semantic Net
@@ -207,7 +225,7 @@ public class XMLSerializer {
                                 buf.append(this.endTag(SI_TAG));
                                 buf.append(this.endTag(TARGET_TAG));
 
-                                // end 
+                                // end
                                 buf.append(this.endTag(PREDICATE_TAG));
                             }
                         }
@@ -261,26 +279,13 @@ public class XMLSerializer {
                         buf.append(this.endTag(SI_TAG));
                         buf.append(this.endTag(TARGET_TAG));
 
-                        // end 
+                        // end
                         buf.append(this.endTag(SUPER_TAG));
                     }
                 }
             } while (tagEnum.hasMoreElements());
         }
-
-        if (openTagWritten) {
-            if (semanticNet) {
-                buf.append(this.endTag(PREDICATES_TAG));
-            } else {
-                buf.append(this.endTag(SUB_SUPER_TAG));
-            }
-        }
-
-        if (buf.length() > 0) {
-            return buf.toString();
-        } else {
-            return null;
-        }
+        return openTagWritten;
     }
 
     private String serializeTag(SemanticTag tag) throws SharkKBException {
