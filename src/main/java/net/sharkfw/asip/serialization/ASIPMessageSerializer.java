@@ -255,6 +255,11 @@ public class ASIPMessageSerializer {
             }
         }
 
+        if (ASIPPerformer(message, serializationHolder, command, content)) return false;
+        return true;
+    }
+
+    private static boolean ASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content) {
         switch (command) {
             case ASIPMessage.ASIP_EXPOSE:
                 try {
@@ -262,13 +267,13 @@ public class ASIPMessageSerializer {
                     message.setInterest(interest);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
-                    return false;
+                    return true;
                 }
                 break;
             case ASIPMessage.ASIP_INSERT:
                 if(serializationHolder.getContent()==null){
                     L.d("No content available", CLASS);
-                    return false;
+                    return true;
                 }
                 try {
                     ASIPKnowledgeConverter knowledgeConverter =
@@ -278,18 +283,18 @@ public class ASIPMessageSerializer {
                     message.setKnowledge(knowledgeConverter.getKnowledge());
                 } catch (SharkKBException | ASIPSerializerException e) {
                     e.printStackTrace();
-                    return false;
+                    return true;
                 }
                 break;
             case ASIPMessage.ASIP_RAW:
                 if(serializationHolder.getContent()==null){
                     L.d("No content available", CLASS);
-                    return false;
+                    return true;
                 }
                 byte[] raw = serializationHolder.getContent();
                 message.setRaw(new ByteArrayInputStream(raw));
                 break;
         }
-        return true;
+        return false;
     }
 }
