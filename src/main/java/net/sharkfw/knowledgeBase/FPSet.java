@@ -51,7 +51,7 @@ public class FPSet {
         fpSet.setFP(directionFP, ASIPSpace.DIM_DIRECTION);
     }
     
-    private int dimension2index(int dim) {
+    private int dimensionToIndex(int dim) {
         switch(dim) {
             case ASIPSpace.DIM_TOPIC: return 0;
             case ASIPSpace.DIM_TYPE: return 1;
@@ -67,7 +67,7 @@ public class FPSet {
     }
 
     private void setFP(FragmentationParameter fp, int dimension) {
-        int index = this.dimension2index(dimension);
+        int index = this.dimensionToIndex(dimension);
         fps[index] = fp;
     }
 
@@ -77,7 +77,7 @@ public class FPSet {
      * return fragmentation parameters in any case.
      */
     public FragmentationParameter getFP(int dimension) {
-        int index = this.dimension2index(dimension);
+        int index = this.dimensionToIndex(dimension);
         
         if(this.fps[index] == null) {
             return FragmentationParameter.getZeroFP();
