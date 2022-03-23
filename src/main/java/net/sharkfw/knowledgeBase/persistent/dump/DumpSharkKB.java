@@ -5,7 +5,7 @@ import net.sharkfw.asip.ASIPInformationSpace;
 import net.sharkfw.asip.ASIPInterest;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.serialization.ASIPKnowledgeConverter;
-import net.sharkfw.asip.serialization.ASIPMessageSerializerHelper;
+import net.sharkfw.asip.serialization.ASIPMessageSerializer;
 import net.sharkfw.asip.serialization.ASIPSerializerException;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
@@ -110,7 +110,7 @@ public class DumpSharkKB implements SharkKB {
     public void persist(){
         FileOutputStream stream = null;
         try {
-            ASIPKnowledgeConverter converter = ASIPMessageSerializerHelper.serializeKB(this.sharkKB);
+            ASIPKnowledgeConverter converter = ASIPMessageSerializer.serializeKB(this.sharkKB);
 
             stream = new FileOutputStream(this.file);
 

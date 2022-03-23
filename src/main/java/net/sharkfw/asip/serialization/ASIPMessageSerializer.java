@@ -7,6 +7,7 @@ import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.L;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 
 /**
  * @author j4rvis
@@ -53,9 +55,9 @@ public class ASIPMessageSerializer {
 
         ASIPKnowledgeConverter knowledgeConverter;
         if (knowledge instanceof SharkKB){
-            knowledgeConverter = ASIPMessageSerializerHelper.serializeKB((SharkKB) knowledge);
+            knowledgeConverter = serializeKB((SharkKB) knowledge);
         } else {
-            knowledgeConverter = ASIPMessageSerializerHelper.serializeKnowledge(knowledge);
+            knowledgeConverter = serializeKnowledge(knowledge);
         }
 
         content.put(KNOWLEDGE, knowledgeConverter.getSerializedKnowledgeAsJSON());
@@ -296,5 +298,41 @@ public class ASIPMessageSerializer {
                 break;
         }
         return false;
+    }
+
+    public static ASIPKnowledgeConverter serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException {
+        return new ASIPKnowledgeConverter(knowledge);
+    }
+
+    public static ASIPKnowledgeConverter serializeKB(SharkKB kb) throws SharkKBException {
+        ASIPKnowledgeConverter knowledgeConverter = new ASIPKnowledgeConverter(kb);
+        JSONObject jsonObject = knowledgeConverter.getSerializedKnowledgeAsJSON();
+        jsonObject.put(PropertyHolder.PROPERTIES, serializeProperties(kb));
+        knowledgeConverter.setSerializedKnowledgeAsJSON(jsonObject);
+        return knowledgeConverter;
+    }
+
+    public static JSONArray serializeProperties(SystemPropertyHolder target) throws SharkKBException {
+
+        if (target == null) { return null; }
+
+        Enumeration<String> propNamesEnum = target.propertyNames(false);
+        if (propNamesEnum == null || !propNamesEnum.hasMoreElements()) {
+            return new JSONArray();
+        }
+        JSONArray jsonArray = new JSONArray();
+        while (propNamesEnum.hasMoreElements()) {
+            String name = propNamesEnum.nextElement();
+            String value = target.getProperty(name);
+
+            JSONObject property = new JSONObject();
+            property.put(PropertyHolder.NAME, name);
+            property.put(PropertyHolder.VALUE, value);
+            jsonArray.put(property);
+        }
+
+//        L.d(jsonArray.toString());
+
+        return jsonArray;
     }
 }
