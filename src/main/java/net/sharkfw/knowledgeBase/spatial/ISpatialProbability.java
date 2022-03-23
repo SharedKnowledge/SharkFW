@@ -5,5 +5,5 @@ package net.sharkfw.knowledgeBase.spatial;
  */
 public interface ISpatialProbability {
 
-    double calculateProbability(ISpatialInformation spatialGeometryInformation);
+    //double calculateProbability(ISpatialInformation spatialGeometryInformation);
 }
