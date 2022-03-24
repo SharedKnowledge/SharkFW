@@ -20,7 +20,7 @@ import java.util.Enumeration;
 /**
  * @author j4rvis
  */
-public class ASIPMessageSerializer {
+public abstract class ASIPMessageSerializer {
 
     private static final String CLASS = "ASIPSERIALIZER: ";
 
@@ -258,6 +258,7 @@ public class ASIPMessageSerializer {
         }
 
         if (ASIPPerformer(message, serializationHolder, command, content)) return false;
+
         return true;
     }
 
@@ -300,6 +301,9 @@ public class ASIPMessageSerializer {
         return false;
     }
 
+
+
+
     public static ASIPKnowledgeConverter serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException {
         return new ASIPKnowledgeConverter(knowledge);
     }
@@ -336,3 +340,49 @@ public class ASIPMessageSerializer {
         return jsonArray;
     }
 }
+//
+//
+//class ASIPExpose extends ASIPMessageSerializer{
+//    boolean getASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content){
+//        try {
+//            ASIPInterest interest = ASIPMessageSerializerHelper.deserializeASIPInterest(content.get(ASIPMessageSerializer.INTEREST).toString());
+//            message.setInterest(interest);
+//        } catch (SharkKBException e) {
+//            e.printStackTrace();
+//            return true;
+//        }
+//        return false;
+//    }
+//}
+//
+//class ASIPInsert extends ASIPMessageSerializer{
+//    boolean getASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content){
+//        if(serializationHolder.getContent()==null){
+//            L.d("No content available", CLASS);
+//            return true;
+//        }
+//        try {
+//            ASIPKnowledgeConverter knowledgeConverter =
+//                    new ASIPKnowledgeConverter(
+//                            content.get(ASIPMessageSerializer.KNOWLEDGE).toString(),
+//                            serializationHolder.getContent());
+//            message.setKnowledge(knowledgeConverter.getKnowledge());
+//        } catch (SharkKBException | ASIPSerializerException e) {
+//            e.printStackTrace();
+//            return true;
+//        }
+//        return false;
+//    }
+//}
+//
+//class ASIPRaw extends ASIPMessageSerializer{
+//    boolean getASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content){
+//        if(serializationHolder.getContent()==null){
+//            L.d("No content available", CLASS);
+//            return true;
+//        }
+//        byte[] raw = serializationHolder.getContent();
+//        message.setRaw(new ByteArrayInputStream(raw));
+//        return false;
+//    }
+//}

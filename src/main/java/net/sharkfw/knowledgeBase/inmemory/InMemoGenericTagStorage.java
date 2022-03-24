@@ -76,7 +76,7 @@ public class InMemoGenericTagStorage<ST extends SemanticTag> {
         }
     }
     
-    protected void add(ST tag) throws SharkKBException {
+    public void add(ST tag) throws SharkKBException {
         // only add if not yet in storage
         ST st = this.getSemanticTag(tag.getSI());
         

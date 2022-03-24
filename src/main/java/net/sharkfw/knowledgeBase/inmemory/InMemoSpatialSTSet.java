@@ -20,31 +20,9 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
         super(storage);
     }
 
-    /**
-     * TODO
-     *
-     * @param gst
-     */
-    public void addGeoSemanticTag(SpatialSemanticTag gst) throws SharkKBException {
-        super.add(gst);
-    }
-
     // TODO
     public static SpatialSTSet fragmentSpatialSTSet(Enumeration<String> anchor, SpatialSTSet gsts, double range) throws SharkKBException {
         return gsts;
-    }
-
-    @Override
-    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
-        SpatialSemanticTag st = this.getSpatialSemanticTag(sis);
-        if (st != null) {
-            return st;
-        }
-
-        st = new InMemoSpatialSemanticTag(name, sis, geom);
-        this.addGeoSemanticTag(st);
-
-        return st;
     }
 
     /**
@@ -60,18 +38,6 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
         return this;
     }
 
-    private SpatialSemanticTag castGST(SemanticTag st) throws SharkKBException {
-        if (st == null) {
-            return null;
-        }
-
-        if (st instanceof SpatialSemanticTag) {
-            return (SpatialSemanticTag) st;
-        }
-
-        throw new SharkKBException("cannot use non geo semantic tag in geo semantic tag set");
-    }
-
     @SuppressWarnings("rawtypes")
     @Override
     public SemanticTag createSemanticTag(String name, String[] sis) throws SharkKBException {
@@ -81,11 +47,6 @@ public class InMemoSpatialSTSet extends InMemoSTSet implements SpatialSTSet, STS
     @Override
     public SemanticTag createSemanticTag(String name, String si) throws SharkKBException {
         return this.createSemanticTag(name, new String[]{si});
-    }
-
-    @Override
-    public SpatialSemanticTag getSpatialSemanticTag(String[] sis) throws SharkKBException {
-        return this.castGST(super.getSemanticTag(sis));
     }
 
     @Override

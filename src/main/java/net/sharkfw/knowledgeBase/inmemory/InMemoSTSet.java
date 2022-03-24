@@ -24,8 +24,6 @@ import net.sharkfw.system.EnumerationChain;
  */
 public class InMemoSTSet extends AbstractSTSet implements STSet {
 
-    private InMemoGenericTagStorage storage;
-    
     /**
      * That's the prefered way to create an empty stand alone semantic tag set.
      */
@@ -90,8 +88,7 @@ public class InMemoSTSet extends AbstractSTSet implements STSet {
     
     /**
      * copies name, SIs and properties to the target set
-     * @param targetSet
-     * @param source 
+     * @param source
      */
     @Override
     public SemanticTag merge(SemanticTag source) throws SharkKBException {
@@ -112,19 +109,6 @@ public class InMemoSTSet extends AbstractSTSet implements STSet {
         Util.mergeProperties(copy, source);
         
         return copy;
-    }
-    /**
-     * Adds this semantic tag to the set. Note: The object itself is
-     * added, no copy is made. It shouldn't be changed after adding.
-     * Create a copy if required in the first step.
-     * 
-     * @param tag Tag to add.
-     * @throws net.sharkfw.knowledgeBase.SharkKBException
-     */
-    public void add(SemanticTag tag) throws SharkKBException {
-        this.storage.add(tag);
-        
-        this.notifyCreated(tag);
     }
 
     @Override
@@ -159,7 +143,7 @@ public class InMemoSTSet extends AbstractSTSet implements STSet {
     /**
      * A tag is created and added to the set
      * @param name Tag name
-     * @param sis Subject Identifier
+     * @param si Subject Identifier
      * @return
      * @throws SharkKBException 
      */
