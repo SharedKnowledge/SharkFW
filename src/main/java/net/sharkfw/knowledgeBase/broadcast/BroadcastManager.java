@@ -1,19 +1,12 @@
 package net.sharkfw.knowledgeBase.broadcast;
 
 import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPKnowledge;
-import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPOutMessage;
 import net.sharkfw.knowledgeBase.*;
-import net.sharkfw.knowledgeBase.inmemory.InMemoSemanticNet;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSharkKB;
 import net.sharkfw.knowledgeBase.sync.manager.SyncComponent;
-import net.sharkfw.knowledgeBase.sync.manager.SyncManager;
-import net.sharkfw.knowledgeBase.sync.manager.SyncMergeInfo;
 import net.sharkfw.knowledgeBase.sync.manager.SyncMergeInfoSerializer;
-import net.sharkfw.knowledgeBase.sync.manager.port.SyncAcceptKP;
-import net.sharkfw.knowledgeBase.sync.manager.port.SyncMergeKP;
 import net.sharkfw.peer.SharkEngine;
 import net.sharkfw.routing.SemanticRoutingKP;
 import net.sharkfw.system.L;
@@ -28,8 +21,8 @@ import java.util.concurrent.Executors;
 public class BroadcastManager {
 
     private final ExecutorService executor;
-    public static final String SHARK_BROADCAST_TYPE_SI = "http://www.sharksystem.net/broadcast";
-    public static final SemanticTag SHARK_BROADCAST_TAG = InMemoSharkKB.createInMemoSemanticTag("BROADCAST", SHARK_BROADCAST_TYPE_SI);
+    public static final String SHARK_BROADCAST_URL = "http://www.sharksystem.net/broadcast";
+    public static final SemanticTag SHARK_BROADCAST_TAG = InMemoSharkKB.createInMemoSemanticTag("BROADCAST", SHARK_BROADCAST_URL);
 
     // Semantic Routing
     private SemanticRoutingKP semanticRoutingKP;
