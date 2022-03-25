@@ -1,9 +1,6 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
-import net.sharkfw.knowledgeBase.PeerSNSemanticTag;
-import net.sharkfw.knowledgeBase.PeerSemanticTag;
-import net.sharkfw.knowledgeBase.PeerTXSemanticTag;
-import net.sharkfw.knowledgeBase.SystemPropertyHolder;
+import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.Util;
 
 import java.io.Serializable;
@@ -119,5 +116,20 @@ public class InMemo_SN_TX_PeerSemanticTag extends InMemo_SN_TX_SemanticTag
             newAddresses[oldAddresses.length] = address;
             this.setAddresses(newAddresses);
         } // else: do nothing
+    }
+
+    @Override
+    public void removeSI(String deleteSI) throws SharkKBException {
+        /* that a kind of trick: super implementation creates an new array
+         * when adding this si is ok. We check this.
+         */
+
+        String[] sis = this.getSI();
+        super.removeSI(deleteSI);
+
+        if(sis != this.getSI()) {
+            // something changed
+            this.updateSIInPredicates();
+        }
     }
 }
