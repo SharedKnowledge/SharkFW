@@ -3,7 +3,11 @@ package net.sharkfw.knowledgeBase;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+
+import net.sharkfw.knowledgeBase.geom.SharkGeometry;
+import net.sharkfw.knowledgeBase.inmemory.InMemoGenericTagStorage;
 import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
+import net.sharkfw.knowledgeBase.inmemory.InMemoSpatialSemanticTag;
 
 /**
  *
@@ -11,7 +15,8 @@ import net.sharkfw.knowledgeBase.inmemory.InMemoSTSet;
  */
 public abstract class AbstractSTSet implements STSet {
     private FragmentationParameter defaultFP;
-    
+    public InMemoGenericTagStorage storage;
+
     /**
     * Each set has build fragmentation parameter. They can be retrieved.
     * @return default fragmentation parameter
@@ -200,5 +205,56 @@ public abstract class AbstractSTSet implements STSet {
             STSetListener nextListener = listenerIter.next();
             nextListener.semanticTagCreated(st, this);
         }
-    }   
+    }
+
+    /**
+     * Adds this semantic tag to the set. Note: The object itself is
+     * added, no copy is made. It shouldn't be changed after adding.
+     * Create a copy if required in the first step.
+     *
+     * @param tag Tag to add.
+     * @throws SharkKBException
+     */
+    public void add(SemanticTag tag) throws SharkKBException {
+        this.storage.add(tag);
+
+        this.notifyCreated(tag);
+    }
+
+    /**
+     * TODO
+     *
+     * @param gst
+     */
+    public void addGeoSemanticTag(SpatialSemanticTag gst) throws SharkKBException {
+        add(gst);
+    }
+
+    public SpatialSemanticTag createSpatialSemanticTag(String name, String[] sis, SharkGeometry geom) throws SharkKBException {
+        SpatialSemanticTag st = this.getSpatialSemanticTag(sis);
+        if (st != null) {
+            return st;
+        }
+
+        st = new InMemoSpatialSemanticTag(name, sis, geom);
+        this.addGeoSemanticTag(st);
+
+        return st;
+    }
+
+    protected SpatialSemanticTag castGST(SemanticTag st) throws SharkKBException {
+        if (st == null) {
+            return null;
+        }
+
+        if (st instanceof SpatialSemanticTag) {
+            return (SpatialSemanticTag) st;
+        }
+
+        throw new SharkKBException("cannot use non geo semantic tag in geo semantic tag set");
+    }
+
+    public SpatialSemanticTag getSpatialSemanticTag(String[] sis) throws SharkKBException {
+        return this.castGST(getSemanticTag(sis));
+    }
 }

@@ -108,22 +108,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag implements SNSem
             this.updateSIInPredicates();
         }
     }
-    
-    @Override
-    public void removeSI(String deleteSI) throws SharkKBException {
-        /* that a kind of trick: super implementation creates an new array 
-         * when adding this si is ok. We check this.
-         */
-        
-        String[] sis = this.getSI();
-        super.removeSI(deleteSI);
-        
-        if(sis != this.getSI()) {
-            // something changed
-            this.updateSIInPredicates();
-        }
-    }
-    
+
     /**
      * Si of a tag can be changed. But just one SI can be changed.
      * Thus, a tag never looses its identity. Nevertheless, each 
@@ -136,7 +121,7 @@ public class InMemo_SN_TX_SemanticTag extends InMemoSemanticTag implements SNSem
      * Thus, if there is a persistency - each referenced tag must just
      * write changed si set after each si change. That's done with this method
      */
-    private void updateSIInPredicates() {
+    public void updateSIInPredicates() {
         // targets
         if(this.targets != null) {
             Collection<HashSet<SNSemanticTag>> targetSets = this.targets.values();

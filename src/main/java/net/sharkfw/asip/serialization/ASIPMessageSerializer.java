@@ -7,6 +7,7 @@ import net.sharkfw.asip.engine.ASIPInMessage;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.knowledgeBase.*;
 import net.sharkfw.system.L;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,11 +15,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 
 /**
  * @author j4rvis
  */
-public class ASIPMessageSerializer {
+public abstract class ASIPMessageSerializer {
 
     private static final String CLASS = "ASIPSERIALIZER: ";
 
@@ -53,9 +55,9 @@ public class ASIPMessageSerializer {
 
         ASIPKnowledgeConverter knowledgeConverter;
         if (knowledge instanceof SharkKB){
-            knowledgeConverter = ASIPMessageSerializerHelper.serializeKB((SharkKB) knowledge);
+            knowledgeConverter = serializeKB((SharkKB) knowledge);
         } else {
-            knowledgeConverter = ASIPMessageSerializerHelper.serializeKnowledge(knowledge);
+            knowledgeConverter = serializeKnowledge(knowledge);
         }
 
         content.put(KNOWLEDGE, knowledgeConverter.getSerializedKnowledgeAsJSON());
@@ -255,6 +257,12 @@ public class ASIPMessageSerializer {
             }
         }
 
+        if (ASIPPerformer(message, serializationHolder, command, content)) return false;
+
+        return true;
+    }
+
+    private static boolean ASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content) {
         switch (command) {
             case ASIPMessage.ASIP_EXPOSE:
                 try {
@@ -262,13 +270,13 @@ public class ASIPMessageSerializer {
                     message.setInterest(interest);
                 } catch (SharkKBException e) {
                     e.printStackTrace();
-                    return false;
+                    return true;
                 }
                 break;
             case ASIPMessage.ASIP_INSERT:
                 if(serializationHolder.getContent()==null){
                     L.d("No content available", CLASS);
-                    return false;
+                    return true;
                 }
                 try {
                     ASIPKnowledgeConverter knowledgeConverter =
@@ -278,18 +286,103 @@ public class ASIPMessageSerializer {
                     message.setKnowledge(knowledgeConverter.getKnowledge());
                 } catch (SharkKBException | ASIPSerializerException e) {
                     e.printStackTrace();
-                    return false;
+                    return true;
                 }
                 break;
             case ASIPMessage.ASIP_RAW:
                 if(serializationHolder.getContent()==null){
                     L.d("No content available", CLASS);
-                    return false;
+                    return true;
                 }
                 byte[] raw = serializationHolder.getContent();
                 message.setRaw(new ByteArrayInputStream(raw));
                 break;
         }
-        return true;
+        return false;
+    }
+
+
+
+
+    public static ASIPKnowledgeConverter serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException {
+        return new ASIPKnowledgeConverter(knowledge);
+    }
+
+    public static ASIPKnowledgeConverter serializeKB(SharkKB kb) throws SharkKBException {
+        ASIPKnowledgeConverter knowledgeConverter = new ASIPKnowledgeConverter(kb);
+        JSONObject jsonObject = knowledgeConverter.getSerializedKnowledgeAsJSON();
+        jsonObject.put(PropertyHolder.PROPERTIES, serializeProperties(kb));
+        knowledgeConverter.setSerializedKnowledgeAsJSON(jsonObject);
+        return knowledgeConverter;
+    }
+
+    public static JSONArray serializeProperties(SystemPropertyHolder target) throws SharkKBException {
+
+        if (target == null) { return null; }
+
+        Enumeration<String> propNamesEnum = target.propertyNames(false);
+        if (propNamesEnum == null || !propNamesEnum.hasMoreElements()) {
+            return new JSONArray();
+        }
+        JSONArray jsonArray = new JSONArray();
+        while (propNamesEnum.hasMoreElements()) {
+            String name = propNamesEnum.nextElement();
+            String value = target.getProperty(name);
+
+            JSONObject property = new JSONObject();
+            property.put(PropertyHolder.NAME, name);
+            property.put(PropertyHolder.VALUE, value);
+            jsonArray.put(property);
+        }
+
+//        L.d(jsonArray.toString());
+
+        return jsonArray;
     }
 }
+//
+//
+//class ASIPExpose extends ASIPMessageSerializer{
+//    boolean getASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content){
+//        try {
+//            ASIPInterest interest = ASIPMessageSerializerHelper.deserializeASIPInterest(content.get(ASIPMessageSerializer.INTEREST).toString());
+//            message.setInterest(interest);
+//        } catch (SharkKBException e) {
+//            e.printStackTrace();
+//            return true;
+//        }
+//        return false;
+//    }
+//}
+//
+//class ASIPInsert extends ASIPMessageSerializer{
+//    boolean getASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content){
+//        if(serializationHolder.getContent()==null){
+//            L.d("No content available", CLASS);
+//            return true;
+//        }
+//        try {
+//            ASIPKnowledgeConverter knowledgeConverter =
+//                    new ASIPKnowledgeConverter(
+//                            content.get(ASIPMessageSerializer.KNOWLEDGE).toString(),
+//                            serializationHolder.getContent());
+//            message.setKnowledge(knowledgeConverter.getKnowledge());
+//        } catch (SharkKBException | ASIPSerializerException e) {
+//            e.printStackTrace();
+//            return true;
+//        }
+//        return false;
+//    }
+//}
+//
+//class ASIPRaw extends ASIPMessageSerializer{
+//    boolean getASIPPerformer(ASIPInMessage message, ASIPSerializationHolder serializationHolder, int command, JSONObject content){
+//        if(serializationHolder.getContent()==null){
+//            L.d("No content available", CLASS);
+//            return true;
+//        }
+//        byte[] raw = serializationHolder.getContent();
+//        message.setRaw(new ByteArrayInputStream(raw));
+//        return false;
+//    }
+//}

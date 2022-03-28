@@ -1,8 +1,7 @@
 package net.sharkfw.knowledgeBase.inmemory;
 
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.sharkfw.knowledgeBase.geom.SharkGeometry;
 import net.sharkfw.knowledgeBase.SharkKBException;
 import net.sharkfw.knowledgeBase.SharkURI;
@@ -213,5 +212,20 @@ public class InMemoSpatialSemanticTag extends InMemo_SN_TX_SemanticTag implement
         }
         
         return this.geom;
+    }
+
+    @Override
+    public void removeSI(String deleteSI) throws SharkKBException {
+        /* that a kind of trick: super implementation creates an new array
+         * when adding this si is ok. We check this.
+         */
+
+        String[] sis = this.getSI();
+        super.removeSI(deleteSI);
+
+        if(sis != this.getSI()) {
+            // something changed
+            this.updateSIInPredicates();
+        }
     }
 }

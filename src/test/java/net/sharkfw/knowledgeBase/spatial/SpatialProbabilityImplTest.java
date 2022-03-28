@@ -1,5 +1,6 @@
 package net.sharkfw.knowledgeBase.spatial;
 
+import net.sharkfw.knowledgeBase.broadcast.SpatialFilter;
 import net.sharkfw.system.L;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,11 +10,11 @@ import org.junit.Test;
  * @author Max Oehme (546545)
  */
 public class SpatialProbabilityImplTest {
-    ISpatialProbability decider;
+    SpatialFilter decider;
 
     @Before
     public void setUp() {
-        decider = new SpatialProbabilityImpl();
+        decider = new SpatialFilter();
     }
 
     @Test

@@ -118,4 +118,19 @@ public class InMemoTimeSemanticTag extends InMemo_SN_TX_SemanticTag
     public long getDuration() {
         return this.duration;
     }
+
+    @Override
+    public void removeSI(String deleteSI) throws SharkKBException {
+        /* that a kind of trick: super implementation creates an new array
+         * when adding this si is ok. We check this.
+         */
+
+        String[] sis = this.getSI();
+        super.removeSI(deleteSI);
+
+        if(sis != this.getSI()) {
+            // something changed
+            this.updateSIInPredicates();
+        }
+    }
 }

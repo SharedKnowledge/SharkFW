@@ -1,8 +1,6 @@
 package net.sharkfw.asip.serialization;
 
-import net.sharkfw.asip.ASIPInformation;
 import net.sharkfw.asip.ASIPInterest;
-import net.sharkfw.asip.ASIPKnowledge;
 import net.sharkfw.asip.ASIPSpace;
 import net.sharkfw.asip.engine.ASIPMessage;
 import net.sharkfw.knowledgeBase.*;
@@ -16,7 +14,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -28,18 +25,6 @@ public class ASIPMessageSerializerHelper {
 
     public static JSONObject serializeInterest(ASIPSpace space) throws SharkKBException, JSONException {
         return ASIPMessageSerializerHelper.serializeASIPSpace(space);
-    }
-
-    public static ASIPKnowledgeConverter serializeKnowledge(ASIPKnowledge knowledge) throws SharkKBException {
-        return new ASIPKnowledgeConverter(knowledge);
-    }
-
-    public static ASIPKnowledgeConverter serializeKB(SharkKB kb) throws SharkKBException {
-        ASIPKnowledgeConverter knowledgeConverter = new ASIPKnowledgeConverter(kb);
-        JSONObject jsonObject = knowledgeConverter.getSerializedKnowledgeAsJSON();
-        jsonObject.put(PropertyHolder.PROPERTIES, serializeProperties(kb));
-        knowledgeConverter.setSerializedKnowledgeAsJSON(jsonObject);
-        return knowledgeConverter;
     }
 
     public static JSONObject serializeHeader(ASIPMessage header) throws JSONException, SharkKBException {
@@ -119,7 +104,7 @@ public class ASIPMessageSerializerHelper {
             object.put(SpatialSemanticTag.GEOMETRY, sst.getGeometry().getWKT());
         }
 
-        object.put(PropertyHolder.PROPERTIES, serializeProperties(tag).toString());
+        object.put(PropertyHolder.PROPERTIES, ASIPMessageSerializer.serializeProperties(tag).toString());
 
         return object;
     }
@@ -155,30 +140,6 @@ public class ASIPMessageSerializerHelper {
                 jsonObject.put(STSet.RELATIONS, serializeRelations(stset.tags()));
         }
         return jsonObject;
-    }
-
-    public static JSONArray serializeProperties(SystemPropertyHolder target) throws SharkKBException {
-
-        if (target == null) { return null; }
-
-        Enumeration<String> propNamesEnum = target.propertyNames(false);
-        if (propNamesEnum == null || !propNamesEnum.hasMoreElements()) {
-            return new JSONArray();
-        }
-        JSONArray jsonArray = new JSONArray();
-        while (propNamesEnum.hasMoreElements()) {
-            String name = propNamesEnum.nextElement();
-            String value = target.getProperty(name);
-
-            JSONObject property = new JSONObject();
-            property.put(PropertyHolder.NAME, name);
-            property.put(PropertyHolder.VALUE, value);
-            jsonArray.put(property);
-        }
-
-//        L.d(jsonArray.toString());
-
-        return jsonArray;
     }
 
     public static JSONObject serializeRelations(Enumeration<SemanticTag> tagEnum) {
